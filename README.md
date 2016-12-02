@@ -22,18 +22,14 @@ If you want to run the latest code from git, here's how to get started:
 
 2. Clone the code in a `node-red-contrib` folder
 
-```
-cd node-red
-mkdir node-red-contrib
-git clone https://github.com/NGRP/node-red-contrib-viseo.git
-```
+        cd node-red
+        mkdir node-red-contrib
+        git clone https://github.com/NGRP/node-red-contrib-viseo.git
 
 3. Install dependencies for each sub folder
 
-```
-cd /{subfolder}
-npm install
-```
+        cd /{subfolder}
+        npm install
 
 4. Update `nodesDir` property of [Node-RED configuration](https://nodered.org/docs/configuration) to use the `node-red-contrib` folder as a module repository.
 
