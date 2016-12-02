@@ -18,7 +18,9 @@ npm install node-red-contrib-viseo-{filename}
 
 ## Getting Help
 
-TBW.
+For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
+- Your message is a question / discussion
+- The module or node name
 
 ## Developers
 

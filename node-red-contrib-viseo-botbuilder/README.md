@@ -6,11 +6,15 @@ This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/no
 
 ## Quick Start
 
-TBW.
+```
+npm install node-red-contrib-viseo-botbuilder
+```
 
 ## Getting Help
 
-TBW.
+For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
+- Your message is a question / discussion
+- The module or node name
 
 ## Contributing
 
