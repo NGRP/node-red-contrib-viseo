@@ -1,0 +1,17 @@
+{
+    "name"          : "node-red-contrib-viseo-random",
+    "version"       : "0.0.1",
+    "description"   : "Random call between outputs",
+    "dependencies"  : { },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-random"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "random": "node-random.js"
+        }
+    }
+}
