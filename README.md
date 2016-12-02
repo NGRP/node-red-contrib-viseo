@@ -6,7 +6,8 @@ A set Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) Technologies.
 | Node                                                                                                           | Description |
 | -------------------------------------------------------------------------------------------------------------- |-------------|
 | [botbuilder](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-botbuilder)     | wrapper on top of Microsoft Bot Builder Framework |
-| [random](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-random)     | perform random call between outputs |
+| [random](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-random)             | perform random call between outputs               |
+| [nedb](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-nedb)                 | set/get data from NeDB Database                   |
 
 ## Quick Start
 
