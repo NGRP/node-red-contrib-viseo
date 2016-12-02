@@ -1,4 +1,4 @@
-# Contributing to Node-RED
+# Contributing to the Project
 
 We welcome contributions, but request you follow these guidelines.
 
