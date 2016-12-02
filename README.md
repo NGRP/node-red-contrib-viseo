@@ -2,6 +2,12 @@
 
 A set Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) Technologies.
 
+
+| Node                                                                                                           | Description |
+| -------------------------------------------------------------------------------------------------------------- |-------------|
+| [botbuilder](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-botbuilder)     | wrapper on top of Microsoft Bot Builder Framework |
+|      |  |
+
 ## Quick Start
 
 Each module can be installed using `npm` command
