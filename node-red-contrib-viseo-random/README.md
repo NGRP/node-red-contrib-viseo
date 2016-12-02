@@ -1,6 +1,6 @@
 # Node-RED: Random
 
-A Node-RED wrapper on top of [Microsoft Bot Builder](https://github.com/Microsoft/BotBuilder) Framework.
+A Node-RED node to perform random call between outputs.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
