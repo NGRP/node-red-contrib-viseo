@@ -1,0 +1,50 @@
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('fb-greeting',{
+        category: 'VISEO',
+        color: '#3FADB5',
+        defaults:  { 
+            name:      { value: undefined },
+            greeting:  { value: undefined }
+        },
+        inputs:  0,
+        outputs: 0,
+        icon: "facebook.svg",  align: "left",
+        button: { onclick: function() {
+            var node = this;
+            $.ajax({
+                url: "fb-greeting/"+this.id,
+                type:"POST",
+                success: function(resp) { RED.notify("Successfully Updated", "success"); },
+                error: function(jqXHR,textStatus,errorThrown) {
+                    if (jqXHR.status == 404) {
+                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.not-deployed")}),"error");
+                    } else if (jqXHR.status == 500) {
+                        RED.notify(node._("common.notification.error",{message:node._("inject.errors.failed")}),"error");
+                    } else if (jqXHR.status == 0) {
+                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.no-response")}),"error");
+                    } else {
+                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.unexpected",{status:jqXHR.status,message:textStatus})}),"error");
+                    }
+                }
+            });
+        }},
+        label: function() { return this.name || "Greeting"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="fb-greeting">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-greeting"><i class="icon-tag"></i> Greeting</label>
+        <textarea id="node-input-greeting" rows="5" style="width:300px"></textarea>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="fb-greeting">
+    <p>Configure greeting message on facebook</p>
+</script>
