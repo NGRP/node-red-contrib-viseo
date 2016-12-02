@@ -1,4 +1,4 @@
-# Node-RED: BotBuilder
+# Node-RED: Random
 
 A Node-RED wrapper on top of [Microsoft Bot Builder](https://github.com/Microsoft/BotBuilder) Framework.
 
