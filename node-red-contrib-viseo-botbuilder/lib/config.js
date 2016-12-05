@@ -5,7 +5,10 @@ const extend  = require('extend');
 
 exports.init = () => {
     global.CONFIG = {};
-    let path = process.cwd() + process.env['BOTBUILDER_CFG'];
+    
+    let path = process.env['BOTBUILDER_CFG'];
+    if (!path) return;
+
     extend(true, CONFIG, loadConfiguration(path));
 };
 

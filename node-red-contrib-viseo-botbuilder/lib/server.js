@@ -19,9 +19,8 @@ const start = (callback, options) => {
 
     // Configure server with credentials if any
     if (srv.certificate){    
-        let root        = process.cwd();
-        cfg.certificate = fs.readFileSync(root+srv.certificate.crt);
-        cfg.key         = fs.readFileSync(root+srv.certificate.key);
+        cfg.certificate = fs.readFileSync(srv.certificate.crt);
+        cfg.key         = fs.readFileSync(srv.certificate.key);
     }
     server = restify.createServer(cfg);
 

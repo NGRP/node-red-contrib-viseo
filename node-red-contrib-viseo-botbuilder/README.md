@@ -10,6 +10,24 @@ This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/no
 npm install node-red-contrib-viseo-botbuilder
 ```
 
+## Documentation
+
+| Node        | Description                                |
+| ----------- |--------------------------------------------|
+| Bot         | Microsoft BotBuilder Server                |
+| Send Card   | Send a reply message to the user           |
+| Luis        | Query MS LUIS and return first intent      |
+| Attachement | Download message attachements              |
+| Profile     | Update user's profile from current message |
+| FB Profile  | Update user's profile from facebook data   |
+| FB Greeting | Set Messenger Greeting message             |
+
+Configuration can be set in nodes or in a [configuration file](https://gist.github.com/JpEncausse/40a917ade2e044eb5c9f5a5381d886dc).
+A configuration is easier to manage with multiple server. 
+The absolute path to this file must be defined in ENV var `BOTBUILDER_CFG`. 
+
+
+
 ## Getting Help
 
 For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
