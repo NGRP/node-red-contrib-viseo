@@ -4,6 +4,8 @@ A Node-RED wrapper on top of [Microsoft Bot Builder](https://github.com/Microsof
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
+Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
+
 ## Quick Start
 
 ```
@@ -26,7 +28,18 @@ Configuration can be set in nodes or in a [configuration file](https://gist.gith
 A configuration is easier to manage with multiple server. 
 The absolute path to this file must be defined in ENV var `BOTBUILDER_CFG`. 
 
+### Get Started
+
+Here is a sample configuration to start you server. Switch will route to the convenient SendCard according to business logic. 
+
 ![Kickstart Nodes](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-viseo-botbuilder/doc/node_start.jpg?raw=true)
+
+### Tips & Tricks
+
+- The BotBuilder require an access to [Microsoft Bot Framework](https://dev.botframework.com/)
+- Do not forget to open port 3978 of the bot server.
+- Users' storage is performed by any storage node like NeDB.
+- An SSL certificate is required to work.
 
 ## Getting Help
 
