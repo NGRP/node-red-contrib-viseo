@@ -26,7 +26,7 @@ Configuration can be set in nodes or in a [configuration file](https://gist.gith
 A configuration is easier to manage with multiple server. 
 The absolute path to this file must be defined in ENV var `BOTBUILDER_CFG`. 
 
-
+![Kickstart Nodes](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-viseo-botbuilder/doc/node_start.jpg?raw=true)
 
 ## Getting Help
 
