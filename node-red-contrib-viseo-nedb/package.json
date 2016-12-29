@@ -3,7 +3,6 @@
     "version"       : "0.0.2",
     "description"   : "Get/Set content in NeDB",
     "dependencies"  : {
-	    /*"node-red-helper" : "^0.0.1",*/
         "extend"    : "^3.0.0",
         "nedb"      : "^1.8.0"
         

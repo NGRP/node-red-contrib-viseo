@@ -3,7 +3,6 @@
     "version"       : "0.0.1",
     "description"   : "Wrapper on PhantomJS",
     "dependencies"  : {
-	    /*"node-red-helper" : "^0.0.1",*/
         "phantomjs-prebuilt" : "^2.1.0"
     },
     "repository" : {
