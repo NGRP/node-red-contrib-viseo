@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('random',{
         category: 'VISEO',
-        color: '#FFCC66',
+        color: '#3FADB5',
         defaults: { 
             name:      { value: undefined },
             outputs:   { value: 1 },
@@ -10,6 +10,7 @@
         outputs: function(){ this.outputs },
         icon: "random.svg",
         align: "left",
+        paletteLabel: "Random",
         label: function() { return this.name || "Random"; }
     });
 </script>

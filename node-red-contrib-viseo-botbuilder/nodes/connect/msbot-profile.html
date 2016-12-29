@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('profile',{
-        category: 'VISEO',
+        category: 'VISEO_Bot',
         color: '#3FADB5',
         defaults:  { 
             name:      { value: undefined }
@@ -10,6 +10,7 @@
         inputs:  1,
         outputs: 1,
         icon: "profile.svg",  align: "left",
+        paletteLabel: "Profile",
         label: function() { return this.name || "Profile"; }
     });
 </script>

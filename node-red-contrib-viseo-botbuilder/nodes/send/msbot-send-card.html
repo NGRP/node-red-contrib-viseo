@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('send-card',{
-        category: 'VISEO',
+        category: 'VISEO_Bot',
         color: '#3FADB5',
         defaults: { 
             name:      { value: undefined },
@@ -39,6 +39,7 @@
             return icon; 
         }, 
         align: "left",
+        paletteLabel: "Message",
         labelStyle: "bot-card-name",
         label: function() { return (this.name || this.text || "Send Card") }
     });

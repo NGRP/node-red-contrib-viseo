@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('bot',{
-        category: 'VISEO',
+        category: 'VISEO_Bot',
         color: '#3FADB5',
         defaults:  { 
             name:  { value: "" },
@@ -14,7 +14,8 @@
         inputs:0,
         outputs:2,
         icon: "server.svg",  align: "left",
-        label: function() { return this.name || "Bot"; }
+        paletteLabel: "Server",
+        label: function() { return this.name || "Bot Server"; }
     });
 </script>
 

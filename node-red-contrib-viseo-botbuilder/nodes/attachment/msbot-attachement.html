@@ -1,16 +1,17 @@
 <script type="text/javascript">
     RED.nodes.registerType('attachement',{
-        category: 'VISEO',
+        category: 'VISEO_Bot',
         color: '#3FADB5',
         defaults:  { 
-            name	: { value: undefined },
-	    afterPrompt : { value: false },
-            path	: { value: "" },
-	    output	: { value: "" }
+            name		: { value: undefined },
+	    	afterPrompt : { value: false },
+            path		: { value: "" },
+	    	output		: { value: "" }
         },
         inputs:  1,
         outputs: 4,
         icon: "store.svg",  align: "left",
+		paletteLabel: "Attachment",
         label: function() { return this.name || "Attachment"; }
     });
 </script>

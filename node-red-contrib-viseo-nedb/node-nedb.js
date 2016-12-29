@@ -1,25 +1,8 @@
+const helper    = require('node-red-helper');
 const Datastore = require('nedb');
-const extend  = require('extend');
-const path = require('path');
-const vm = require('vm');
-
-
-const getByString = (obj, str) => {
-    let ctxt = { "data": obj , "value": undefined };
-    const context = new vm.createContext(ctxt);
-    const script  = new vm.Script("value = data."+str);
-    try { script.runInContext(context); }
-    catch(ex){ error(ex.message); }
-    return ctxt.value;
-}
-
-const setByString = (obj, str, value) => {
-    let ctxt = { "data": obj };
-    const context = new vm.createContext(ctxt);
-    const script  = new vm.Script("data."+str+"="+value);
-    try { script.runInContext(context); }
-    catch(ex){ error(ex.message); }
-}
+const extend    = require('extend');
+const path      = require('path');
+const vm        = require('vm');
 
 // --------------------------------------------------------------------------
 //  LOGS
@@ -51,8 +34,8 @@ let db = undefined;
 const stop = (callback) => { db = undefined; callback(); }
 const start = (node, config) => {
     if (db) return;
-    let dbPath = config.path || '/data/database.db';
-    let file   = path.normalize(process.cwd() + dbPath);
+    let dbPath = helper.resolve(data, config.path || '{cwd}/data/database.db', '');
+    let file   = path.normalize(dbPath);
 
     db = new Datastore({ filename: file });
     db.loadDatabase((err) => { node.log('Loading DataBase:' + file); });
@@ -64,8 +47,8 @@ const input = (node, data, config) => {
 }
 
 const set = (node, data, config) => {
-    let dbKey = getByString(data, config.key);
-    let value = getByString(data, config.value);
+    let dbKey = helper.getByString(data, config.key);
+    let value = helper.getByString(data, config.value);
     if (!value) return;
     
     value.mdate = Date.now(); 
@@ -75,13 +58,13 @@ const set = (node, data, config) => {
 }
 
 const get = (node, data, config) => {
-    let dbKey = getByString(data, config.key);
+    let dbKey = helper.getByString(data, config.key);
     if (!dbKey) return node.send(data);
 
     db.findOne({ id: dbKey }, (err, doc) => {
-        let value = getByString(data, config.value);
+        let value = helper.getByString(data, config.value);
         if (value) extend(true, value, doc);
-        else setByString(data, config.value, doc);
+        else helper.setByString(data, config.value, doc);
         node.send(data);
     });
 }

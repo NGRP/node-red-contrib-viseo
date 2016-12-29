@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('fb-profile',{
-        category: 'VISEO',
+        category: 'VISEO_Bot',
         color: '#3FADB5',
         defaults:  { 
             name:      { value: undefined }
@@ -10,7 +10,8 @@
         inputs:  1,
         outputs: 1,
         icon: "facebook.svg",  align: "left",
-        label: function() { return this.name || "Profile"; }
+        paletteLabel: "Profile FB",
+        label: function() { return this.name || "Facebook"; }
     });
 </script>
 

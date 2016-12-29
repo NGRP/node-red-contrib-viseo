@@ -96,4 +96,6 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Copyright and license
 
+Icons are made by [Freepik](http://www.freepik.com) from [Flaticon](http://www.flaticon.com) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
+
 Copyright 2016 [VISEO](http://www.viseo.com/) under the Apache 2.0 license.

@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('fb-greeting',{
-        category: 'VISEO',
+        category: 'VISEO_Bot',
         color: '#3FADB5',
         defaults:  { 
             name:      { value: undefined },
@@ -30,7 +30,8 @@
                 }
             });
         }},
-        label: function() { return this.name || "Greeting"; }
+        paletteLabel: "Greeting FB",
+        label: function() { return this.name || "Greeting FB"; }
     });
 </script>
 
