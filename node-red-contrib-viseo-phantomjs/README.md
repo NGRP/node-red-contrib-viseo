@@ -1,13 +1,19 @@
 # Node-RED: NeDB
 
-A Node-RED node to set/get data in an in memory database named [NeDB](https://github.com/louischatriot/nedb).
+A Node-RED node using PhantomJS to snapshot pages. A usecase is to snapshot pages with D3JS charts.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
 ## Quick Start
 
+On Linux you must install
 ```
-npm install node-red-contrib-viseo-nedb
+sudo apt-get install bzip2
+```
+
+Before 
+```
+npm install node-red-contrib-viseo-phantomjs
 ```
 
 ## Getting Help
