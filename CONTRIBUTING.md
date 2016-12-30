@@ -48,6 +48,6 @@ code base. Some basic rules include:
 Nodes can handle fields in various ways.
 
 - `msg.payload` should contains the input required data to run the nodes and the output result
-- Filesystem `path` should handle string with `{cwd}` to allow absolute or relative path and `{time}` to add random timestamp.
+- Filesystem `path` should handle string with `{cwd}` to allow absolute or relative path and `{timestamp}` to add random timestamp.
 - Fields should be able to rerieve data from `msg.*` according to a given property path.
 

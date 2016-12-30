@@ -1,0 +1,132 @@
+[
+    {
+        "id": "19b2639e.a1989c",
+        "type": "inject",
+        "z": "117acbe.66e4f34",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "874f4524.9e7918"
+            ]
+        ]
+    },
+    {
+        "id": "935142e3.231da",
+        "type": "debug",
+        "z": "117acbe.66e4f34",
+        "name": "",
+        "active": true,
+        "console": "false",
+        "complete": "false",
+        "x": 590,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "b9767180.28af4",
+        "type": "http in",
+        "z": "117acbe.66e4f34",
+        "name": "",
+        "url": "/chart",
+        "method": "get",
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 80,
+        "wires": [
+            [
+                "ea2b2989.bdf278"
+            ]
+        ]
+    },
+    {
+        "id": "ea2b2989.bdf278",
+        "type": "template",
+        "z": "117acbe.66e4f34",
+        "name": "D3 Bar Chart",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html>\n<head>\n    <meta charset=\"utf-8\">\n    <style>\n        path, line {stroke: #AAAAAA; }\n        \n        .bar { fill: #279FD3; }\n        .line {\n            fill: none;\n            stroke: #DD1E25; stroke-width: 3;\n            shape-rendering: crispEdges;\n        }\n        .y0 text { fill: #279FD3; font-family: \"A030\", arial, sans-serif; }\n        .y1 text { fill: #DD1E25; font-family: \"A030\", arial, sans-serif; }\n        \n    </style>\n</head>\n<body>\n<script src=\"https://d3js.org/d3.v4.min.js\"></script>\n<script>\n\n// set the dimensions and margins of the graph\nvar margin = {top: 80, right: 20, bottom: 30, left: 40},\n    width  = 440 - margin.left - margin.right,\n    height = 250 - margin.top - margin.bottom;\n\n// set the ranges\nvar x0 = d3.scaleBand().range([0, width]).padding(0.1);\nvar y0 = d3.scaleLinear().range([height, 0]);\nvar y1 = d3.scaleLinear().range([height, 0]);\n\n\nvar svg = d3.select(\"body\").append(\"svg\")\n            .attr(\"width\",  width  + margin.left + margin.right)\n            .attr(\"height\", height + margin.top  + margin.bottom)\n            .append(\"g\")\n            .attr(\"transform\", \"translate(\" + margin.left + \",\" + margin.top + \")\");\n\nvar handleData = function(json){\n  \n  //var json = JSON.parse(json)\n  var data = json.data\n\n  // format the data\n  data.forEach(function(d) {\n    d.barY = +d.barY;\n  });\n\n  // Scale the range of the data in the domains\n  x0.domain(data.map(function(d) { return d.barX; }));\n  y0.domain([0, d3.max(data, function(d) { return d.barY; })]);\n  y1.domain([0, d3.max(data, function(d) { return d.lineY; })]);\n\n  var valueline = d3.line()\n\t.x(function (d) { return x0(d.barX) + x0.bandwidth()/2; })\n\t.y(function (d) { return y1(d.lineY); });\n\n  // append the rectangles for the bar chart\n  svg.selectAll(\".bar\").data(data).enter().append(\"rect\")\n      .attr(\"class\", \"bar\")\n      .attr(\"x\", function(d) { return x0(d.barX); })\n      .attr(\"width\", x0.bandwidth())\n      .attr(\"y\", function(d) { return y0(d.barY); })\n      .attr(\"height\", function(d) { return height - y0(d.barY); });\n\n  // add the x Axis\n  svg.append(\"g\")\n      .attr(\"transform\", \"translate(0,\" + height + \")\")\n      .call(d3.axisBottom(x0));\n\n  // add the y Axis\n  svg.append(\"g\")\n     .attr(\"class\",\"y0\").call(d3.axisLeft(y0));\n  svg.append(\"g\")\n     .attr(\"class\",\"y1\").attr(\"transform\", \"translate(\" + width + \",0)\").call(d3.axisRight(y1));\n  \n  // add valueline\n  svg.append(\"path\")\n      .data([data])\n      .attr(\"class\", \"line\")\n      .attr(\"d\", valueline);\n}\n\nhandleData({ \"data\": [\n  {\"barX\": \"Lundi\",      \"barY\": 4.2, \"lineY\": 12},\n  {\"barX\": \"Mardi\",      \"barY\": 4.3, \"lineY\": 13},\n  {\"barX\": \"Mercredi\",   \"barY\": 4.0, \"lineY\": 8},\n  {\"barX\": \"Jeudi\",      \"barY\": 3.8, \"lineY\": 6},\n  {\"barX\": \"Vendredi\",   \"barY\": 4.0, \"lineY\": 7},\n  {\"barX\": \"Samedi\",     \"barY\": 5.3, \"lineY\": 7},\n  {\"barX\": \"Dimanche\",   \"barY\": 5.6, \"lineY\": 8}\n]})\n\n</script>\n</body>\n</html>",
+        "x": 270,
+        "y": 80,
+        "wires": [
+            [
+                "54eeaa0.2ce1458"
+            ]
+        ]
+    },
+    {
+        "id": "54eeaa0.2ce1458",
+        "type": "http response",
+        "z": "117acbe.66e4f34",
+        "name": "",
+        "x": 410,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "874f4524.9e7918",
+        "type": "template",
+        "z": "117acbe.66e4f34",
+        "name": "JSON Data",
+        "field": "phantomjs.data",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{ \"data\": [\n  {\"barX\": \"Lundi\",      \"barY\": 4.2, \"lineY\": 12},\n  {\"barX\": \"Mardi\",      \"barY\": 4.3, \"lineY\": 13},\n  {\"barX\": \"Mercredi\",   \"barY\": 4.0, \"lineY\": 8},\n  {\"barX\": \"Jeudi\",      \"barY\": 3.8, \"lineY\": 6},\n  {\"barX\": \"Vendredi\",   \"barY\": 4.0, \"lineY\": 7},\n  {\"barX\": \"Samedi\",     \"barY\": 5.3, \"lineY\": 7},\n  {\"barX\": \"Dimanche\",   \"barY\": 5.6, \"lineY\": 8}\n]}\n",
+        "x": 290,
+        "y": 200,
+        "wires": [
+            [
+                "61c46845.9da798"
+            ]
+        ]
+    },
+    {
+        "id": "61c46845.9da798",
+        "type": "phantomjs-snapshot",
+        "z": "117acbe.66e4f34",
+        "name": "",
+        "url": "http://127.0.0.1:1880/chart",
+        "path": "{cwd}/webapp/static/shot_test.png",
+        "width": "500",
+        "height": "250",
+        "delay": "0",
+        "x": 440,
+        "y": 200,
+        "wires": [
+            [
+                "935142e3.231da"
+            ]
+        ]
+    },
+    {
+        "id": "696c7767.96bfb8",
+        "type": "comment",
+        "z": "117acbe.66e4f34",
+        "name": "Line / Bar Chart",
+        "info": "ouverture d'un EndPoint \npermettant de générer un graphique",
+        "x": 140,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "924c7213.01eb2",
+        "type": "comment",
+        "z": "117acbe.66e4f34",
+        "name": "Snapshot",
+        "info": "Génère un snapshot d'une page web",
+        "x": 120,
+        "y": 160,
+        "wires": []
+    }
+]

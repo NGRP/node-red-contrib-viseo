@@ -6,15 +6,46 @@ This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/no
 
 ## Quick Start
 
-On Linux you must install
+### Windows
+
+install npm
+```
+npm install node-red-contrib-viseo-phantomjs
+```
+
+### Linux
+
+Install `bzip2` to unzip phnatojs
+
 ```
 sudo apt-get install bzip2
 ```
 
-Before 
+PhantomJS works with Ghostscript Font Type1
+```
+sudo apt-get install libfontconfig
+sudo apt-get install fontconfig
+```
+
+Font should be installed here:
+```
+sudo cp fonts/arial/type1/* /usr/share/fonts/type1/
+fc-cache -fv
+```
+
+Use `fc-list` command to check if font are correctly installed. The provided font name is not Arial but `A030`
+
+Then install npm
 ```
 npm install node-red-contrib-viseo-phantomjs
 ```
+
+On Linux, for a better rendering of font, Type1 font must be added in `/usr/share/fonts/type1` and the run `fc-cache -fv`
+
+### Demo
+
+A demonstration flow can be imported from /demo/demo.json.
+
 
 ## Getting Help
 
