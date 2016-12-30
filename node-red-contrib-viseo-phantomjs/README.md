@@ -46,6 +46,8 @@ On Linux, for a better rendering of font, Type1 font must be added in `/usr/shar
 
 A demonstration flow can be imported from /demo/demo.json.
 
+![Demo Flow](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-viseo-phantomjs/demo/demo.jpg?raw=true)
+
 
 ## Getting Help
 
