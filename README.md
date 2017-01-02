@@ -64,7 +64,7 @@ node node-red/red.js -s data/node-red-config.js
 ```
 
 See also sample [node-red-conf.js](https://gist.github.com/JpEncausse/1d2e72c65749d7704df59a9c38273f7f). 
-Do not forget to [set a password](http://nodered.org/docs/security) !
+Do not forget to [set a password](http://nodered.org/docs/security) ! Here is a [start.sh](https://gist.github.com/JpEncausse/20af7c946e4bb105ac7da7f24a287ca5)
 
 ## Getting Help
 
