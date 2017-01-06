@@ -303,45 +303,5 @@ var repaint = function($node){
 </script>
 
 <script type="text/x-red" data-help-name="send-card">
-	<h1>HeroCard</h1>
-
-	<p>Send an HeroCard Bot Message </p>
-    <h3>Usage</h3>
-
-    <p>To Be Written.</p>
-
-	<h3>Text substitution</h3>
-	<p>You can perform some text substitution by using the following syntax : 
-	<ol>
-		<li>{message.user.name} => 'bob'
-		<li>{message.user.name2} => 'undefined'
-		<li>{message.user.name:not provided} => 'bob'
-		<li>{message.user.name2:} => '' <i>(that's remove an undefined property)</i>
-		<li>{message.user.name2:not provided} => 'not provided'
-		<li>{"{message.user.name}"=="bob"?true:false} => 'true'
-		<li>{%message.user.name%=="bob"?true:false} => 'true' <i>(try to be more simple than the previous line.)</i> 
-		<li>{message.user.age>18?You are of age:young} => <i>(it depends on the user's age)</i> 
-		<li>{%message.user.name2%=="bob"?true:false} => 'false' 
-		<li>{%message.user.name%==%message.user.name%?true:false} => 'true'
-		<li>{%message.user.name%==%message.user.name2%?false:true} => 'true'
-	</ol>
-	Samples : <br>
-	<code>Allergène(s) : {"undefined"!=%openfoodfacts.product.allergens% && <br>
-	%openfoodfacts.product.allergens%.length>0?<br>
-	{openfoodfacts.product.allergens}:aucun}</code>
-	<br>
-	It tests if the attribute <code>openfoodfacts.product.allergens</code> exists and is not empty before 
-	displaying it or 'aucun' (which means <i>nothing</i>).
-	<br>
-	The code :<br>
-	<code>Allergène(s) : {openfoodfacts.product.allergens:aucun}</code><br>
-	is more simple, but if the attribute is defined and empty, the result will be an empty string. 
-	<br><br>
-	If you have to use the character <i><b>':'</b></i> somewhere in the answers you can use <i><b>':else:'</b></i>.<br><br>
-	<code>{"undefined"!=%intent.answers[0]% && %intent.answers[0]%.length>0?<br>
-	https://server.com/search/{intent.answers[0]}<b>:else:</b>nothing} </code> => 'nothing' if the condition section is false.
-	<br><br>
-	Note, a pseudo recursion is available.
-	</p>
 
 </script>

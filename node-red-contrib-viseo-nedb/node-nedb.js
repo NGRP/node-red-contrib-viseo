@@ -34,7 +34,7 @@ let db = undefined;
 const stop = (callback) => { db = undefined; callback(); }
 const start = (node, config) => {
     if (db) return;
-    let dbPath = helper.resolve(undefined, config.path || '{cwd}/data/database.db', '');
+    let dbPath = helper.resolve(config.path || '{cwd}/data/database.db', undefined, '');
     let file   = path.normalize(dbPath);
     
     db = new Datastore({ filename: file });

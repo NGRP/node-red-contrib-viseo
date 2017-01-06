@@ -34,7 +34,7 @@ const input = (node, data, config) => {
 }
 
 const snapshot  = (node, data, config, callback) => {
-    let outPath = helper.resolve(data, data.path || config.path, '');
+    let outPath = helper.resolve(data.path || config.path, data, '');
     let binPath = phantomjs.path;
     let width   = config.width  || 1024;
     let height  = config.height || 768;
