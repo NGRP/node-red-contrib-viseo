@@ -7,7 +7,7 @@ const helper  = require('node-red-helper');
 exports.init = () => {
     global.CONFIG = {};
     
-    let path = helper.resolve(undefined, process.env['BOTBUILDER_CFG']);
+    let path = helper.resolve(process.env['BOTBUILDER_CFG']);
     if (!path) return;
 
     extend(true, CONFIG, loadConfiguration(path));
