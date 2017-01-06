@@ -1,0 +1,54 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nedb',{
+        category: 'VISEO_DB',
+        color: '#3FADB5',
+        defaults: { 
+            name:      { value: undefined },
+            key: 	   { value: undefined },
+            value: 	   { value: undefined },
+            operation: { value: undefined }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "db.svg",
+        align: "left",
+        paletteLabel: "NeDB",
+        label: function() { return this.name || "NeDB"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nedb">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Key</label>
+        <input type="text" id="node-input-key" placeholder="Key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-value"><i class="icon-tag"></i> Value</label>
+        <input type="text" id="node-input-value" placeholder="Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-operation"><i class="icon-tag"></i> Operation</label>
+        <select id="node-input-operation" style="width:125px">
+            <option value="set">set</option>
+            <option value="get">get</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="nedb">
+    Retrieve or Save an object of the data flow according to a data flow id.
+    For instance, to retrieve or save a data.user then set key=data.user.id and value=data.user 
+    For a get, if the user already exists in the flow then it is merged with new one  
+    <h2>Fields</h2>
+    <ul>
+        <li><b>Name:</b> can be used to override the default name of the node.</li>
+        <li><b>Key:</b> filled with the property used as the key (mandatory). </li>
+        <li><b>Value:</b> filled with the property used as the value (mandatory).</li>
+        <li><b>Operation:</b> <i>set</i> is used to store the value. <i>get</i> is used to 
+        fetch the value.</li>
+    </ul>
+</script>

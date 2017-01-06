@@ -1,0 +1,21 @@
+{
+    "name"          : "node-red-contrib-viseo-jimp",
+    "version"       : "0.0.1",
+    "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
+    "description"   : "Wrapper of JIMP",
+    "dependencies"  : { 
+        "jimp"   : "^0.2.27"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-jimp"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "jimp":   "node-jimp.js"
+        }
+    }
+}
+

@@ -1,0 +1,63 @@
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('bot',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:  { value: "" },
+            port:  { value: "" },
+            appId: { value: "" },
+            appPassword: { value: "" },
+	    fmsg : { value: "markdown"}
+        },
+        inputs:0,
+        outputs:2,
+        icon: "server.svg",  align: "left",
+        paletteLabel: "Server",
+        label: function() { return this.name || "Bot Server"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="bot">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="icon-tag"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="3978">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appId"><i class="icon-tag"></i> AppId</label>
+        <input type="text" id="node-input-appId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appPassword"><i class="icon-tag"></i> AppPass</label>
+        <input type="text" id="node-input-appPassword" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-fmsg"><i class="icon-tag"></i> Format</label>
+        <select id="node-input-fmsg" style="width:125px">
+            <option value="plain">plain</option>
+            <option value="markdown">markdown</option>
+            <option value="xml">XML (HTML)</option>
+        </select>
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="bot">
+	<h1>MS Bot</h1>
+
+	<h3>Description</h3>
+    <p>Start a MS Bot Builder Server with the given configuration. (Configuration can also be read from config files defined by BOTBUILDER_CFG environment var).</p>
+    <p>The node will forward the received message to next node with the given properties</p>
+    <ul>
+        <li>payload: the message's text</li>
+        <li>message: the message object</li>
+        <li>user: an empty object with an id to be filled by further nodes</li>
+        <li>context: a map with bot, session, and anything usefull during the current stream's' life (it's a workaround for Node-RED message clone)</li>
+        <li>fmsg: the text format (plain, markdown, xml, ...). Note, Skype supports the HTML format. Telegram could support it.</li>
+    </ul>
+</script>

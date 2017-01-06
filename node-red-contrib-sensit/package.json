@@ -1,0 +1,19 @@
+{
+    "name"          : "node-red-contrib-viseo-sensit",
+    "version"       : "0.0.1",
+    "description"   : "Wrapper on Sensit (sigfox) API",
+    "dependencies"  : { 
+        "node-sensit" : "*"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-sensit"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "sensit": "node-sensit.js"
+        }
+    }
+}

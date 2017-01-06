@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    RED.nodes.registerType('file-out',{
+        category: 'VISEO_IO',
+        color: '#3FADB5',
+        defaults: { 
+            name:    { value: undefined },
+            path:    { value: undefined },
+            mtimes:  { value: undefined },
+            content: { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "download.svg",
+        align: "right",
+        paletteLabel: 'file out',
+        label: function() { return this.name || "to File"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="file-out">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-path"><i class="icon-tag"></i> Path</label>
+        <input type="text" id="node-input-path" placeholder="/path/in/webapp">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mtimes"><i class="icon-tag"></i> Date</label>
+        <input type="text" id="node-input-mtimes" placeholder="2016-05-04T00:00:00+00:00">
+    </div>
+    <div class="form-row">
+        <label for="node-input-content"><i class="icon-tag"></i> Content</label>
+        <input type="text" id="node-input-content" placeholder="utf-8">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="file-out">
+    Store given input buffer (or String) into output file path.
+    <ul>
+        <li><code>date</code>: the last modified date</li>
+        <li><code>path</code>: the output file path</li>
+        <li><code>content</code>: the content-type (utf-8 or binay or ...) </li>
+    </ul>
+
+    <h3>Output</h3>
+    <ul>
+        <li>payload: the absolute file path</li>
+    </ul>
+</script>

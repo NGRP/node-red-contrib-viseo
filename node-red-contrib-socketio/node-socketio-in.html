@@ -1,0 +1,34 @@
+<script type="text/javascript">
+    RED.nodes.registerType('socketio-in',{
+        category: 'VISEO_IO',
+        color: '#3FADB5',
+        defaults: { 
+            name:   { value: undefined },
+            path:   { value: undefined },
+        },
+        inputs:0,
+        outputs:1,
+        icon: "socketio.svg",
+        align: "left",
+        paletteLabel: 'socket IO in',
+        label: function() { return this.name || "SocketIO IN"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="socketio-in">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-path"><i class="icon-tag"></i> Path</label>
+        <input type="text" id="node-input-path" placeholder="/ws/path">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="socketio-in">
+    <p>
+        Listen to incomming SocketIO message on the given path.
+        Output in the payload incomming data and set the current socket in <code>message.socket</code>. 
+    </p>
+</script>

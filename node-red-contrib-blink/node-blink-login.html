@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    RED.nodes.registerType('blink-login',{
+        category: 'VISEO_IOT',
+        color: '#3FADB5',
+        defaults: { 
+            name:      { value: undefined },
+            uri:       { value: undefined },
+        },
+        credentials: {
+            login:     { type:"text"      },
+            password:  { type:"password"  }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "blink.svg",
+        align: "left",
+        label: function() { return this.name || "Blink Login"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="blink-login">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-login"><i class="icon-tag"></i> Login</label>
+        <input type="text" id="node-input-login" placeholder="email address">
+    </div>
+    <div class="form-row">
+        <label for="node-input-password"><i class="icon-tag"></i> Password</label>
+        <input type="password" id="node-input-password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-uri"><i class="icon-tag"></i> URI</label>
+        <input type="text" id="node-input-uri" placeholder="https://rest.prde.immedia-semi.com">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="blink-login">
+    <p>Implements CURL Blink for Home unofficial API</p>
+    <p>Use Login/password to login Blink API and retrieve an authentication token</p>
+
+    <h3>Output</h3>
+    Output in a blink object the following data: 
+    <ul>
+        <li>login: the return JSON object</li>
+        <li>token: the authentication token</li>
+        <li>uri: the server URI</li>
+    </ul>
+</script>

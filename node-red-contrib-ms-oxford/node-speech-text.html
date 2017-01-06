@@ -1,0 +1,31 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-speech-text',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            name: { value: undefined },
+            key:  { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: 'MS Speech',
+        label: function() { return this.name || "MS Speech2Text"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-speech-text">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Key</label>
+        <input type="text" id="node-input-key" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ms-speech-text">
+
+</script>

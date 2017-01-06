@@ -1,0 +1,43 @@
+<script type="text/javascript">
+    RED.nodes.registerType('blink-home',{
+        category: 'VISEO_IOT',
+        color: '#3FADB5',
+        defaults: { 
+            name:      { value: undefined },
+            uri:       { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "blink.svg",
+        align: "left",
+        label: function() { return this.name || "Blink Home"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="blink-home">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-uri"><i class="icon-tag"></i> URI</label>
+        <input type="text" id="node-input-uri" placeholder="https://rest.prde.immedia-semi.com">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="blink-home">
+    <p>Implements CURL Blink for Home unofficial API</p>
+    <p>Query HomeScreen using authentication token and send a message for each camera</p>
+
+    <h3>Input</h3>
+    Must be called after a Blink-Login in the flow.
+
+    <h3>Output</h3>
+    <ul>
+        <li>blink.device: the JSON device</li>
+        <li>headers: set an HTTP header with the token</li>
+        <li>url: path to the media</li>
+    </ul>
+
+    <p>This node can be piped to HTTP request to retrieve thumbnails</p>
+</script>

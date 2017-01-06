@@ -1,0 +1,21 @@
+{
+    "name"          : "node-red-contrib-viseo-socketio",
+    "version"       : "0.0.1",
+    "author"        : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
+    "description"   : "Implements SocketIO library for Node-RED",
+    "dependencies"  : { 
+        "socket.io" : "~1.5.1"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-socketio"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "sarah" ],
+    "node-red" : {
+        "nodes": {
+            "socketio-in":  "node-socketio-in.js",
+            "socketio-out": "node-socketio-out.js"
+        }
+    }
+}
