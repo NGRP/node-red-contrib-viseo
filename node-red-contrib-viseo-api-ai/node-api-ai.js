@@ -42,7 +42,7 @@ module.exports = function (RED) {
 
 const input = (node, data, config, app, RED) => {
     try {
-        const text = nodeRedHelper.resolve(data, config.text);
+        const text = nodeRedHelper.resolve(config.text, data);
         const request = app.textRequest(text, { sessionId: md5(config.session) });
 
         request.on('response', function (response) {

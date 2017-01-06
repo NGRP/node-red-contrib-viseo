@@ -38,7 +38,7 @@ const getMessage = (cards, options) => {
     let msg = new builder.Message();
 
     // set the format
-    if (options.fmsg) msg.textFormat(options.fmsg);
+    if (options && options.fmsg) msg.textFormat(options.fmsg);
 
     // Is Carousel
     if (cards.length > 1){
