@@ -9,7 +9,7 @@ const helper = require('node-red-helper');
 const configValidationScheme = {
     token: Joi.string().length(32).hex().required(),
     language: Joi.string().empty('').regex(/^[a-z]{2}(-[A-Z]{2})?$/).optional(),
-    session: Joi.string().min(8).max(32).alphanum().required(),
+    session: Joi.string().required(),
     text: Joi.string().required()
 };
 
