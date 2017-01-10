@@ -1,10 +1,11 @@
 {
     "name"          : "node-red-contrib-viseo-jimp",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Wrapper of JIMP",
     "dependencies"  : { 
-        "jimp"   : "^0.2.27"
+        "jimp"   : "^0.2.27",
+        "node-red-viseo-helper" : "^0.0.2"
     },
     "repository" : {
         "type":"git",

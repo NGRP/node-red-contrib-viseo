@@ -1,7 +1,7 @@
 const path         = require('path');
 const childProcess = require('child_process');
 const phantomjs    = require('phantomjs-prebuilt');
-const helper       = require('node-red-helper');
+const helper       = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  LOGS

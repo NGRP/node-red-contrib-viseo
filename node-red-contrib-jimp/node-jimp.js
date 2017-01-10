@@ -1,5 +1,5 @@
 const Jimp = require("jimp");
-const helper = require('node-red-helper');
+const helper = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED

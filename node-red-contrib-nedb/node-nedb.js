@@ -1,4 +1,4 @@
-const helper    = require('node-red-helper');
+const helper    = require('node-red-viseo-helper');
 const Datastore = require('nedb');
 const extend    = require('extend');
 const path      = require('path');
