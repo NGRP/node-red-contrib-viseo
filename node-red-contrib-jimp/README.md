@@ -1,4 +1,4 @@
-# Node-RED: NeDB
+# Node-RED
 
 A Node-RED node to manipulate image data using jimp library.
 
