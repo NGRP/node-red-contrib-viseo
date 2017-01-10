@@ -4,7 +4,6 @@
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Utility nodes for SARAH",
     "dependencies"  : {
-        "node-red-sarah-helper" : "^0.0.1"
     },
     "repository" : {
         "type":"git",
