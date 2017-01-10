@@ -5,9 +5,18 @@ A set Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) Technologies.
 
 | Node                                                                                                           | Description |
 | -------------------------------------------------------------------------------------------------------------- |-------------|
-| [botbuilder](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-botbuilder)     | wrapper on top of Microsoft Bot Builder Framework |
-| [random](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-random)             | perform random call between outputs               |
-| [nedb](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-viseo-nedb)                 | set/get data from NeDB Database                   |
+| [api.ai](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-api-ai)             | Wrapper on NLP Api.ai                                      |
+| [blink](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-blink)               | Wrapper on BlinkForHome unnoficial API                     |
+| [botbuilder](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-botbuilder)     | wrapper on top of Microsoft Bot Builder Framework and LUIS |
+| [ffmpeg](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ffmpeg)             | Wrapper on CLI FFmpeg                                      |
+| [file](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-file)                 | Improve i/o and file management                            |
+| [jimp](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-jimp)                 | Wrapper on JIMP library work on images                     |
+| [oxford](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford)          | Wrapper on Microsoft Cognitive Services                    |
+| [nedb](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-nedb)                 | set/get data from NeDB Database                            |
+| [phantomjs](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-phantomjs)       | Snapshot webpage using phantomJS (for graphics)            |
+| [random](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-random)             | Perform random call between outputs                        |
+| [sensit](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-sensit)             | Wrapper on Sensit (Sigfox demo) API v1                     |
+| [socketio](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-socketio)         | Wrapper on SocketIO to forward a JSON object               |
 
 ## Getting Started
 
