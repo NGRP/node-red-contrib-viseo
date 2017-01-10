@@ -1,4 +1,4 @@
-# Node-RED: NeDB
+# Node-RED
 
 A Node-RED node to set/get data in an in memory database named [NeDB](https://github.com/louischatriot/nedb).
 

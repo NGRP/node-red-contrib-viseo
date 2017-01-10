@@ -1,4 +1,4 @@
-# Node-RED: NeDB
+# Node-RED
 
 A Node-RED node to send/receive data using [Socket.io](http://socket.io/).
 

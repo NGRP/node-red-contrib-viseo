@@ -1,4 +1,4 @@
-# Node-RED: MS Cognitive Services
+# Node-RED
 
 A Node-RED node to use microsoft cognitive services.
 
