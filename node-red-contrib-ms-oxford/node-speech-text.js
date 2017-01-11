@@ -1,6 +1,7 @@
-const request = require('request');
 const fs = require('fs');
+const request = require('request');
 const extend  = require('extend');
+const helper  = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -33,7 +34,7 @@ const input = (node, data, config) => {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ', 
-            'ContentType': '"audio/wav; codec=""audio/pcm""; samplerate=16000"' 
+            'ContentType': (config.contentType || 'audio/wav; codec=audio/pcm; samplerate=16000') 
         },
     }
     req.url += '?scenarios=smd'
@@ -44,38 +45,28 @@ const input = (node, data, config) => {
             +  '&format=json'
             +  '&instanceid='+'b2c95ede-97eb-4c88-81e4-80f32d6aee54'
             +  '&requestid=' +'b2c95ede-97eb-4c88-81e4-80f32d6aee54';
-    req.body = fs.readFileSync(data.payload);
+    
+    let value = helper.resolve(config.file, data);
+    if (typeof value !== 'string'){
+        req.body = value;
+    } else {
+        req.body = fs.readFileSync(value);
+    }
+    
 
     request(auth, (err, response, body) => {
         if (err) return node.error(err);
 
         req.headers.Authorization += body;
-        console.log(req.url)
         request(req, (err, response, body) => {
             if (err) return node.error(err);
-            console.log(body)
+            let json = JSON.parse(body)
+
+            data.speech  = json
+            if (json.header.status === 'success'){
+                data.payload = json.results[0].lexical
+            }
+            node.send(data);
         });
     });
-
-
-/*
-    if (typeof data.payload !== 'string'){
-        req.headers['Content-Type'] = 'application/octet-stream';
-        req.body = data.payload;
-    } else if (data.payload.indexOf('http') === 0) {
-        req.headers['Content-Type'] = 'application/json';
-        req.body = JSON.stringify({ 'url' : data.payload });
-    } else {
-        req.headers['Content-Type'] = 'application/octet-stream';
-        req.body = fs.readFileSync(data.payload);
-    }
-
-    let cb = (err, response, body) => {
-        if (err) return node.send({'payload' : err});
-        let json = { faces : JSON.parse(body) };
-        extend(true, data, json);
-        node.send(data);
-    }
-
-    request(req, cb);*/
 }

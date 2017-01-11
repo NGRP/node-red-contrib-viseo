@@ -26,15 +26,16 @@ const input = (node, data, config) => {
         headers: {'Ocp-Apim-Subscription-Key': config.key }
     }
 
-    if (typeof data.payload !== 'string'){
+    let value = helper.resolve(config.file, data);
+    if (typeof value !== 'string'){
         req.headers['Content-Type'] = 'application/octet-stream';
-        req.body = data.payload;
-    } else if (data.payload.indexOf('http') === 0) {
+        req.body = value;
+    } else if (value.indexOf('http') === 0) {
         req.headers['Content-Type'] = 'application/json';
-        req.body = JSON.stringify({ 'url' : data.payload });
+        req.body = JSON.stringify({ 'url' : value });
     } else {
         req.headers['Content-Type'] = 'application/octet-stream';
-        req.body = fs.readFileSync(data.payload);
+        req.body = fs.readFileSync(value);
     }
 
     let cb = (err, response, body) => {
