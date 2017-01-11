@@ -89,24 +89,24 @@ const buildRawMessage = (msg, opts) => {
     }
     
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
-    // if (undefined === opts.attach && undefined !== opts.buttons){
-    //     msg.text("Testing");
-    //     msg.sourceEvent({ 
-    //         facebook: { 
-    //             quick_replies: [{
-    //                 content_type:"text",
-    //                 title:"Red",
-    //                 payload:"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
-    //             },            
-    //             {
-    //                 content_type:"text",
-    //                 title:"Blue",
-    //                 payload:"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_BLUE"
-    //             }]
-    //         }
-    //     });
-    //     return true;
-    // }
+    if (undefined === opts.attach && undefined !== opts.buttons){
+        msg.text("Testing");
+        msg.sourceEvent({ 
+            facebook: { 
+                quick_replies: [{
+                    content_type:"text",
+                    title:"Red",
+                    payload:"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
+                },            
+                {
+                    content_type:"text",
+                    title:"Blue",
+                    payload:"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_BLUE"
+                }]
+            }
+        });
+        return true;
+    }
 
     return false;
 }
