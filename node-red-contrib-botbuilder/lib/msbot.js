@@ -96,11 +96,11 @@ const buildQuickReplyObject = (obj) => {
 };
 
 const buildRawMessage = (msg, opts) => {
-    if ('' !== opts.title || '' !== opts.subtitle || '' !== opts.subtext) {
+    if ('' !== opts.title || '' !== opts.subtitle) {
         return false;
     }
 
-    if (undefined !== opts.text && opts.buttons === undefined) {
+    if (undefined !== opts.text) {
         msg.text(opts.text);
         return true;
     }
@@ -125,13 +125,13 @@ const buildRawMessage = (msg, opts) => {
     }
 
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
-    if (opts.text !== '' && '' === opts.attach && undefined !== opts.buttons) {
-        msg.text(opts.text);
+    if (opts.subtext !== '' && '' === opts.attach && undefined !== opts.buttons) {
+        msg.text(opts.subtext);
         msg.data.address = { channelId: 'facebook' };
         const quickRepliesObject = {
             facebook: { quick_replies: [] }
         };
-        _.forEach(opts.button, (element) => {
+        _.forEach(opts.buttons, (element) => {
             quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(element));
         });
         msg.sourceEvent(quickRepliesObject);
