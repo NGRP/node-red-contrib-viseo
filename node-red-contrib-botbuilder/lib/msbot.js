@@ -59,10 +59,9 @@ const getMessage = (cards, options) => {
 };
 
 const buildRawMessage = (msg, opts) => {
-    if (undefined !== opts.title 
-     || undefined !== opts.subtitle
-     || undefined !== opts.subtext
-     || undefined !== opts.buttons) return false;
+    if ('' !== opts.title || '' !== opts.subtitle || '' !== opts.subtext) {
+        return false;
+    }
 
     if (undefined !== opts.text){
         msg.text(opts.text);
@@ -79,7 +78,7 @@ const buildRawMessage = (msg, opts) => {
     }
 
     // Backward compatibility
-    if (undefined !== opts.attach && undefined === opts.buttons){
+    if ('' !== opts.attach && undefined === opts.buttons){
         let url = absURL(opts.attach);
         msg.attachments([{ 
             "contentType": CONTENT_TYPE[url.substring(url.length-3)],
@@ -89,8 +88,9 @@ const buildRawMessage = (msg, opts) => {
     }
     
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
-    if (undefined === opts.attach && undefined !== opts.buttons){
+    if ('' === opts.attach && undefined !== opts.buttons){
         msg.text("Testing");
+        msg.data.address = { channelId: 'facebook' };
         msg.sourceEvent({ 
             facebook: { 
                 quick_replies: [{
