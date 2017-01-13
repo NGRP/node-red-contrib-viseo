@@ -1,4 +1,4 @@
-# Node-RED: BotBuilder
+# Node-RED
 
 A Node-RED wrapper on top of [Microsoft Bot Builder](https://github.com/Microsoft/BotBuilder) Framework.
 
@@ -32,7 +32,7 @@ The absolute path to this file must be defined in ENV var `BOTBUILDER_CFG`.
 
 Here is a sample configuration to start you server. Switch will route to the convenient SendCard according to business logic. 
 
-![Kickstart Nodes](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-viseo-botbuilder/doc/node_start.jpg?raw=true)
+![Kickstart Nodes](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-botbuilder/doc/node_start.jpg?raw=true)
 
 ### Tips & Tricks
 

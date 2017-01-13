@@ -1,13 +1,11 @@
 # Node-RED
 
-A Node-RED node to set/get data in an in memory database named [NeDB](https://github.com/louischatriot/nedb).
-
-This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
+A Node-RED node wrapper of [API.ai](https://api.ai/) NLP (Natural Language Processing) from Google
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-nedb
+npm install node-red-contrib-viseo-api-ai
 ```
 
 ## Getting Help
@@ -26,11 +24,14 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [VISEO](http://www.viseo.com) Technology.
+This project is a creation of [Jean-Philippe Encausse](http://www.encausse.net) for the [SARAH](http://sarah.encausse.net) home automation project.
 
-- Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Eric Brulatout [@ebrulato](https://github.com/ebrulato)
+- Jean-Philippe Encausse [@jpencausse](https://github.com/JpEncausse)
+- Matthias Brunet [@m-brunet](https://github.com/m-brunet)
 
 
 ## Copyright and license
 
+Copyright 2012-2017 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.
 Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.

@@ -1,4 +1,4 @@
-# Node-RED: Random
+# Node-RED
 
 A Node-RED node wrapper of Sensit (sigfox) API.
 

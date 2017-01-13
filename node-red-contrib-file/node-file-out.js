@@ -1,6 +1,6 @@
 
 
-const helper = require('node-red-helper');
+const helper = require('node-red-viseo-helper');
 const path   = require('path');
 const fs     = require('fs');
 

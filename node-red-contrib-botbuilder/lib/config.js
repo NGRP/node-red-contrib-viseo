@@ -2,7 +2,7 @@
 
 const fs      = require('fs');
 const extend  = require('extend');
-const helper  = require('node-red-helper');
+const helper  = require('node-red-viseo-helper');
 
 exports.init = () => {
     global.CONFIG = {};

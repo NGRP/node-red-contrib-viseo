@@ -2,7 +2,7 @@
 const path    = require('path');
 const builder = require('botbuilder');
 const MSBot   = require('../../lib/msbot.js');
-const helper  = require('node-red-helper');
+const helper  = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED

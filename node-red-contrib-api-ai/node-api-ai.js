@@ -4,7 +4,7 @@ const apiAi = require('apiai');
 const md5   = require('md5');
 const Joi   = require('joi');
 
-const helper = require('node-red-helper');
+const helper = require('node-red-viseo-helper');
 
 const configValidationScheme = {
     token: Joi.string().length(32).hex().required(),

@@ -1,4 +1,4 @@
-# Node-RED: NeDB
+# Node-RED
 
 A Node-RED node using PhantomJS to snapshot pages. A usecase is to snapshot pages with D3JS charts.
 

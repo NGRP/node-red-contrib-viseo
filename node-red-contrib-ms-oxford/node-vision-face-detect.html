@@ -5,6 +5,7 @@
         defaults: { 
             name: { value: undefined },
             key:  { value: undefined },
+            file: { value: undefined }
         },
         inputs:  1,
         outputs: 1,
@@ -23,6 +24,10 @@
     <div class="form-row">
         <label for="node-input-key"><i class="icon-tag"></i> Key</label>
         <input type="text" id="node-input-key" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-file"><i class="icon-tag"></i> File</label>
+        <input type="text" id="node-input-file" placeholder="{payload}">
     </div>
 </script>
 

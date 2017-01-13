@@ -1,4 +1,4 @@
-const helper    = require('node-red-helper');
+const helper    = require('node-red-viseo-helper');
 const Datastore = require('nedb');
 const extend    = require('extend');
 const path      = require('path');
@@ -51,6 +51,7 @@ const set = (node, data, config) => {
     let value = helper.getByString(data, config.value);
     if (!value) return;
     
+    value.id = dbKey;
     value.mdate = Date.now(); 
     db.update({ id: dbKey }, value, { upsert: true }, function (err, numReplaced, upsert) {
         node.send(data);
@@ -63,7 +64,7 @@ const get = (node, data, config) => {
 
     db.findOne({ id: dbKey }, (err, doc) => {
         let value = helper.getByString(data, config.value);
-        if (value) extend(true, value, doc);
+        if (value && (typeof value) === 'object') extend(true, value, doc);
         else helper.setByString(data, config.value, doc);
         node.send(data);
     });
