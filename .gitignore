@@ -49,3 +49,7 @@ Thumbs.db
 ##########################################
 
 node-red-contrib-*/node_modules
+
+
+# IDE
+.idea/
