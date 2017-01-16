@@ -144,24 +144,25 @@ const buildRawMessage = (msg, opts) => {
 const getHeroCard = (opts) => {
     let card = new builder.HeroCard();
 
+    console.log(JSON.stringify(opts));
     // Attach Images to card
-    if (undefined !== opts.attach) {
+    if (!!opts.attach) {
         let url = absURL(opts.attach);
         card.images([builder.CardImage.create(undefined, url)])
     }
 
     // Attach Subtext, appears just below subtitle, differs from Subtitle in font styling only.
-    if (undefined !== opts.subtext) {
+    if (!!opts.subtext) {
         card.text(opts.subtext);
     }
 
     // Attach Subtitle, appears just below Title field, differs from Title in font styling only.
-    if (undefined !== opts.subtitle) {
+    if (!!opts.subtitle) {
         card.subtitle(opts.subtitle);
     }
 
     // Attach Title to card
-    if (undefined !== opts.title) {
+    if (!!opts.title) {
         card.title(opts.title);
     }
 
