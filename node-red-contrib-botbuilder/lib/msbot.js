@@ -96,16 +96,16 @@ const buildQuickReplyObject = (obj) => {
 };
 
 const buildRawMessage = (msg, opts) => {
-    if ('' !== opts.title || '' !== opts.subtitle) {
+    if (!!opts.title || !!opts.subtitle) {
         return false;
     }
 
-    if (undefined !== opts.text) {
+    if (!!opts.text) {
         msg.text(opts.text);
         return true;
     }
 
-    if (undefined !== opts.media) {
+    if (!!opts.media) {
         let url = absURL(opts.media);
         msg.attachments([{
             "contentType": CONTENT_TYPE[url.substring(url.length - 3)],
@@ -115,7 +115,7 @@ const buildRawMessage = (msg, opts) => {
     }
 
     // Backward compatibility
-    if ('' !== opts.attach && undefined === opts.buttons) {
+    if (!!opts.attach && undefined === opts.buttons) {
         let url = absURL(opts.attach);
         msg.attachments([{
             "contentType": CONTENT_TYPE[url.substring(url.length - 3)],
@@ -125,7 +125,7 @@ const buildRawMessage = (msg, opts) => {
     }
 
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
-    if (opts.subtext !== '' && '' === opts.attach && undefined !== opts.buttons) {
+    if (!!opts.subtext && !!!opts.attach && undefined !== opts.buttons) {
         msg.text(opts.subtext);
         msg.data.address = { channelId: 'facebook' };
         const quickRepliesObject = {
@@ -144,24 +144,25 @@ const buildRawMessage = (msg, opts) => {
 const getHeroCard = (opts) => {
     let card = new builder.HeroCard();
 
+    console.log(JSON.stringify(opts));
     // Attach Images to card
-    if (undefined !== opts.attach) {
+    if (!!opts.attach) {
         let url = absURL(opts.attach);
         card.images([builder.CardImage.create(undefined, url)])
     }
 
     // Attach Subtext, appears just below subtitle, differs from Subtitle in font styling only.
-    if (undefined !== opts.subtext) {
+    if (!!opts.subtext) {
         card.text(opts.subtext);
     }
 
     // Attach Subtitle, appears just below Title field, differs from Title in font styling only.
-    if (undefined !== opts.subtitle) {
+    if (!!opts.subtitle) {
         card.subtitle(opts.subtitle);
     }
 
     // Attach Title to card
-    if (undefined !== opts.title) {
+    if (!!opts.title) {
         card.title(opts.title);
     }
 
