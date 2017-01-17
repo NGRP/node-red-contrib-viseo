@@ -54,6 +54,7 @@ const set = (node, data, config) => {
     value.id = dbKey;
     value.mdate = Date.now(); 
     db.update({ id: dbKey }, value, { upsert: true }, function (err, numReplaced, upsert) {
+        if (err) return node.error(err);
         node.send(data);
     });
 }
@@ -63,6 +64,7 @@ const get = (node, data, config) => {
     if (!dbKey) return node.send(data);
 
     db.findOne({ id: dbKey }, (err, doc) => {
+        if (err) return node.error(err);
         let value = helper.getByString(data, config.value);
         if (value && (typeof value) === 'object') extend(true, value, doc);
         else helper.setByString(data, config.value, doc);
