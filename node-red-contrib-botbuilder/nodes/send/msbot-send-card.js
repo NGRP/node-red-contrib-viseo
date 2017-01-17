@@ -87,6 +87,7 @@ const input = (node, data, config) => {
 }
 
 const getButtons = (config, data) => {
+    if (data.buttons) return data.buttons
     let buttons = [];
     if (config.bt1lbl){ buttons.push({ "title": helper.resolve(config.bt1lbl, data), "action": helper.resolve(config.bt1action, data), "value": helper.resolve(config.bt1value, data) })}
     if (config.bt2lbl){ buttons.push({ "title": helper.resolve(config.bt2lbl, data), "action": helper.resolve(config.bt2action, data), "value": helper.resolve(config.bt2value, data) })}
