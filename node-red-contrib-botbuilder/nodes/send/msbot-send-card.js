@@ -19,6 +19,7 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
     let outMsg  = undefined;
+        console.log(JSON.stringify(config));
 
     // Go for prompt
     if (config.prompt){
@@ -29,23 +30,25 @@ const input = (node, data, config) => {
     }
 
     // Send text message (see MSBot.getMessage() documentation)
-    if (config.text){
+    if (config.sendType === 'text'){
         let text = config.text;
         if (config.random){
             let txt = text.split('\n');
             text = txt[Math.round(Math.random() * (txt.length-1))]
         }
-        outMsg = MSBot.getMessage({"text": helper.resolve(text, data)});
+        outMsg = MSBot.getMessage({type: config.sendType, "text": helper.resolve(text, data)});
     }
 
     // Send media message (see MSBot.getMessage() documentation)
-    else if (config.media){
-        outMsg = MSBot.getMessage({"media": helper.resolve(config.media, data)});
+    else if (config.sendType === 'media'){
+        outMsg = MSBot.getMessage({type: config.sendType, "media": helper.resolve(config.media, data)});
     }
 
     // Send card message (see MSBot.getMessage() documentation)
     else {
         outMsg = MSBot.getMessage({
+            type: config.sendType,
+            quicktext: helper.resolve(config.quicktext, data),
             "title"   : helper.resolve(config.title,    data),
             "subtitle": helper.resolve(config.subtitle, data),
             "subtext" : helper.resolve(config.subtext,  data),
@@ -89,8 +92,16 @@ const input = (node, data, config) => {
 const getButtons = (config, data) => {
     if (data.buttons) return data.buttons
     let buttons = [];
-    if (config.bt1lbl){ buttons.push({ "title": helper.resolve(config.bt1lbl, data), "action": helper.resolve(config.bt1action, data), "value": helper.resolve(config.bt1value, data) })}
-    if (config.bt2lbl){ buttons.push({ "title": helper.resolve(config.bt2lbl, data), "action": helper.resolve(config.bt2action, data), "value": helper.resolve(config.bt2value, data) })}
-    if (config.bt3lbl){ buttons.push({ "title": helper.resolve(config.bt3lbl, data), "action": helper.resolve(config.bt3action, data), "value": helper.resolve(config.bt3value, data) })}
+
+    if (config.sendType === 'quick') {
+        if (config.quickbt1lbl){ buttons.push({ "title": helper.resolve(config.quickbt1lbl, data), "action": helper.resolve(config.quickbt1action, data), "value": helper.resolve(config.quickbt1value, data) })}
+        if (config.quickbt2lbl){ buttons.push({ "title": helper.resolve(config.quickbt2lbl, data), "action": helper.resolve(config.quickbt2action, data), "value": helper.resolve(config.quickbt2value, data) })}
+        if (config.quickbt3lbl){ buttons.push({ "title": helper.resolve(config.quickbt3lbl, data), "action": helper.resolve(config.quickbt3action, data), "value": helper.resolve(config.quickbt3value, data) })}
+    } else {
+        if (config.bt1lbl){ buttons.push({ "title": helper.resolve(config.bt1lbl, data), "action": helper.resolve(config.bt1action, data), "value": helper.resolve(config.bt1value, data) })}
+        if (config.bt2lbl){ buttons.push({ "title": helper.resolve(config.bt2lbl, data), "action": helper.resolve(config.bt2action, data), "value": helper.resolve(config.bt2value, data) })}
+        if (config.bt3lbl){ buttons.push({ "title": helper.resolve(config.bt3lbl, data), "action": helper.resolve(config.bt3action, data), "value": helper.resolve(config.bt3value, data) })}
+    }
+
     return buttons.length > 0 ? buttons : undefined;
 }

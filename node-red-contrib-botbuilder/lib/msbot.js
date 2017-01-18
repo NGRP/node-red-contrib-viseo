@@ -96,21 +96,35 @@ const buildQuickReplyObject = (obj) => {
 };
 
 const buildRawMessage = (msg, opts) => {
-    if (!!opts.title || !!opts.subtitle) {
+    if (opts.type === 'card') {
         return false;
     }
 
-    if (!!opts.text) {
+    if (opts.type === 'text') {
         msg.text(opts.text);
         return true;
     }
 
-    if (!!opts.media) {
+    if (opts.type === 'media') {
         let url = absURL(opts.media);
         msg.attachments([{
             "contentType": CONTENT_TYPE[url.substring(url.length - 3)],
             "contentUrl": url
         }]);
+        return true;
+    }
+
+    // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
+    if (opts.type === 'quick') {
+        msg.text(opts.quicktext);
+        msg.data.address = { channelId: 'facebook' };
+        const quickRepliesObject = {
+            facebook: { quick_replies: [] }
+        };
+        _.forEach(opts.buttons, (element) => {
+            quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(element));
+        });
+        msg.sourceEvent(quickRepliesObject);
         return true;
     }
 
@@ -124,27 +138,12 @@ const buildRawMessage = (msg, opts) => {
         return true;
     }
 
-    // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
-    if (!!opts.subtext && !!!opts.attach && undefined !== opts.buttons) {
-        msg.text(opts.subtext);
-        msg.data.address = { channelId: 'facebook' };
-        const quickRepliesObject = {
-            facebook: { quick_replies: [] }
-        };
-        _.forEach(opts.buttons, (element) => {
-            quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(element));
-        });
-        msg.sourceEvent(quickRepliesObject);
-        return true;
-    }
-
     return false;
 }
 
 const getHeroCard = (opts) => {
     let card = new builder.HeroCard();
 
-    console.log(JSON.stringify(opts));
     // Attach Images to card
     if (!!opts.attach) {
         let url = absURL(opts.attach);

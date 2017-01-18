@@ -2,10 +2,11 @@
     RED.nodes.registerType('send-card',{
         category: 'VISEO_BOT',
         color: '#3FADB5',
-        defaults: { 
+        defaults: {
             name:      { value: undefined },
             prompt:    { value: undefined },
             delay:     { value: 0 },
+            sendType: { value: "text" },
             text:      { value: undefined },
             random:    { value: undefined },
             media:     { value: undefined },
@@ -23,9 +24,32 @@
             bt1value:  { value: undefined },
             bt2value:  { value: undefined },
             bt3value:  { value: undefined },
+            quicktext: { value: undefined },
+            quickbt1lbl:    { value: undefined },
+            quickbt2lbl:    { value: undefined },
+            quickbt3lbl:    { value: undefined },
+            quickbt1action: { value: "postBack" },
+            quickbt2action: { value: "postBack" },
+            quickbt3action: { value: "postBack" },
+            quickbt1value:  { value: undefined },
+            quickbt2value:  { value: undefined },
+            quickbt3value:  { value: undefined }
         },
         inputs:1,
         outputs:1,
+        oneditprepare: function () {
+            $('#node-input-sendType').change(function (event) {
+                var type = $(this).val();
+                $('#send-type').find('section').each(function () {
+                    console.log($(this).attr('id'));
+                    if ($(this).attr('id').indexOf(type) >= 0) {
+                        $(this).addClass('visible');
+                    } else {
+                        $(this).removeClass('visible');
+                    }
+                });
+            });
+        },
         icon: function() {
             if (this.text) { return "text.svg"; } 
 
@@ -57,16 +81,6 @@
             $btn.on('click', repaintAll);
             $('#workspace').append($btn);
 
-            // Bind click on 
-            $(document).on('click', '.msg-tabs A.red-ui-tab-label', function(e){
-                var $elm  = $(e.target).closest('A');
-                
-                $('.msg-tabs .red-ui-tab').removeClass('active');
-                $elm.parents('.red-ui-tab').addClass('active');
-
-                $('.msg-tabs-panel').hide();
-                $($elm.attr('href')).show();
-            });
 
         },1)
     })
@@ -187,6 +201,8 @@ var repaint = function($node){
     .bot-card .bot-msg-btn-1 LI,  .bot-card .bot-msg-btn-2  LI { display: inline; list-style: none;  font-size: 12px; margin-right: 6px; }
 
     .bot-repaint { position: absolute; top: 3px; right: 38px; width: 32px; height: 32px; }
+    #send-type > section { display: none; }
+    #send-type > .visible { display: block; }
 </style>
 
 
@@ -204,100 +220,158 @@ var repaint = function($node){
         <label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
         <input type="text" id="node-input-delay" placeholder="0">
     </div>
+    <h5 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Send format</h5>
 
-    <div class="red-ui-tabs">
-        <ul class="msg-tabs">
-        <li class="red-ui-tab active"><a href="#msg-text" class="red-ui-tab-label"><span>Text</span></a></li>
-        <li class="red-ui-tab"><a href="#msg-media" class="red-ui-tab-label"><span>Media</span></a></li>
-        <li class="red-ui-tab"><a href="#msg-card" class="red-ui-tab-label"><span>Cards</span></a></li>
-        </ul>
+    <div class="form-row">
+        <label for="node-input-sendType"><i class="icon-tag"></i> Type</label>
+        <select id="node-input-sendType">
+            <option value="text">Text</option>
+            <option value="media">Image</option>
+            <option value="card">Card</option>
+            <option value="quick">Quick replies</option>
+        </select>
     </div>
 
-    <div id="msg-text" class="msg-tabs-panel">
-        <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Text Message</h4>
-        <div class="form-row">
-            <label for="node-input-text"><i class="icon-tag"></i> Text</label>
-            <textarea id="node-input-text" rows="5" style="width:300px"></textarea>
-        </div>
-        <div class="form-row">
-            <label for="node-input-random"><i class="icon-tag"></i> Random</label>
-            <input type="checkbox" style="width: auto;" id="node-input-random"> <span style="font-size: 12px">(on each line of text)</span>
-        </div>
-    </div>
-
-    <div id="msg-media" class="msg-tabs-panel" style="display:none">
-        <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Media Message</h4>
-        <div class="form-row">
-            <label for="node-input-media"><i class="icon-tag"></i> Media</label>
-            <input type="text" id="node-input-media" placeholder="http://path/to/card/image">
-        </div>
-    </div>
-
-    <div id="msg-card" class="msg-tabs-panel" style="display:none">
-        <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Hero Card</h4>
-        <div class="form-row">
-            <label for="node-input-title"><i class="icon-tag"></i> Title</label>
-            <input type="text" id="node-input-title" placeholder="Card title">
-        </div>
-        <div class="form-row">
-            <label for="node-input-subtitle"><i class="icon-tag"></i> Subtitle</label>
-            <textarea id="node-input-subtitle" rows="3" style="width:300px"></textarea>
-        </div>
-        <div class="form-row">
-            <label for="node-input-subtext"><i class="icon-tag"></i> Text</label>
-            <textarea id="node-input-subtext" rows="3" style="width:300px"></textarea>
-            <div style="padding-left: 104px;"><i class="fa fa-exclamation-triangle"></i> <em>Won't work with Facebook Messenger</em></div>
-        </div>
-        <div class="form-row">
-            <label for="node-input-attach"><i class="icon-tag"></i> Attachement</label>
-            <input type="text" id="node-input-attach" placeholder="http://path/to/card/image">
-        </div>
-        <div class="form-row">
-            <label for="node-input-bt1lbl"><i class="icon-tag"></i> Button 1</label>
-            <input  style="width: 20%" id="node-input-bt1lbl" type="text" placeholder="Label">
-            <select style="width: 20%" id="node-input-bt1action">
-                <option value="postBack">Post Back</option>
-                <option value="imBack">IM Back</option>
-                <option value="openUrl">Open URL</option>
-                <option value="showImage">Show Image</option>
-                <option value="playAudio">Play Audio</option>
-                <option value="playVideo">Play Video</option>
-                <option value="call">Call</option>
-            </select>
-            <input  style="width: 20%" id="node-input-bt1value" type="text" placeholder="Value">
-        </div>
-        <div class="form-row">
-            <label for="node-input-bt2lbl"><i class="icon-tag"></i> Button 2</label>
-            <input  style="width: 20%" id="node-input-bt2lbl" type="text" placeholder="Label">
-            <select style="width: 20%" id="node-input-bt2action">
-                <option value="postBack">Post Back</option>
-                <option value="imBack">IM Back</option>
-                <option value="openUrl">Open URL</option>
-                <option value="showImage">Show Image</option>
-                <option value="playAudio">Play Audio</option>
-                <option value="playVideo">Play Video</option>
-                <option value="call">Call</option>
-            </select>
-            <input  style="width: 20%" id="node-input-bt2value" type="text" placeholder="Value">
-        </div>
-        <div class="form-row">
-            <label for="node-input-bt3lbl"><i class="icon-tag"></i> Button 3</label>
-            <input  style="width: 20%" id="node-input-bt3lbl" type="text" placeholder="Label">
-            <select style="width: 20%" id="node-input-bt3action">
-                <option value="postBack">Post Back</option>
-                <option value="imBack">IM Back</option>
-                <option value="openUrl">Open URL</option>
-                <option value="showImage">Show Image</option>
-                <option value="playAudio">Play Audio</option>
-                <option value="playVideo">Play Video</option>
-                <option value="call">Call</option>
-            </select>
-            <input  style="width: 20%" id="node-input-bt3value" type="text" placeholder="Value">
-        </div>
-        <div class="form-row">
-            <label for="node-input-carousel"><i class="icon-tag"></i> Carousel</label>
-            <input type="checkbox" style="width: auto;" id="node-input-carousel"> <span style="font-size: 12px">(add to next card)</span>
-        </div>
+    <div id="send-type">
+        <section id="text-type" class="visible">
+            <div id="msg-text" class="msg-tabs-panel">
+                <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Text Message</h4>
+                <div class="form-row">
+                    <label for="node-input-text"><i class="icon-tag"></i> Text</label>
+                    <textarea id="node-input-text" rows="5" style="width:300px"></textarea>
+                </div>
+                <div class="form-row">
+                    <label for="node-input-random"><i class="icon-tag"></i> Random</label>
+                    <input type="checkbox" style="width: auto;" id="node-input-random"> <span style="font-size: 12px">(on each line of text)</span>
+                </div>
+            </div>
+        </section>
+        <section id="media-type">
+            <div id="msg-media" class="msg-tabs-panel">
+                <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Media Message</h4>
+                <div class="form-row">
+                    <label for="node-input-media"><i class="icon-tag"></i> Media</label>
+                    <input type="text" id="node-input-media" placeholder="http://path/to/card/image">
+                </div>
+            </div>
+        </section>
+        <section id="card-type">
+            <div id="msg-card" class="msg-tabs-panel">
+                <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Hero Card</h4>
+                <div class="form-row">
+                    <label for="node-input-title"><i class="icon-tag"></i> Title</label>
+                    <input type="text" id="node-input-title" placeholder="Card title">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-subtitle"><i class="icon-tag"></i> Subtitle</label>
+                    <textarea id="node-input-subtitle" rows="3" style="width:300px"></textarea>
+                </div>
+                <div class="form-row">
+                    <label for="node-input-subtext"><i class="icon-tag"></i> Text</label>
+                    <textarea id="node-input-subtext" rows="3" style="width:300px"></textarea>
+                    <div style="padding-left: 104px;"><i class="fa fa-exclamation-triangle"></i> <em>Won't work with Facebook Messenger</em></div>
+                </div>
+                <div class="form-row">
+                    <label for="node-input-attach"><i class="icon-tag"></i> Attachement</label>
+                    <input type="text" id="node-input-attach" placeholder="http://path/to/card/image">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-bt1lbl"><i class="icon-tag"></i> Button 1</label>
+                    <input  style="width: 20%" id="node-input-bt1lbl" type="text" placeholder="Label">
+                    <select style="width: 20%" id="node-input-bt1action">
+                        <option value="postBack">Post Back</option>
+                        <option value="imBack">IM Back</option>
+                        <option value="openUrl">Open URL</option>
+                        <option value="showImage">Show Image</option>
+                        <option value="playAudio">Play Audio</option>
+                        <option value="playVideo">Play Video</option>
+                        <option value="call">Call</option>
+                    </select>
+                    <input  style="width: 20%" id="node-input-bt1value" type="text" placeholder="Value">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-bt2lbl"><i class="icon-tag"></i> Button 2</label>
+                    <input  style="width: 20%" id="node-input-bt2lbl" type="text" placeholder="Label">
+                    <select style="width: 20%" id="node-input-bt2action">
+                        <option value="postBack">Post Back</option>
+                        <option value="imBack">IM Back</option>
+                        <option value="openUrl">Open URL</option>
+                        <option value="showImage">Show Image</option>
+                        <option value="playAudio">Play Audio</option>
+                        <option value="playVideo">Play Video</option>
+                        <option value="call">Call</option>
+                    </select>
+                    <input  style="width: 20%" id="node-input-bt2value" type="text" placeholder="Value">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-bt3lbl"><i class="icon-tag"></i> Button 3</label>
+                    <input  style="width: 20%" id="node-input-bt3lbl" type="text" placeholder="Label">
+                    <select style="width: 20%" id="node-input-bt3action">
+                        <option value="postBack">Post Back</option>
+                        <option value="imBack">IM Back</option>
+                        <option value="openUrl">Open URL</option>
+                        <option value="showImage">Show Image</option>
+                        <option value="playAudio">Play Audio</option>
+                        <option value="playVideo">Play Video</option>
+                        <option value="call">Call</option>
+                    </select>
+                    <input  style="width: 20%" id="node-input-bt3value" type="text" placeholder="Value">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-carousel"><i class="icon-tag"></i> Carousel</label>
+                    <input type="checkbox" style="width: auto;" id="node-input-carousel"> <span style="font-size: 12px">(add to next card)</span>
+                </div>
+            </div>
+        </section>
+        <section id="quick-type">
+            <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Facebook's quick replies</h4>
+            <div class="form-row">
+                <label for="node-input-quicktext"><i class="icon-tag"></i> Text</label>
+                <textarea id="node-input-quicktext" rows="5" style="width:300px"></textarea>
+            </div>
+            <div class="form-row">
+                <label for="node-input-quickbt1lbl"><i class="icon-tag"></i> Button 1</label>
+                <input  style="width: 20%" id="node-input-quickbt1lbl" type="text" placeholder="Label">
+                <select style="width: 20%" id="node-input-quickbt1action">
+                    <option value="postBack">Post Back</option>
+                    <option value="imBack">IM Back</option>
+                    <option value="openUrl">Open URL</option>
+                    <option value="showImage">Show Image</option>
+                    <option value="playAudio">Play Audio</option>
+                    <option value="playVideo">Play Video</option>
+                    <option value="call">Call</option>
+                </select>
+                <input  style="width: 20%" id="node-input-quickbt1value" type="text" placeholder="Value">
+            </div>
+            <div class="form-row">
+                <label for="node-input-quickbt2lbl"><i class="icon-tag"></i> Button 2</label>
+                <input  style="width: 20%" id="node-input-quickbt2lbl" type="text" placeholder="Label">
+                <select style="width: 20%" id="node-input-quickbt2action">
+                    <option value="postBack">Post Back</option>
+                    <option value="imBack">IM Back</option>
+                    <option value="openUrl">Open URL</option>
+                    <option value="showImage">Show Image</option>
+                    <option value="playAudio">Play Audio</option>
+                    <option value="playVideo">Play Video</option>
+                    <option value="call">Call</option>
+                </select>
+                <input  style="width: 20%" id="node-input-quickbt2value" type="text" placeholder="Value">
+            </div>
+            <div class="form-row">
+                <label for="node-input-quickbt3lbl"><i class="icon-tag"></i> Button 3</label>
+                <input  style="width: 20%" id="node-input-quickbt3lbl" type="text" placeholder="Label">
+                <select style="width: 20%" id="node-input-quickbt3action">
+                    <option value="postBack">Post Back</option>
+                    <option value="imBack">IM Back</option>
+                    <option value="openUrl">Open URL</option>
+                    <option value="showImage">Show Image</option>
+                    <option value="playAudio">Play Audio</option>
+                    <option value="playVideo">Play Video</option>
+                    <option value="call">Call</option>
+                </select>
+                <input  style="width: 20%" id="node-input-quickbt3value" type="text" placeholder="Value">
+            </div>
+        </section>
     </div>
 
 </script>
