@@ -46,12 +46,9 @@ const input = (node, data, config) => {
 
     // Send card message (see MSBot.getMessage() documentation)
     else {
-        console.log("=====");
-        console.log("ELSE");
-        console.log("=====");
         outMsg = MSBot.getMessage({
             type: config.sendType,
-            quicktext: helper.resolve(config.quciktext, data),
+            quicktext: helper.resolve(config.quicktext, data),
             "title"   : helper.resolve(config.title,    data),
             "subtitle": helper.resolve(config.subtitle, data),
             "subtext" : helper.resolve(config.subtext,  data),

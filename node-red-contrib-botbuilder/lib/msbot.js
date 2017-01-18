@@ -96,9 +96,6 @@ const buildQuickReplyObject = (obj) => {
 };
 
 const buildRawMessage = (msg, opts) => {
-        console.log("=====");
-        console.log("RAW");
-        console.log("=====");
     if (opts.type === 'card') {
         return false;
     }
@@ -119,9 +116,6 @@ const buildRawMessage = (msg, opts) => {
 
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
     if (opts.type === 'quick') {
-        console.log("=====");
-        console.log("QUICK");
-        console.log("=====");
         msg.text(opts.quicktext);
         msg.data.address = { channelId: 'facebook' };
         const quickRepliesObject = {
