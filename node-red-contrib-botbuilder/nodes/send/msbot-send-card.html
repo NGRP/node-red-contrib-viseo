@@ -51,16 +51,10 @@
             });
         },
         icon: function() {
-            if (this.text) { return "text.svg"; } 
-
-            var feat = 0;
-            var icon = "";
-            if (this.attach) { feat++;  icon = "picture.svg"; } 
-            if (this.buttons){ feat++;  icon = "buttons.svg"; }
-            if (this.title || this.subtitle){ feat++;  icon = "text.svg"; }
-            if (feat != 1) { icon = "card.svg"; }
-            
-            return icon; 
+            if (this.sendType === "text") { return "text.svg"; } 
+            if (this.sendType === "media") { return "picture.svg"; } 
+            if (this.sendType === "quick") { return "buttons.svg"; }
+            if (this.sendType === "card") { return "card.svg"; }
         }, 
         align: "left",
         paletteLabel: "Message",
