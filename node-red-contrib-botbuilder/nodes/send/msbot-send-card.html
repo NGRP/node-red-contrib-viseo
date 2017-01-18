@@ -24,6 +24,16 @@
             bt1value:  { value: undefined },
             bt2value:  { value: undefined },
             bt3value:  { value: undefined },
+            quicktext: { value: undefined },
+            quickbt1lbl:    { value: undefined },
+            quickbt2lbl:    { value: undefined },
+            quickbt3lbl:    { value: undefined },
+            quickbt1action: { value: "postBack" },
+            quickbt2action: { value: "postBack" },
+            quickbt3action: { value: "postBack" },
+            quickbt1value:  { value: undefined },
+            quickbt2value:  { value: undefined },
+            quickbt3value:  { value: undefined }
         },
         inputs:1,
         outputs:1,
@@ -313,7 +323,55 @@ var repaint = function($node){
                 </div>
             </div>
         </section>
-        <section id="quick-type">Quick-replies</section>
+        <section id="quick-type">
+            <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Facebook's quick replies</h4>
+            <div class="form-row">
+                <label for="node-input-quicktext"><i class="icon-tag"></i> Text</label>
+                <textarea id="node-input-quicktext" rows="5" style="width:300px"></textarea>
+            </div>
+            <div class="form-row">
+                <label for="node-input-quickbt1lbl"><i class="icon-tag"></i> Button 1</label>
+                <input  style="width: 20%" id="node-input-quickbt1lbl" type="text" placeholder="Label">
+                <select style="width: 20%" id="node-input-quickbt1action">
+                    <option value="postBack">Post Back</option>
+                    <option value="imBack">IM Back</option>
+                    <option value="openUrl">Open URL</option>
+                    <option value="showImage">Show Image</option>
+                    <option value="playAudio">Play Audio</option>
+                    <option value="playVideo">Play Video</option>
+                    <option value="call">Call</option>
+                </select>
+                <input  style="width: 20%" id="node-input-quickbt1value" type="text" placeholder="Value">
+            </div>
+            <div class="form-row">
+                <label for="node-input-quickbt2lbl"><i class="icon-tag"></i> Button 2</label>
+                <input  style="width: 20%" id="node-input-quickbt2lbl" type="text" placeholder="Label">
+                <select style="width: 20%" id="node-input-quickbt2action">
+                    <option value="postBack">Post Back</option>
+                    <option value="imBack">IM Back</option>
+                    <option value="openUrl">Open URL</option>
+                    <option value="showImage">Show Image</option>
+                    <option value="playAudio">Play Audio</option>
+                    <option value="playVideo">Play Video</option>
+                    <option value="call">Call</option>
+                </select>
+                <input  style="width: 20%" id="node-input-quickbt2value" type="text" placeholder="Value">
+            </div>
+            <div class="form-row">
+                <label for="node-input-quickbt3lbl"><i class="icon-tag"></i> Button 3</label>
+                <input  style="width: 20%" id="node-input-quickbt3lbl" type="text" placeholder="Label">
+                <select style="width: 20%" id="node-input-quickbt3action">
+                    <option value="postBack">Post Back</option>
+                    <option value="imBack">IM Back</option>
+                    <option value="openUrl">Open URL</option>
+                    <option value="showImage">Show Image</option>
+                    <option value="playAudio">Play Audio</option>
+                    <option value="playVideo">Play Video</option>
+                    <option value="call">Call</option>
+                </select>
+                <input  style="width: 20%" id="node-input-quickbt3value" type="text" placeholder="Value">
+            </div>
+        </section>
     </div>
 
 </script>

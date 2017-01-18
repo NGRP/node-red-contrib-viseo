@@ -96,7 +96,10 @@ const buildQuickReplyObject = (obj) => {
 };
 
 const buildRawMessage = (msg, opts) => {
-    if (!!opts.title || !!opts.subtitle) {
+        console.log("=====");
+        console.log("RAW");
+        console.log("=====");
+    if (opts.type === 'card') {
         return false;
     }
 
@@ -114,19 +117,12 @@ const buildRawMessage = (msg, opts) => {
         return true;
     }
 
-    // Backward compatibility
-    if (!!opts.attach && undefined === opts.buttons) {
-        let url = absURL(opts.attach);
-        msg.attachments([{
-            "contentType": CONTENT_TYPE[url.substring(url.length - 3)],
-            "contentUrl": url
-        }]);
-        return true;
-    }
-
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
     if (opts.type === 'quick') {
-        msg.text(opts.subtext);
+        console.log("=====");
+        console.log("QUICK");
+        console.log("=====");
+        msg.text(opts.quicktext);
         msg.data.address = { channelId: 'facebook' };
         const quickRepliesObject = {
             facebook: { quick_replies: [] }
@@ -138,13 +134,22 @@ const buildRawMessage = (msg, opts) => {
         return true;
     }
 
+    // Backward compatibility
+    if (!!opts.attach && undefined === opts.buttons) {
+        let url = absURL(opts.attach);
+        msg.attachments([{
+            "contentType": CONTENT_TYPE[url.substring(url.length - 3)],
+            "contentUrl": url
+        }]);
+        return true;
+    }
+
     return false;
 }
 
 const getHeroCard = (opts) => {
     let card = new builder.HeroCard();
 
-    console.log(JSON.stringify(opts));
     // Attach Images to card
     if (!!opts.attach) {
         let url = absURL(opts.attach);
