@@ -100,12 +100,12 @@ const buildRawMessage = (msg, opts) => {
         return false;
     }
 
-    if (!!opts.text) {
+    if (opts.type === 'text') {
         msg.text(opts.text);
         return true;
     }
 
-    if (!!opts.media) {
+    if (opts.type === 'media') {
         let url = absURL(opts.media);
         msg.attachments([{
             "contentType": CONTENT_TYPE[url.substring(url.length - 3)],
@@ -125,7 +125,7 @@ const buildRawMessage = (msg, opts) => {
     }
 
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
-    if (!!opts.subtext && !!!opts.attach && undefined !== opts.buttons) {
+    if (opts.type === 'quick') {
         msg.text(opts.subtext);
         msg.data.address = { channelId: 'facebook' };
         const quickRepliesObject = {

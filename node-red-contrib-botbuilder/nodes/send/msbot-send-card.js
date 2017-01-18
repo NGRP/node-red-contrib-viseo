@@ -29,23 +29,24 @@ const input = (node, data, config) => {
     }
 
     // Send text message (see MSBot.getMessage() documentation)
-    if (config.text){
+    if (config.sendType === 'text'){
         let text = config.text;
         if (config.random){
             let txt = text.split('\n');
             text = txt[Math.round(Math.random() * (txt.length-1))]
         }
-        outMsg = MSBot.getMessage({"text": helper.resolve(text, data)});
+        outMsg = MSBot.getMessage({type: config.sendType, "text": helper.resolve(text, data)});
     }
 
     // Send media message (see MSBot.getMessage() documentation)
-    else if (config.media){
-        outMsg = MSBot.getMessage({"media": helper.resolve(config.media, data)});
+    else if (config.sendType === 'media'){
+        outMsg = MSBot.getMessage({type: config.sendType, "media": helper.resolve(config.media, data)});
     }
 
     // Send card message (see MSBot.getMessage() documentation)
     else {
         outMsg = MSBot.getMessage({
+            type: config.sendType,
             "title"   : helper.resolve(config.title,    data),
             "subtitle": helper.resolve(config.subtitle, data),
             "subtext" : helper.resolve(config.subtext,  data),
