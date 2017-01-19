@@ -14,16 +14,16 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
-    console.log('>>> src ', config.src)
-try {
-    var json = helper.getByString(data, config.src);
-    if (!json) return node.send(data);
-    }catch(ex){console.log(ex)}
 
-    console.log(config.key, config.value, json);
+    var json = helper.getByString(data, config.src);
+    if (!json) return node.send([undefined,data]);
+
     data.payload = json.filter((item) => {
         return item[config.key] === config.value;
     })
-    
-    node.send(data);
+
+    if (data.payload.length > 0){
+        return node.send([data, undefined]);
+    }
+    node.send([undefined, data]);
 }
