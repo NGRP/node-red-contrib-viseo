@@ -39,7 +39,7 @@ const input = (node, data, config) => {
     user.profile = user.profile || {};
 
     let now = new Date().getTime();
-    if (now - user.mdate < THRESHOLD){
+    if (user.fbmdate && now - user.fbmdate < THRESHOLD){
         return node.send(data);
     }
 
@@ -47,7 +47,7 @@ const input = (node, data, config) => {
         node.log('Update Facebook profile: ' + user.id);
         if (undefined === json) return node.send(data); 
         extend(true, user.profile, json);
-        user.mdate = Date.now();
+        user.fbmdate = Date.now();
         node.send(data); 
     })
 }
@@ -57,11 +57,11 @@ const input = (node, data, config) => {
 // --------------------------------------------------------------------------
 
 const getPageToken = () => {
-    if (!CONFIG || !CONFIG.facebook || CONFIG.facebook.pageToken) return;
+    if (!CONFIG || !CONFIG.facebook || !CONFIG.facebook.pageToken) return;
     return CONFIG.facebook.pageToken;
 }
 
-const URL = "https://graph.facebook.com/v2.6/";
+const URL = "https://graph.facebook.com/v2.8/";
 const QS  = "?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=";
 const getFBProfile = exports.getUserProfile = (uid, callback) => {
     if (undefined === uid) return callback();
