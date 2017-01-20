@@ -207,9 +207,10 @@ const hasPrompt = (inMsg) => {
 //   TYPING
 // ------------------------------------------
 
-const typing = (session) => {
+const typing = (session, callback) => {
     if (undefined === session) return;
     session.sendTyping();
+    callback();
 }
 
 // ------------------------------------------

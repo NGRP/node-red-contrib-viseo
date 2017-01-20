@@ -4,6 +4,8 @@ const builder = require('botbuilder');
 const MSBot   = require('../../lib/msbot.js');
 const helper  = require('node-red-viseo-helper');
 
+const TYPING_DELAY_CONSTANT = 1000;
+
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
@@ -75,18 +77,17 @@ const input = (node, data, config) => {
     }
 
     let reply = () => {
-        MSBot.typing(data.context.get('session'));
         MSBot.replyTo(data.context.get('bot'), data.message, outMsg, () => {
             if (!config.prompt){ node.send(data); }
         });
     }
 
     // Send Message
-    if (config.delay > 0){
-        setTimeout(reply, config.delay)
-    } else {
-        reply();
-    }
+    MSBot.typing(data.context.get('session'), () => {
+        let delay = TYPING_DELAY_CONSTANT;
+        delay += config.delay !== undefined ? parseInt(config.delay) : 0
+        setTimeout(reply, delay)
+    });
 }
 
 const getButtons = (config, data) => {
