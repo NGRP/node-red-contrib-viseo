@@ -52,7 +52,7 @@ const start = (RED, node, config) => {
     // Bind for a given path 
     ws.on('connection', function(socket){
         socket.on(config.path, function (data) {
-            node.send({ "payload" : data, "socket" : socket });
+            node.send({ "payload" : data, "socket" : socket.id });
         });
     });
 }

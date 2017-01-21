@@ -1,5 +1,6 @@
 
-var io = require('socket.io');
+const io     = require('socket.io');
+const helper = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -15,14 +16,15 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
+    let SOCKETS = node.context().global.get("sockets");
+    let payload = helper.getByString(data, config.value);
 
     if (data.socket){
-        data.socket.emit(config.path, data.payload);
+        SOCKETS[data.socket].emit(config.path, payload);
         return;
     }
     
-    let SOCKETS = node.context().global.get("sockets");
     for (let id in SOCKETS){
-        SOCKETS[id].emit(config.path, data.payload);
+        SOCKETS[id].emit(config.path, payload);
     }
 }
