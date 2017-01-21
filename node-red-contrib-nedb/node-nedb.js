@@ -42,8 +42,11 @@ const start = (node, config) => {
 }
 
 const input = (node, data, config) => {
-    config.operation === 'set' ? set(node, data, config)
-                               : get(node, data, config);
+    try {
+         if (config.operation === 'set')  set(node, data, config)
+    else if (config.operation === 'get')  get(node, data, config)
+    else if (config.operation === 'find') find(node, data, config)
+    } catch (ex) {console.log(ex)}
 }
 
 const set = (node, data, config) => {
@@ -63,11 +66,31 @@ const get = (node, data, config) => {
     let dbKey = helper.getByString(data, config.key);
     if (!dbKey) return node.send(data);
 
-    db.findOne({ id: dbKey }, (err, doc) => {
+    db.findOne({ id: dbKey }, (err, doc) => { console.log(doc)
         if (err) return node.error(err);
         let value = helper.getByString(data, config.value);
+
+        // Set the value property to the DB object
         if (value && (typeof value) === 'object') extend(true, value, doc);
         else helper.setByString(data, config.value, doc);
+        node.send(data);
+    });
+}
+
+const find = (node, data, config) => { 
+    // Kludge test to avoid logs exception for inline JSON
+    let dbKey = config.key;
+    if (dbKey.indexOf('{') != 0) 
+        dbKey = helper.getByString(data, config.key);
+
+    if (!dbKey) return node.send(data);
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
+    }
+
+    db.find(dbKey, (err, docs) => {
+        if (err) return node.error(err);
+        helper.setByString(data, config.value, docs);
         node.send(data);
     });
 }
