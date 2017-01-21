@@ -38,21 +38,27 @@ const start = (node, config) => {
     let file   = path.normalize(dbPath);
     
     db = new Datastore({ filename: file });
-    db.loadDatabase((err) => { node.log('Loading DataBase:' + file); });
+    db.loadDatabase((err) => {
+        if (err) return node.error(err); 
+        node.log('Loading DataBase:' + file); 
+    });
 }
 
 const input = (node, data, config) => {
     try {
+
          if (config.operation === 'set')  set(node, data, config)
     else if (config.operation === 'get')  get(node, data, config)
     else if (config.operation === 'find') find(node, data, config)
+
     } catch (ex) {console.log(ex)}
 }
 
 const set = (node, data, config) => {
     let dbKey = helper.getByString(data, config.key);
     let value = helper.getByString(data, config.value);
-    if (!value) return;
+    
+    if (!value) return node.error(new Error('No values: '+ config.value));
     
     value.id = dbKey;
     value.mdate = Date.now(); 
@@ -66,11 +72,16 @@ const get = (node, data, config) => {
     let dbKey = helper.getByString(data, config.key);
     if (!dbKey) return node.send(data);
 
-    db.findOne({ id: dbKey }, (err, doc) => { console.log(doc)
+    db.findOne({ id: dbKey }, (err, doc) => { 
         if (err) return node.error(err);
         let value = helper.getByString(data, config.value);
-
-        // Set the value property to the DB object
+        /*
+        let result = {}
+        if (value && (typeof value) === 'object')
+            extend(true, result, value);
+        extend(true, result, doc);
+        helper.setByString(data, config.value, result);
+        */
         if (value && (typeof value) === 'object') extend(true, value, doc);
         else helper.setByString(data, config.value, doc);
         node.send(data);
