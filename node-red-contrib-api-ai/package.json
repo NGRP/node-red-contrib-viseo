@@ -6,7 +6,7 @@
     "apiai": "^3.0.3",
     "joi": "^10.1.0",
     "md5": "^2.2.1",
-    "node-red-viseo-helper" : "^0.0.2"
+    "node-red-viseo-helper" : "*"
   },
   "repository": {
     "type": "git",

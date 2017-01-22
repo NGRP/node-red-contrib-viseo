@@ -5,7 +5,7 @@
     "description"   : "Wrapper of JIMP",
     "dependencies"  : { 
         "jimp"   : "^0.2.27",
-        "node-red-viseo-helper" : "^0.0.2"
+        "node-red-viseo-helper" : "*"
     },
     "repository" : {
         "type":"git",

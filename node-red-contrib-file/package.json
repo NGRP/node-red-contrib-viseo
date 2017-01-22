@@ -4,7 +4,7 @@
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Utility nodes for SARAH",
     "dependencies"  : {
-        "node-red-viseo-helper" : "^0.0.2"
+        "node-red-viseo-helper" : "*"
     },
     "repository" : {
         "type":"git",
