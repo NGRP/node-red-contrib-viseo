@@ -98,6 +98,14 @@ const getButtons = (config, data) => {
         if (config.quickbt1lbl){ buttons.push({ "title": helper.resolve(config.quickbt1lbl, data, ''), "action": helper.resolve(config.quickbt1action, data, ''), "value": helper.resolve(config.quickbt1value, data, '') })}
         if (config.quickbt2lbl){ buttons.push({ "title": helper.resolve(config.quickbt2lbl, data, ''), "action": helper.resolve(config.quickbt2action, data, ''), "value": helper.resolve(config.quickbt2value, data, '') })}
         if (config.quickbt3lbl){ buttons.push({ "title": helper.resolve(config.quickbt3lbl, data, ''), "action": helper.resolve(config.quickbt3action, data, ''), "value": helper.resolve(config.quickbt3value, data, '') })}
+        if (config.quickbt4lbl){ buttons.push({ "title": helper.resolve(config.quickbt4lbl, data, ''), "action": helper.resolve(config.quickbt4action, data, ''), "value": helper.resolve(config.quickbt4value, data, '') })}
+        if (config.quickbt5lbl){ buttons.push({ "title": helper.resolve(config.quickbt5lbl, data, ''), "action": helper.resolve(config.quickbt5action, data, ''), "value": helper.resolve(config.quickbt5value, data, '') })}
+        if (config.quickbt6lbl){ buttons.push({ "title": helper.resolve(config.quickbt6lbl, data, ''), "action": helper.resolve(config.quickbt6action, data, ''), "value": helper.resolve(config.quickbt6value, data, '') })}
+        if (config.quickbt7lbl){ buttons.push({ "title": helper.resolve(config.quickbt7lbl, data, ''), "action": helper.resolve(config.quickbt7action, data, ''), "value": helper.resolve(config.quickbt7value, data, '') })}
+        if (config.quickbt8lbl){ buttons.push({ "title": helper.resolve(config.quickbt8lbl, data, ''), "action": helper.resolve(config.quickbt8action, data, ''), "value": helper.resolve(config.quickbt8value, data, '') })}
+        if (config.quickbt9lbl){ buttons.push({ "title": helper.resolve(config.quickbt9lbl, data, ''), "action": helper.resolve(config.quickbt9action, data, ''), "value": helper.resolve(config.quickbt9value, data, '') })}
+        if (config.quickbt10lbl){ buttons.push({ "title": helper.resolve(config.quickbt10lbl, data, ''), "action": helper.resolve(config.quickbt10action, data, ''), "value": helper.resolve(config.quickbt10value, data, '') })}
+        if (config.quickbt11lbl){ buttons.push({ "title": helper.resolve(config.quickbt11lbl, data, ''), "action": helper.resolve(config.quickbt11action, data, ''), "value": helper.resolve(config.quickbt11value, data, '') })}
     } else {
         if (config.bt1lbl){ buttons.push({ "title": helper.resolve(config.bt1lbl, data, ''), "action": helper.resolve(config.bt1action, data, ''), "value": helper.resolve(config.bt1value, data, '') })}
         if (config.bt2lbl){ buttons.push({ "title": helper.resolve(config.bt2lbl, data, ''), "action": helper.resolve(config.bt2action, data, ''), "value": helper.resolve(config.bt2value, data, '') })}
