@@ -45,8 +45,8 @@ const input = (node, data, config) => {
             +  '&format=json'
             +  '&instanceid='+'b2c95ede-97eb-4c88-81e4-80f32d6aee54'
             +  '&requestid=' +'b2c95ede-97eb-4c88-81e4-80f32d6aee54';
-    
-    let value = helper.resolve(config.file, data);
+
+    let value = helper.getByString(data,config.file);
     if (typeof value !== 'string'){
         req.body = value;
     } else {
@@ -62,9 +62,11 @@ const input = (node, data, config) => {
             if (err) return node.error(err);
             let json = JSON.parse(body)
 
-            data.speech  = json
+            data.speech  = json; 
             if (json.header.status === 'success'){
                 data.payload = json.results[0].lexical
+            } else if (json.header.status === 'error'){
+                data.payload = json.header.properties
             }
             node.send(data);
         });

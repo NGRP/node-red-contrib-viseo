@@ -26,7 +26,7 @@ const input = (node, data, config) => {
         headers: {'Ocp-Apim-Subscription-Key': config.key }
     }
 
-    let value = helper.resolve(config.file, data);
+    let value = helper.getByString(data,config.file);
     if (typeof value !== 'string'){
         req.headers['Content-Type'] = 'application/octet-stream';
         req.body = value;
