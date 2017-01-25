@@ -27,8 +27,15 @@ const input = (node, data, config) => {
     builder.LuisRecognizer.recognize(data.payload, LUIS_URL, (err, intents, entities) => {
 
         // Intents
-        if (intents && intents.length > 0)
-            data.intent = intents[0];
+        if (intents && intents.length > 0){
+            data.intent  = intents[0];
+            data.intents = intents;
+        }
+
+        if (entities && entities.length > 0){
+            data.entity  = entities[0];
+            data.entities = entities;
+        }
 
         // Forward data
         node.send(data);
