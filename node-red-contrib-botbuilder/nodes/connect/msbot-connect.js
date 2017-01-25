@@ -47,9 +47,9 @@ class Context {
 // SERVER
 // ------------------------------------------
 
-const startServer = (node, config) => {
+const startServer = (node, config, RED) => {
 
-    server.start((err, server, bot) => {
+    server.start((err, bot) => {
         
         if (err){
             let msg = "disconnected (" + err.message + ")";
@@ -79,7 +79,7 @@ const startServer = (node, config) => {
          });
 
         // Root Dialog
-        bot.dialog('/', [(session) => {
+        bot.dialog('/', [(session) => { 
             let message = session.message;
             if (MSBot.hasPrompt(message)) return;
 
@@ -96,7 +96,7 @@ const startServer = (node, config) => {
             node.send([undefined, { "context": context, "message": message, "payload": message.text, "user": usr, "fmsg": config.fmsg }])
         }]);
 
-    }, config);
+    }, config, RED);
 }
 
 // Stop server
@@ -116,7 +116,7 @@ module.exports = function(RED) {
         var node = this;
         config.port = parseInt(config.port);
 	    config.fmsg = ("undefined" == config.fmsg) ? "markdown" : config.fmsg;
-        startServer(node, config);
+        startServer(node, config, RED);
         this.on('close', (done) => { stopServer(done) });
     }
     RED.nodes.registerType("bot", register, {});

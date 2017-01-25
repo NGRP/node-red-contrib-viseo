@@ -4,64 +4,12 @@ const fs = require('fs');
 const restify = require('restify');
 const builder = require('botbuilder');
 
-
-// ------------------------------------------
-//  START/STOP
-// ------------------------------------------
-
-let server;
-const start = (callback, options) => {
-    let opt = options    || {};
-    let srv = opt.server || CONFIG.server;
-    let cfg = {};
-
-    if (!srv){ return callback(new Error("Missing server configuration")); }
-
-    // Configure server with credentials if any
-    if (srv.certificate){    
-        cfg.certificate = fs.readFileSync(srv.certificate.crt);
-        cfg.key         = fs.readFileSync(srv.certificate.key);
-    }
-    server = restify.createServer(cfg);
-
-    // Trap errors
-    server.on('error', function(err){
-        error(err.message);
-        callback(err);
-    });
-
-    // Start listening on port
-    server.listen(opt.port || CONFIG.server.port, ()  => {
-        info(server.name + ' listening to ' + server.url);
-        callback(undefined, server);
-    });
-};
-
-const stop = () => {
-    if (undefined == server) return;
-    info('closing HTTP server');
-    server.close();
-}
-
-// ------------------------------------------
-//  ROUTE
-// ------------------------------------------
-
 let bot;
-const route = (callback, options) => {
+const route = (callback, options, server) => {
     let opt = options || {};
 
-    // Serve static files
-    let root = process.cwd() + '/webapp/';
-    info("Serve static files on "+ root);
-    server.get(/\/static\/?.*/, restify.serveStatic({
-        directory: root,
-        default: 'index.html',
-        charSet: 'utf-8',
-    }));
-
     // Add GET path for debugging
-    server.get('/', (req, res, next) => {
+    server.get('/api/v1/messages/', (req, res, next) => {
         res.send("Hello I'm a Bot !");
         return next();
     });
@@ -81,7 +29,7 @@ const route = (callback, options) => {
             defaultLocale: "en"
         }
     });
-    
+
     // Anytime the major version is incremented any existing conversations will be restarted.
     bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
 
@@ -89,18 +37,61 @@ const route = (callback, options) => {
     bot.on('incoming', (msg) => { info("Message incoming:" + JSON.stringify(msg) ); })
     bot.on('send',     (msg) => { info("Message outgoing:" + JSON.stringify(msg)); })
     bot.on('error',    (err) => { info("Message error:"    + JSON.stringify(err)); }) 
-    callback(bot);
+
+    callback(undefined, bot);
 };
 
-// ------------------------------------------
-//  EXPORTS
-// ------------------------------------------
+let server;
+const createServer = (callback, options, RED) => {
+    let opt = options    || {};
+    let srv = opt.server || CONFIG.server;
+    if (!srv){
+        console.log('Missing server configuration, fallback on Node-RED server')
+        return callback(undefined, RED.httpNode); 
+    }
 
-exports.start = (callback, options) => {
-    start((err, server) => {
-        if (err) return callback(err);
-        route((bot) => { callback(err, server, bot); }, options);    
-    }, options);
+    // Configure server with credentials if any
+    let cfg = {};
+    if (srv.certificate){    
+        cfg.certificate = fs.readFileSync(srv.certificate.crt);
+        cfg.key         = fs.readFileSync(srv.certificate.key);
+    }
+
+    // Create server
+    server = restify.createServer(cfg);
+
+    // Trap errors
+    server.on('error', function(err){
+        error(err.message);
+        callback(err);
+    });
+
+    // Start listening on port
+    server.listen(opt.port || CONFIG.server.port, ()  => {
+        info(server.name + ' listening to ' + server.url);
+
+        // Serve static files
+        let root = process.cwd() + '/webapp/';
+        info("Serve static files on "+ root);
+        server.get(/\/static\/?.*/, restify.serveStatic({
+            directory: root,
+            default: 'index.html',
+            charSet: 'utf-8',
+        }));
+
+        callback(undefined, server);
+    });
 }
 
-exports.stop = stop;
+exports.start = (callback, options, RED) => {
+    createServer((err, server)=>{
+        if (err) return callback(err);
+        route(callback, options, server)
+    }, options, RED)
+}
+
+exports.stop  = () => {
+    if (undefined == server) return;
+    info('closing HTTP server');
+    server.close();
+}
