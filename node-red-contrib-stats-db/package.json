@@ -1,0 +1,26 @@
+{
+  "name": "node-red-contrib-stats-db",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-stats-db"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+      "api-ai": "node-stats-db.js"
+    }
+  },
+  "dependencies": {
+    "sqlite3": "3.1.8"
+  }
+}
