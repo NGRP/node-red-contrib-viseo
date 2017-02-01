@@ -102,7 +102,7 @@ const getButtons = (locale, config, data) => {
     let buttons = [];
 
     let pfx = config.sendType === 'quick' ? 'quick' : '';
-    for (let idx = 0 ; idx < 11 ; idx++){
+    for (let idx = 1 ; idx < 12 ; idx++){
         if (!config[pfx+'bt'+idx+'lbl']){ break; } // Stop ASAP to avoid holes in list
         buttons.push({ 
             "title":  marshall(locale, config[pfx+'bt'+idx+'lbl'],    data, ''), 
