@@ -8,9 +8,10 @@ const logger  = require('../../lib/logger.js');
 // Retrive requirements
 require('../../lib/helper.js');
 require('../../lib/config.js').init();
+require('../../lib/i18n.js').init();
 
 // Retrieve server
-const MSBot    = require('../../lib/msbot.js');
+const msbot    = require('../../lib/msbot.js');
 const server   = require('../../lib/server.js');
 
 // ------------------------------------------
@@ -75,13 +76,13 @@ const startServer = (node, config, RED) => {
             context.set('bot', bot);
 
             // Send message
-            node.send([{ "context": context, "message": message, "user": usr , "fmsg": config.fmsg}, undefined]) 
+            node.send([{ "context": context, "message": message, "user": usr, "fmsg": config.fmsg}, undefined]) 
          });
 
         // Root Dialog
         bot.dialog('/', [(session) => { 
             let message = session.message;
-            if (MSBot.hasPrompt(message)) return;
+            if (msbot.hasPrompt(message)) return;
 
             // Add User to data stream
             // (not in context because some node may access to user properties)
@@ -90,7 +91,8 @@ const startServer = (node, config, RED) => {
 
             // Add context obejct to store the lifetime of the stream
             var context = new Context();
-            context.set('bot', bot).set('session', session);
+            context.set('bot', bot)
+                   .set('session', session);
 
             // Send message
             node.send([undefined, { "context": context, "message": message, "payload": message.text, "user": usr, "fmsg": config.fmsg }])

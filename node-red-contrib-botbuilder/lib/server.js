@@ -26,7 +26,7 @@ const route = (callback, options, server) => {
     bot = new builder.UniversalBot(connector, {
         localizerSettings: {
             botLocalePath: "./locale",
-            defaultLocale: "en"
+            defaultLocale: options.defaultLocale || "en"
         }
     });
 
@@ -52,9 +52,12 @@ const createServer = (callback, options, RED) => {
 
     // Configure server with credentials if any
     let cfg = {};
-    if (srv.certificate){    
-        cfg.certificate = fs.readFileSync(srv.certificate.crt);
-        cfg.key         = fs.readFileSync(srv.certificate.key);
+    if (srv.certificate){
+        cfg.certificate  = fs.readFileSync(srv.certificate.crt);
+        cfg.key          = fs.readFileSync(srv.certificate.key);
+        
+        if (srv.certificate.intermediate)
+        cfg.ca           = [fs.readFileSync(srv.certificate.intermediate)];
     }
 
     // Create server
