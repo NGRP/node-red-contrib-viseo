@@ -8,9 +8,9 @@ const helper   = require('node-red-viseo-helper');
 const TYPING_DELAY_CONSTANT = 2000;
 
 const marshall = (locale, str, data, def) => {
-    let resolved  = helper.resolve(str, data, def);
-    let translate = i18n.translate(locale, resolved);
-    return translate;
+    str = i18n.translate(locale, str);
+    str  = helper.resolve(str, data, def);
+    return str;
 }
 
 // --------------------------------------------------------------------------
