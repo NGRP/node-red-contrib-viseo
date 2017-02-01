@@ -5,11 +5,12 @@
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults:  { 
-            name:  { value: "" },
-            port:  { value: "" },
-            appId: { value: "" },
-            appPassword: { value: "" },
-	    fmsg : { value: "markdown"}
+            name:          { value: "" },
+            port:          { value: "" },
+            appId:         { value: "" },
+            appPassword:   { value: "" },
+            defaultLocale: { value: "fr-FR" },
+	        fmsg :         { value: "markdown"}
         },
         inputs:0,
         outputs:2,
@@ -35,6 +36,10 @@
     <div class="form-row">
         <label for="node-input-appPassword"><i class="icon-tag"></i> AppPass</label>
         <input type="text" id="node-input-appPassword" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-defaultLocale"><i class="icon-tag"></i> Locale</label>
+        <input type="text" id="node-input-defaultLocale" placeholder="fr-FR">
     </div>
     <div class="form-row">
         <label for="node-input-fmsg"><i class="icon-tag"></i> Format</label>

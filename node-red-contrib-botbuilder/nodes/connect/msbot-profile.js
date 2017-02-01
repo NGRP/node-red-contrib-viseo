@@ -1,5 +1,6 @@
 
-const path    = require('path');
+const path = require('path');
+const i18n = require('../../lib/i18n.js');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -29,6 +30,10 @@ const input = (node, data, config) => {
     user.address = inMsg.address;
     user.profile = user.profile || {};
     user.profile.name = user.profile.name || inMsg.user.name;
+
+
+    // Resolve locale
+    user.profile.locale = i18n.resolve(data);
 
     // geolocation
     if (inMsg.entities){ 
