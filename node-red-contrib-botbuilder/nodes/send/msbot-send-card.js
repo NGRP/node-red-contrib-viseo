@@ -27,6 +27,7 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
+    if (!data.user || !data.user.profile) return; // Stop here, not initialised my server
     let outMsg  = undefined;
     let locale  = data.user.profile.locale;
 

@@ -28,7 +28,7 @@ const tryLoadJSON = (file, path) => {
 }
 
 exports.init = () => {
-    let folder = '{cwd}/data/locales/';
+    let folder = '{cwd}/data/locales';
         folder = helper.resolve(folder);
     if (!fs.existsSync(folder)){ return; }
 
@@ -46,9 +46,11 @@ exports.translate = (locale, key, def) => {
     if (!locale) return def || key;
     locale = locale.toLowerCase();
 
+    let cleanKey = key.replace(/^\s*(.+)\s*$/mg,'$1').trim();
+
     if (!LOCALES[locale]) return def || key;
-    if (!LOCALES[locale][key]) return def || key;
-    return LOCALES[locale][key];
+    if (!LOCALES[locale][cleanKey]) return def || key;
+    return LOCALES[locale][cleanKey];
 }
 
 exports.resolve = (data) => {
