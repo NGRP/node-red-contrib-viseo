@@ -3,30 +3,54 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const insertIntentStats = (node, result) => {
-    const intent = (result.metadata && result.metadata.intentName) || result.action
+    try {
+        const intent = (result.metadata && result.metadata.intentName) || result.action
 
-    node.statsDb.run('INSERT INTO intents (intents, question) VALUES($intent, $question)', {
-        $intent: intent,
-        $question: result.resolvedQuery
-    });
+        node.statsDb.run('INSERT INTO intents (intents, question) VALUES($intent, $question)', {
+            $intent: intent,
+            $question: result.resolvedQuery
+        });
+    } catch (err) {
+        console.log('============');
+        console.log('insertIntentStats');
+        console.log(JSON.stringify(err));
+        console.log('============');
+        throw(err);
+    }
 };
 
 const insertUserStats = (node, user) => {
-    node.statsDb.run('UPDATE OR IGNORE users SET last_seen="$lastSeen" WHERE facebook_id="$fbId"', {
-        $fbId: user.id,
-        $lastSeen: user.mdate
-    });
-    node.statsDb.run('INSERT OR IGNORE INTO users (facebook_id, last_seen) VALUES($fbId, $lastSeen)', {
-        $fbId: user.id,
-        $lastSeen: user.mdate
-    });
+    try {
+        node.statsDb.run('UPDATE OR IGNORE users SET last_seen="$lastSeen" WHERE facebook_id="$fbId"', {
+            $fbId: user.id,
+            $lastSeen: user.mdate
+        });
+        node.statsDb.run('INSERT OR IGNORE INTO users (facebook_id, last_seen) VALUES($fbId, $lastSeen)', {
+            $fbId: user.id,
+            $lastSeen: user.mdate
+        });
+    } catch (err) {
+        console.log('============');
+        console.log('insertUserStats');
+        console.log(JSON.stringify(err));
+        console.log('============');
+        throw(err);
+    }
 };
 
 const insertHotelStats = (node, hotel) => {
-    node.statsDb.run('INSERT INTO hotels (rid, hotel_name) VALUES($rid, $name)', {
-        $rid: hotel.code,
-        $name: hotel.name
-    });
+    try {
+        node.statsDb.run('INSERT INTO hotels (rid, hotel_name) VALUES($rid, $name)', {
+            $rid: hotel.code,
+            $name: hotel.name
+        });
+    } catch (err) {
+        console.log('============');
+        console.log('insertHotelStats');
+        console.log(JSON.stringify(err));
+        console.log('============');
+        throw(err);
+    }
 };
 
 const inputHandler = (node, data, config) => {
