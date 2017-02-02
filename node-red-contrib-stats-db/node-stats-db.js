@@ -3,8 +3,10 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const insertIntentStats = (node, result) => {
+    const intent = (result.metadata && result.metadata.intentName) || result.action
+
     node.statsDb.run('INSERT INTO intents (intents, question) VALUES($intent, $question)', {
-        $intent: result.metadata && result.metadata.intentName,
+        $intent: intent,
         $question: result.resolvedQuery
     });
 };
