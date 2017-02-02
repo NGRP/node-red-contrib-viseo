@@ -3,21 +3,25 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const insertIntentStats = (node, result) => {
-    node.statsDb.run('INSERT INTO intents VALUES($intent, $question)', {
+    node.statsDb.run('INSERT INTO intents (intents, question) VALUES($intent, $question)', {
         $intent: result.metadata && result.metadata.intentName,
         $question: result.resolvedQuery
     });
 };
 
 const insertUserStats = (node, user) => {
-    node.statsDb.run('INSERT INTO users VALUES($fbId, $lastSeen)', {
+    node.statsDb.run('UPDATE OR IGNORE users SET last_seen="$lastSeen" WHERE facebook_id="$fbId"', {
+        $fbId: user.id,
+        $lastSeen: user.mdate
+    });
+    node.statsDb.run('INSERT OR IGNORE INTO users (facebook_id, last_seen) VALUES($fbId, $lastSeen)', {
         $fbId: user.id,
         $lastSeen: user.mdate
     });
 };
 
 const insertHotelStats = (node, hotel) => {
-    node.statsDb.run('INSERT INTO hotels VALUES($rid, $name)', {
+    node.statsDb.run('INSERT INTO hotels (rid, hotel_name) VALUES($rid, $name)', {
         $rid: hotel.code,
         $name: hotel.name
     });
