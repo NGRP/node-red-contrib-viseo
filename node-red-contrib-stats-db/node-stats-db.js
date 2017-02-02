@@ -25,7 +25,7 @@ const insertUserStats = (node, user) => {
     console.log('============');
 
     try {
-        node.statsDb.run('UPDATE OR IGNORE users SET last_seen="$lastSeen" WHERE facebook_id="$fbId"', {
+        node.statsDb.run('UPDATE OR IGNORE users SET last_seen = $lastSeen WHERE facebook_id = $fbId', {
             fbId: user.id,
             lastSeen: user.mdate
         });
