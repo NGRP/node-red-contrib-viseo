@@ -10,7 +10,7 @@ const insertIntentStats = (node, result) => {
     try {
         const intent = (result.metadata && result.metadata.intentName) || result.action
 
-        node.statsDb.run('INSERT INTO intents(intents, question) VALUES($intent, $question)', {
+        node.statsDb.run('INSERT INTO intents(intents, question) VALUES("$intent", "$question")', {
             intent: intent,
             question: result.resolvedQuery
         });
@@ -29,7 +29,7 @@ const insertUserStats = (node, user) => {
             fbId: user.id,
             lastSeen: user.mdate
         });
-        node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, $lastSeen)', {
+        node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES("$fbId", "$lastSeen")', {
             fbId: user.id,
             lastSeen: user.mdate
         });
@@ -44,7 +44,7 @@ const insertHotelStats = (node, hotel) => {
     console.log('============');
 
     try {
-        node.statsDb.run('INSERT INTO hotels(rid, hotel_name) VALUES($rid, $name)', {
+        node.statsDb.run('INSERT INTO hotels(rid, hotel_name) VALUES("$rid", "$name")', {
             rid: hotel.code,
             name: hotel.name
         });
