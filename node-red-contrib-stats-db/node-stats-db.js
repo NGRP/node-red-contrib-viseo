@@ -12,14 +12,13 @@ const insertIntentStats = (node, result) => {
 };
 
 const insertUserStats = (node, user) => {
-    node.statsDb.run('UPDATE OR IGNORE users SET last_seen = $lastSeen WHERE facebook_id = $fbId', {
-        $fbId: user.id,
-        $lastSeen: user.mdate
-    });
-    node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, $lastSeen)', {
-        $fbId: user.id,
-        $lastSeen: user.mdate
-    });
+    const params = {
+        $fbId: user.facebookId,
+        $lastSeen: user.lastSeen
+    };
+
+    node.statsDb.run('UPDATE OR IGNORE users SET last_seen = $lastSeen WHERE facebook_id = $fbId', params);
+    node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, $lastSeen)', params);
 };
 
 const insertHotelStats = (node, hotel) => {
@@ -30,17 +29,17 @@ const insertHotelStats = (node, hotel) => {
 };
 
 const inputHandler = (node, data, config) => {
-    if (data.payload && data.payload.result) {
-        insertIntentStats(node, data.payload.result);
+    // if (data.payload && data.payload.result) {
+    //     insertIntentStats(node, data.payload.result);
+    // }
+
+    if (data.log && data.log.user) {
+        insertUserStats(node, data.log.user);
     }
 
-    if (data.user) {
-        insertUserStats(node, data.user);
-    }
-
-    if (/^RID-[0-9]{4}$/.test(data.value) || (data.hotel && !data.hotel.errors)) {
-        insertHotelStats(node, data.hotel || { code: data.value.split('-')[1] });
-    }
+    // if (/^RID-[0-9]{4}$/.test(data.value) || (data.hotel && !data.hotel.errors)) {
+    //     insertHotelStats(node, data.hotel || { code: data.value.split('-')[1] });
+    // }
 
     node.send(data);
 };
