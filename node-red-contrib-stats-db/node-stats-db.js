@@ -3,54 +3,30 @@
 const sqlite3 = require('sqlite3').verbose();
 
 const insertIntentStats = (node, result) => {
-    console.log('============');
-    console.log('insertIntentStats');
-    console.log('============');
+    const intent = (result.metadata && result.metadata.intentName) || result.action
 
-    try {
-        const intent = (result.metadata && result.metadata.intentName) || result.action
-
-        node.statsDb.run('INSERT INTO intents(intents, question) VALUES($intent, $question)', {
-            intent: intent,
-            question: result.resolvedQuery
-        });
-    } catch (err) {
-        console.error(JSON.stringify(err));
-    }
+    node.statsDb.run('INSERT INTO intents(intents, question) VALUES($intent, $question)', {
+        $intent: intent,
+        $question: result.resolvedQuery
+    });
 };
 
 const insertUserStats = (node, user) => {
-    console.log('============');
-    console.log('insertUserStats');
-    console.log('============');
-
-    try {
-        node.statsDb.run('UPDATE OR IGNORE users SET last_seen = $lastSeen WHERE facebook_id = $fbId', {
-            fbId: user.id,
-            lastSeen: user.mdate
-        });
-        node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, $lastSeen)', {
-            fbId: user.id,
-            lastSeen: user.mdate
-        });
-    } catch (err) {
-        console.error(JSON.stringify(err));
-    }
+    node.statsDb.run('UPDATE OR IGNORE users SET last_seen = $lastSeen WHERE facebook_id = $fbId', {
+        $fbId: user.id,
+        $lastSeen: user.mdate
+    });
+    node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, $lastSeen)', {
+        $fbId: user.id,
+        $lastSeen: user.mdate
+    });
 };
 
 const insertHotelStats = (node, hotel) => {
-    console.log('============');
-    console.log('insertHotelStats');
-    console.log('============');
-
-    try {
-        node.statsDb.run('INSERT INTO hotels(rid, hotel_name) VALUES($rid, $name)', {
-            rid: hotel.code,
-            name: hotel.name
-        });
-    } catch (err) {
-        console.error(JSON.stringify(err));
-    }
+    node.statsDb.run('INSERT INTO hotels(rid, hotel_name) VALUES($rid, $name)', {
+        $rid: hotel.code,
+        $name: hotel.name || NULL
+    });
 };
 
 const inputHandler = (node, data, config) => {
@@ -62,8 +38,8 @@ const inputHandler = (node, data, config) => {
         insertUserStats(node, data.user);
     }
 
-    if (data.hotel && !data.hotel.errors) {
-        insertHotelStats(node, data.hotel);
+    if (/^RID-[0-9]{4}$/.test(data.value) || (data.hotel && !data.hotel.errors)) {
+        insertHotelStats(node, data.hotel || { code: data.value.split('-')[1] });
     }
 
     node.send(data);
