@@ -13,8 +13,8 @@ const insertIntentStats = (node, result) => {
 
 const insertUserStats = (node, user) => {
     const params = {
-        $fbId: user.facebookId,
-        $lastSeen: user.lastSeen
+        $fbId: user.id,
+        $lastSeen: user.mdate
     };
 
     node.statsDb.run('UPDATE OR IGNORE users SET last_seen = $lastSeen WHERE facebook_id = $fbId', params);
@@ -33,13 +33,14 @@ const inputHandler = (node, data, config) => {
     //     insertIntentStats(node, data.payload.result);
     // }
 
-    if (data.log && data.log.user) {
-        insertUserStats(node, data.log.user);
+    if (data.user) {
+        insertUserStats(node, data.user);
     }
 
-    // if (/^RID-[0-9]{4}$/.test(data.value) || (data.hotel && !data.hotel.errors)) {
-    //     insertHotelStats(node, data.hotel || { code: data.value.split('-')[1] });
-    // }
+    if (data.log && data.log.hotel) {
+        insertHotelStats(node, data.log.hotel);
+        delete data.log.hotel;
+    }
 
     node.send(data);
 };
