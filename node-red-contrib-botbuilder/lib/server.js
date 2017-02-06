@@ -26,7 +26,7 @@ const route = (callback, options, server) => {
     bot = new builder.UniversalBot(connector, {
         localizerSettings: {
             botLocalePath: "./locale",
-            defaultLocale: options.defaultLocale || "en"
+            defaultLocale: options.defaultLocale || "fr_FR"
         }
     });
 
