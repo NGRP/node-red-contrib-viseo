@@ -71,7 +71,7 @@ const getPageToken = () => {
 }
 
 const URL = "https://graph.facebook.com/v2.8/";
-const QS  = "?fields=id,first_name,last_name,profile_pic,locale,timezone,gender&access_token=";
+const QS  = "?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=";
 const getFBProfile = exports.getUserProfile = (uid, callback) => {
     if (undefined === uid) return callback();
 

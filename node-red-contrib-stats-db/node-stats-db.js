@@ -24,7 +24,7 @@ const insertUserStats = (node, user) => {
 const insertHotelStats = (node, hotel) => {
     node.statsDb.run('INSERT INTO hotels(rid, hotel_name) VALUES($rid, $name)', {
         $rid: hotel.code,
-        $name: hotel.name || NULL
+        $name: hotel.name || null
     });
 };
 
