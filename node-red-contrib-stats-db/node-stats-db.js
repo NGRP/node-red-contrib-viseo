@@ -17,8 +17,8 @@ const insertUserStats = (node, user) => {
         $lastSeen: user.mdate
     };
 
-    node.statsDb.run('UPDATE OR IGNORE users SET last_seen = $lastSeen WHERE facebook_id = $fbId', params);
-    node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, $lastSeen)', params);
+    node.statsDb.run('UPDATE OR IGNORE users SET last_seen = CURRENT_TIMESTAMP WHERE facebook_id = $fbId', params);
+    node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, CURRENT_TIMESTAMP)', params);
 };
 
 const insertHotelStats = (node, hotel) => {
