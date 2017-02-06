@@ -25,6 +25,13 @@ module.exports = function(RED) {
     RED.nodes.registerType("fb-profile", register, {});
 }
 
+const generateLogObject = (user) => {
+    return {
+        facebookId: user.id,
+        lastSeen: user.mdate
+    };
+};
+
 const input = (node, data, config) => {
     if (undefined === data.user) return node.send(data);
     let user  = data.user;
@@ -37,6 +44,7 @@ const input = (node, data, config) => {
     
     // Has a Facebook profile
     user.profile = user.profile || {};
+    data.log = { user: Object.assign({}, generateLogObject(user)) };
 
     let now = new Date().getTime();
     if (user.fbmdate && now - user.fbmdate < THRESHOLD){
@@ -48,6 +56,7 @@ const input = (node, data, config) => {
         if (undefined === json) return node.send(data); 
         extend(true, user.profile, json);
         user.fbmdate = Date.now();
+        data.log = { user: Object.assign({}, generateLogObject(user)) };
         node.send(data); 
     })
 }
