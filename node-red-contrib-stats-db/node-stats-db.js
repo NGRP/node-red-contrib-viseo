@@ -2,8 +2,8 @@
 
 const sqlite3 = require('sqlite3').verbose();
 
-const insertActionsStats = (node, actions, user) => {
-    node.statsDb.run('INSERT INTO actions(user_id, intent, question, input) VALUES($userId, $intent, $question, $input)', {
+const insertActionsStats = (actions, user) => {
+    STAT_DB.run('INSERT INTO actions(user_id, intent, question, input) VALUES($userId, $intent, $question, $input)', {
         $userId: user.id,
         $intent: actions.intent,
         $question: actions.question,
@@ -11,17 +11,17 @@ const insertActionsStats = (node, actions, user) => {
     });
 };
 
-const insertUserStats = (node, user) => {
+const insertUserStats = (user) => {
     const params = {
         $fbId: user.id
     };
 
-    node.statsDb.run('UPDATE OR IGNORE users SET last_seen = CURRENT_TIMESTAMP WHERE facebook_id = $fbId', params);
-    node.statsDb.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, CURRENT_TIMESTAMP)', params);
+    STAT_DB.run('UPDATE OR IGNORE users SET last_seen = CURRENT_TIMESTAMP WHERE facebook_id = $fbId', params);
+    STAT_DB.run('INSERT OR IGNORE INTO users(facebook_id, last_seen) VALUES($fbId, CURRENT_TIMESTAMP)', params);
 };
 
-const insertHotelStats = (node, hotel) => {
-    node.statsDb.run('INSERT INTO hotels(rid, hotel_name) VALUES($rid, $name)', {
+const insertHotelStats = (hotel) => {
+    STAT_DB.run('INSERT INTO hotels(rid, hotel_name) VALUES($rid, $name)', {
         $rid: hotel.code,
         $name: hotel.name || null
     });
@@ -29,32 +29,32 @@ const insertHotelStats = (node, hotel) => {
 
 const inputHandler = (node, data, config) => {
     if (data.log && data.log.actions && data.user) {
-        insertActionsStats(node, data.log.actions, data.user);
+        insertActionsStats(data.log.actions, data.user);
         delete data.log.actions;
     }
 
     if (data.user) {
-        insertUserStats(node, data.user);
+        insertUserStats(data.user);
     }
 
     if (data.log && data.log.hotel) {
-        insertHotelStats(node, data.log.hotel);
+        insertHotelStats(data.log.hotel);
         delete data.log.hotel;
     }
 
     node.send(data);
 };
 
+const STAT_DB = undefined;
 module.exports = function (RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
-        const db = new sqlite3.Database('./dbstats');
-        this.statsDb = db;
+        DB = new sqlite3.Database('./data/dbstats');
 
         let node = this;
 
         this.on('input', (data) => {
-            inputHandler(node, data, config);
+            inputHandler(data, config);
         });
     };
 
