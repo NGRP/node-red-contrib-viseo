@@ -37,9 +37,22 @@ Here is a sample configuration to start you server. Switch will route to the con
 ### Tips & Tricks
 
 - The BotBuilder require an access to [Microsoft Bot Framework](https://dev.botframework.com/)
-- Do not forget to open port 3978 of the bot server.
+- A new HTTP server is started if config.json has been configured on port 3978 otherwise the Node-RED server is reused.
+- An SSL certificate is required to work and must be declared in config.json OR node-red-config.js (depends if you start a new server)
 - Users' storage is performed by any storage node like NeDB.
-- An SSL certificate is required to work.
+
+### Multilang
+
+- The profile node handle the default locale
+- The user's locale is defined throught MSBotBuilder priorities
+- All fields of Card node are translated according to the user's locale
+- Locales files are defined in `/data/locales/lang_country.json`
+
+The JSON file can be generated from XLSX:
+
+```
+node path/to/xlsx2json.js path/to/input.xlsx path/to/output.json
+```
 
 ## Getting Help
 
