@@ -2,12 +2,12 @@
 
 const sqlite3 = require('sqlite3').verbose();
 
-const insertIntentStats = (node, result) => {
-    const intent = (result.metadata && result.metadata.intentName) || result.action
-
-    node.statsDb.run('INSERT INTO intents(intents, question) VALUES($intent, $question)', {
-        $intent: intent,
-        $question: result.resolvedQuery
+const insertActionsStats = (node, actions, user) => {
+    node.statsDb.run('INSERT INTO actions(user_id, intent, question, input) VALUES($userId, $intent, $question, $input)', {
+        $userId: user.id,
+        $intent: actions.intent,
+        $question: actions.question,
+        $input: actions.payload
     });
 };
 
@@ -29,9 +29,10 @@ const insertHotelStats = (node, hotel) => {
 };
 
 const inputHandler = (node, data, config) => {
-    // if (data.payload && data.payload.result) {
-    //     insertIntentStats(node, data.payload.result);
-    // }
+    if (data.log && data.log.actions && data.user) {
+        insertActionsStats(node, data.log.action, data.user);
+        delete data.log.actions;
+    }
 
     if (data.user) {
         insertUserStats(node, data.user);
