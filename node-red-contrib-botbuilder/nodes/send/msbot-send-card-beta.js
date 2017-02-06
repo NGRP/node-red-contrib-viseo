@@ -25,7 +25,7 @@ module.exports = function(RED) {
         var node = this;
         this.on('input', (data)  => { input(node, data, config)  });
     }
-    RED.nodes.registerType("send-card", register, {});
+    RED.nodes.registerType("send-card-beta", register, {});
 }
 
 const input = (node, data, config) => {

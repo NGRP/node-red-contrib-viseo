@@ -1,4 +1,3 @@
-
 const path     = require('path');
 const builder  = require('botbuilder');
 const mustache = require('mustache');
