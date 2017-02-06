@@ -13,8 +13,7 @@ const insertActionsStats = (node, actions, user) => {
 
 const insertUserStats = (node, user) => {
     const params = {
-        $fbId: user.id,
-        $lastSeen: user.mdate
+        $fbId: user.id
     };
 
     node.statsDb.run('UPDATE OR IGNORE users SET last_seen = CURRENT_TIMESTAMP WHERE facebook_id = $fbId', params);
