@@ -30,7 +30,7 @@ const insertHotelStats = (node, hotel) => {
 
 const inputHandler = (node, data, config) => {
     if (data.log && data.log.actions && data.user) {
-        insertActionsStats(node, data.log.action, data.user);
+        insertActionsStats(node, data.log.actions, data.user);
         delete data.log.actions;
     }
 
