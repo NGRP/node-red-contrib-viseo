@@ -1,6 +1,7 @@
 
 const path     = require('path');
 const builder  = require('botbuilder');
+const mustache = require('mustache');
 const msbot    = require('../../lib/msbot.js');
 const i18n     = require('../../lib/i18n.js');
 const helper   = require('node-red-viseo-helper');
@@ -9,7 +10,8 @@ const TYPING_DELAY_CONSTANT = 2000;
 
 const marshall = (locale, str, data, def) => {
     str = i18n.translate(locale, str);
-    str  = helper.resolve(str, data, def);
+    str = mustache.render(str, data);
+    str = helper.resolve(str, data, def);
     return str;
 }
 

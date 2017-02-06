@@ -33,7 +33,8 @@ const input = (node, data, config) => {
 
 
     // Resolve locale
-    user.profile.locale = i18n.resolve(data);
+    let locale = i18n.resolve(data);
+    user.profile.locale = locale ? locale : config.defaultLocale;
 
     // geolocation
     if (inMsg.entities){ 
