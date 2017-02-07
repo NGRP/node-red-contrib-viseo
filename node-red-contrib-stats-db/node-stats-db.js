@@ -45,7 +45,7 @@ const inputHandler = (node, data, config) => {
     node.send(data);
 };
 
-const STAT_DB = undefined;
+let STAT_DB = undefined;
 module.exports = function (RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
