@@ -49,7 +49,7 @@ const STAT_DB = undefined;
 module.exports = function (RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
-        DB = new sqlite3.Database('./data/dbstats');
+        STAT_DB = new sqlite3.Database('./data/dbstats');
 
         let node = this;
 
