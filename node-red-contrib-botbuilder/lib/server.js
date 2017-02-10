@@ -15,10 +15,16 @@ const route = (callback, options, server) => {
     });
 
     // Add ChatBot connector
-    let connector = new builder.ChatConnector({
-        appId: opt.appId || CONFIG.microsoft.bot.appId,
-        appPassword: opt.appPassword || CONFIG.microsoft.bot.appPassword
-    });
+    let mscfg = {};
+
+    if (opt.appId){
+        mscfg.appId       = opt.appId
+        mscfg.appPassword = opt.appPassword
+    } else if (CONFIG.microsoft){
+        mscfg.appId       = CONFIG.microsoft.bot.appId
+        mscfg.appPassword = CONFIG.microsoft.bot.appPassword
+    }
+    let connector = new builder.ChatConnector(mscfg);
 
     server.post('/api/v1/messages', connector.listen());
 
@@ -44,7 +50,7 @@ const route = (callback, options, server) => {
 let server;
 const createServer = (callback, options, RED) => {
     let opt = options    || {};
-    let srv = opt.server || CONFIG.server;
+    let srv = opt.port ? opt : CONFIG.server;
     if (!srv){
         console.log('Missing server configuration, fallback on Node-RED server')
         return callback(undefined, RED.httpNode); 
