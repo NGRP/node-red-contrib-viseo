@@ -1,0 +1,52 @@
+<script type="text/javascript">
+    RED.nodes.registerType('logstach',{
+        category: 'VISEO_LOG',
+        color: '#3FADB5',
+        defaults: { 
+            name:    { value: undefined },
+            port:    { value: undefined },
+            host:    { value: undefined },
+            protocol:{ value: undefined },
+            log:     { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "log.svg",
+        align: "right",
+        paletteLabel: 'to Logstach',
+        label: function() { return this.name || "to Logstach"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="logstach">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-port"><i class="icon-tag"></i> Port</label>
+        <input type="text" id="node-input-port" placeholder="13333">
+    </div>
+    <div class="form-row">
+        <label for="node-input-host"><i class="icon-tag"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-input-protocol"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-protocol" placeholder="udp">
+    </div>
+    <div class="form-row">
+        <label for="node-input-log"><i class="icon-tag"></i> Log</label>
+        <input type="text" id="node-input-log" placeholder="payload">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="logstach">
+    Send log data to Logstach in TCP/UDP
+
+    <h3>input</h3>
+    An object to log.
+
+    <h3>Output</h3>
+    The previous Input data
+</script>
