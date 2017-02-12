@@ -39,19 +39,23 @@ const start = (node, config) => {
     
     db = new Datastore({ filename: file });
     db.loadDatabase((err) => {
-        if (err) return node.error(err); 
+        if (err) { db = undefined; return node.error(err); }
         node.log('Loading DataBase:' + file); 
     });
 }
 
 const input = (node, data, config) => {
-    try {
+    if (!db){
+        node.log('Error with database, moving on');
+        node.send(data);
+    }
 
+    try {
          if (config.operation === 'set')  set(node, data, config)
     else if (config.operation === 'get')  get(node, data, config)
     else if (config.operation === 'find') find(node, data, config)
 
-    } catch (ex) {console.log(ex)}
+    } catch (ex) { node.log(ex.message) }
 }
 
 const set = (node, data, config) => {
