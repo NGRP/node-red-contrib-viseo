@@ -1,0 +1,62 @@
+<script type="text/javascript">
+    RED.nodes.registerType('fb-log',{
+        category: 'VISEO_LOG',
+        color: '#3FADB5',
+        defaults: { 
+            name:         { value: undefined },
+            clientId:     { value: undefined },
+            clientSecret: { value: undefined },
+            appId:        { value: undefined },
+            pageId:       { value: undefined },
+            userId:       { value: undefined },
+            log:          { value: undefined }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "chart.svg",
+        align: "right",
+        paletteLabel: 'to FB Stats',
+        label: function() { return this.name || "to FB Analytics"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="fb-log">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clientId"><i class="icon-tag"></i> Client ID</label>
+        <input type="text" id="node-input-clientId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clientSecret"><i class="icon-tag"></i> Client Secret</label>
+        <input type="text" id="node-input-clientSecret" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appId"><i class="icon-tag"></i> App ID</label>
+        <input type="text" id="node-input-appId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-pageId"><i class="icon-tag"></i> Page ID</label>
+        <input type="text" id="node-input-pageId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-userId"><i class="icon-tag"></i> User ID</label>
+        <input type="text" id="node-input-userId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-log"><i class="icon-tag"></i> Event Log</label>
+        <input type="text" id="node-input-log" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="fb-log">
+    Send log data to Facebook Analytics
+
+    <h3>input</h3>
+    A string object to log. It is defined in pageId field
+
+    <h3>Output</h3>
+    The previous Input data
+</script>

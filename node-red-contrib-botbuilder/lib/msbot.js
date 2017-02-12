@@ -2,8 +2,6 @@
 
 const fs = require("fs");
 const builder = require('botbuilder');
-const _ = require('lodash');
-const Joi = require('joi');
 
 // ------------------------------------------
 //  VALIDATORS
@@ -18,14 +16,6 @@ const ACTIONS_TYPES = [
     'playVideo',
     'call'
 ];
-
-const buttonObjectScheme = Joi.object().keys({
-    title: Joi.string().required(),
-    action: Joi.string().valid(ACTIONS_TYPES).required(),
-    value: Joi.string().required(),
-    image: Joi.string().uri().allow('').optional()
-
-});
 
 // ------------------------------------------
 //  HELPERS
@@ -83,11 +73,6 @@ const getMessage = (cards, options) => {
 };
 
 const buildQuickReplyObject = (obj) => {
-    const check = Joi.validate(obj, buttonObjectScheme);
-    if (check.error) {
-        throw new Error(result.error)
-    }
-
     return {
         content_type: 'text',
         title: obj.title,
@@ -121,9 +106,10 @@ const buildRawMessage = (msg, opts) => {
         const quickRepliesObject = {
             facebook: { quick_replies: [] }
         };
-        _.forEach(opts.buttons, (element) => {
-            quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(element));
-        });
+
+        for (let button of opts.buttons){
+            quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(button));
+        }
         msg.sourceEvent(quickRepliesObject);
         return true;
     }

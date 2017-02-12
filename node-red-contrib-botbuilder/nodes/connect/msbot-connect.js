@@ -4,6 +4,7 @@ const fs      = require('fs');
 const path    = require('path');
 const builder = require('botbuilder');
 const logger  = require('../../lib/logger.js');
+const event   = require('../../lib/event.js');
 
 // Retrive requirements
 require('../../lib/helper.js');
@@ -75,8 +76,10 @@ const startServer = (node, config, RED) => {
             var context = new Context();
             context.set('bot', bot);
 
-            // Send message
-            node.send([{ "context": context, "message": message, "user": usr, "fmsg": config.fmsg}, undefined]) 
+            // Send 
+            let data = { "context": context, "message": message, "user": usr, "fmsg": config.fmsg}
+            event.emit('greeting', data, node, config);
+            node.send([data, undefined])
          });
 
         // Root Dialog
@@ -87,15 +90,18 @@ const startServer = (node, config, RED) => {
             // Add User to data stream
             // (not in context because some node may access to user properties)
             // MUST be overrided by storage nodes 
-            var usr = {"id": message.user.id, profile: {}}
+            let usr = {"id": message.user.id, profile: {}}
 
             // Add context obejct to store the lifetime of the stream
-            var context = new Context();
+            let context = new Context();
             context.set('bot', bot)
                    .set('session', session);
 
             // Send message
-            node.send([undefined, { "context": context, "message": message, "payload": message.text, "user": usr, "fmsg": config.fmsg }])
+            let data = { "context": context, "message": message, "payload": message.text, "user": usr, "fmsg": config.fmsg }
+            event.emit('received', data, node, config);
+            node.send([undefined, data])
+            
         }]);
 
     }, config, RED);

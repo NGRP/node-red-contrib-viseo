@@ -1,6 +1,8 @@
+
 const path     = require('path');
 const builder  = require('botbuilder');
 const mustache = require('mustache');
+const event    = require('../../lib/event.js');
 const msbot    = require('../../lib/msbot.js');
 const i18n     = require('../../lib/i18n.js');
 const helper   = require('node-red-viseo-helper');
@@ -37,7 +39,7 @@ const input = (node, data, config) => {
         msbot.promptNext(data.message, (prompt) => {
             data.prompt = prompt
             node.send(data); // Forward data
-        })
+        }) 
     }
 
     // Send text message (see msbot.getMessage() documentation)
@@ -86,7 +88,13 @@ const input = (node, data, config) => {
     }
 
     let reply = () => {
+        // Event
+        event.emit('reply', {'to': data.message.address, 'outMsg': outMsg, 'data': data }, node, config);
+
+        // Reply
         msbot.replyTo(data.context.get('bot'), data.message, outMsg, () => {
+            data.reply = outMsg; // for next nodes
+            event.emit('replied', data, node, config);
             if (!config.prompt){ node.send(data); }
         });
     }
@@ -101,17 +109,20 @@ const input = (node, data, config) => {
 
 const getButtons = (locale, config, data) => {
     if (data.buttons) return data.buttons
-    let buttons = [];
 
-    let pfx = config.sendType === 'quick' ? 'quick' : '';
-    for (let idx = 1 ; idx < 12 ; idx++){
-        if (!config[pfx+'bt'+idx+'lbl']){ break; } // Stop ASAP to avoid holes in list
-        buttons.push({ 
-            "title":  marshall(locale, config[pfx+'bt'+idx+'lbl'],    data, ''), 
-            "action": marshall(locale, config[pfx+'bt'+idx+'action'], data, ''), 
-            "value":  marshall(locale, config[pfx+'bt'+idx+'value'],  data, '') 
-        })
+    let buttons = undefined
+    if (config.sendType === 'quick'){
+        buttons = config.quickreplies;
+    } else if (config.sendType === 'card'){
+        buttons = config.buttons;
     }
 
-    return buttons.length > 0 ? buttons : undefined;
+    if (buttons.length <= 0) return;
+    for (let button in buttons){
+        button.title  = marshall(locale, button.title,  data, '')
+        button.action = marshall(locale, button.action, data, '')
+        button.value  = marshall(locale, button.value,  data, '')
+    }
+
+    return buttons;
 }

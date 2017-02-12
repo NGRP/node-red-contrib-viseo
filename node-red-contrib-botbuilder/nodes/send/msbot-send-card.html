@@ -1,71 +1,106 @@
 <script type="text/javascript">
+
+    var saveButtons = function(buttons, query){
+        $(query).each(function(){
+            var btn = {
+                title :  $(this).find('.node-input-title').val(),
+                action : $(this).find('.node-input-action').val(),
+                value :  $(this).find('.node-input-value').val(),
+            }
+            if (btn.title && btn.value){ buttons.push(btn); }
+        })
+    }
+    var setButtons = function(buttons, query, add){
+        var $add = $(add);
+        $add.on('click', function(){
+            var $tmpl = $(query).last();
+            $tmpl.before($tmpl.clone());
+        })
+
+        var $query = $(query);
+        var $tmpl  = $query.last().clone();
+        $query.remove();
+        for (var i = 0 ; i < buttons.length; i++){
+            var $clone = $tmpl.clone();
+            $add.before($clone);
+            $clone.find('.node-input-title').val(buttons[i].title);
+            $clone.find('.node-input-action').val(buttons[i].action);
+            $clone.find('.node-input-value').val(buttons[i].value);
+        }
+        $add.before($tmpl);
+    }
+
     RED.nodes.registerType('send-card',{
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults: {
-            name:      { value: undefined },
-            prompt:    { value: undefined },
-            delay:     { value: 0 },
-            sendType: { value: "text" },
-            text:      { value: undefined },
-            random:    { value: undefined },
-            media:     { value: undefined },
-            title:     { value: undefined },
-            subtitle:  { value: undefined },
-            subtext:   { value: undefined },
-            attach:    { value: undefined },
-            carousel:  { value: undefined },
-            bt1lbl:    { value: undefined },
-            bt2lbl:    { value: undefined },
-            bt3lbl:    { value: undefined },
-            bt1action: { value: "postBack" },
-            bt2action: { value: "postBack" },
-            bt3action: { value: "postBack" },
-            bt1value:  { value: undefined },
-            bt2value:  { value: undefined },
-            bt3value:  { value: undefined },
-            quicktext: { value: undefined },
-            quickbt1lbl:    { value: undefined },
-            quickbt2lbl:    { value: undefined },
-            quickbt3lbl:    { value: undefined },
-            quickbt4lbl:    { value: undefined },
-            quickbt5lbl:    { value: undefined },
-            quickbt6lbl:    { value: undefined },
-            quickbt7lbl:    { value: undefined },
-            quickbt8lbl:    { value: undefined },
-            quickbt9lbl:    { value: undefined },
+            name:         { value: undefined },
+            prompt:       { value: undefined },
+            delay:        { value: 0 },
+            sendType:     { value: "text" },
+            text:         { value: undefined },
+            random:       { value: undefined },
+            media:        { value: undefined },
+            title:        { value: undefined },
+            subtitle:     { value: undefined },
+            subtext:      { value: undefined },
+            attach:       { value: undefined },
+            carousel:     { value: undefined },
+            buttons:      { value: null },
+            quicktext:    { value: undefined },
+            quickreplies: { value: null },
+
+            // Kludge Backward compatibility ------------------------------------------
+            bt1lbl:          { value: undefined },
+            bt2lbl:          { value: undefined },
+            bt3lbl:          { value: undefined },
+            bt1action:       { value: "postBack" },
+            bt2action:       { value: "postBack" },
+            bt3action:       { value: "postBack" },
+            bt1value:        { value: undefined },
+            bt2value:        { value: undefined },
+            bt3value:        { value: undefined },
+            quickbt1lbl:     { value: undefined },
+            quickbt2lbl:     { value: undefined },
+            quickbt3lbl:     { value: undefined },
+            quickbt4lbl:     { value: undefined },
+            quickbt5lbl:     { value: undefined },
+            quickbt6lbl:     { value: undefined },
+            quickbt7lbl:     { value: undefined },
+            quickbt8lbl:     { value: undefined },
+            quickbt9lbl:     { value: undefined },
             quickbt10lbl:    { value: undefined },
             quickbt11lbl:    { value: undefined },
-            quickbt1action: { value: "postBack" },
-            quickbt2action: { value: "postBack" },
-            quickbt3action: { value: "postBack" },
-            quickbt4action: { value: "postBack" },
-            quickbt5action: { value: "postBack" },
-            quickbt6action: { value: "postBack" },
-            quickbt7action: { value: "postBack" },
-            quickbt8action: { value: "postBack" },
-            quickbt9action: { value: "postBack" },
+            quickbt1action:  { value: "postBack" },
+            quickbt2action:  { value: "postBack" },
+            quickbt3action:  { value: "postBack" },
+            quickbt4action:  { value: "postBack" },
+            quickbt5action:  { value: "postBack" },
+            quickbt6action:  { value: "postBack" },
+            quickbt7action:  { value: "postBack" },
+            quickbt8action:  { value: "postBack" },
+            quickbt9action:  { value: "postBack" },
             quickbt10action: { value: "postBack" },
             quickbt11action: { value: "postBack" },
-            quickbt1value:  { value: undefined },
-            quickbt2value:  { value: undefined },
-            quickbt3value:  { value: undefined },
-            quickbt4value:  { value: undefined },
-            quickbt5value:  { value: undefined },
-            quickbt6value:  { value: undefined },
-            quickbt7value:  { value: undefined },
-            quickbt8value:  { value: undefined },
-            quickbt9value:  { value: undefined },
+            quickbt1value:   { value: undefined },
+            quickbt2value:   { value: undefined },
+            quickbt3value:   { value: undefined },
+            quickbt4value:   { value: undefined },
+            quickbt5value:   { value: undefined },
+            quickbt6value:   { value: undefined },
+            quickbt7value:   { value: undefined },
+            quickbt8value:   { value: undefined },
+            quickbt9value:   { value: undefined },
             quickbt10value:  { value: undefined },
-            quickbt11value:  { value: undefined }
+            quickbt11value:  { value: undefined },
+            // ------------------------------------------ ------------------------------------------
         },
-        inputs:1,
+        inputs: 1, 
         outputs:1,
         oneditprepare: function () {
-            $('#node-input-sendType').change(function (event) {
+            $('#node-input-sendType').change(function (event) { 
                 var type = $(this).val();
                 $('#send-type').find('section').each(function () {
-                    console.log($(this).attr('id'));
                     if ($(this).attr('id').indexOf(type) >= 0) {
                         $(this).addClass('visible');
                     } else {
@@ -73,6 +108,47 @@
                     }
                 });
             });
+
+            // Kludge Backward compatibility ------------------------------------------
+            if (!this.buttons){
+                this.buttons = []
+                for (let i = 1 ; i < 4 ; i++){
+                    this.buttons.push({
+                        'title'  : this['bt'+i+'lbl'],
+                        'action' : this['bt'+i+'action'],
+                        'value'  : this['bt'+i+'value']
+                    })
+                }
+            }
+            if (!this.quickreplies){
+                this.quickreplies = []
+                for (let i = 1 ; i < 12 ; i++){
+                    this.quickreplies.push({
+                        'title'  : this['quickbt'+i+'lbl'],
+                        'action' : this['quickbt'+i+'action'],
+                        'value'  : this['quickbt'+i+'value']
+                    })
+                }
+            }
+            // ------------------------------------------ ------------------------------------------
+
+            // Buttons
+            this.buttons = this.buttons || [];
+            setButtons(this.buttons, '#card-type .cardbt', '#addcardbt');
+
+            // QuickReplies
+            this.quickreplies = this.quickreplies || [];
+            setButtons(this.quickreplies, '#quick-type .quickbt', '#addquick');
+        },
+        oneditsave: function(){
+
+            // Buttons
+            this.buttons = [];
+            saveButtons(this.buttons, '#card-type .cardbt')
+
+            // QuickReplies
+            this.quickreplies = [];
+            saveButtons(this.quickreplies, '#quick-type .quickbt')
         },
         icon: function() {
             if (this.sendType === "text") { return "text.svg"; } 
@@ -87,142 +163,10 @@
     });
 </script>
 
-<script type="text/javascript">
-
-    jQuery.fn.exists = function(){return this.length>0;}
-
-    $(document).ready(function() {
-        setTimeout(function(){
-
-            // Add repaint button on tabs
-            var $btn = $('<button class="bot-repaint"><i class="fa fa-comment"></i></button>');
-            $btn.on('click', repaintAll);
-            $('#workspace').append($btn);
-
-
-        },1)
-    })
-
-var repaintAll = function(){
-    $(document).find('.bot-card-name').each(function(idx, elm){
-        repaint($(elm).closest('.nodegroup'));
-    })
-}
-
-var repaint = function($node){
-    
-    var nodeId     = $node.attr('id');
-    var nodeRED    = RED.nodes.node(nodeId);
-    var nodeD3     = d3.select($node[0]);
-
-    var cardWidth  = 250;
-    var cardHeight = 6;
-    var imgHeight  = 100;
-    var lineHeight = 18;
-    var msgType    = "bot-msg";
-
-    // Build HTML
-    var html = '';
-    if (nodeRED.text){
-        cardHeight += lineHeight * Math.round(nodeRED.text.length / 50);
-        html += '<div class="bot-msg-text">' + nodeRED.text + '</div>'
-    }
-    if (nodeRED.attach){
-        cardHeight += imgHeight;
-        html += '<div class="bot-msg-img" style="background-image: url(\''+nodeRED.attach+'\');"></div>'
-    }
-
-    if (nodeRED.title){
-        cardHeight += lineHeight;
-        html += '<div class="bot-msg-title">' + nodeRED.title + '</div>';
-        msgType = "bot-card";
-    }
-
-    if (nodeRED.subtitle){
-        cardHeight += lineHeight*2;
-        html += '<div class="bot-msg-subtitle">' + nodeRED.subtitle + '</div>'
-        msgType = "bot-card";
-    }
-
-    var tmp = ''; var count = 0;
-    if (nodeRED.bt1lbl){ tmp += '<li>' + nodeRED.bt1lbl + '</li>'; count++; }
-    if (nodeRED.bt2lbl){ tmp += '<li>' + nodeRED.bt2lbl + '</li>'; count++; }
-    if (nodeRED.bt3lbl){ tmp += '<li>' + nodeRED.bt3lbl + '</li>'; count++; }
-    if (tmp) { html += '<ul class="bot-msg-btn bot-msg-btn-'+count+'">'+tmp+'</ul>' }
-    cardHeight += count > 2 ? lineHeight*count : lineHeight;
-
-    // Insert HTML Shim
-    var shim = $node.find('.bot-shim');
-    if (!shim.exists()){ 
-        // First Repaint
-        shim = nodeD3.insert("foreignObject",":first-child")
-                     .attr('class', 'bot-shim')
-                     .attr('x', 0).attr('y', 0)
-                     .attr('width',  cardWidth);
-
-        // Hide nodes
-        $node.find('.bot-card-name').first().hide();
-        $node.find('.node_icon_group').first().hide();
-
-        // Trap events
-        var $anchor = $node.find('.node').first();
-            $anchor.attr("fill-opacity","0")
-                   .attr("rx","10").attr("ry","10")
-                   .on("mousedown",  function(){ repaint($node) })
-                   .on("mouseup",    function(){ repaint($node) })
-                   .on("touchstart", function(){ repaint($node) })
-                   .on("touchend",   function(){ repaint($node) })
-    }
-
-    // Repaint HTML
-    cardHeight = Math.max(cardHeight, 40);
-    shim.html('<div class="'+msgType+'" style="height:'+(cardHeight-2)+'px;">'+html+'</div>').attr('height', cardHeight)
-
-    // Resize
-    $node.find('.node').first().attr("width", cardWidth).attr("height", cardHeight);
-    
-    // Outputs
-    $node.find('.port_output').each(function(){
-        var $this = $(this);
-        var tY =  /translate\(\d+,(\d+)\)/.exec($this.attr("transform"))[1];
-        $this.attr("transform", "translate("+( cardWidth-5 )+","+( tY )+")")
-    });
-}
-</script>
-
 <style>
-    .bot-msg { 
-        border: 1px solid #AAAAAA; border-radius: 10px; 
-        background-color: #CCCCCC; 
-        line-height: 12px;
-    }
-    .bot-card { 
-        border: 1px solid #AAAAAA; border-radius: 10px; 
-        background-color: white; 
-        line-height: 12px; 
-    }
-    .bot-msg  .bot-msg-img,
-    .bot-card .bot-msg-img {
-        width:  250px; 
-        height: 100px;
-        background-position: center;
-        background-size: 250px auto;
-        border-radius: 10px 10px 0 0;
-        overflow: hidden;
-    }
-    .bot-msg  .bot-msg-img      { border-radius: 10px; }
-    .bot-msg  .bot-msg-text     { padding: 2px 6px 2px 6px; font-size: 12px; color: #222222; }
-    .bot-card .bot-msg-title    { padding: 4px 5px 0px 5px; font-size: 11px; font-weight: bold; }
-    .bot-card .bot-msg-subtitle { padding: 4px 5px 0px 5px; font-size: 10px; color: #999999; min-height: 40px; }
-    
-    .bot-card .bot-msg-btn-1,     .bot-card .bot-msg-btn-2     { margin: 4px 0 0 0; text-align: right; color: #0083fe }
-    .bot-card .bot-msg-btn-1 LI,  .bot-card .bot-msg-btn-2  LI { display: inline; list-style: none;  font-size: 12px; margin-right: 6px; }
-
-    .bot-repaint { position: absolute; top: 3px; right: 38px; width: 32px; height: 32px; }
-    #send-type > section { display: none; }
+    #send-type > section  { display: none; }
     #send-type > .visible { display: block; }
 </style>
-
 
 <script type="text/x-red" data-template-name="send-card">
 
@@ -238,7 +182,7 @@ var repaint = function($node){
         <label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
         <input type="text" id="node-input-delay" placeholder="0">
     </div>
-    <h5 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Send format</h5>
+    <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Send format</h4>
 
     <div class="form-row">
         <label for="node-input-sendType"><i class="icon-tag"></i> Type</label>
@@ -293,10 +237,11 @@ var repaint = function($node){
                     <label for="node-input-attach"><i class="icon-tag"></i> Attachement</label>
                     <input type="text" id="node-input-attach" placeholder="http://path/to/card/image">
                 </div>
-                <div class="form-row">
-                    <label for="node-input-bt1lbl"><i class="icon-tag"></i> Button 1</label>
-                    <input  style="width: 20%" id="node-input-bt1lbl" type="text" placeholder="Label">
-                    <select style="width: 20%" id="node-input-bt1action">
+
+                <div class="form-row cardbt">
+                    <label><i class="icon-tag"></i> Button</label>
+                    <input  style="width: 20%" class="node-input-title"  type="text" placeholder="Label">
+                    <select style="width: 20%" class="node-input-action">
                         <option value="postBack">Post Back</option>
                         <option value="imBack">IM Back</option>
                         <option value="openUrl">Open URL</option>
@@ -305,36 +250,10 @@ var repaint = function($node){
                         <option value="playVideo">Play Video</option>
                         <option value="call">Call</option>
                     </select>
-                    <input  style="width: 20%" id="node-input-bt1value" type="text" placeholder="Value">
+                    <input  style="width: 20%" class="node-input-value" type="text" placeholder="Value">
                 </div>
-                <div class="form-row">
-                    <label for="node-input-bt2lbl"><i class="icon-tag"></i> Button 2</label>
-                    <input  style="width: 20%" id="node-input-bt2lbl" type="text" placeholder="Label">
-                    <select style="width: 20%" id="node-input-bt2action">
-                        <option value="postBack">Post Back</option>
-                        <option value="imBack">IM Back</option>
-                        <option value="openUrl">Open URL</option>
-                        <option value="showImage">Show Image</option>
-                        <option value="playAudio">Play Audio</option>
-                        <option value="playVideo">Play Video</option>
-                        <option value="call">Call</option>
-                    </select>
-                    <input  style="width: 20%" id="node-input-bt2value" type="text" placeholder="Value">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-bt3lbl"><i class="icon-tag"></i> Button 3</label>
-                    <input  style="width: 20%" id="node-input-bt3lbl" type="text" placeholder="Label">
-                    <select style="width: 20%" id="node-input-bt3action">
-                        <option value="postBack">Post Back</option>
-                        <option value="imBack">IM Back</option>
-                        <option value="openUrl">Open URL</option>
-                        <option value="showImage">Show Image</option>
-                        <option value="playAudio">Play Audio</option>
-                        <option value="playVideo">Play Video</option>
-                        <option value="call">Call</option>
-                    </select>
-                    <input  style="width: 20%" id="node-input-bt3value" type="text" placeholder="Value">
-                </div>
+                <p><button id="addcardbt">Add Button</button></p>
+
                 <div class="form-row">
                     <label for="node-input-carousel"><i class="icon-tag"></i> Carousel</label>
                     <input type="checkbox" style="width: auto;" id="node-input-carousel"> <span style="font-size: 12px">(add to next card)</span>
@@ -347,10 +266,11 @@ var repaint = function($node){
                 <label for="node-input-quicktext"><i class="icon-tag"></i> Text</label>
                 <textarea id="node-input-quicktext" rows="5" style="width:300px"></textarea>
             </div>
-            <div class="form-row">
-                <label for="node-input-quickbt1lbl"><i class="icon-tag"></i> Button 1</label>
-                <input  style="width: 20%" id="node-input-quickbt1lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt1action">
+
+            <div class="form-row quickbt">
+                <label><i class="icon-tag"></i> QuickReply</label>
+                <input  style="width: 20%" class="node-input-title"  type="text" placeholder="Label">
+                <select style="width: 20%" class="node-input-action">
                     <option value="postBack">Post Back</option>
                     <option value="imBack">IM Back</option>
                     <option value="openUrl">Open URL</option>
@@ -359,148 +279,9 @@ var repaint = function($node){
                     <option value="playVideo">Play Video</option>
                     <option value="call">Call</option>
                 </select>
-                <input  style="width: 20%" id="node-input-quickbt1value" type="text" placeholder="Value">
+                <input  style="width: 20%" class="node-input-value" type="text" placeholder="Value">
             </div>
-            <div class="form-row">
-                <label for="node-input-quickbt2lbl"><i class="icon-tag"></i> Button 2</label>
-                <input  style="width: 20%" id="node-input-quickbt2lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt2action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt2value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt3lbl"><i class="icon-tag"></i> Button 3</label>
-                <input  style="width: 20%" id="node-input-quickbt3lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt3action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt3value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt4lbl"><i class="icon-tag"></i> Button 4</label>
-                <input  style="width: 20%" id="node-input-quickbt4lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt4action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt4value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt5lbl"><i class="icon-tag"></i> Button 5</label>
-                <input  style="width: 20%" id="node-input-quickbt5lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt5action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt5value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt6lbl"><i class="icon-tag"></i> Button 6</label>
-                <input  style="width: 20%" id="node-input-quickbt6lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt6action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt6value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt7lbl"><i class="icon-tag"></i> Button 7</label>
-                <input  style="width: 20%" id="node-input-quickbt7lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt7action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt7value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt8lbl"><i class="icon-tag"></i> Button 8</label>
-                <input  style="width: 20%" id="node-input-quickbt8lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt8action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt8value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt9lbl"><i class="icon-tag"></i> Button 9</label>
-                <input  style="width: 20%" id="node-input-quickbt9lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt9action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt9value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt10lbl"><i class="icon-tag"></i> Button 10</label>
-                <input  style="width: 20%" id="node-input-quickbt10lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt10action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt10value" type="text" placeholder="Value">
-            </div>
-            <div class="form-row">
-                <label for="node-input-quickbt11lbl"><i class="icon-tag"></i> Button 11</label>
-                <input  style="width: 20%" id="node-input-quickbt11lbl" type="text" placeholder="Label">
-                <select style="width: 20%" id="node-input-quickbt11action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 20%" id="node-input-quickbt11value" type="text" placeholder="Value">
-            </div>
+            <p><button id="addquick">Add QuickReply</button></p>
         </section>
     </div>
 
