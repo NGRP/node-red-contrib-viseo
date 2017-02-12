@@ -1,33 +1,16 @@
 'use strict';
 
-const apiAi = require('apiai');
-const md5   = require('md5');
-const Joi   = require('joi');
-
+const apiAi  = require('apiai');
+const md5    = require('md5');
 const helper = require('node-red-viseo-helper');
 
-const configValidationScheme = {
-    token: Joi.string().length(32).hex().required(),
-    language: Joi.string().empty('').regex(/^[a-z]{2}(-[A-Z]{2})?$/).optional(),
-    session: Joi.string().required(),
-    text: Joi.string().required()
-};
-
-const configObjectValidation = (config) => {
-    const result = Joi.validate(config, configValidationScheme, { allowUnknown: true });
-    if (result.error) {
-        throw new Error(result.error);
-    }
-};
 
 module.exports = function (RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
         let node = this;
 
-        configObjectValidation(config);
-
-        //API.AI Initialization
+        // API.AI Initialization
         const apiConfig = { language: config.language || 'en' };
         const app = apiAi(config.token, apiConfig);
         node.log('API AI Initialization completed');
