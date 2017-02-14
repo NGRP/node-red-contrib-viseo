@@ -1,0 +1,55 @@
+<script type="text/javascript">
+    RED.nodes.registerType('log-sqlite',{
+        category: 'VISEO_LOG',
+        color: '#3FADB5',
+        defaults: { 
+            name:     { value: undefined },
+            database: { value: undefined },
+            cmd:      { value: undefined },
+            table:    { value: undefined },
+            where:    { value: undefined },
+            log:      { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "log.svg",
+        align: "right",
+        paletteLabel: 'to Database',
+        label: function() { return this.name || "to Database"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="log-sqlite">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-database"><i class="icon-tag"></i> Database</label>
+        <input type="text" id="node-input-database" placeholder="{cwd}/data/sqlite.db">
+    </div>
+    <div class="form-row">
+        <label for="node-input-cmd"><i class="icon-tag"></i> Database</label>
+        <select id="node-input-cmd">
+            <option value="INSERT INTO">INSERT INTO</option>
+            <option value="INSERT OR IGNORE INTO">INSERT OR IGNORE INTO</option>
+            <option value="UPDATE OR IGNORE">UPDATE OR IGNORE</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-table"><i class="icon-tag"></i> Table</label>
+        <input type="text" id="node-input-table" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-where"><i class="icon-tag"></i> Where</label>
+        <input type="text" id="node-input-where" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-log"><i class="icon-tag"></i> Event Log</label>
+        <input type="text" id="node-input-log" placeholder="payload">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="log-sqlite">
+
+</script>
