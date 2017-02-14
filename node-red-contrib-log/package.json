@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-log",
-    "version"       : "0.0.3",
+    "version"       : "0.0.4",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Logging nodes",
     "dependencies"  : { 
@@ -22,7 +22,7 @@
             "log-file":               "node-log-file.js",
             "log-azure-appinsight":   "node-azure-appinsight.js",
             "log-xiti":               "node-log-xiti.js",
-            "log-logstach":           "node-log-logstach.js",
+            "log-logstach":           "node-logstach.js",
             "log-sqlite":             "node-log-sqlite.js"
         }
     }
