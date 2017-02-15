@@ -117,7 +117,7 @@ const getButtons = (locale, config, data) => {
         buttons = config.buttons;
     }
 
-    if (buttons.length <= 0) return;
+    if (!buttons || buttons.length <= 0) return;
     for (let button in buttons){
         button.title  = marshall(locale, button.title,  data, '')
         button.action = marshall(locale, button.action, data, '')
