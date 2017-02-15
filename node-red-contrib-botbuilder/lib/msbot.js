@@ -23,7 +23,8 @@ const ACTIONS_TYPES = [
 
 const CONTENT_TYPE = {
     "jpg": "image/jpg",
-    "gif": "image/gif"
+    "gif": "image/gif",
+    "png": "image/png",
 }
 
 const absURL = (url) => {
