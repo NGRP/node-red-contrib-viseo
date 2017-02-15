@@ -10,6 +10,7 @@ const helper   = require('node-red-viseo-helper');
 const TYPING_DELAY_CONSTANT = 2000;
 
 const marshall = (locale, str, data, def) => {
+    if (!str) return def;
     str = i18n.translate(locale, str);
     str = mustache.render(str, data);
     str = helper.resolve(str, data, def);
@@ -118,11 +119,11 @@ const getButtons = (locale, config, data) => {
     }
 
     if (!buttons || buttons.length <= 0) return;
-    for (let button in buttons){
+    for (let button of buttons){
+        if (!button.title || !button.action || !button.value) continue;
         button.title  = marshall(locale, button.title,  data, '')
         button.action = marshall(locale, button.action, data, '')
         button.value  = marshall(locale, button.value,  data, '')
     }
-
     return buttons;
 }
