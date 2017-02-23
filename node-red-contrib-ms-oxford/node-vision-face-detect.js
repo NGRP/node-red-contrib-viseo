@@ -1,6 +1,7 @@
 const request = require('request');
 const fs = require('fs');
 const extend  = require('extend');
+const helper  = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
