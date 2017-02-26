@@ -5,9 +5,9 @@ const path    = require('path');
 const builder = require('botbuilder');
 const logger  = require('../../lib/logger.js');
 const event   = require('../../lib/event.js');
+const helper  = require('../../lib/helper.js');
 
 // Retrive requirements
-require('../../lib/helper.js');
 require('../../lib/config.js').init();
 require('../../lib/i18n.js').init();
 
@@ -16,39 +16,10 @@ const msbot    = require('../../lib/msbot.js');
 const server   = require('../../lib/server.js');
 
 // ------------------------------------------
-// CLASS: Context
-// ------------------------------------------
-
-let CONTEXT = {};
-class Context {
-    constructor(timestamp) {
-        this.timestamp = timestamp || Date.now();
-        // TODO: Clean the Map according to a ttl
-    }
-
-    get(key, def) {
-        let ctx = CONTEXT[this.timestamp];
-        if (!ctx) ctx = CONTEXT[this.timestamp] = {};
-        
-        let val = ctx[key];
-        if (val) return val
-
-        if (def) this.set(key, def);
-        return def; 
-    }
-
-    set(key, value) {
-        let ctx = CONTEXT[this.timestamp];
-        if (!ctx) ctx = CONTEXT[this.timestamp] = {};
-        ctx[key] = value;
-        return this;
-    }
-}
-
-// ------------------------------------------
 // SERVER
 // ------------------------------------------
 
+let BOT_CONTEXT = {};
 const startServer = (node, config, RED) => {
 
     server.start((err, bot) => {
@@ -61,8 +32,8 @@ const startServer = (node, config, RED) => {
         node.status({fill:"green", shape:"dot", text:"connected"});
 
         // CleanUp context
-        CONTEXT = {}
-        
+        BOT_CONTEXT = {}
+
         // Greetings
         bot.on('contactRelationUpdate', (message) => { 
             if (message.action !== 'add') { /* delete user data */ return; }
@@ -73,8 +44,8 @@ const startServer = (node, config, RED) => {
             var usr = {"id": message.user.id, profile: {}}
 
             // Add context obejct to store the lifetime of the stream
-            var context = new Context();
-            context.set('bot', bot);
+            var context = BOT_CONTEXT[Date.now()] = {};
+            context.bot = bot;
 
             // Send 
             let data = { "context": context, "message": message, "user": usr, "fmsg": config.fmsg}
@@ -93,15 +64,14 @@ const startServer = (node, config, RED) => {
             let usr = {"id": message.user.id, profile: {}}
 
             // Add context obejct to store the lifetime of the stream
-            let context = new Context();
-            context.set('bot', bot)
-                   .set('session', session);
+            var context = BOT_CONTEXT[Date.now()] = {};
+            context.bot     = bot;
+            context.session = session;
 
             // Send message
             let data = { "context": context, "message": message, "payload": message.text, "user": usr, "fmsg": config.fmsg }
             event.emit('received', data, node, config);
             node.send([undefined, data])
-            
         }]);
 
     }, config, RED);

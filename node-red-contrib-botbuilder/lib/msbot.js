@@ -204,16 +204,16 @@ const typing = (session, callback) => {
 //   REPLY
 // ------------------------------------------
 
-const replyTo = (bot, inMsg, outMsg, next) => {
-    if (undefined === inMsg) return;
+const replyTo = (address, outMsg, next) => {
+    if (undefined === address) return;
     if (undefined === outMsg) return;
 
     // Set the message address
-    outMsg.address(inMsg.address);
+    outMsg.address(address);
 
     // Send the message
     try {
-        bot.send(outMsg, next);
+        global.botbuilder.send(outMsg, next);
     } catch (ex) { error(ex); next(); }
 }
 

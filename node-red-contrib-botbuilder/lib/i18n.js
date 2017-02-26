@@ -54,7 +54,7 @@ exports.translate = (locale, key, def) => {
 }
 
 exports.resolve = (data) => {
-    let session = data.context.get('session');
+    let session = data.context.session;
     if (!session) return;
     
     return session.preferredLocale();

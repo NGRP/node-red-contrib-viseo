@@ -35,6 +35,9 @@ const route = (callback, options, server) => {
             defaultLocale: options.defaultLocale || "fr_FR"
         }
     });
+    
+    // Put bot as a global variable
+    global.botbuilder = bot;
 
     // Anytime the major version is incremented any existing conversations will be restarted.
     bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));

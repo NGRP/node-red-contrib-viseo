@@ -31,9 +31,15 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
-    if (!data.user || !data.user.profile) return; // Stop here, not initialised my server
     let outMsg  = undefined;
-    let locale  = data.user.profile.locale;
+    let locale  = 'fr_FR';
+    
+    if (data.user && data.user.profile){
+        locale  = data.user.profile.locale;
+    }
+
+    if (!data.context)
+         data.context = {}; // FIXME: Should be set in a global variable
 
     // Go for prompt
     if (config.prompt){
@@ -71,29 +77,30 @@ const input = (node, data, config) => {
         }, data);
         
         if (config.carousel){
-            let carousel = data.context.get('carousel', []);
+            let carousel = data.context.carousel = data.context.carousel || [];
             carousel.push(outMsg.data.attachments[0]);
 
             // Forward data without sending anything
             return node.send(data);
             
         } else {
-            let carousel = data.context.get('carousel', []);
+            let carousel = data.context.carousel = data.context.carousel || [];
             if (carousel.length > 0){
                 carousel.push(outMsg.data.attachments[0])
                 outMsg.attachmentLayout(builder.AttachmentLayout.carousel);
                 outMsg.data.attachments = carousel;
-                data.context.set('carousel', []); // clean
+                data.context.carousel = []; // clean
             }
         }
     }
 
     let reply = () => {
         // Event
-        event.emit('reply', {'to': data.message.address, 'outMsg': outMsg, 'data': data }, node, config);
+        event.emit('reply', {'to': data.user.address, 'outMsg': outMsg, 'data': data }, node, config);
 
         // Reply
-        msbot.replyTo(data.context.get('bot'), data.message, outMsg, () => {
+        let to = data.user.address;
+        msbot.replyTo(to, outMsg, () => {
             data.reply = outMsg; // for next nodes
             event.emit('replied', data, node, config);
             if (!config.prompt){ node.send(data); }
@@ -101,16 +108,18 @@ const input = (node, data, config) => {
     }
 
     // Send Message
-    msbot.typing(data.context.get('session'), () => {
-        let delay = TYPING_DELAY_CONSTANT;
-        delay += config.delay !== undefined ? parseInt(config.delay) : 0
-        setTimeout(reply, delay)
-    });
+    if (data.context.session){
+        msbot.typing(data.context.session, () => {
+            let delay = TYPING_DELAY_CONSTANT;
+            delay += config.delay !== undefined ? parseInt(config.delay) : 0
+            setTimeout(reply, delay)
+        });
+    } else { reply() }
 }
 
 const getButtons = (locale, config, data) => {
     if (data.buttons) return data.buttons
-
+    
     let buttons = undefined
     if (config.sendType === 'quick'){
         buttons = config.quickreplies;
