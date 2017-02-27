@@ -34,6 +34,17 @@ const input = (node, data, config) => {
 }
 
 const start = (RED, node, config) => {
+    for (let i = 1; i <= 5; i++) {
+        if (config['menu' + i] && config['action' + i] && config['value' + i]) {
+            const menu = {
+                type: config['action' + i],
+                title: config['menu' + i],
+                payload: config['value' + i]
+            };
+            
+            PERSISTANT_MENU.call_to_actions.push(menu);
+        }
+    }
     RED.httpAdmin.post("/fb-greeting/:id", function(req,res) {
         var node = RED.nodes.getNode(req.params.id);
         if (node == null) { return res.sendStatus(404); }
