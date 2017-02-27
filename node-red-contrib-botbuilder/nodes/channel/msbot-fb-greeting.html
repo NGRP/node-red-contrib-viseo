@@ -6,7 +6,22 @@
         color: '#3FADB5',
         defaults:  { 
             name:      { value: undefined },
-            greeting:  { value: undefined }
+            greeting:  { value: undefined },
+            menu1: { value: undefined },
+            action1: { value: 'postBack' },
+            value1: { value: undefined },
+            menu2: { value: undefined },
+            action2: { value: 'postBack' },
+            value2: { value: undefined },
+            menu3: { value: undefined },
+            action3: { value: 'postBack' },
+            value3: { value: undefined },
+            menu4: { value: undefined },
+            action4: { value: 'postBack' },
+            value4: { value: undefined },
+            menu5: { value: undefined },
+            action5: { value: 'postBack' },
+            value5: { value: undefined }
         },
         inputs:  0,
         outputs: 0,
@@ -43,6 +58,52 @@
     <div class="form-row">
         <label for="node-input-greeting"><i class="icon-tag"></i> Greeting</label>
         <textarea id="node-input-greeting" rows="5" style="width:300px"></textarea>
+    </div>
+    <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Facebook Messenger menu</h4>
+    <div class="form-row">
+        <label for="node-input-menu1"><i class="icon-tag"></i> Menu 1</label>
+        <input style="width: 20%" type="text" id="node-input-menu1" placeholder="Name">
+        <select style="width: 20%" id="node-input-action1">
+            <option value="postBack">Post Back</option>
+            <option value="openUrl">Open URL</option>
+        </select>
+        <input  style="width: 20%" class="node-input-value1" type="text" placeholder="Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-menu1"><i class="icon-tag"></i> Menu 2</label>
+        <input style="width: 20%" type="text" id="node-input-menu2" placeholder="Name">
+        <select style="width: 20%" id="node-input-action2">
+            <option value="postBack">Post Back</option>
+            <option value="openUrl">Open URL</option>
+        </select>
+        <input  style="width: 20%" class="node-input-value2" type="text" placeholder="Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-menu1"><i class="icon-tag"></i> Menu 3</label>
+        <input style="width: 20%" type="text" id="node-input-menu3" placeholder="Name">
+        <select style="width: 20%" id="node-input-action3">
+            <option value="postBack">Post Back</option>
+            <option value="openUrl">Open URL</option>
+        </select>
+        <input  style="width: 20%" class="node-input-value3" type="text" placeholder="Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-menu1"><i class="icon-tag"></i> Menu 4</label>
+        <input style="width: 20%" type="text" id="node-input-menu4" placeholder="Name">
+        <select style="width: 20%" id="node-input-action4">
+            <option value="postBack">Post Back</option>
+            <option value="openUrl">Open URL</option>
+        </select>
+        <input  style="width: 20%" class="node-input-value4" type="text" placeholder="Value">
+    </div>
+    <div class="form-row">
+        <label for="node-input-menu1"><i class="icon-tag"></i> Menu 5</label>
+        <input style="width: 20%" type="text" id="node-input-menu5" placeholder="Name">
+        <select style="width: 20%" id="node-input-action5">
+            <option value="postBack">Post Back</option>
+            <option value="openUrl">Open URL</option>
+        </select>
+        <input  style="width: 20%" class="node-input-value5" type="text" placeholder="Value">
     </div>
 </script>
 

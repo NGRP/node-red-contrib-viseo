@@ -43,7 +43,10 @@ const snapshot  = (node, data, config, callback) => {
     let childArgs = [ path.join(__dirname, 'phantomjs-script-snapshot.js'), config.url, outPath, width, height, delay, json]
 
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {
-        info('stderr:' + stderr);
+        if (stderr) {
+            info('stderr:' + stderr);
+        }
+
         callback(err, outPath);
     })
 }
