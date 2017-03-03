@@ -7,6 +7,8 @@
             token:   { value: undefined },
             device:  { value: undefined },
             sensor:  { value: undefined },
+            startdate:  { value: undefined },
+            enddate:  { value: undefined },
         },
         inputs:1,
         outputs:1,
@@ -33,6 +35,14 @@
     <div class="form-row">
         <label for="node-input-sensor"><i class="icon-tag"></i> Sensor Id</label>
         <input type="text" id="node-input-sensor" placeholder="">
+    </div>
+	<div class="form-row">
+        <label for="node-input-startdate"><i class="icon-tag"></i> Date after (optional)</label>
+        <input type="text" id="node-input-startdate" placeholder="Format 2017-01-17T06:03Z">
+    </div>
+	<div class="form-row">
+        <label for="node-input-enddate"><i class="icon-tag"></i> Date before (optional)</label>
+        <input type="text" id="node-input-enddate" placeholder="Format 2017-01-17T06:03Z">
     </div>
 </script>
 
