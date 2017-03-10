@@ -4,6 +4,8 @@
         color: '#3FADB5',
         defaults: { 
             name:      { value: undefined },
+            path:      { value: undefined },
+            xlsx:      { value: undefined },
             key: 	   { value: undefined },
             value:     { value: undefined },
             operation: { value: undefined }
@@ -22,6 +24,19 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+
+    <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Config</h4>
+    <div class="form-row">
+        <label for="node-input-path"><i class="icon-tag"></i> Path</label>
+        <input type="text" id="node-input-path" placeholder="{cwd}/data/database.db">
+    </div>
+    <div class="form-row">
+        <label for="node-input-xlsx"><i class="icon-tag"></i> XLSX Tab</label>
+        <input type="text" id="node-input-xlsx" placeholder="0">
+        <div style="padding-left: 104px;"><em>For XLSX Path import tab to NeDB readonly</em></div>
+    </div>
+
+    <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Query</h4>
     <div class="form-row">
         <label for="node-input-key"><i class="icon-tag"></i> Key</label>
         <input type="text" id="node-input-key" placeholder="Key">
