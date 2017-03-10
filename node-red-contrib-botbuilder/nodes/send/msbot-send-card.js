@@ -100,7 +100,8 @@ const input = (node, data, config) => {
 
         // Reply
         let to = data.user.address;
-        msbot.replyTo(to, outMsg, () => {
+        msbot.replyTo(to, outMsg, (err) => {
+            if (err){ node.warn(err); }
             data.reply = outMsg; // for next nodes
             event.emit('replied', data, node, config);
             if (!config.prompt){ node.send(data); }
