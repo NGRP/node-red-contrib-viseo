@@ -41,8 +41,8 @@ const stop = (node, cb, config) => {
 }
 
 const start = (node, config) => {
-    let key = resolveKey(config);    
-    if (CACHE[key]) return;
+    let key = resolveKey(config); 
+    if (CACHE[key]) return; 
     
     // DB Configuration
     let file = resolvePath(config.path);
@@ -51,7 +51,7 @@ const start = (node, config) => {
 
     if (config.xlsx){
         dbconf.inMemoryOnly = true;
-        delete dbconf.filename;
+        //delete dbconf.filename;
 
         let tab  = parseInt(config.xlsx);
         let rows = xlsx2json(file, tab);
@@ -65,10 +65,10 @@ const start = (node, config) => {
 
     // Create Database
     let db = new Datastore(dbconf);
+    CACHE[key] = db;
     db.loadDatabase((err) => {
-        if (err) { return node.error(err); }
+        if (err) { CACHE[key] = undefined; return node.error(err); }
         node.log('Loading DataBase:' + file);
-        CACHE[key] = db;
         if (callback) callback(db)
     });
 }
