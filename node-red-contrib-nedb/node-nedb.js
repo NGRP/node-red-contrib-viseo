@@ -25,30 +25,27 @@ module.exports = function(RED) {
 
         start(node, config);
         this.on('input', (data)  => { input(node, data, config)  });
-        this.on('close', stop);
+        this.on('close', (cb)    => { stop(node, cb, config)  });
     }
     RED.nodes.registerType("nedb", register, {});
 }
 
 let CACHE = {};
 
-const resolvePath = (str) => {
-    let dbPath = helper.resolve(str || '{cwd}/data/database.db', undefined, '');
-    let file   = path.normalize(dbPath);
-    return file;
-}
 
-const stop = (callback) => {
-    let file = resolvePath(config.path);
-    if (file) CACHE[file] = undefined;
-    callback();
+
+const stop = (node, cb, config) => {
+    let key = resolveKey(config);
+    if (key) CACHE[key] = undefined;
+    cb();
 }
 
 const start = (node, config) => {
-    let file = resolvePath(config.path);
-    if (CACHE[file]) return;
+    let key = resolveKey(config);    
+    if (CACHE[key]) return;
     
     // DB Configuration
+    let file = resolvePath(config.path);
     let dbconf = { 'filename': file }
     let callback = undefined;
 
@@ -71,14 +68,14 @@ const start = (node, config) => {
     db.loadDatabase((err) => {
         if (err) { return node.error(err); }
         node.log('Loading DataBase:' + file);
-        CACHE[file] = db;
+        CACHE[key] = db;
         if (callback) callback(db)
     });
 }
 
 const input = (node, data, config) => {
-    let file = resolvePath(config.path);
-    let db   = CACHE[file];
+    let key = resolveKey(config);
+    let db   = CACHE[key];
 
     if (!db){
         node.log('Error with database, moving on');
@@ -92,6 +89,22 @@ const input = (node, data, config) => {
     else if (config.operation === 'find') find(node, data, config, db)
 
     } catch (ex) { node.log(ex.message) }
+}
+
+// ------------------------------------------
+//  UTILITY
+// ------------------------------------------
+
+const resolvePath = (str) => {
+    let dbPath = helper.resolve(str || '{cwd}/data/database.db', undefined, '');
+    let file   = path.normalize(dbPath);
+    return file;
+}
+
+const resolveKey = (config) => {
+    let key   = resolvePath(config.path)
+    if (!config.xlsx) return key;
+    return key + '_' +config.xlsx;
 }
 
 // ------------------------------------------
