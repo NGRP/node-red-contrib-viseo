@@ -3,11 +3,12 @@
         category: 'VISEO_NLP',
         color: '#3FADB5',
         defaults: {
-            name: { value: 'API.AI' },
-            token: { value: '' },
+            name:     { value: undefined },
+            token:    { value: undefined },
+            session:  { value: undefined },
             language: { value: undefined },
-            text: { value: '' },
-            session: { value: undefined }
+            text:     { value: undefined },
+            intent:   { value: undefined },
         },
         inputs: 1,
         outputs: 1,
@@ -21,23 +22,27 @@
 <script type="text/x-red" data-template-name="api-ai">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="API.ai">
     </div>
     <div class="form-row">
-        <label for="node-input-token"><i class="icon-tag"></i> Client token</label>
-        <input type="text" id="node-input-token" placeholder="Client token">
+        <label for="node-input-token"><i class="icon-tag"></i> Client Token</label>
+        <input type="text" id="node-input-token" placeholder="000a0aaaa000000aa0000aaaa000aaa0">
     </div>
     <div class="form-row">
         <label for="node-input-session"><i class="icon-tag"></i> Session ID</label>
-        <input type="text" id="node-input-session" placeholder="Session ID">
+        <input type="text" id="node-input-session" placeholder="{user.id}">
     </div>
     <div class="form-row">
         <label for="node-input-language"><i class="icon-tag"></i> Language</label>
-        <input type="text" id="node-input-language" placeholder="Language">
+        <input type="text" id="node-input-language" placeholder="en">
     </div>
     <div class="form-row">
         <label for="node-input-text"><i class="icon-tag"></i> Text</label>
-        <input type="text" id="node-input-text" placeholder="Text">
+        <input type="text" id="node-input-text" placeholder="{payload}">
+    </div>
+    <div class="form-row">
+        <label for="node-input-intent"><i class="icon-tag"></i> Intent</label>
+        <input type="text" id="node-input-intent" placeholder="payload">
     </div>
 </script>
 

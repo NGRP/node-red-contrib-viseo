@@ -1,47 +1,68 @@
 'use strict';
 
+const helper = require('node-red-viseo-helper');
 const apiAi  = require('apiai');
 const md5    = require('md5');
-const helper = require('node-red-viseo-helper');
 
+
+// --------------------------------------------------------------------------
+//  NODE-RED
+// --------------------------------------------------------------------------
 
 module.exports = function (RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
         let node = this;
-
-        // API.AI Initialization
-        const apiConfig = { language: config.language || 'en' };
-        const app = apiAi(config.token, apiConfig);
-        node.log('API AI Initialization completed');
-
-        this.on('input', (data) => {
-            input(node, data, config, app, RED);
-        });
+        
+        start(node, config);
+        this.on('input', (data)  => { input(node, data, config); });
+        this.on('close', (cb)    => { stop(node, cb, config)  });
     }
 
     RED.nodes.registerType('api-ai', register, {});
 };
 
-const input = (node, data, config, app, RED) => {
+
+let CACHE = {};
+
+
+const stop = (node, cb, config) => {
+    let key = config.token;
+    if (key) CACHE[key] = undefined;
+    cb();
+}
+
+const start = (node, config) => {
+    let key = config.token;
+    if (CACHE[key]) return; 
+
+    let apiConfig = { language: config.language || 'en' };
+    CACHE[key] = apiAi(config.token, apiConfig);
+    node.log('API AI Initialization completed');
+}
+
+
+const input = (node, data, config) => {
+    let key = config.token;
+    let app = CACHE[key];
+
     try {
-        const text = helper.resolve(config.text, data);
-        const request = app.textRequest(text, { sessionId: md5(config.session) });
+        let text    = helper.resolve(config.text || '{payload}', data);
+        let session = helper.resolve(config.session, data);
+        let request = app.textRequest(text, { sessionId: md5(session) });
 
         request.on('response', function (response) {
             node.log(JSON.stringify(response));
-            RED.util.setMessageProperty(data, config.intent || 'payload', response, true);
+            helper.setByString(data, config.intent || 'payload', response);
             node.send(data);
         });
 
         request.on('error', function (error) {
             node.error(error);
-            node.send([null, data]);
+            node.send(data);
         });
         
         request.end();
 
-    } catch (err) {
-        node.error(err);
-    }
+    } catch (err) { node.error(err); }
 };
