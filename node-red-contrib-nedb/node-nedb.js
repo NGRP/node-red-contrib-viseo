@@ -1,3 +1,5 @@
+'use strict';
+
 const helper    = require('node-red-viseo-helper');
 const Datastore = require('nedb');
 const extend    = require('extend');
