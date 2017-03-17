@@ -61,7 +61,7 @@ const startServer = (node, config, RED) => {
             // Add User to data stream
             // (not in context because some node may access to user properties)
             // MUST be overrided by storage nodes 
-            let usr = {"id": message.user.id, profile: {}}
+            let usr = {"id": message.user.id, address: message.address, profile: {}}
 
             // Add context obejct to store the lifetime of the stream
             var context = BOT_CONTEXT[Date.now()] = {};
