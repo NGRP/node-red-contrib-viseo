@@ -18,12 +18,12 @@ const input = (node, data, config) => {
     let out  = new Array(parseInt(config.outputs));
     let rand = Math.round(Math.random() * (out.length-1));
 
-    if (config.topic){
-        let order = helper.getByString(data, config.topic, undefined);
+    if (config.once){
+        let order = helper.getByString(data, config.once, undefined);
         if (!order || order.length <= 0){ order = [];
             for(let i=0; i < config.outputs ; i++){ order.push(i); }
             shuffle(order);
-            helper.setByString(data, config.topic, order);
+            helper.setByString(data, config.once, order);
         }
         rand = order.pop();
     }
