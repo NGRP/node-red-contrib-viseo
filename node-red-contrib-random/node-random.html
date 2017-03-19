@@ -3,8 +3,9 @@
         category: 'VISEO_HELPER',
         color: '#3FADB5',
         defaults: { 
-            name:      { value: undefined },
-            outputs:   { value: 1 },
+            name:     { value: undefined },
+            outputs:  { value: 1 },
+            once:     { value: undefined },
         },
         inputs:1,
         outputs: function(){ this.outputs },
@@ -23,6 +24,10 @@
     <div class="form-row">
         <label for="node-input-outputs"><i class="icon-tag"></i> Outputs</label>
         <input type="text" id="node-input-outputs" placeholder="1">
+    </div>
+    <div class="form-row">
+        <label for="node-input-once"><i class="icon-tag"></i> Once</label>
+        <input type="text" id="node-input-once" placeholder="user.profile.topic">
     </div>
 </script>
 
