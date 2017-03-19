@@ -13,12 +13,9 @@ let error = console.log;
 // --------------------------------------------------------------------------
 
 module.exports = function(RED) {
-    info  = RED.log.info;
-    error = RED.log.error;
-
     const register = function(config) {
         RED.nodes.createNode(this, config);
-        var node = this;
+        var node = this; 
         start(RED, node, config);
         this.on('input', (data)  => { input(node, data, config)  });
     }
@@ -27,10 +24,35 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => { 
     if (!config.greeting) { return; }
+    facebookThreadAPI(node, GET_STARTED);
+
+    // Set greeting message
     GREETING_MSG.greeting.text = config.greeting
-    facebookThreadAPI(GREETING_MSG);
-    facebookThreadAPI(GET_STARTED);
-    facebookThreadAPI(PERSISTANT_MENU);
+    facebookThreadAPI(node, GREETING_MSG);
+
+    if (!config.buttons) { return; }
+
+    // Set Persistant
+    // https://developers.facebook.com/docs/messenger-platform/thread-settings/domain-whitelisting
+    PERSISTANT_MENU.call_to_actions = []
+    for (let button of config.buttons){
+        let btn = {
+            "type"   : button.action,
+            "title"  : button.title,
+            "payload": button.value
+        }
+        if (btn.type == 'web_url_compact'){
+            btn.type = 'web_url';
+            btn.webview_height_ratio = "full";
+            btn.messenger_extensions = true;
+        }
+        if (btn.type == 'web_url'){
+            btn.url = btn.payload
+            delete btn.payload;
+        }
+        PERSISTANT_MENU.call_to_actions.push(btn)
+    }
+    facebookThreadAPI(node, PERSISTANT_MENU);
 }
 
 const start = (RED, node, config) => {
@@ -49,7 +71,7 @@ const start = (RED, node, config) => {
 // --------------------------------------------------------------------------
 
 const getPageToken = () => {
-    if (!CONFIG || !CONFIG.facebook || CONFIG.facebook.pageToken) return;
+    if (!CONFIG || !CONFIG.facebook || !CONFIG.facebook.pageToken) return;
     return CONFIG.facebook.pageToken;
 }
 
@@ -74,7 +96,7 @@ const PERSISTANT_MENU = {
     }]
 }
 
-const facebookThreadAPI = (json) => {
+const facebookThreadAPI = (node, json) => { 
     let token = getPageToken();
     if (!token) return;
 
@@ -84,5 +106,7 @@ const facebookThreadAPI = (json) => {
         headers: {'Content-Type': 'application/json'},
         form: json
     },
-    function (err, response, body) { error(err.message, err); });
+    function (err, response, body) { 
+       if (err) node.error(err); else node.warn(body);
+    });
 }
