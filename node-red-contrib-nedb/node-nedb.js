@@ -47,7 +47,7 @@ const start = (node, config) => {
     if (CACHE[key]) return; 
     
     // DB Configuration
-    let file = resolvePath(config.path);
+    let file = resolvePath(config.path || '{cwd}/data/database.db');
     let dbconf = { 'filename': file }
     let callback = undefined;
 
