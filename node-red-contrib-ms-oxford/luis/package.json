@@ -1,0 +1,20 @@
+{
+  "name": "LUISSDK",
+  "version": "1.0.0",
+  "description": "LUIS SDK for Node.js",
+  "author": "t-ahelhi@microsoft.com",
+  "homepage": "https://www.luis.ai/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/Cognitive-LUIS-Node.js"
+  },
+  "bugs": {
+    "url": "https://github.com/Microsoft/Cognitive-LUIS-Node.js/issues"
+  },
+  "keywords": [
+    "LUIS",
+	"Microsoft-Cognitive",
+	"Language Understanding Intelligent Service"
+  ],
+  "license": "MIT"
+}

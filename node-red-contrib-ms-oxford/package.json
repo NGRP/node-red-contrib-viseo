@@ -1,11 +1,11 @@
 {
     "name"          : "node-red-contrib-viseo-ms-oxford",
-    "version"       : "0.0.5",
+    "version"       : "0.0.6",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Wrapper of Microsoft Oxford / Cognitive Services",
     "dependencies"  : {  
-        "request"   : "*",
-        "extend"    : "*"
+        "request"   : "^2.76.0",
+        "extend"    : "^3.0.0"
     },
     "repository" : {
         "type":"git",
@@ -17,7 +17,8 @@
         "nodes": {
             "ms-video-face-track":   "node-video-face-track.js",
             "ms-vision-face-detect": "node-vision-face-detect.js",
-            "ms-speech-text":        "node-speech-text.js"
+            "ms-speech-text":        "node-speech-text.js",
+            "ms-luis":               "node-luis.js"
         }
     }
 }
