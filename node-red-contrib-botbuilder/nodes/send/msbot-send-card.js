@@ -45,8 +45,8 @@ const input = (node, data, config) => {
     if (config.prompt){
         msbot.promptNext(data.message, (prompt) => {
             data.prompt = prompt
-            node.send(data); // Forward data
-        }) 
+            sendData(node, data, config)
+        })
     }
 
     // Send text message (see msbot.getMessage() documentation)
@@ -81,7 +81,7 @@ const input = (node, data, config) => {
             carousel.push(outMsg.data.attachments[0]);
 
             // Forward data without sending anything
-            return node.send(data);
+            return sendData(node, data, config);
             
         } else {
             let carousel = data.context.carousel = data.context.carousel || [];
@@ -95,6 +95,8 @@ const input = (node, data, config) => {
     }
 
     let reply = () => {
+        if (!data.user) return sendData(node, data, config);
+
         // Event
         event.emit('reply', {'to': data.user.address, 'outMsg': outMsg, 'data': data }, node, config);
 
@@ -104,7 +106,7 @@ const input = (node, data, config) => {
             if (err){ node.warn(err); }
             data.reply = outMsg; // for next nodes
             event.emit('replied', data, node, config);
-            if (!config.prompt){ node.send(data); }
+            if (!config.prompt){ sendData(node, data, config); }
         });
     }
 
@@ -137,3 +139,61 @@ const getButtons = (locale, config, data) => {
     }
     return buttons;
 }
+
+const sendData = (node, data, config) => {
+    let out  = new Array(parseInt(config.outputs || 1));
+
+    let _continue = () => {
+        // 3. REPEAT: the latest output
+        if (config.repeat && config.repeat > 0){
+            data._tmp = data._tmp || {}
+            let cpt = data._tmp['rpt_'+node.id] || 0
+            let rpt = parseInt(config.repeat)
+
+            data._tmp['rpt_'+node.id] = cpt + 1;
+            if (cpt >= rpt){
+                out[out.length -1] = data;
+                return node.send(out);        
+            }
+        }
+
+        // 4. DEFAULT: the first output
+        out[0] = data;
+        node.send(out);
+    }
+
+
+    // 1. BUTTONS: the middle outputs
+    if (data.prompt){
+        let buttons = undefined;
+        if (config.sendType === 'quick' && config.quickOutput)
+            buttons = config.quickreplies
+        else if (config.sendType === 'card' && config.btnOutput)
+            buttons = config.buttons
+
+        if (buttons){
+            for (let i = 0 ; i < buttons.length ; i++){
+                let button = buttons[i];
+                let rgxp = new RegExp(button.regexp || button.value, 'i')
+                if (!rgxp.test(data.prompt.text)) continue;
+                out[i+1] = data;
+                return node.send(out);
+            }
+        }
+    }
+
+    // 2. EVENTS: Cross Messages
+    if (data.prompt){
+         return event.emitAsync('prompt', data, node, config, () => {
+            console.log('CONTINUE')
+            _continue();
+        });
+    }
+
+    console.log('Default');
+    _continue();
+}   
+
+
+
+

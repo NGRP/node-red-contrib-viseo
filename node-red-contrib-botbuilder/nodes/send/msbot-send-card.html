@@ -3,9 +3,10 @@
     var saveButtons = function(buttons, query){
         $(query).each(function(){
             var btn = {
-                title :  $(this).find('.node-input-title').val(),
+                title  : $(this).find('.node-input-title').val(),
                 action : $(this).find('.node-input-action').val(),
-                value :  $(this).find('.node-input-value').val(),
+                value  : $(this).find('.node-input-value').val(),
+                regexp : $(this).find('.node-input-regexp').val(),
             }
             if (btn.title && btn.value){ buttons.push(btn); }
         })
@@ -26,6 +27,7 @@
             $clone.find('.node-input-title').val(buttons[i].title);
             $clone.find('.node-input-action').val(buttons[i].action);
             $clone.find('.node-input-value').val(buttons[i].value);
+            $clone.find('.node-input-regexp').val(buttons[i].regexp);
         }
         $add.before($tmpl);
     }
@@ -49,6 +51,10 @@
             buttons:      { value: null },
             quicktext:    { value: undefined },
             quickreplies: { value: null },
+            btnOutput:    { value: undefined },
+            quickOutput:  { value: undefined },
+            repeat:       { value: 0 },
+            outputs:      { value: 1 },
 
             // Kludge Backward compatibility ------------------------------------------
             bt1lbl:          { value: undefined },
@@ -95,8 +101,9 @@
             quickbt11value:  { value: undefined },
             // ------------------------------------------ ------------------------------------------
         },
-        inputs: 1, 
-        outputs:1,
+        inputs:  1, 
+        outputs: 1,
+
         oneditprepare: function () {
             $('#node-input-sendType').change(function (event) { 
                 var type = $(this).val();
@@ -149,17 +156,37 @@
             // QuickReplies
             this.quickreplies = [];
             saveButtons(this.quickreplies, '#quick-type .quickbt')
+
+            // Repeat
+            var repeat = parseInt($('#node-input-repeat').val() || 0);
+            this.outputs = 1 + (repeat > 0 ? 1 : 0)
+            
+            // Btn Output
+            var type = $('#node-input-sendType').val()
+            if (type === 'card'){
+                var btnOut = $('#node-input-btnOutput').is(':checked')
+                if (btnOut) this.outputs += this.buttons.length
+            } else if (type === 'quick') {
+                var quickOut = $('#node-input-quickOutput').is(':checked')
+                if (quickOut) this.outputs += this.quickreplies.length
+            }
         },
         icon: function() {
-            if (this.sendType === "text") { return "text.svg"; } 
+            if (this.sendType === "text")  { return "text.svg"; } 
             if (this.sendType === "media") { return "picture.svg"; } 
             if (this.sendType === "quick") { return "buttons.svg"; }
-            if (this.sendType === "card") { return "card.svg"; }
+            if (this.sendType === "card")  { return "card.svg"; }
         }, 
         align: "left",
         paletteLabel: "Message",
         labelStyle: "bot-card-name",
-        label: function() { return (this.name || this.text || "Send Card") }
+        label: function() { this._config.outputs = 1; return (this.name || this.text || "Send Card") }
+    });
+
+    RED.events.on("nodes:add", function(node){
+        if (node.type !== 'send-card') return;
+        if (node.outputs) return;
+        node.outputs = 1;
     });
 </script>
 
@@ -169,7 +196,6 @@
 </style>
 
 <script type="text/x-red" data-template-name="send-card">
-
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -181,6 +207,12 @@
     <div class="form-row">
         <label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
         <input type="text" id="node-input-delay" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-repeat"><i class="icon-tag"></i> Repeat</label>
+        <input type="text" id="node-input-repeat" placeholder="0">
+        <div style="padding-left: 104px;"><em>Node output can't directly loop to it's own input</em></div>
+    </div>
     </div>
     <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Send format</h4>
 
@@ -221,6 +253,10 @@
             <div id="msg-card" class="msg-tabs-panel">
                 <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Hero Card</h4>
                 <div class="form-row">
+                    <label for="node-input-carousel"><i class="icon-tag"></i> Carousel</label>
+                    <input type="checkbox" style="width: auto;" id="node-input-carousel"> <span style="font-size: 12px">Do not send message, add to the next card</span>
+                </div>
+                <div class="form-row">
                     <label for="node-input-title"><i class="icon-tag"></i> Title</label>
                     <input type="text" id="node-input-title" placeholder="Card title">
                 </div>
@@ -228,11 +264,13 @@
                     <label for="node-input-subtitle"><i class="icon-tag"></i> Subtitle</label>
                     <textarea id="node-input-subtitle" rows="3" style="width:300px"></textarea>
                 </div>
+                <!--
                 <div class="form-row">
                     <label for="node-input-subtext"><i class="icon-tag"></i> Text</label>
                     <textarea id="node-input-subtext" rows="3" style="width:300px"></textarea>
                     <div style="padding-left: 104px;"><i class="fa fa-exclamation-triangle"></i> <em>Won't work with Facebook Messenger</em></div>
                 </div>
+                -->
                 <div class="form-row">
                     <label for="node-input-attach"><i class="icon-tag"></i> Attachement</label>
                     <input type="text" id="node-input-attach" placeholder="http://path/to/card/image">
@@ -240,8 +278,8 @@
 
                 <div class="form-row cardbt">
                     <label><i class="icon-tag"></i> Button</label>
-                    <input  style="width: 20%" class="node-input-title"  type="text" placeholder="Label">
-                    <select style="width: 20%" class="node-input-action">
+                    <input  style="width: 80px" class="node-input-title"  type="text" placeholder="Label">
+                    <select style="width: 70px" class="node-input-action">
                         <option value="postBack">Post Back</option>
                         <option value="imBack">IM Back</option>
                         <option value="openUrl">Open URL</option>
@@ -250,14 +288,11 @@
                         <option value="playVideo">Play Video</option>
                         <option value="call">Call</option>
                     </select>
-                    <input  style="width: 20%" class="node-input-value" type="text" placeholder="Value">
+                    <input  style="width: 80px" class="node-input-value"  type="text" placeholder="Value">
+                    <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
                 </div>
-                <p><button id="addcardbt">Add Button</button></p>
+                <p><button id="addcardbt">Add Button</button>&nbsp;&nbsp;&nbsp;<input type="checkbox" style="width: auto;" id="node-input-btnOutput"> <span style="font-size: 12px">Add outputs for each button</span></p>
 
-                <div class="form-row">
-                    <label for="node-input-carousel"><i class="icon-tag"></i> Carousel</label>
-                    <input type="checkbox" style="width: auto;" id="node-input-carousel"> <span style="font-size: 12px">(add to next card)</span>
-                </div>
             </div>
         </section>
         <section id="quick-type">
@@ -269,8 +304,8 @@
 
             <div class="form-row quickbt">
                 <label><i class="icon-tag"></i> QuickReply</label>
-                <input  style="width: 20%" class="node-input-title"  type="text" placeholder="Label">
-                <select style="width: 20%" class="node-input-action">
+                <input  style="width: 80px" class="node-input-title"  type="text" placeholder="Label">
+                <select style="width: 70px" class="node-input-action">
                     <option value="postBack">Post Back</option>
                     <option value="imBack">IM Back</option>
                     <option value="openUrl">Open URL</option>
@@ -279,9 +314,10 @@
                     <option value="playVideo">Play Video</option>
                     <option value="call">Call</option>
                 </select>
-                <input  style="width: 20%" class="node-input-value" type="text" placeholder="Value">
+                <input  style="width: 80px" class="node-input-value" type="text" placeholder="Value">
+                <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
             </div>
-            <p><button id="addquick">Add QuickReply</button></p>
+            <p><button id="addquick">Add QuickReply</button>&nbsp;&nbsp;&nbsp;<input type="checkbox" style="width: auto;" id="node-input-quickOutput"> <span style="font-size: 12px">Add outputs for each reply</span></p>
         </section>
     </div>
 
