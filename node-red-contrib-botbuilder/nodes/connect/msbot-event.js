@@ -22,7 +22,9 @@ const setup  = (RED, node, config) => {
     let listen = CACHE[node.id].listen = config.listen;
     if (!listen) return;
 
-    let listener = CACHE[node.id].listener = (data) => { node.send(data); }
+    let listener = CACHE[node.id].listener = (data) => { 
+        node.send(data); 
+    }
     event.listen(listen, listener)
 }
 
