@@ -18,7 +18,6 @@ exports.removeListener =  (type, callback) => {
 exports.emitAsync  = (type, data, node, config, callback) => {
 
     let listeners = emitter.listeners(type)
-    console.log(listeners)
     if (!listeners || listeners.length == 0){
         return callback();
     }

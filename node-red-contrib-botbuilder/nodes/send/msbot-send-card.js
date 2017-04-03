@@ -164,7 +164,7 @@ const sendData = (node, data, config) => {
 
 
     // 1. BUTTONS: the middle outputs
-    if (data.prompt){
+    if (config.prompt){
         let buttons = undefined;
         if (config.sendType === 'quick' && config.quickOutput)
             buttons = config.quickreplies
@@ -183,7 +183,7 @@ const sendData = (node, data, config) => {
     }
 
     // 2. EVENTS: Cross Messages
-    if (data.prompt){
+    if (config.prompt){
          return event.emitAsync('prompt', data, node, config, () => {
             console.log('CONTINUE')
             _continue();
@@ -193,7 +193,3 @@ const sendData = (node, data, config) => {
     console.log('Default');
     _continue();
 }   
-
-
-
-
