@@ -49,7 +49,9 @@ Thumbs.db
 ##########################################
 
 node-red-contrib-*/node_modules
-
+node-red-contrib-sarah
+node-red-direct-energie
+node-red-DE-*
 
 # IDE
 .idea/
