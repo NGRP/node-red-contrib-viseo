@@ -39,7 +39,7 @@ const close = (done) => {
 }
 
 const input = (node, data, config) => {
-    let log = config.log || 'payload';
+    let log = config.log || 'payload'; 
         log = helper.getByString(data, log, log);
 
     if (typeof log === 'object'){
@@ -47,6 +47,6 @@ const input = (node, data, config) => {
         log = log.replace ("\n","");
     }
 
-    logger.log(config.level, log);
+    logger.log(config.level || 'info', log);
     node.send(data);
 }
