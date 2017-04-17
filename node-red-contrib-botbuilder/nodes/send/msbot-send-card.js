@@ -136,6 +136,7 @@ const getButtons = (locale, config, data) => {
         button.title  = marshall(locale, button.title,  data, '')
         button.action = marshall(locale, button.action, data, '')
         button.value  = marshall(locale, button.value,  data, '')
+        button.regexp = marshall(locale, button.regexp, data, undefined)
     }
     return buttons;
 }
@@ -166,30 +167,35 @@ const sendData = (node, data, config) => {
     // 1. BUTTONS: the middle outputs
     if (config.prompt){
         let buttons = undefined;
-        if (config.sendType === 'quick' && config.quickOutput)
+        if (config.sendType === 'quick')
             buttons = config.quickreplies
-        else if (config.sendType === 'card' && config.btnOutput)
+        else if (config.sendType === 'card')
             buttons = config.buttons
-
+        
+        
+        if (config.promptText){ // Save the prompt value to a given attribute
+            helper.setByString(data, config.promptText, data.prompt.text, (ex) => { node.warn(ex) });
+        }
+        
         if (buttons){
             for (let i = 0 ; i < buttons.length ; i++){
-                let button = buttons[i];
+                let button = buttons[i]; 
                 let rgxp = new RegExp(button.regexp || button.value, 'i')
+
                 if (!rgxp.test(data.prompt.text)) continue;
-                out[i+1] = data;
-                return node.send(out);
+                if (config.promptText){ helper.setByString(data, config.promptText, button.value, (ex) => { node.warn(ex) }) }
+                
+                if (config.btnOutput){ 
+                    out[i+1] = data; 
+                    return node.send(out);
+                } 
             }
         }
     }
 
     // 2. EVENTS: Cross Messages
     if (config.prompt){
-         return event.emitAsync('prompt', data, node, config, () => {
-            console.log('CONTINUE')
-            _continue();
-        });
+         return event.emitAsync('prompt', data, node, config, () => {  _continue(); });
     }
-
-    console.log('Default');
     _continue();
 }   

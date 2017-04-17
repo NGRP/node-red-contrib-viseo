@@ -38,6 +38,7 @@
         defaults: {
             name:         { value: undefined },
             prompt:       { value: undefined },
+            promptText:   { value: undefined },
             delay:        { value: 0 },
             sendType:     { value: "text" },
             text:         { value: undefined },
@@ -180,7 +181,7 @@
         align: "left",
         paletteLabel: "Message",
         labelStyle: "bot-card-name",
-        label: function() { this._config.outputs = 1; return (this.name || this.text || "Send Card") }
+        label: function() { /*this._config.outputs = 1;*/ return (this.name || this.text || "Send Card") }
     });
 
     RED.events.on("nodes:add", function(node){
@@ -203,6 +204,10 @@
     <div class="form-row">
         <label for="node-input-prompt"><i class="icon-tag"></i> Prompt</label>
         <input type="checkbox" style="width: auto;" id="node-input-prompt"> <span style="font-size: 12px">(require user inputs)</span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-promptText"></label>
+        <input type="text" id="node-input-promptText" placeholder="prompt.text">
     </div>
     <div class="form-row">
         <label for="node-input-delay"><i class="icon-tag"></i> Delay</label>

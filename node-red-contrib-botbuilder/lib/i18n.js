@@ -47,10 +47,18 @@ exports.translate = (locale, key, def) => {
     locale = locale.toLowerCase();
 
     let cleanKey = key.replace(/^\s*(.+)\s*$/mg,'$1').trim();
+    
+    if (LOCALES[locale]){
+        let value = LOCALES[locale][cleanKey]
+        if (value) return value;
+    }
+    if (LOCALES['default']){
+        let value = LOCALES['default'][cleanKey]
+        if (value) return value;
+    }
 
-    if (!LOCALES[locale]) return def || key;
-    if (!LOCALES[locale][cleanKey]) return def || key;
-    return LOCALES[locale][cleanKey];
+    return def || key; 
+    
 }
 
 exports.resolve = (data) => {
