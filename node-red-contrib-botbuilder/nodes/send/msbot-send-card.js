@@ -101,7 +101,7 @@ const input = (node, data, config) => {
         event.emit('reply', {'to': data.user.address, 'outMsg': outMsg, 'data': data }, node, config);
 
         // Reply
-        let to = data.user.address;
+        let to = data.user.address; 
         msbot.replyTo(to, outMsg, (err) => {
             if (err){ node.warn(err); }
             data.reply = outMsg; // for next nodes
