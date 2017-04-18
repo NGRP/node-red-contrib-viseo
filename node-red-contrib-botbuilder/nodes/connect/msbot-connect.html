@@ -1,21 +1,33 @@
 
 
 <script type="text/javascript">
+    var setProject = function(value){
+        $('SPAN.logo SPAN').text(value || 'VISEO Framework')
+    }
+
+    RED.events.on("nodes:add", function(node){ 
+        if (node.type !== 'bot') return;
+        setProject(node.project);
+    });
+
     RED.nodes.registerType('bot',{
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults:  { 
-            name:          { value: "" },
-            port:          { value: "" },
-            appId:         { value: "" },
-            appPassword:   { value: "" },
+            name:          { value: undefined },
+            project:       { value: undefined },
+            port:          { value: undefined },
+            appId:         { value: undefined },
+            appPassword:   { value: undefined },
 	        fmsg :         { value: "markdown"}
         },
         inputs:0,
         outputs:2,
         icon: "server.svg",  align: "left",
         paletteLabel: "Server",
-        label: function() { return this.name || "Bot Server"; }
+        oneditsave:    function(){ var node = this; setTimeout(function(){ setProject(node.project) },1) },
+        oneditprepare: function(){ setProject(this.project) },
+        label: function() { return this.name || "Bot Server"; },
     });
 </script>
 
@@ -23,6 +35,10 @@
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-project"><i class="icon-tag"></i> Project</label>
+        <input type="text" id="node-input-project" placeholder="Project">
     </div>
     <div class="form-row">
         <label for="node-input-port"><i class="icon-tag"></i> Port</label>
