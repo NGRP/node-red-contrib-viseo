@@ -40,24 +40,24 @@
         }
     });
 
-
-    RED.events.on("deploy",          function(){ repaintAll(); });
-    RED.events.on("nodes:change",    function(){ repaintAll(); });
-    RED.events.on("workspace:change",function(){ repaintAll(); });
+    RED.events.on("workspace:change", function(){ repaintAll(); });
+    RED.events.on("nodes:add", function(node){
+        if (node.type !== 'help-html') return;
+        console.log(node)
+        setTimeout(function(){ repaintAll(); }, 1);
+    });
 
     jQuery.fn.exists = function(){return this.length>0;}
     $(document).ready(function() {
         setTimeout(function(){
-            repaintAll();
-
             var $svg = $('svg')
-            $svg.on("mousedown",  function(){ repaintAll() });
-            $svg.on("mouseup",    function(){ repaintAll() });
-            $svg.on("touchstart", function(){ repaintAll() });
-            $svg.on("touchend",   function(){ repaintAll() });
-
+            $svg.on("mousedown",  repaintAll);
+            $svg.on("mouseup",    repaintAll);
+            $svg.on("touchstart", repaintAll);
+            $svg.on("touchend",   repaintAll);
         },1)
     })
+
     var repaintAll = function(){
         $(document).find('.node-help-html').each(function(idx, elm){
             repaint($(elm).closest('.nodegroup'));
@@ -94,7 +94,6 @@
         }
         $shim.attr('width',  w).attr('height', h)
         .html('<div class="node-shim-html" style="height:'+h+'px; width:'+(w+21)+'px; overflow: auto;"><div style="overflow: hidden; min-height:'+(h-8)+'px; width:'+(w-8)+'px; padding: 4px; border-radius: 5px; background: '+nodeRED.background+'; line-height: normal">'+nodeRED.content+'</div></div>')
-
     }
 </Script>
 
