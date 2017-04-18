@@ -56,6 +56,9 @@
             quickOutput:  { value: undefined },
             repeat:       { value: 0 },
             outputs:      { value: 1 },
+            signintext:   { value: undefined },
+            signintitle:  { value: undefined },
+            signinurl:    { value: undefined },
 
             // Kludge Backward compatibility ------------------------------------------
             bt1lbl:          { value: undefined },
@@ -228,6 +231,7 @@
             <option value="media">Image</option>
             <option value="card">Card</option>
             <option value="quick">Quick replies</option>
+            <option value="signin">SignIn</option>
         </select>
     </div>
 
@@ -323,6 +327,21 @@
                 <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
             </div>
             <p><button id="addquick">Add QuickReply</button>&nbsp;&nbsp;&nbsp;<input type="checkbox" style="width: auto;" id="node-input-quickOutput"> <span style="font-size: 12px">Add outputs for each reply</span></p>
+        </section>
+        <section id="signin-type">
+            <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">SignIn</h4>
+            <div class="form-row">
+                <label for="node-input-signintext"><i class="icon-tag"></i> Text</label>
+                <textarea id="node-input-signintext" rows="5" style="width:300px"></textarea>
+            </div>
+            <div class="form-row">
+                <label for="node-input-signintitle"><i class="icon-tag"></i> Button</label>
+                <input type="text" id="node-input-signintitle" placeholder="SignIn">
+            </div>
+            <div class="form-row">
+                <label for="node-input-signinurl"><i class="icon-tag"></i> URL</label>
+                <input type="text" id="node-input-signinurl" placeholder="https://">
+            </div>
         </section>
     </div>
 

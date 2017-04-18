@@ -86,6 +86,14 @@ const buildRawMessage = (msg, opts) => {
         return false;
     }
 
+    if (opts.type === 'signin') {
+        var card = new builder.SigninCard()
+        card.text(opts.text)
+        card.button(opts.title, opts.url)
+        msg.addAttachment(card);
+        return true;
+    }
+
     if (opts.type === 'text') {
         msg.text(opts.text);
         return true;

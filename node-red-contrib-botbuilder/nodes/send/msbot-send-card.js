@@ -64,6 +64,16 @@ const input = (node, data, config) => {
         outMsg = msbot.getMessage({type: config.sendType, "media": marshall(locale, config.media, data, '')});
     }
 
+    // Send media message (see msbot.getMessage() documentation)
+    else if (config.sendType === 'signin'){
+        outMsg = msbot.getMessage({
+            "type":  config.sendType, 
+            "text":  marshall(locale, config.signintext,  data, ''),
+            "title": marshall(locale, config.signintitle, data, ''),
+            "url":   marshall(locale, config.signinurl,   data, ''),
+        });
+    }
+
     // Send card message (see msbot.getMessage() documentation)
     else {
         outMsg = msbot.getMessage({
