@@ -158,10 +158,14 @@ const get = (node, data, config, db) => {
 
     db.findOne({ id: dbKey }, (err, doc) => { 
         if (err) return node.error(err);
-        let value = helper.getByString(data, config.value);
 
-        if (value && (typeof value) === 'object') extend(true, value, doc);
-        else helper.setByString(data, config.value, doc);
+        if (config.merge){
+            let value = helper.getByString(data, config.value);
+            if (value && (typeof value) === 'object') extend(true, value, doc);
+            return node.send(data);
+        }
+
+        helper.setByString(data, config.value, doc);
         node.send(data);
     });
 }
