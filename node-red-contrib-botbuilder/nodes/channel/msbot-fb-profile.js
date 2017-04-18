@@ -51,7 +51,7 @@ const input = (node, data, config) => {
         return node.send(data);
     }
 
-    getFBProfile(user.id, (json) => {
+    getFBProfile(user.id, config, (json) => {
         node.log('Update Facebook profile: ' + user.id);
         if (undefined === json) return node.send(data); 
         extend(true, user.profile, json);
