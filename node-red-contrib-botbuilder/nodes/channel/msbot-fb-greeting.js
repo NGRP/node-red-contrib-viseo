@@ -24,11 +24,11 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => { 
     if (!config.greeting) { return; }
-    facebookThreadAPI(node, GET_STARTED);
+    facebookThreadAPI(node, config, GET_STARTED);
 
     // Set greeting message
     GREETING_MSG.greeting.text = config.greeting
-    facebookThreadAPI(node, GREETING_MSG);
+    facebookThreadAPI(node, config, GREETING_MSG);
 
     if (!config.buttons) { return; }
 
@@ -52,7 +52,7 @@ const input = (node, data, config) => {
         }
         PERSISTANT_MENU.call_to_actions.push(btn)
     }
-    facebookThreadAPI(node, PERSISTANT_MENU);
+    facebookThreadAPI(node, config, PERSISTANT_MENU);
 }
 
 const start = (RED, node, config) => {
@@ -70,9 +70,12 @@ const start = (RED, node, config) => {
 //  FACEBOOK API
 // --------------------------------------------------------------------------
 
-const getPageToken = () => {
-    if (!CONFIG || !CONFIG.facebook || !CONFIG.facebook.pageToken) return;
-    return CONFIG.facebook.pageToken;
+const getPageToken = (config) => {
+    if (config && config.pageToken)
+        return config.pageToken;
+
+    if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
+        return CONFIG.facebook.pageToken;
 }
 
 let GREETING_MSG = {
@@ -96,8 +99,8 @@ const PERSISTANT_MENU = {
     }]
 }
 
-const facebookThreadAPI = (node, json) => { 
-    let token = getPageToken();
+const facebookThreadAPI = (node, config, json) => { 
+    let token = getPageToken(config);
     if (!token) return;
 
     request({

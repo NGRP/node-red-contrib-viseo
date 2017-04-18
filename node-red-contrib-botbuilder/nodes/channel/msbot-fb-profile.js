@@ -65,17 +65,20 @@ const input = (node, data, config) => {
 //  FACEBOOK API
 // --------------------------------------------------------------------------
 
-const getPageToken = () => {
-    if (!CONFIG || !CONFIG.facebook || !CONFIG.facebook.pageToken) return;
-    return CONFIG.facebook.pageToken;
+const getPageToken = (config) => {
+    if (config && config.pageToken)
+        return config.pageToken;
+
+    if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
+        return CONFIG.facebook.pageToken;
 }
 
 const URL = "https://graph.facebook.com/v2.8/";
 const QS  = "?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=";
-const getFBProfile = exports.getUserProfile = (uid, callback) => {
+const getFBProfile = exports.getUserProfile = (uid, config, callback) => {
     if (undefined === uid) return callback();
 
-    let token =getPageToken();
+    let token = getPageToken(config);
     if (!token) return callback();
 
     let url = URL + uid + QS + token;
