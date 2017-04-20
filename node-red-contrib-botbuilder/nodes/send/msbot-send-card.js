@@ -17,6 +17,7 @@ const marshall = (locale, str, data, def) => {
     return str;
 }
 
+
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
@@ -192,10 +193,11 @@ const sendData = (node, data, config) => {
                 let button = buttons[i]; 
                 let rgxp = new RegExp(button.regexp || button.value, 'i')
 
+
                 if (!rgxp.test(data.prompt.text)) continue;
                 if (config.promptText){ helper.setByString(data, config.promptText, button.value, (ex) => { node.warn(ex) }) }
-                
-                if (config.btnOutput){ 
+
+                if (config.btnOutput || config.quickOutput){ 
                     out[i+1] = data; 
                     return node.send(out);
                 } 
@@ -209,3 +211,4 @@ const sendData = (node, data, config) => {
     }
     _continue();
 }   
+
