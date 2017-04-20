@@ -158,7 +158,8 @@ const get = (node, data, config, db) => {
 
     db.findOne({ id: dbKey }, (err, doc) => { 
         if (err) return node.error(err);
-
+        if (!doc) return node.send(data);
+        
         if (config.merge){
             let value = helper.getByString(data, config.value);
             if (value && (typeof value) === 'object') extend(true, value, doc);
