@@ -44,6 +44,14 @@ if ( config.enddate == "")   {
 const startdate = new Date(config.startdate);
 const enddate = new Date(config.enddate);
 
+if (config.enddate.toString().substr(0,7) == "payload") {
+	config.enddate = helper.getByString(data,config.enddate);
+}
+
+if (config.startdate.toString().substr(0,7) == "payload") {
+	config.startdate = helper.getByString(data,config.startdate);
+}
+
 let req = {
         url: baseUrl,
         method: 'GET',
