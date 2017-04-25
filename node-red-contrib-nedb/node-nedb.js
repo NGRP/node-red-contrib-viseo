@@ -56,7 +56,7 @@ const start = (node, config) => {
         //delete dbconf.filename;
 
         let tab  = parseInt(config.xlsx);
-        let rows = xlsx2json(file, tab);
+        let rows = xlsx2json(file, tab); 
         callback = (db) => {
             db.insert(rows, function (err, newDocs) { 
                 if (err){ error(err); } 
@@ -120,18 +120,19 @@ const xlsx2json = (inputFile, tabIndex) => {
 
     let first = undefined;
     let cptId = 0;
-    let json  = [];
-    for (let row of sheet){
+    let rows  = [];
+    for (let row of sheet){ 
         if (first === undefined){ first = row; continue; }
         if (row[0] === undefined){ continue;} // Skip (quick) empty lines
 
         let obj = { '_id' : '' + (cptId++) }; // Generate an NeDB id
         for(let i = 0 ; i < first.length ; i++){
-            obj[first[i]] = row[i]; 
+            let col  = ((first[i] || '') + '').trim(); // Cleanup
+            obj[col] = ((row[i]   || '') + '').trim(); // Cleanup
         }
-        json.push(obj)
+        rows.push(obj)
     }
-    return json
+    return rows
 }
 
 // ------------------------------------------
@@ -175,17 +176,15 @@ const find = (node, data, config, db) => {
     // Kludge test to avoid logs exception for inline JSON
     let dbKey = config.key;
     if (dbKey.indexOf('{') !== 0) 
-        dbKey = helper.getByString(data, config.key);
+        dbKey = helper.getByString(data, config.key || 'payload');
 
-    if (!dbKey) return node.send(data);
-     
     if (typeof dbKey === 'string'){
         dbKey = JSON.parse(dbKey);
     }
-
+    if (!dbKey) return node.send(data);
     db.find(dbKey, (err, docs) => { 
         if (err) return node.error(err);
-        helper.setByString(data, config.value, docs);
+        helper.setByString(data, config.value || 'payload', docs);
         node.send(data);
     });
 }
