@@ -18,29 +18,23 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
-
-    let rows = helper.getByString(data, config.rows);
+    let rows = helper.getByString(data, config.rows || 'payload');
     if (!Array.isArray(rows)){
         node.warn('Rows must be an array of object');
         return node.send(data);
     }
 
-    let columns  = config.columns.split('\n');
-    if (columns.length <= 0){
-        node.warn('No columns to fill');
+    if (rows.length === 0){
+        node.warn('No elements, skip and continue');
         return node.send(data);
     }
 
+    let columns  = config.columns
+    if (columns){ columns = columns.split('\n'); }
+    else {        columns = Object.keys(rows[0]) }
+
     // Build matrix
-    let sheet  = [];
-    for (let item  of rows){
-        let row = [];
-        for (let column of columns){
-            let obj = helper.getByString(item, column, null);
-            if (typeof obj === 'object') { row = row.concat(Object.keys(obj).map(key => obj[key])); } else { row.push(obj) }
-        }
-        sheet.push(row)
-    }
+    let sheet  = json2xlsx(columns, rows);
     let buffer = xlsx.build([{name: config.name, data: sheet}]);
     
     // Write to a file
@@ -48,4 +42,22 @@ const input = (node, data, config) => {
     fs.writeFileSync(path, buffer);
 
     node.send(data);
+}
+
+// ------------------------------------------
+//  JSON TO XLSX
+// ------------------------------------------
+
+const json2xlsx = (columns, rows) => {
+    let sheet = [];
+    sheet.push(columns);
+    for (let obj of rows){
+        let row = [];
+        for (let column of columns){
+            let value = helper.getByString(obj, column, '');
+            row.push(value);
+        }
+        sheet.push(row)
+    }
+    return sheet;
 }
