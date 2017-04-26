@@ -55,8 +55,9 @@ const startServer = (node, config, RED) => {
 
         // Root Dialog
         bot.dialog('/', [(session) => { 
-            let message = session.message;
-            if (msbot.hasPrompt(message)) return;
+            let message = session.message
+            let convId  = message.address.conversation.id
+            if (msbot.hasPrompt(convId, message)) return;
 
             // Add User to data stream
             // (not in context because some node may access to user properties)

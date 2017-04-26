@@ -182,19 +182,17 @@ const getHeroCard = (opts) => {
 // ------------------------------------------
 
 var PROMPT_CALLBACK = {}
-const promptNext = (inMsg, callback) => {
-    let convId = inMsg.address.conversation.id;
+const promptNext = (convId, callback) => {
     PROMPT_CALLBACK[convId] = callback;
 }
 
-const hasPrompt = (inMsg) => {
-    let convId = inMsg.address.conversation.id;
+const hasPrompt = (convId, data) => {
 
     let cb = PROMPT_CALLBACK[convId];
     if (undefined === cb) return false;
 
     delete PROMPT_CALLBACK[convId];
-    cb(inMsg);
+    cb(data);
     return true;
 }
 

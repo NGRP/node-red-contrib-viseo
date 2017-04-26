@@ -43,8 +43,10 @@ const input = (node, data, config) => {
          data.context = {}; // FIXME: Should be set in a global variable
 
     // Go for prompt
-    if (config.prompt){
-        msbot.promptNext(data.message, (prompt) => {
+    
+    if (config.prompt && data.user && data.user.address){
+        let convId = data.user.address.conversation.id;
+        msbot.promptNext(convId, (prompt) => {
             data.prompt = prompt
             sendData(node, data, config)
         })
