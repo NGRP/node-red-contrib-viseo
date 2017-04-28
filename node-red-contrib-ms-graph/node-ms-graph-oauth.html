@@ -1,0 +1,71 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-graph-oauth',{
+        category: 'VISEO_AUTH',
+        color: '#3FADB5',
+        defaults: { 
+            name:      { value: undefined },
+            appId:     { value: undefined },
+            appSecret: { value: undefined },
+            redirect:  { value: undefined },
+            scope:     { value: undefined },
+            state:     { value: undefined },
+            url:       { value: undefined },
+            code:      { value: undefined },
+            refresh:   { value: undefined },
+            access:    { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: 'MS Auth',
+        label: function() { return this.name || "MS Authentication"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-graph-oauth">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appId"><i class="icon-tag"></i> AppId</label>
+        <input type="text" id="node-input-appId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appSecret"><i class="icon-tag"></i> App Secret</label>
+        <input type="text" id="node-input-appSecret" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-redirect"><i class="icon-tag"></i> Redirect</label>
+        <input type="text" id="node-input-redirect" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-scope"><i class="icon-tag"></i> Scope</label>
+        <input type="text" id="node-input-scope" placeholder="User.Read">
+    </div>
+    <div class="form-row">
+        <label for="node-input-state"><i class="icon-tag"></i> State</label>
+        <input type="text" id="node-input-state" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-url"><i class="icon-tag"></i> Auth URL</label>
+        <input type="text" id="node-input-url" placeholder="payload">
+    </div>
+    <div class="form-row">
+        <label for="node-input-code"><i class="icon-tag"></i> Code</label>
+        <input type="text" id="node-input-code" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-refresh"><i class="icon-tag"></i> Refresh</label>
+        <input type="text" id="node-input-refresh" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-access"><i class="icon-tag"></i> Access</label>
+        <input type="text" id="node-input-access" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ms-graph-oauth">
+
+</script>
