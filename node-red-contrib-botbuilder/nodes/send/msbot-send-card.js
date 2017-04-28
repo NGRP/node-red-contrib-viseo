@@ -42,10 +42,10 @@ const input = (node, data, config) => {
     if (!data.context)
          data.context = {}; // FIXME: Should be set in a global variable
 
+    let convId = (data.user && data.user.address) ? data.user.address.conversation.id : undefined;
+
     // Go for prompt
-    
-    if (config.prompt && data.user && data.user.address){
-        let convId = data.user.address.conversation.id;
+    if (config.prompt){
         msbot.promptNext(convId, (prompt) => {
             data.prompt = prompt
             sendData(node, data, config)
@@ -124,13 +124,18 @@ const input = (node, data, config) => {
     }
 
     // Send Message
+    let delay = config.delay !== undefined ? parseInt(config.delay) : 0
     if (data.context.session){
         msbot.typing(data.context.session, () => {
-            let delay = TYPING_DELAY_CONSTANT;
-            delay += config.delay !== undefined ? parseInt(config.delay) : 0
-            setTimeout(reply, delay)
+            let handle = setTimeout(reply, delay + TYPING_DELAY_CONSTANT)
+            msbot.saveTimeout(convId, handle);
         });
-    } else { reply() }
+    } else if (delay > 0) { 
+        let handle = setTimeout(reply, delay) 
+        msbot.saveTimeout(convId, handle);
+    } else {
+        reply();
+    }
 }
 
 const getButtons = (locale, config, data) => {

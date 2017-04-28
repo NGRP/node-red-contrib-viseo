@@ -57,6 +57,11 @@ const startServer = (node, config, RED) => {
         bot.dialog('/', [(session) => { 
             let message = session.message
             let convId  = message.address.conversation.id
+
+            // Clear all delayed messages
+            msbot.clearTimeout(convId);
+
+            // Handle Prompts
             if (msbot.hasPrompt(convId, message)) return;
 
             // Add User to data stream

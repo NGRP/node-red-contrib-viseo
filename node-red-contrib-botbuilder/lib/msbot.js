@@ -183,10 +183,12 @@ const getHeroCard = (opts) => {
 
 var PROMPT_CALLBACK = {}
 const promptNext = (convId, callback) => {
+    if (!convId) return;
     PROMPT_CALLBACK[convId] = callback;
 }
 
 const hasPrompt = (convId, data) => {
+    if (!convId) return;
 
     let cb = PROMPT_CALLBACK[convId];
     if (undefined === cb) return false;
@@ -200,6 +202,19 @@ const hasPrompt = (convId, data) => {
 //   TYPING
 // ------------------------------------------
 
+var TIMEOUT_HANDLES = {}
+const saveTimeout = (convId, handle) => { console.log('saveTimeout', convId)
+    if (!TIMEOUT_HANDLES[convId])
+        TIMEOUT_HANDLES[convId] = [];
+    TIMEOUT_HANDLES[convId].push(handle)
+}
+const clearHandles = (convId) => { console.log('clearHandles', convId)
+    if (!TIMEOUT_HANDLES[convId]) return;
+    for (let handle of TIMEOUT_HANDLES[convId]){
+        clearTimeout(handle);
+    }
+    TIMEOUT_HANDLES[convId] = []
+}
 const typing = (session, callback) => {
     if (undefined === session) return;
     session.sendTyping();
@@ -232,3 +247,5 @@ exports.hasPrompt = hasPrompt;
 exports.getMessage = getMessage;
 exports.replyTo = replyTo;
 exports.typing = typing;
+exports.saveTimeout = saveTimeout;
+exports.clearTimeout = clearHandles;
