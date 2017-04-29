@@ -154,7 +154,7 @@ const set = (node, data, config, db) => {
 }
 
 const get = (node, data, config, db) => {
-    let dbKey = helper.getByString(data, config.key);
+    let dbKey = helper.getByString(data, config.key, config.key);
     if (!dbKey) return node.send(data);
 
     db.findOne({ id: dbKey }, (err, doc) => { 
