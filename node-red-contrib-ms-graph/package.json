@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-ms-graph",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "author"        : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Wrapper of Microsoft Graph",
     "dependencies"  : {  

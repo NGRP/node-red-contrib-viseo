@@ -1,12 +1,50 @@
 # Node-RED
 
-A Node-RED node to use microsoft graph.
+A Node-RED node to perform an OAuth2 Authentication with [Microsoft Graph](https://developer.microsoft.com/en-us/graph).
 
 ## Quick Start
+
+To use the Microsoft Graph Connect Sample for Node.js, you need either a [Microsoft account](https://www.outlook.com/) or a [work or school account](http://dev.office.com/devprogram)
 
 ```
 npm install node-red-contrib-viseo-ms-graph
 ```
+
+
+### Register the Application
+
+1. Sign into the App Registration Portal using either your personal or work or school account.
+2. Choose Add an app.
+3. Enter a name for the app, and choose Create application. The registration page displays, listing the properties of your app.
+4. Copy the Application Id. This is the unique identifier for your app.
+5. Under Application Secrets, choose Generate New Password. Copy the password from the New password generated dialog. You'll use the application ID and password (secret) to configure the sample app in the next section.
+6. Under Platforms, choose Add Platform.
+7. Choose Web.
+8. Enter https://server.url:1880/callback-auth as the Redirect URI.
+9. Choose Save.
+
+
+### Build the Node-RED Flow
+
+This [sample](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-ms-graph/doc/flow.json) demonstrate an authentication throught a ChatBot.
+
+![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-ms-graph/doc/flow.jpg) "Node-RED MS Graph Flow")
+
+#### Sign-In
+
+The first row build an URL to `https://login.microsoftonline.com/common` with credentials then send a ChatBot Sign-In Card
+
+#### Callback URL
+
+The second row 
+- handle HTTP GET Request to `/callback-auth` and answer a "Thank You" message.
+- the callback `code` is resolved into a `refreshToken` and `accessToken`. 
+- the callback `state` is resolved to fetch the ChatBot user, save the credential and send back a message.
+
+#### API Testing
+
+The third row try to retrieve the microsoft profile with an HTTP request to `https://graph.microsoft.com/v1.0/me`
+
 
 ## Getting Help
 
