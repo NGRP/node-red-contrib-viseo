@@ -28,7 +28,7 @@ npm install node-red-contrib-viseo-ms-graph
 
 This [sample](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-ms-graph/doc/flow.json) demonstrate an authentication throught a ChatBot.
 
-![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-ms-graph/doc/flow.jpg) "Node-RED MS Graph Flow")
+![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-ms-graph/doc/flow.jpg, "Node-RED MS Graph Flow")
 
 #### Sign-In
 
