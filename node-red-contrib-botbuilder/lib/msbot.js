@@ -37,6 +37,64 @@ const absURL = (url) => {
 //  MESSAGES
 // ------------------------------------------
 
+let BOT_CONTEXT = {};
+
+const bindDialogs = exports.bindDialogs = (bot, callback) => {
+
+    // CleanUp context
+    BOT_CONTEXT = {}
+
+    // Greetings
+    bot.on('contactRelationUpdate', (message) => { 
+        if (message.action !== 'add') { /* delete user data */ return; }
+        
+        // Add User to data stream
+        // (not in context because some node may access to user properties)
+        // MUST be overrided by storage nodes 
+        var usr = {"id": message.user.id, profile: {}}
+
+        // Add context obejct to store the lifetime of the stream
+        var context = BOT_CONTEXT[Date.now()] = {};
+        context.bot = bot;
+
+        // Send 
+        let data = { "context": context, "message": message, "user": usr }
+        callback(undefined, data, 'greeting');
+    });
+
+    // Root Dialog
+    bot.dialog('/', [(session) => { 
+
+        let message = session.message;
+        let convId  = message.address.conversation.id
+
+        // Clear all delayed messages
+        clearHandles(convId);
+
+        // Handle Prompts
+        if (hasPrompt(convId, message)) return;
+
+        // Add User to data stream
+        // (not in context because some node may access to user properties)
+        // MUST be overrided by storage nodes 
+        let usr = {"id": message.user.id, address: message.address, profile: {}}
+
+        // Add context obejct to store the lifetime of the stream
+        let context = BOT_CONTEXT[Date.now()] = {};
+        context.bot     = bot;
+        context.session = session;
+
+        // Send message
+        let data = { "context": context, "message": message, "payload": message.text, "user": usr }
+        callback(undefined, data, 'received');
+
+    }]);
+}
+
+// ------------------------------------------
+//  MESSAGES
+// ------------------------------------------
+
 /**
  * Multi purpose function can be called
  * - with ONLY a 'text' attribute to create a text (raw) message

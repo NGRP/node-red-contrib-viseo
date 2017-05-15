@@ -16,7 +16,6 @@ const route = (callback, options, server) => {
 
     // Add ChatBot connector
     let mscfg = {};
-
     if (opt.appId){
         mscfg.appId       = opt.appId
         mscfg.appPassword = opt.appPassword
@@ -24,12 +23,17 @@ const route = (callback, options, server) => {
         mscfg.appId       = CONFIG.microsoft.bot.appId
         mscfg.appPassword = CONFIG.microsoft.bot.appPassword
     }
+
     let connector = new builder.ChatConnector(mscfg);
-
     server.post('/api/v1/messages', connector.listen());
+    bot = bindConnector(connector, options);
 
+    callback(undefined, bot);
+};
+
+const bindConnector = exports.bindConnector = (connector, options) => {
     // Build new bot
-    bot = new builder.UniversalBot(connector, {
+    let bot = new builder.UniversalBot(connector, {
         localizerSettings: {
             botLocalePath: "./locale",
             defaultLocale: options.defaultLocale || "fr_FR"
@@ -47,8 +51,8 @@ const route = (callback, options, server) => {
     bot.on('send',     (msg) => { info("Message outgoing:" + JSON.stringify(msg)); })
     bot.on('error',    (err) => { info("Message error:"    + JSON.stringify(err)); }) 
 
-    callback(undefined, bot);
-};
+    return bot;
+}
 
 let server;
 const createServer = (callback, options, RED) => {

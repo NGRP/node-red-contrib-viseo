@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-botbuilder",
-    "version"       : "0.1.8",
+    "version"       : "0.2.8",
     "description"   : "A MS BotBuilder implementation for Node-RED",
     "dependencies"  : {
         "botbuilder": "^3.3.3",
@@ -12,6 +12,9 @@
         "node-xlsx" : "^0.7.4",
         "mustache"  : "^2.3.0",
         "request-promise": "^4.1.1",
+        "wechat"    : "^2.0.3",
+        "wechat-api": "^1.28.0",
+        "lodash"    : "^4.15.0",
         "node-red-viseo-helper" : "*"
     },
     "repository" : {
@@ -25,6 +28,7 @@
             "msbot-send-card":   "nodes/send/msbot-send-card.js",
             "msbot-nlp-luis":    "nodes/nlp/msbot-nlp-luis.js",
             "msbot-connect":     "nodes/connect/msbot-connect.js",
+            "msbot-wechat":      "nodes/connect/msbot-wechat.js",
             "msbot-profile":     "nodes/connect/msbot-profile.js",
             "msbot-event":       "nodes/connect/msbot-event.js",
             "msbot-continue":    "nodes/connect/msbot-continue.js",

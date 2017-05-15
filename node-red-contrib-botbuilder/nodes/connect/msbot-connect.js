@@ -19,7 +19,6 @@ const server   = require('../../lib/server.js');
 // SERVER
 // ------------------------------------------
 
-let BOT_CONTEXT = {};
 const startServer = (node, config, RED) => {
 
     server.start((err, bot) => {
@@ -31,54 +30,13 @@ const startServer = (node, config, RED) => {
         }
         node.status({fill:"green", shape:"dot", text:"connected"});
 
-        // CleanUp context
-        BOT_CONTEXT = {}
-
-        // Greetings
-        bot.on('contactRelationUpdate', (message) => { 
-            if (message.action !== 'add') { /* delete user data */ return; }
-            
-            // Add User to data stream
-            // (not in context because some node may access to user properties)
-            // MUST be overrided by storage nodes 
-            var usr = {"id": message.user.id, profile: {}}
-
-            // Add context obejct to store the lifetime of the stream
-            var context = BOT_CONTEXT[Date.now()] = {};
-            context.bot = bot;
-
-            // Send 
-            let data = { "context": context, "message": message, "user": usr, "fmsg": config.fmsg}
-            event.emit('greeting', data, node, config);
-            node.send([data, undefined])
-         });
-
         // Root Dialog
-        bot.dialog('/', [(session) => { 
-            let message = session.message
-            let convId  = message.address.conversation.id
-
-            // Clear all delayed messages
-            msbot.clearTimeout(convId);
-
-            // Handle Prompts
-            if (msbot.hasPrompt(convId, message)) return;
-
-            // Add User to data stream
-            // (not in context because some node may access to user properties)
-            // MUST be overrided by storage nodes 
-            let usr = {"id": message.user.id, address: message.address, profile: {}}
-
-            // Add context obejct to store the lifetime of the stream
-            var context = BOT_CONTEXT[Date.now()] = {};
-            context.bot     = bot;
-            context.session = session;
-
-            // Send message
-            let data = { "context": context, "message": message, "payload": message.text, "user": usr, "fmsg": config.fmsg }
-            event.emit('received', data, node, config);
-            node.send([undefined, data])
-        }]);
+        msbot.bindDialogs(bot, (err, data, type) => {
+            event.emit(type, data, node, config);
+            if (type === 'received') {
+                return node.send(data)
+            }
+        });
 
     }, config, RED);
 }
@@ -99,7 +57,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
         config.port = parseInt(config.port);
-	    config.fmsg = ("undefined" == config.fmsg) ? "markdown" : config.fmsg;
         startServer(node, config, RED);
         this.on('close', (done) => { stopServer(done) });
     }
