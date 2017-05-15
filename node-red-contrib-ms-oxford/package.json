@@ -18,7 +18,8 @@
             "ms-video-face-track":   "node-video-face-track.js",
             "ms-vision-face-detect": "node-vision-face-detect.js",
             "ms-speech-text":        "node-speech-text.js",
-            "ms-luis":               "node-luis.js"
+            "ms-luis":               "node-luis.js",
+            "ms-qna":                "node-qna.js"
         }
     }
 }
