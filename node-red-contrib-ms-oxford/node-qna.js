@@ -1,5 +1,6 @@
 const request = require('request');
 const helper  = require('node-red-viseo-helper');
+const Entities = require('html-entities').XmlEntities;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -56,8 +57,10 @@ const input = (node, data, config) => {
         if(json.Error) {
             return node.error(json.Error.Code + ' : ' + json.Error.Message);
         }
-        data.qna  = json; 
-        data.payload = json.answers[0].answer;
+        data.qna  = json;
+
+        const entities = new Entities();
+        data.payload = entities.decode(json.answers[0].answer);
         node.send(data);
     });
 
