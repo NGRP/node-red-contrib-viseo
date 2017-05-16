@@ -128,7 +128,10 @@ const xlsx2json = (inputFile, tabIndex) => {
         let obj = { '_id' : '' + (cptId++) }; // Generate an NeDB id
         for(let i = 0 ; i < first.length ; i++){
             let col  = ((first[i] || '') + '').trim(); // Cleanup
-            obj[col] = ((row[i]   || '') + '').trim(); // Cleanup
+            obj[col] = row[i] || ''; // Cleanup
+            if(typeof obj[col] === 'string') {
+                obj[col] = obj[col].trim();
+            }
         }
         rows.push(obj)
     }
