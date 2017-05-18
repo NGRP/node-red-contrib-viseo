@@ -40,6 +40,7 @@
             prompt:       { value: undefined },
             promptText:   { value: undefined },
             delay:        { value: 0 },
+            assert:       { value: undefined }, 
             sendType:     { value: "text" },
             text:         { value: undefined },
             random:       { value: undefined },
@@ -219,8 +220,12 @@
     <div class="form-row">
         <label for="node-input-repeat"><i class="icon-tag"></i> Repeat</label>
         <input type="text" id="node-input-repeat" placeholder="0">
-        <div style="padding-left: 104px;"><em>Node output can't directly loop to it's own input</em></div>
+        <div style="padding-left: 104px;font-size: 12px;"><em>Node output can't directly loop to it's own input</em></div>
     </div>
+    <div class="form-row">
+        <label for="node-input-assert"><i class="icon-tag"></i> Assert</label>
+        <input type="text" id="node-input-assert" placeholder="Regexp">
+        <div style="font-size: 12px;padding-left: 104px;"><em>(prompt text populated only if value matches regexp)</em></div>
     </div>
     <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Send format</h4>
 

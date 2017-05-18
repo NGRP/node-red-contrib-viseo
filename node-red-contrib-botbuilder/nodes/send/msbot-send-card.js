@@ -79,6 +79,8 @@ const input = (node, data, config) => {
 
     // Send card message (see msbot.getMessage() documentation)
     else {
+
+
         outMsg = msbot.getMessage({
             type: config.sendType,
             quicktext : marshall(locale, config.quicktext, data, ''),
@@ -92,7 +94,6 @@ const input = (node, data, config) => {
         if (config.carousel){
             let carousel = data.context.carousel = data.context.carousel || [];
             carousel.push(outMsg.data.attachments[0]);
-
             // Forward data without sending anything
             return sendData(node, data, config);
             
@@ -182,16 +183,29 @@ const sendData = (node, data, config) => {
     }
 
 
-    // 1. BUTTONS: the middle outputs
+
     if (config.prompt){
+
+        // 1. BUTTONS: the middle outputs
+        let acceptValue = false;
         let buttons = undefined;
-        if (config.sendType === 'quick')
-            buttons = config.quickreplies
-        else if (config.sendType === 'card')
-            buttons = config.buttons
+
+        if (config.sendType === 'quick') {
+            buttons = config.quickreplies;
+        }
+        else if (config.sendType === 'card') {
+            buttons = config.buttons;
+        }
         
+        //checks whether we should accept the input value
+        if(config.assert) {
+            let regexp = new RegExp(config.assert);
+            acceptValue = regexp.test(data.prompt.text);
+        } else {
+            acceptValue = true;
+        }
         
-        if (config.promptText){ // Save the prompt value to a given attribute
+        if (config.promptText && acceptValue) { // Save the prompt value to a given attribute
             helper.setByString(data, config.promptText, data.prompt.text, (ex) => { node.warn(ex) });
         }
         
@@ -210,11 +224,21 @@ const sendData = (node, data, config) => {
                 } 
             }
         }
-    }
 
-    // 2. EVENTS: Cross Messages
-    if (config.prompt){
-         return event.emitAsync('prompt', data, node, config, () => {  _continue(); });
+        // 2. EVENTS: Cross Messages
+        if(config.assert && acceptValue === false) {
+            
+            event.emitAsync('prompt', data, node, config, () => {
+                event.emitAsync('prompt-unexpected', data, node, config, () => {
+                    _continue();
+                });
+            });
+        } else {
+            event.emitAsync('prompt', data, node, config, () => {  _continue(); });
+
+        }
+
+        return;
     }
     _continue();
 }   
