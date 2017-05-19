@@ -11,9 +11,11 @@ const TYPING_DELAY_CONSTANT = 2000;
 
 const marshall = (locale, str, data, def) => {
     if (!str) return def;
+
     str = i18n.translate(locale, str);
     str = mustache.render(str, data);
     str = helper.resolve(str, data, def);
+
     return str;
 }
 
@@ -144,14 +146,15 @@ const getButtons = (locale, config, data) => {
     
     let buttons = undefined
     if (config.sendType === 'quick'){
-        buttons = config.quickreplies;
+        buttons = JSON.parse(JSON.stringify(config.quickreplies));
     } else if (config.sendType === 'card'){
-        buttons = config.buttons;
+        buttons = JSON.parse(JSON.stringify(config.buttons));
     }
 
     if (!buttons || buttons.length <= 0) return;
     for (let button of buttons){
         if (!button.title || !button.action || !button.value) continue;
+
         button.title  = marshall(locale, button.title,  data, '')
         button.action = marshall(locale, button.action, data, '')
         button.value  = marshall(locale, button.value,  data, '')
