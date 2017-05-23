@@ -165,6 +165,11 @@ const getButtons = (locale, config, data) => {
 
 const sendData = (node, data, config) => {
     let out  = new Array(parseInt(config.outputs || 1));
+    let promptText = undefined;
+
+    if(config.promptText) {
+        promptText = helper.resolve(config.promptText, data, undefined);
+    }
 
     let _continue = () => {
         // 3. REPEAT: the latest output
@@ -208,8 +213,8 @@ const sendData = (node, data, config) => {
             acceptValue = true;
         }
         
-        if (config.promptText && acceptValue) { // Save the prompt value to a given attribute
-            helper.setByString(data, config.promptText, data.prompt.text, (ex) => { node.warn(ex) });
+        if (promptText && acceptValue) { // Save the prompt value to a given attribute
+            helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
         }
         
         if (buttons){
@@ -219,7 +224,7 @@ const sendData = (node, data, config) => {
 
 
                 if (!rgxp.test(data.prompt.text)) continue;
-                if (config.promptText){ helper.setByString(data, config.promptText, button.value, (ex) => { node.warn(ex) }) }
+                if (promptText){ helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) }) }
 
                 if (config.btnOutput || config.quickOutput){ 
                     out[i+1] = data; 
@@ -229,6 +234,7 @@ const sendData = (node, data, config) => {
         }
 
         // 2. EVENTS: Cross Messages
+        config.promptText = promptText;
         if(config.assert && acceptValue === false) {
             
             event.emitAsync('prompt', data, node, config, () => {
