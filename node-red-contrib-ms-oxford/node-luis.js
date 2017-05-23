@@ -30,8 +30,8 @@ const start = (node, config) => {
     }
 
     client = LUISClient({
-        appId:  config.appId,
-        appKey: config.subKey,
+        appId:  config.appId.trim(),
+        appKey: config.subKey.trim(),
         verbose: true
     });
     node.status({});
