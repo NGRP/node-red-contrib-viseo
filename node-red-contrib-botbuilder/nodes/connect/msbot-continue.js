@@ -18,7 +18,7 @@ module.exports = function(RED) {
 const input = (node, data, config) => {
     if (!data._tmp) return;
     
-    let callback = data._tmp.event_emitter;
+    let callback = data._tmp.event_emitter.callback;
     if (!callback) return;
     
     delete data._tmp.event_emitter;

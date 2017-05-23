@@ -23,6 +23,6 @@ exports.emitAsync  = (type, data, node, config, callback) => {
     }
 
     data._tmp = data._tmp || {}
-    data._tmp['event_emitter'] = callback   // Only one in a flow otherwise might loose it
+    data._tmp['event_emitter'] = { callback : callback, config : config };   // Only one in a flow otherwise might loose it
     emitter.emit(type, data, node, config);
 }
