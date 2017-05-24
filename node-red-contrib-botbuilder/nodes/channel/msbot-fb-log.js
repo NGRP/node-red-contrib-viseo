@@ -47,7 +47,10 @@ const getAccessToken = (client_id, client_secret, callback) => {
         'url' : FB_URL_ACCESS + 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=client_credentials'
     }, function (err, response, body) { 
         if (err) return callback(err);
-        callback(undefined, body.substring(13)); //access_token=
+
+        let result = JSON.parse(body);
+
+        callback(undefined, result.access_token);
     })
 }
 
