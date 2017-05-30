@@ -20,6 +20,9 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+
+        this.config = RED.nodes.getNode(config.config);
+
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("fb-profile", register, {});
@@ -51,7 +54,7 @@ const input = (node, data, config) => {
         return node.send(data);
     }
 
-    getFBProfile(user.id, config, (json) => {
+    getFBProfile(node, user.id, config, (json) => {
         node.log('Update Facebook profile: ' + user.id);
         if (undefined === json) return node.send(data); 
         extend(true, user.profile, json);
@@ -65,20 +68,22 @@ const input = (node, data, config) => {
 //  FACEBOOK API
 // --------------------------------------------------------------------------
 
-const getPageToken = (config) => {
-    if (config && config.pageToken)
-        return config.pageToken;
-
+const getPageToken = (node) => {
+    
     if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
         return CONFIG.facebook.pageToken;
+
+    return node.config.accessToken;
+
 }
 
 const URL = "https://graph.facebook.com/v2.8/";
 const QS  = "?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=";
-const getFBProfile = exports.getUserProfile = (uid, config, callback) => {
+
+const getFBProfile = exports.getUserProfile = (node, uid, config, callback) => {
     if (undefined === uid) return callback();
 
-    let token = getPageToken(config);
+    let token = getPageToken(node);
     if (!token) return callback();
 
     let url = URL + uid + QS + token;
