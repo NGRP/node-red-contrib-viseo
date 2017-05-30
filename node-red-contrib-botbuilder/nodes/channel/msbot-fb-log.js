@@ -10,52 +10,37 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
+
+        this.config = RED.nodes.getNode(config.config);
         this.on('input', (data) => { input(node, data, config)  });
     }
-    RED.nodes.registerType("fb-log", register, {});
+    RED.nodes.registerType("fb-log", register);
 }
 
 
 const input = (node, data, config) => {
     
-    let clientId     = helper.resolve(config.clientId,  data, config.clientId);
-    let clientSecret = helper.resolve(config.clientSecret, data, config.clientSecret);
+    
+    let accessToken  = node.config.token;
+    let appId        = node.config.appId;
+    let pageId       = node.config.pageId;
 
-    let appId        = helper.resolve(config.appId,  data, config.appId);
-    let pageId       = helper.resolve(config.pageId, data, config.pageId);
-    let userId       = helper.resolve(config.userId, data, config.userId);
+    let userId       = config.userId || 'user.id';
+        userId       = helper.getByString(data, userId, userId);
 
     let eventLog     = config.log || 'payload';
         eventLog     = helper.getByString(data, eventLog, eventLog);
 
-    getAccessToken(clientId, clientSecret, (err, access_token) => {
+    sendCustomEvent(appId, pageId, userId, accessToken, eventLog, (err, body) => {
         if (err) return node.error(err);
-
-        sendCustomEvent(appId, pageId, userId, access_token, eventLog, (err, body) => {
-            if (err) return node.error(err);
-            node.log(body);
-        })
+        node.log(body);
     })
 
     node.send(data);
 }
 
-
-const FB_URL_ACCESS = 'https://graph.facebook.com/oauth/access_token?'
-const getAccessToken = (client_id, client_secret, callback) => {
-    request({
-        'url' : FB_URL_ACCESS + 'client_id=' + client_id + '&client_secret=' + client_secret + '&grant_type=client_credentials'
-    }, function (err, response, body) { 
-        if (err) return callback(err);
-
-        let result = JSON.parse(body);
-
-        callback(undefined, result.access_token);
-    })
-}
-
-const sendCustomEvent = (appId, pageId, userId, access_token, eventLog, callback) => {
-    let url = 'https://graph.facebook.com/' + appId + '/activities?access_token='+access_token;
+const sendCustomEvent = (appId, pageId, userId, accessToken, eventLog, callback) => {
+    let url = 'https://graph.facebook.com/' + appId + '/activities?access_token='+accessToken;
 
     request({ 
         'url': url,'method': 'POST',

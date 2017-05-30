@@ -4,10 +4,7 @@
         color: '#3FADB5',
         defaults: { 
             name:         { value: undefined },
-            clientId:     { value: undefined },
-            clientSecret: { value: undefined },
-            appId:        { value: undefined },
-            pageId:       { value: undefined },
+            config:  { value: undefined, type: 'facebook-config'}, 
             userId:       { value: undefined },
             log:          { value: undefined }
         },
@@ -26,28 +23,16 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-clientId"><i class="icon-tag"></i> Client ID</label>
-        <input type="text" id="node-input-clientId" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-input-clientSecret"><i class="icon-tag"></i> Client Secret</label>
-        <input type="text" id="node-input-clientSecret" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-input-appId"><i class="icon-tag"></i> App ID</label>
-        <input type="text" id="node-input-appId" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-input-pageId"><i class="icon-tag"></i> Page ID</label>
-        <input type="text" id="node-input-pageId" placeholder="">
+        <label for="node-input-config"><i class="icon-tag"></i> Credentials</label>
+        <input type="text" id="node-input-config" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-input-userId"><i class="icon-tag"></i> User ID</label>
-        <input type="text" id="node-input-userId" placeholder="">
+        <input type="text" id="node-input-userId" placeholder="user.id">
     </div>
     <div class="form-row">
         <label for="node-input-log"><i class="icon-tag"></i> Event Log</label>
-        <input type="text" id="node-input-log" placeholder="">
+        <input type="text" id="node-input-log" placeholder="payload">
     </div>
 </script>
 

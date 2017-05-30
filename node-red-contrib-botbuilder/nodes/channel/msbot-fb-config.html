@@ -1,0 +1,33 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-config',{
+        category: 'config',
+        defaults: {
+            name:         { value: undefined },
+            token:        { value: undefined, required: true },
+            appId:        { value: undefined, required: true },
+            pageId:       { value: undefined, required: true },
+        },
+        label: function() {
+            return this.name || "Facebook config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="facebook-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="icon-tag"></i> Access Token</label>
+        <input type="text" id="node-config-input-token" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-appId"><i class="icon-tag"></i> App ID</label>
+        <input type="text" id="node-config-input-appId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-pageId"><i class="icon-tag"></i> Page ID</label>
+        <input type="text" id="node-config-input-pageId" placeholder="">
+    </div>
+</script>
