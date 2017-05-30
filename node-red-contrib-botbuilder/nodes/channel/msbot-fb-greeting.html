@@ -35,10 +35,10 @@
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults:  { 
-            name:      { value: undefined },
-            pageToken: { value: undefined },
-            greeting:  { value: undefined },
-            buttons:   { value: undefined }
+            name:           { value: undefined },
+            config:    { value: undefined, type: 'facebook-config' },
+            greeting:       { value: undefined },
+            buttons:        { value: undefined }
         },
         inputs:  0,
         outputs: 0,
@@ -82,8 +82,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-pageToken"><i class="icon-tag"></i> PageToken</label>
-        <input type="text" id="node-input-pageToken" placeholder="">
+        <label for="node-input-config"><i class="icon-tag"></i> Credentials</label>
+        <input type="text" id="node-input-config" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-input-greeting"><i class="icon-tag"></i> Greeting</label>

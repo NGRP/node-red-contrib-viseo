@@ -17,6 +17,9 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this; 
         start(RED, node, config);
+
+        this.config = RED.nodes.getNode(config.config);
+
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("fb-greeting", register, {});
@@ -70,12 +73,12 @@ const start = (RED, node, config) => {
 //  FACEBOOK API
 // --------------------------------------------------------------------------
 
-const getPageToken = (config) => {
-    if (config && config.pageToken)
-        return config.pageToken;
+const getPageToken = (node) => {
 
     if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
         return CONFIG.facebook.pageToken;
+
+    return node.config.accessToken;
 }
 
 let GREETING_MSG = {
@@ -100,7 +103,7 @@ const PERSISTANT_MENU = {
 }
 
 const facebookThreadAPI = (node, config, json) => { 
-    let token = getPageToken(config);
+    let token = getPageToken(node);
     if (!token) return;
 
     request({

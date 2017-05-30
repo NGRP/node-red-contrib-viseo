@@ -21,7 +21,7 @@ module.exports = function(RED) {
 const input = (node, data, config) => {
     
     
-    let accessToken  = node.config.token;
+    let accessToken  = getPageToken(node);
     let appId        = node.config.appId;
     let pageId       = node.config.pageId;
 
@@ -37,6 +37,14 @@ const input = (node, data, config) => {
     })
 
     node.send(data);
+}
+
+const getPageToken = (node) => {
+
+    if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
+        return CONFIG.facebook.pageToken;
+
+    return node.config.accessToken;
 }
 
 const sendCustomEvent = (appId, pageId, userId, accessToken, eventLog, callback) => {
