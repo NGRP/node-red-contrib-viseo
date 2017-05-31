@@ -78,7 +78,7 @@ const getPageToken = (node) => {
     if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
         return CONFIG.facebook.pageToken;
 
-    return node.config.accessToken;
+    return node.config.token;
 }
 
 let GREETING_MSG = {
