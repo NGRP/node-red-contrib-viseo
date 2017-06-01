@@ -224,7 +224,13 @@ const sendData = (node, data, config) => {
 
 
                 if (!rgxp.test(data.prompt.text)) continue;
-                if (promptText){ helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) }) }
+
+                if (promptText){ 
+                    let currentPromptText = helper.getByString(data, promptText, promptText);
+                    if(!currentPromptText) {
+                        helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) }) 
+                    }
+                }
 
                 if (config.btnOutput || config.quickOutput){ 
                     out[i+1] = data; 
