@@ -1,35 +1,5 @@
 <script type="text/javascript">
 
-    var saveButtons = function(buttons, query){
-        $(query).each(function(){
-            var btn = {
-                title :  $(this).find('.node-input-title').val(),
-                action : $(this).find('.node-input-action').val(),
-                value :  $(this).find('.node-input-value').val(),
-            }
-            if (btn.title && btn.value){ buttons.push(btn); }
-        })
-    }
-
-    var setButtons = function(buttons, query, add){
-        var $add = $(add);
-        $add.on('click', function(){
-            var $tmpl = $(query).last();
-            $tmpl.before($tmpl.clone());
-        })
-
-        var $query = $(query);
-        var $tmpl  = $query.last().clone();
-        $query.remove();
-        for (var i = 0 ; i < buttons.length; i++){
-            var $clone = $tmpl.clone();
-            $add.before($clone);
-            $clone.find('.node-input-title').val(buttons[i].title);
-            $clone.find('.node-input-action').val(buttons[i].action);
-            $clone.find('.node-input-value').val(buttons[i].value);
-        }
-        $add.before($tmpl);
-    }
 
     RED.nodes.registerType('fb-greeting',{
         category: 'VISEO_BOT',
@@ -63,12 +33,42 @@
             });
         }},
         oneditprepare: function () {
+
             this.buttons = this.buttons || [];
-            setButtons(this.buttons, '#menu-type .menubt', '#addmenubt');
+
+            var $add = $('#addmenubt');
+            var $query = $('#menu-type .menubt');
+
+            $add.on('click', function() {
+                var $tmpl = $query.last();
+                $tmpl.before($tmpl.clone());
+            });
+
+            var $tmpl = $query.last().clone();
+            $query.remove();
+
+            for (var i = 0 ; i < this.buttons.length; i++) {
+                var $clone = $tmpl.clone();
+                $add.before($clone);
+                $clone.find('.node-input-title').val(this.buttons[i].title);
+                $clone.find('.node-input-action').val(this.buttons[i].action);
+                $clone.find('.node-input-value').val(this.buttons[i].value);
+            }
+            
+            $add.before($tmpl);
+            
         },
         oneditsave: function(){
             this.buttons = [];
-            saveButtons(this.buttons, '#menu-type .menubt')
+
+            $('#menu-type .menubt').each(function(){
+                var btn = {
+                    title :  $(this).find('.node-input-title').val(),
+                    action : $(this).find('.node-input-action').val(),
+                    value :  $(this).find('.node-input-value').val(),
+                }
+                if (btn.title && btn.value){ buttons.push(btn); }
+            });
         },
 
         paletteLabel: "Greeting FB",
