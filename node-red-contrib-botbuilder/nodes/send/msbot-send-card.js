@@ -171,7 +171,7 @@ const sendData = (node, data, config) => {
         promptText = helper.resolve(config.promptText, data, undefined);
     }
 
-    let _continue = () => {
+    let _continue = (data) => {
         // 3. REPEAT: the latest output
         if (config.repeat && config.repeat > 0){
             data._tmp = data._tmp || {}
@@ -243,18 +243,18 @@ const sendData = (node, data, config) => {
         config.promptText = promptText;
         if(config.assert && acceptValue === false) {
             
-            event.emitAsync('prompt', data, node, config, () => {
-                event.emitAsync('prompt-unexpected', data, node, config, () => {
-                    _continue();
+            event.emitAsync('prompt', data, node, config, (data) => {
+                event.emitAsync('prompt-unexpected', data, node, config, (data) => {
+                    _continue(data);
                 });
             });
         } else {
-            event.emitAsync('prompt', data, node, config, () => {  _continue(); });
+            event.emitAsync('prompt', data, node, config, (data) => {  _continue(data); });
 
         }
 
         return;
     }
-    _continue();
+    _continue(data);
 }   
 

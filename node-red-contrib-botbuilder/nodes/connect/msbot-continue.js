@@ -22,5 +22,5 @@ const input = (node, data, config) => {
     if (!callback) return;
     
     delete data._tmp.event_emitter;
-    callback();
+    callback(data);
 }
