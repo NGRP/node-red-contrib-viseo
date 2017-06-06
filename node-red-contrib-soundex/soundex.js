@@ -44,7 +44,8 @@ const start = (node, config) => {
 }
 
 const input = (node, data, config) => { 
-    find(config.confidence, data.payload, (err, score, match) => {
+    let confidence = parseFloat(config.confidence)
+    find(confidence, data.payload, (err, score, match) => {
         if (err) return node.warn(err);
         data.payload = {"match" : match, "score": score};
         node.send(data);
