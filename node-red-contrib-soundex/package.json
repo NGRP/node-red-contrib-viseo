@@ -1,0 +1,20 @@
+{
+    "name"          : "node-red-contrib-viseo-soundex",
+    "version"       : "0.0.1",
+    "description"   : "",
+    "dependencies"  : { 
+        "node-red-viseo-helper" : "*",
+        "clj-fuzzy" : "^0.4.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-soundex"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "soundex": "soundex.js"
+        }
+    }
+}

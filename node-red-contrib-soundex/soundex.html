@@ -1,0 +1,36 @@
+<script type="text/javascript">
+    RED.nodes.registerType('soundex',{
+        category: 'VISEO_NLP',
+        color: '#3FADB5',
+        defaults: { 
+            name :       { value: undefined },
+            confidence : { value: undefined },
+            sheet :      { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "soundex.svg",
+        align: "left",
+        paletteLabel: "Soundex",
+        label: function() { return this.name || "Soundex"; },
+    });
+</script>
+
+<script type="text/x-red" data-template-name="soundex">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-confidence"><i class="icon-tag"></i> Confidence</label>
+        <input type="text" id="node-input-confidence" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sheet"><i class="icon-tag"></i> Sheet ID</label>
+        <input type="text" id="node-input-sheet" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="soundex">
+    <p></p>
+</script>
