@@ -20,8 +20,6 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
     
-    
-    let accessToken  = getPageToken(node);
     let appId        = node.config.appId;
     let pageId       = node.config.pageId;
 
@@ -31,7 +29,7 @@ const input = (node, data, config) => {
     let eventLog     = config.log || 'payload';
         eventLog     = helper.getByString(data, eventLog, eventLog);
 
-    sendCustomEvent(appId, pageId, userId, accessToken, eventLog, (err, body) => {
+    sendCustomEvent(appId, pageId, userId, eventLog, (err, body) => {
         if (err) return node.error(err);
         node.log(body);
     })
@@ -39,16 +37,8 @@ const input = (node, data, config) => {
     node.send(data);
 }
 
-const getPageToken = (node) => {
-
-    if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
-        return CONFIG.facebook.pageToken;
-
-    return node.config.token;
-}
-
-const sendCustomEvent = (appId, pageId, userId, accessToken, eventLog, callback) => {
-    let url = 'https://graph.facebook.com/' + appId + '/activities?access_token='+accessToken;
+const sendCustomEvent = (appId, pageId, userId, eventLog, callback) => {
+    let url = 'https://graph.facebook.com/' + appId + '/activities';
 
     request({ 
         'url': url,'method': 'POST',
