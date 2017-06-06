@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-soundex",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "",
     "dependencies"  : { 
         "node-red-viseo-helper" : "*",

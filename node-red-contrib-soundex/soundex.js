@@ -45,9 +45,9 @@ const start = (node, config) => {
 
 const input = (node, data, config) => { 
     let confidence = parseFloat(config.confidence)
-    find(confidence, data.payload, (err, score, match) => {
+    find(confidence, data.payload, (err, score, match, sdx) => {
         if (err) return node.warn(err);
-        data.payload = {"match" : match, "score": score};
+        data.payload = {"match" : match, "score": score, "sdx" : sdx};
         node.send(data);
     })
     
@@ -66,7 +66,7 @@ const find = (confidence, lexical, callback) => {
       match = cache;
     }
   }
-  callback(undefined, score, match);
+  callback(undefined, score, match, sdx);
 }
 
 // ------------------------------------------
