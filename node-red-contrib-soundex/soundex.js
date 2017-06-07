@@ -36,10 +36,13 @@ const start = (node, config) => {
 
     let url = "https://spreadsheets.google.com/feeds/list/"+config.sheet+"/1/public/full?alt=json"
     sheet2json(url, (rows) => {
-        CACHE = rows
-        for (let cache of CACHE){
-            cache.soundex = soundex(cache.lexical);
-        }
+    	if (rows == undefined) console.log("ERROR!");
+    	else {
+	        CACHE = rows
+	        for (let cache of CACHE){
+	            cache.soundex = soundex(cache.lexical);
+	        }
+    	}
     })
 }
 
@@ -73,13 +76,16 @@ const find = (confidence, lexical, callback) => {
 //  PUBLIC JSON SHEET => ONLY FOR TESTING
 // ------------------------------------------
 
+
+
 var request = require('request');
 var sheet2json = exports.sheet2json = function(url, callback){ console.log(url)
     request({ 'uri': url, 'json': true }, 
     function (err, response, sheet){
-        if (err || response.statusCode != 200) { return callback(); }
+        if (err || response.statusCode != 200 || sheet.feed == undefined) { 
+            return callback(); }
         var json = []; 
-        sheet.feed.entry.forEach(function(row){
+        sheet.feed.entry.forEach( function(row){
             var q = {};
             for (var prop in row) { 
                 if (!row.hasOwnProperty(prop)) { continue; }
@@ -91,6 +97,11 @@ var sheet2json = exports.sheet2json = function(url, callback){ console.log(url)
             }
             json.push(q);
         });
+
         callback(json);
     });
 }
+
+
+
+
