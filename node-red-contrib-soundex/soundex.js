@@ -35,8 +35,9 @@ const start = (node, config) => {
     if (!config.sheet) return;
 
     let url = "https://spreadsheets.google.com/feeds/list/"+config.sheet+"/1/public/full?alt=json"
+
     sheet2json(url, (rows) => {
-    	if (rows == undefined) console.log("ERROR!");
+    	if (rows == undefined) console.log("ERROR with spreadsheet "+url);
     	else {
 	        CACHE = rows
 	        for (let cache of CACHE){
@@ -81,9 +82,10 @@ const find = (confidence, lexical, callback) => {
 var request = require('request');
 var sheet2json = exports.sheet2json = function(url, callback){ console.log(url)
     request({ 'uri': url, 'json': true }, 
-    function (err, response, sheet){
+    function (err, response, sheet){ 
         if (err || response.statusCode != 200 || sheet.feed == undefined) { 
-            return callback(); }
+            return callback(); 
+        }
         var json = []; 
         sheet.feed.entry.forEach( function(row){
             var q = {};
