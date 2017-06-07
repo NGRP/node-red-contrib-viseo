@@ -40,7 +40,7 @@
             var $query = $('#menu-type .menubt');
 
             $add.on('click', function() {
-                var $tmpl = $query.last();
+                var $tmpl = $('#menu-type .menubt').last();
                 $tmpl.before($tmpl.clone());
             });
 
@@ -60,6 +60,7 @@
         },
         oneditsave: function(){
             this.buttons = [];
+            let self = this;
 
             $('#menu-type .menubt').each(function(){
                 var btn = {
@@ -67,7 +68,7 @@
                     action : $(this).find('.node-input-action').val(),
                     value :  $(this).find('.node-input-value').val(),
                 }
-                if (btn.title && btn.value){ this.buttons.push(btn); }
+                if (btn.title && btn.value){ self.buttons.push(btn); }
             });
         },
 
