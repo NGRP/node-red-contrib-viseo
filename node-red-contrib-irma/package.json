@@ -1,0 +1,29 @@
+{
+    "name"          : "node-red-contrib-viseo-irma",
+    "version"       : "0.0.1",
+    "description"   : "",
+    "dependencies"  : { },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/Klervix/node-red-contrib"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "irma-crop-a-face": "node-irma-persons-crop-a-face.js",
+			"irma-human-detection": "node-irma-persons-human-detection.js",
+			"irma-attachment-buffer": "node-irma-tools-attachment-buffer.js",
+			"irma-loop-management": "node-irma-tools-loop-management.js",
+			"irma-create-person": "node-irma-persons-create-person.js",
+			"irma-add-face": "node-irma-persons-add-face.js",
+			"irma-get-human-by-name": "node-irma-persons-get-by-name.js",
+			"irma-delete-person": "node-irma-persons-delete-person.js",
+			"irma-get-description": "node-irma-vision-get-description.js",
+			"irma-draw-faces": "node-irma-persons-draw-faces",
+			"irma-celebrities": "node-irma-vision-celebrities",
+			"irma-create-group": "node-irma-group-create-group",
+			"irma-delete-group": "node-irma-group-delete-group"
+        }
+    }
+}

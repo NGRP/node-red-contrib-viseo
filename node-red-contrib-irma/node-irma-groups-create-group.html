@@ -1,0 +1,43 @@
+<script type="text/javascript">
+    RED.nodes.registerType('irma-create-group',{
+        category: 'VISEO_IRMA',
+        color: '#3FADB5',
+        defaults: { 
+            name:  { value: undefined },
+            group: { value: undefined },
+            key:   { value: undefined }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "irma.svg",
+        align: "left",
+        paletteLabel: "Groups : Create one",
+        label: function() { return this.name || "Create group"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="irma-create-group">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-group"><i class="icon-tag"></i> Group Id</label>
+        <input type="text" id="node-input-group" placeholder="viseoinno">
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Key</label>
+        <input type="text" id="node-input-key" placeholder="Key for MS Face">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="irma-create-group">
+    <p>This node creates a new Person group with the given id.</p>
+    <p>INPUT</p>
+    <p><b>Name :</b> Label of the node.</p>
+    <p><b>Group Id :</b> The ID of the Face Group in MS Face API.</p>
+    <p><b>Key :</b> Face API key (see https://www.microsoft.com/cognitive-services/en-US/subscriptions</p>
+    <p>OUTPUT</p>
+    <p>The msg.payload field contains <b>"OK"</b> if all went well, and the error in the other case.</p>
+
+</script>

@@ -1,0 +1,55 @@
+<script type="text/javascript">
+    RED.nodes.registerType('irma-create-person',{
+        category: 'VISEO_IRMA',
+        color: '#3FADB5',
+        defaults: { 
+            name:   { value: undefined },
+            person: { value: undefined },
+            pname:  { value: undefined },
+            group:  { value: undefined },
+            key:    { value: undefined }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "irma.svg",
+        align: "left",
+        paletteLabel: "Persons : Create one",
+        label: function() { return this.name || "Create person"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="irma-create-person">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-person"><i class="icon-tag"></i> Person</label>
+        <input type="text" id="node-input-person" placeholder="irma.persons[0]">
+    </div>
+    <div class="form-row">
+        <label for="node-input-pname"><i class="icon-tag"></i> Person name</label>
+        <input type="text" id="node-input-pname" placeholder="Pamela">
+    </div>
+    <div class="form-row">
+        <label for="node-input-group"><i class="icon-tag"></i> Group Id</label>
+        <input type="text" id="node-input-group" placeholder="viseoinno">
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Key</label>
+        <input type="text" id="node-input-key" placeholder="Key for MS Face">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="irma-create-person">
+    <p>This node create a new person, if the name of the person does not already exist. 
+    <p>INPUT</p>
+    <p><b>Name :</b> Label of the node.</p>
+    <p><b>Person :</b> Structure of a person, at least contaiing a person Id.</p>
+    <p><b>Person name :</b> Name of the person.</p>
+    <p><b>Group Id :</b> The ID of the Face Group in MS Face API.</p>
+    <p><b>Key :</b> Face API key (see https://www.microsoft.com/cognitive-services/en-US/subscriptions)</p>
+    <p>OUTPUT</p>
+    <p>The msg.payload field contains <b>"OK"</b> if all went well, and the error in the other case.</p>
+    <p>Note that this step should be used after "Human detection" in order to have an array of correct structures, and the names of the unknown persons should be set at 'unknown'. It allows the user to register the known persons.</p>
+</script>

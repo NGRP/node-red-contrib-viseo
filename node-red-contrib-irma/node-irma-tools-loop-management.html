@@ -1,0 +1,46 @@
+<script type="text/javascript">
+    RED.nodes.registerType('irma-loop-management',{
+        category: 'VISEO_IRMA',
+        color: '#3FADB5',
+        defaults: { 
+            name:  { value: undefined },
+            loopvar: { value: undefined },
+            array:   { value: undefined }
+        },
+        inputs:  1,
+        outputs: 2,
+        icon: "irma.svg",
+        align: "left",
+        paletteLabel: "Tools : Loop",
+        label: function() { return this.name || "Loop"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="irma-loop-management">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-loopvar"><i class="icon-tag"></i> Loop variable</label>
+        <input type="text" id="node-input-loopvar" placeholder="i">
+    </div>
+    <div class="form-row">
+        <label for="node-input-array"><i class="icon-tag"></i> Array</label>
+        <input type="text" id="node-input-array" placeholder="irma.persons">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="irma-loop-management">
+    <p>This node helps you to manage your loops.</p>
+    <p>INPUT</p>
+    <p><b>Name :</b> Label of the node.</p>
+    <p><b>Loop variable :</b> Name of your loop variable.</p>
+    <p><b>Array :</b> Array to scan.</p>
+    <p>MANAGEMENT</p>
+    <p><b>OUT[0] :</b> Loop body. CAUTION : It has to be linked to the input of the node.</p>
+    <p><b>OUT[1] :</b> Output to your flow (after the loop execution). </p>
+    <p> Note that informations to be kept during the process loop will be written into irma.loop.[nameOfYourVariable].</p>
+    <p>OUTPUT</p>
+    <p>The msg.payload field contains <b>"OK"</b> if all went well, and the error in the other case.</p>
+</script>
