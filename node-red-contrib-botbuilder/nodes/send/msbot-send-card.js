@@ -67,7 +67,7 @@ const input = (node, data, config) => {
         outMsg = msbot.getMessage({
             "type"   : config.sendType, 
             "text"   : marshall(locale, text, data, ''),
-            "speech" : config.speech
+            "speech" : speech
         });
     }
 
@@ -76,7 +76,7 @@ const input = (node, data, config) => {
         outMsg = msbot.getMessage({
             "type"  : config.sendType, 
             "media" : marshall(locale, config.media, data, ''),
-            "speech": config.speech
+            "speech": speech
         });
     }
 
@@ -87,7 +87,7 @@ const input = (node, data, config) => {
             "text"  : marshall(locale, config.signintext,  data, ''),
             "title" : marshall(locale, config.signintitle, data, ''),
             "url"   : marshall(locale, config.signinurl,   data, ''),
-            "speech": config.speech
+            "speech": speech
         });
     }
 
@@ -101,7 +101,7 @@ const input = (node, data, config) => {
             "subtext" : marshall(locale, config.subtext,   data, ''),
             "attach"  : marshall(locale, config.attach,    data, ''),
             "buttons" : getButtons(locale, config, data),
-            "speech"  : config.speech
+            "speech"  : speech
         }, data);
         
         if (config.carousel){

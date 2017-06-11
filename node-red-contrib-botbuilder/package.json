@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-botbuilder",
-    "version"       : "0.2.32",
+    "version"       : "0.2.33",
     "description"   : "A MS BotBuilder implementation for Node-RED",
     "dependencies"  : {
         "botbuilder": "^3.*.*",

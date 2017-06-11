@@ -127,12 +127,11 @@ const getMessage = (cards, options) => {
     let _speech = '';
     for (let opts of cards) {
         let card = getHeroCard(opts)
-        _speech = opts._speech
         msg.addAttachment(card);
-    }
-    // Set speech value
-    if (msg.speak && options.speech) {
-        msg.speak(options.speech === true ? _speech : options.speech);
+
+        if (msg.speak && opts.speech) {
+            msg.speak(opts.speech === true ? opts._speech : opts.speech);
+        }
     }
 
     return msg;
