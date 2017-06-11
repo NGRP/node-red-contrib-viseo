@@ -236,8 +236,8 @@ const getHeroCard = (opts) => {
     }
 
     // Set speech value
-    if (msg.speak && opts.speech) {
-        msg.speak(opts.speech === true ? speech : opts.speech);
+    if (card.speak && opts.speech) {
+        card.speak(opts.speech === true ? speech : opts.speech);
     }
 
     // Attach Buttons to card

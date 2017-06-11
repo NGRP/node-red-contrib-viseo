@@ -83,10 +83,10 @@ const input = (node, data, config) => {
     // Send media message (see msbot.getMessage() documentation)
     else if (config.sendType === 'signin'){
         outMsg = msbot.getMessage({
-            "type"  :  config.sendType, 
-            "text"  :  marshall(locale, config.signintext,  data, ''),
+            "type"  : config.sendType, 
+            "text"  : marshall(locale, config.signintext,  data, ''),
             "title" : marshall(locale, config.signintitle, data, ''),
-            "url"   :   marshall(locale, config.signinurl,   data, ''),
+            "url"   : marshall(locale, config.signinurl,   data, ''),
             "speech": config.speech
         });
     }
