@@ -154,6 +154,7 @@ const buildRawMessage = (msg, opts) => {
 
     if (opts.type === 'text') {
         msg.text(opts.text);
+        if (msg.speak) msg.speak(opts.text);
         return true;
     }
 
