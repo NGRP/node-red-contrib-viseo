@@ -124,10 +124,17 @@ const getMessage = (cards, options) => {
     }
 
     // Message with HERO 
+    let _speech = '';
     for (let opts of cards) {
         let card = getHeroCard(opts)
+        _speech = opts._speech
         msg.addAttachment(card);
     }
+    // Set speech value
+    if (msg.speak && options.speech) {
+        msg.speak(options.speech === true ? _speech : options.speech);
+    }
+
     return msg;
 };
 
@@ -208,8 +215,8 @@ const buildRawMessage = (msg, opts) => {
 }
 
 const getHeroCard = (opts) => {
-    let card   = new builder.HeroCard();
-    let speech = '';
+    let card     = new builder.HeroCard();
+    opts._speech = '';
 
     // Attach Images to card
     if (!!opts.attach) {
@@ -219,25 +226,20 @@ const getHeroCard = (opts) => {
 
     // Attach Title to card
     if (!!opts.title) {
-        speech += opts.title + ' ';
+        opts._speech += opts.title + ' ';
         card.title(opts.title);
     }
 
     // Attach Subtext, appears just below subtitle, differs from Subtitle in font styling only.
     if (!!opts.subtext) {
-        speech += opts.subtext
+        opts._speech += opts.subtext
         card.text(opts.subtext);
     }
 
     // Attach Subtitle, appears just below Title field, differs from Title in font styling only.
     if (!!opts.subtitle) {
-        speech += opts.subtitle
+        opts._speech += opts.subtitle
         card.subtitle(opts.subtitle);
-    }
-
-    // Set speech value
-    if (card.speak && opts.speech) {
-        card.speak(opts.speech === true ? speech : opts.speech);
     }
 
     // Attach Buttons to card
