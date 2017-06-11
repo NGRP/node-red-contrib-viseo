@@ -146,7 +146,12 @@ const buildRawMessage = (msg, opts) => {
 
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
-        card.text(opts.text)
+        card.text(opts.text);
+        
+        if (msg.speak && opts.speech) { // Set speech value
+            msg.speak(opts.speech === true ? opts.text : opts.speech);
+        }
+
         card.button(opts.title, opts.url)
         msg.addAttachment(card);
         return true;
@@ -154,7 +159,9 @@ const buildRawMessage = (msg, opts) => {
 
     if (opts.type === 'text') {
         msg.text(opts.text);
-        if (msg.speak) msg.speak(opts.text);
+        if (msg.speak && opts.speech) { // Set speech value
+            msg.speak(opts.speech === true ? opts.text : opts.speech);
+        }
         return true;
     }
 
@@ -171,6 +178,9 @@ const buildRawMessage = (msg, opts) => {
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
     if (opts.type === 'quick') {
         msg.text(opts.quicktext);
+        if (msg.speak && opts.speech) { // Set speech value
+            msg.speak(opts.speech === true ? opts.text : opts.speech);
+        }
         msg.data.address = { channelId: 'facebook' };
         const quickRepliesObject = {
             facebook: { quick_replies: [] }
@@ -198,7 +208,8 @@ const buildRawMessage = (msg, opts) => {
 }
 
 const getHeroCard = (opts) => {
-    let card = new builder.HeroCard();
+    let card   = new builder.HeroCard();
+    let speech = '';
 
     // Attach Images to card
     if (!!opts.attach) {
@@ -206,19 +217,27 @@ const getHeroCard = (opts) => {
         card.images([builder.CardImage.create(undefined, url)])
     }
 
+    // Attach Title to card
+    if (!!opts.title) {
+        speech += opts.title + ' ';
+        card.title(opts.title);
+    }
+
     // Attach Subtext, appears just below subtitle, differs from Subtitle in font styling only.
     if (!!opts.subtext) {
+        speech += opts.subtext
         card.text(opts.subtext);
     }
 
     // Attach Subtitle, appears just below Title field, differs from Title in font styling only.
     if (!!opts.subtitle) {
+        speech += opts.subtitle
         card.subtitle(opts.subtitle);
     }
 
-    // Attach Title to card
-    if (!!opts.title) {
-        card.title(opts.title);
+    // Set speech value
+    if (msg.speak && opts.speech) {
+        msg.speak(opts.speech === true ? speech : opts.speech);
     }
 
     // Attach Buttons to card

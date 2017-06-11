@@ -54,6 +54,9 @@ const input = (node, data, config) => {
         })
     }
 
+    // Prepare speech
+    let speech = config.speechText ? marshall(locale, config.speechText, data, '') : config.speech;
+
     // Send text message (see msbot.getMessage() documentation)
     if (config.sendType === 'text'){
         let text = config.text;
@@ -61,28 +64,35 @@ const input = (node, data, config) => {
             let txt = text.split('\n');
             text = txt[Math.round(Math.random() * (txt.length-1))]
         }
-        outMsg = msbot.getMessage({type: config.sendType, "text": marshall(locale, text, data, '')});
+        outMsg = msbot.getMessage({
+            "type"   : config.sendType, 
+            "text"   : marshall(locale, text, data, ''),
+            "speech" : config.speech
+        });
     }
 
     // Send media message (see msbot.getMessage() documentation)
     else if (config.sendType === 'media'){
-        outMsg = msbot.getMessage({type: config.sendType, "media": marshall(locale, config.media, data, '')});
+        outMsg = msbot.getMessage({
+            "type"  : config.sendType, 
+            "media" : marshall(locale, config.media, data, ''),
+            "speech": config.speech
+        });
     }
 
     // Send media message (see msbot.getMessage() documentation)
     else if (config.sendType === 'signin'){
         outMsg = msbot.getMessage({
-            "type":  config.sendType, 
-            "text":  marshall(locale, config.signintext,  data, ''),
-            "title": marshall(locale, config.signintitle, data, ''),
-            "url":   marshall(locale, config.signinurl,   data, ''),
+            "type"  :  config.sendType, 
+            "text"  :  marshall(locale, config.signintext,  data, ''),
+            "title" : marshall(locale, config.signintitle, data, ''),
+            "url"   :   marshall(locale, config.signinurl,   data, ''),
+            "speech": config.speech
         });
     }
 
     // Send card message (see msbot.getMessage() documentation)
     else {
-
-
         outMsg = msbot.getMessage({
             type: config.sendType,
             quicktext : marshall(locale, config.quicktext, data, ''),
@@ -90,7 +100,8 @@ const input = (node, data, config) => {
             "subtitle": marshall(locale, config.subtitle,  data, ''),
             "subtext" : marshall(locale, config.subtext,   data, ''),
             "attach"  : marshall(locale, config.attach,    data, ''),
-            "buttons" : getButtons(locale, config, data)
+            "buttons" : getButtons(locale, config, data),
+            "speech"  : config.speech
         }, data);
         
         if (config.carousel){
@@ -108,6 +119,11 @@ const input = (node, data, config) => {
                 data.context.carousel = []; // clean
             }
         }
+    }
+
+    // Speech Input HINTS
+    if (config.speech && config.prompt && outMsg.inputHint){
+        outMsg.inputHint('expectingInput');
     }
 
     let reply = () => {

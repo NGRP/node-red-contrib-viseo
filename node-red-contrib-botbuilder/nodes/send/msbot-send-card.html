@@ -7,6 +7,8 @@
             name:         { value: undefined },
             prompt:       { value: undefined },
             promptText:   { value: undefined },
+            speech:       { value: undefined },
+            speechText:   { value: undefined },
             delay:        { value: 0 },
             assert:       { value: undefined }, 
             sendType:     { value: "text" },
@@ -214,6 +216,14 @@
     <div class="form-row">
         <label for="node-input-promptText"></label>
         <input type="text" id="node-input-promptText" placeholder="prompt.text">
+    </div>
+    <div class="form-row">
+        <label for="node-input-speech"><i class="icon-tag"></i> Speech</label>
+        <input type="checkbox" style="width: auto;" id="node-input-speech"> <span style="font-size: 12px">(convert text to speech)</span>
+    </div>
+    <div class="form-row">
+        <label for="node-input-speechText"></label>
+        <input type="text" id="node-input-speechText" placeholder="payload">
     </div>
     <div class="form-row">
         <label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
