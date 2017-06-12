@@ -239,7 +239,12 @@ const sendData = (node, data, config) => {
                 let rgxp = new RegExp(button.regexp || button.value, 'i')
 
 
-                if (!rgxp.test(data.prompt.text)) continue;
+                if (!rgxp.test(data.prompt.text)) {
+                    rgxp = new RegExp(button.value, 'i');
+                    if (!rgxp.test(data.prompt.text)) {
+                        continue;
+                    }
+                }
 
                 if (promptText){ 
                     let currentPromptText = helper.getByString(data, promptText, promptText);
