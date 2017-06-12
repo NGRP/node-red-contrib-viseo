@@ -19,7 +19,7 @@ exports.emitAsync  = (type, data, node, config, callback) => {
 
     let listeners = emitter.listeners(type)
     if (!listeners || listeners.length == 0){
-        return callback();
+        return callback(data);
     }
 
     data._tmp = data._tmp || {}
