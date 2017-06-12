@@ -51,12 +51,12 @@ const start = (node, config) => {
     let dbconf = { 'filename': file }
     let callback = undefined;
 
-    if (config.xlsx){
+    if (config.xlsx !== undefined){
         dbconf.inMemoryOnly = true;
         //delete dbconf.filename;
 
         let tab  = parseInt(config.xlsx);
-        let rows = xlsx2json(file, tab); 
+        let rows = xlsx2json(file, tab);
         callback = (db) => {
             db.insert(rows, function (err, newDocs) { 
                 if (err){ error(err); } 
