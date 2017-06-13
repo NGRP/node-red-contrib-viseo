@@ -51,7 +51,7 @@ const start = (node, config) => {
     let dbconf = { 'filename': file }
     let callback = undefined;
 
-    if (config.xlsx !== undefined){
+    if (config.xlsx !== undefined && config.xlsx !== ""){
         dbconf.inMemoryOnly = true;
         //delete dbconf.filename;
 
