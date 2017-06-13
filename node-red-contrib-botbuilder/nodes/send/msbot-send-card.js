@@ -35,11 +35,7 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
     let outMsg  = undefined;
-    let locale  = 'fr_FR';
-    
-    if (data.user && data.user.profile){
-        locale  = data.user.profile.locale;
-    }
+    let locale = getLocale(data);
 
     if (!data.context)
          data.context = {}; // FIXME: Should be set in a global variable
@@ -157,6 +153,16 @@ const input = (node, data, config) => {
     }
 }
 
+const getLocale = (data) => {
+    let locale  = 'fr_FR';
+    
+    if (data.user && data.user.profile && data.user.profile.locale){
+        locale  = data.user.profile.locale;
+    }
+
+    return locale;
+}
+
 const getButtons = (locale, config, data) => {
     if (data.buttons) return data.buttons
     
@@ -174,7 +180,7 @@ const getButtons = (locale, config, data) => {
         button.title  = marshall(locale, button.title,  data, '')
         button.action = marshall(locale, button.action, data, '')
         button.value  = marshall(locale, button.value,  data, '')
-        button.regexp = marshall(locale, button.regexp, data, undefined)
+
     }
     return buttons;
 }
@@ -234,10 +240,12 @@ const sendData = (node, data, config) => {
         }
         
         if (buttons){
+
+            let locale = getLocale(data);
+
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
-                let rgxp = new RegExp(button.regexp || button.value, 'i')
-
+                let rgxp = new RegExp(marshall(locale, button.regexp, data, undefined) || button.value, 'i');
 
                 if (!rgxp.test(data.prompt.text)) {
                     rgxp = new RegExp(button.value, 'i');
