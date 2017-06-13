@@ -247,8 +247,8 @@ const sendData = (node, data, config) => {
                 }
 
                 if (promptText){ 
-                    let currentPromptText = helper.getByString(data, promptText, promptText);
-                    if(!currentPromptText) {
+
+                    if(!config.assert) {
                         helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) }) 
                     }
                 }
