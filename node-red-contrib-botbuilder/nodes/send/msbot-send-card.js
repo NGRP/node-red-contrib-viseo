@@ -256,9 +256,8 @@ const sendData = (node, data, config) => {
 
                 if (promptText){ 
 
-                    if(!config.assert) {
-                        helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) }) 
-                    }
+                    helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) }) 
+                    
                 }
 
                 if (config.btnOutput || config.quickOutput){ 
