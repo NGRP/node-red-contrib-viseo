@@ -30,7 +30,12 @@ const CONTENT_TYPE = {
 const absURL = (url) => {
     if (undefined === url) return url;
     if (url.startsWith('http')) return url;
-    return CONFIG.server.host + ":" + CONFIG.server.port + url;
+
+    if(CONFIG.server === undefined || CONFIG.server.host === undefined) {
+        console.log("To use relative url, please assign server.host in your configuration file");
+        return url;
+    }
+    return CONFIG.server.host + url;
 }
 
 // ------------------------------------------

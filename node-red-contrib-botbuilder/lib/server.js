@@ -58,7 +58,7 @@ let server;
 const createServer = (callback, options, RED) => {
     let opt = options    || {};
     let srv = opt.port ? opt : CONFIG.server;
-    if (!srv){
+    if (!srv || !srv.port){
         console.log('Missing server configuration, fallback on Node-RED server')
         return callback(undefined, RED.httpNode); 
     }
