@@ -73,7 +73,7 @@ const getPageToken = (node) => {
     if (CONFIG && CONFIG.facebook && CONFIG.facebook.pageToken)
         return CONFIG.facebook.pageToken;
 
-    return node.config.token;
+    return node.config.credentials.token;
 
 }
 

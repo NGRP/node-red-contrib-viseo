@@ -17,8 +17,11 @@
             name:          { value: undefined },
             project:       { value: undefined },
             port:          { value: undefined },
-            appId:         { value: undefined },
-            appPassword:   { value: undefined },
+
+        },
+        credentials: {
+            appId:         { type : "text" },
+            appPassword:   { type : "text" },
         },
         inputs:0,
         outputs:1,
@@ -45,11 +48,11 @@
     </div>
     <div class="form-row">
         <label for="node-input-appId"><i class="icon-tag"></i> AppId</label>
-        <input type="text" id="node-input-appId" placeholder="">
+        <input type="text" id="node-input-appId">
     </div>
     <div class="form-row">
         <label for="node-input-appPassword"><i class="icon-tag"></i> AppPass</label>
-        <input type="text" id="node-input-appPassword" placeholder="">
+        <input type="text" id="node-input-appPassword">
     </div>
 </script>
 

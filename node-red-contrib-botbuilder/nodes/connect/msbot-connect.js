@@ -53,12 +53,25 @@ const stopServer = (done) => {
 
 module.exports = function(RED) {
     logger.init(RED);
+
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        config.port = parseInt(config.port);
+        
+        if(config.port) {
+            config.port = parseInt(config.port);
+        }  else {
+            config.port = undefined;
+        }
+
+        config.appId = node.credentials.appId;
+        config.appPassword = node.credentials.appPassword;
+
         startServer(node, config, RED);
         this.on('close', (done) => { stopServer(done) });
     }
-    RED.nodes.registerType("bot", register, {});
+    RED.nodes.registerType("bot", register, { credentials : {
+        appId:         { type : "text" },
+        appPassword:   { type : "text" }
+    }});
 }

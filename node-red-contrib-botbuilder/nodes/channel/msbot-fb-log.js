@@ -20,8 +20,8 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
     
-    let appId        = node.config.appId;
-    let pageId       = node.config.pageId;
+    let appId        = node.config.credentials.appId;
+    let pageId       = node.config.credentials.pageId;
 
     let userId       = config.userId || 'user.id';
         userId       = helper.getByString(data, userId, userId);

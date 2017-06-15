@@ -2,10 +2,12 @@
     RED.nodes.registerType('facebook-config',{
         category: 'config',
         defaults: {
-            name:         { value: undefined },
-            token:        { value: undefined, required: true },
-            appId:        { value: undefined, required: true },
-            pageId:       { value: undefined, required: true },
+            name:         { value: undefined }
+        },
+        credentials: {
+            token:        { type: "text" },
+            appId:        { type: "text" },
+            pageId:       { type: "text" },
         },
         label: function() {
             return this.name || "Facebook config";
