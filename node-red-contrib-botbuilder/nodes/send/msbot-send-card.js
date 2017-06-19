@@ -229,7 +229,7 @@ const sendData = (node, data, config) => {
         
         //checks whether we should accept the input value
         if(config.assert) {
-            let regexp = new RegExp(config.assert);
+            let regexp = new RegExp(config.assert, 'i');
             acceptValue = regexp.test(data.prompt.text);
         } else {
             acceptValue = true;
@@ -254,10 +254,11 @@ const sendData = (node, data, config) => {
                     }
                 }
 
-                if (promptText){ 
+                //the value was accepted for at least one button
+                acceptValue = true;
 
-                    helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) }) 
-                    
+                if (promptText){ 
+                    helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) });
                 }
 
                 if (config.btnOutput || config.quickOutput){ 
