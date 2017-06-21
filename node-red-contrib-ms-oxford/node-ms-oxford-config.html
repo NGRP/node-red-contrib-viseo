@@ -1,0 +1,28 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-oxford-config',{
+        category: 'config',
+        defaults: {
+            name:         { value: undefined },
+            appId:        { value: undefined, required: true },
+            appKey:       { value: undefined, required: true },
+        },
+        label: function() {
+            return this.name || "MS Cognitive Services config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-oxford-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-appId"><i class="icon-tag"></i> App ID</label>
+        <input type="text" id="node-config-input-appId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-appKey"><i class="icon-tag"></i> App Key</label>
+        <input type="text" id="node-config-input-appKey" placeholder="">
+    </div>
+</script>
