@@ -33,6 +33,19 @@ module.exports = function(RED) {
     RED.nodes.registerType("send-card", register, {});
 }
 
+let buttonsStack = {
+    _stack: [],
+    push: function(buttons) {
+        this._stack = this._stack.concat(buttons);        
+    },
+    popAll: function() {
+        let buttons = this._stack;       
+
+        this._stack = []; 
+        return buttons;
+    }
+};
+
 const input = (node, data, config) => {
     let outMsg  = undefined;
     let locale = getLocale(data);
@@ -89,6 +102,9 @@ const input = (node, data, config) => {
 
     // Send card message (see msbot.getMessage() documentation)
     else {
+
+        let buttons = getButtons(locale, config, data);
+
         outMsg = msbot.getMessage({
             type: config.sendType,
             quicktext : marshall(locale, config.quicktext, data, ''),
@@ -96,9 +112,11 @@ const input = (node, data, config) => {
             "subtitle": marshall(locale, config.subtitle,  data, ''),
             "subtext" : marshall(locale, config.subtext,   data, ''),
             "attach"  : marshall(locale, config.attach,    data, ''),
-            "buttons" : getButtons(locale, config, data),
+            "buttons" : buttons,
             "speech"  : speech
         }, data);
+
+        buttonsStack.push(buttons);
         
         if (config.carousel){
             let carousel = data.context.carousel = data.context.carousel || [];
@@ -180,6 +198,7 @@ const getButtons = (locale, config, data) => {
         button.title  = marshall(locale, button.title,  data, '')
         button.action = marshall(locale, button.action, data, '')
         button.value  = marshall(locale, button.value,  data, '')
+        button.regexp  = marshall(locale, button.regexp,  data, '')
 
     }
     return buttons;
@@ -216,17 +235,11 @@ const sendData = (node, data, config) => {
 
     if (config.prompt){
 
-        // 1. BUTTONS: the middle outputs
         let acceptValue = false;
-        let buttons = undefined;
 
-        if (config.sendType === 'quick') {
-            buttons = config.quickreplies;
-        }
-        else if (config.sendType === 'card') {
-            buttons = config.buttons;
-        }
-        
+        // 1. BUTTONS: the middle outputs
+        let buttons = buttonsStack.popAll();
+
         //checks whether we should accept the input value
         if(config.assert) {
             let regexp = new RegExp(config.assert, 'i');
@@ -239,13 +252,12 @@ const sendData = (node, data, config) => {
             helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
         }
         
-        if (buttons){
-
-            let locale = getLocale(data);
+        if (buttons) {
 
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
-                let rgxp = new RegExp(marshall(locale, button.regexp, data, undefined) || button.value, 'i');
+
+                let rgxp = new RegExp(button.regexp || button.value, 'i');
 
                 if (!rgxp.test(data.prompt.text)) {
                     rgxp = new RegExp(button.value, 'i');
