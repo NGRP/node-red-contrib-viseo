@@ -16,9 +16,10 @@ npm install node-red-contrib-viseo-botbuilder
 
 ## Documentation
 
-Configuration can be set in nodes or in a [configuration file](https://gist.github.com/JpEncausse/40a917ade2e044eb5c9f5a5381d886dc).
-A configuration is easier to manage with multiple server. 
-The absolute path to this file must be defined in ENV var `BOTBUILDER_CFG`. 
+Configuration can be set in nodes with data stored in flow.json.
+
+Some data can also be stored is in a [configuration file](https://gist.github.com/JpEncausse/40a917ade2e044eb5c9f5a5381d886dc)
+and set with ENV var `BOTBUILDER_CFG` (requires an absolute path)
 
 ### Get Started
 
@@ -27,12 +28,11 @@ Switch will route to the convenient SendCard according to business logic.
 
 ![Kickstart Nodes](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-botbuilder/doc/node_start.jpg?raw=true)
 
-### Tips & Tricks
+### Requirement
 
-- The BotBuilder require an access to [Microsoft Bot Framework](https://dev.botframework.com/)
-- A new HTTP server is started if config.json has been configured on port 3978 otherwise the Node-RED server is reused.
-- An SSL certificate is required to work and must be declared in config.json OR node-red-config.js (depends if you start a new server)
-- Users' storage is performed by any storage node like NeDB.
+- An access to [Microsoft Bot Framework](https://dev.botframework.com/)
+- An SSL certificate (like Let's Encrypt) declared in node-red-config.js (or a proxy)
+- Storage is performed in memory in NeDB or any other third party database.
 
 ### Multilang
 
@@ -68,6 +68,9 @@ This project is a creation of [VISEO](http://www.viseo.com) Technology.
 - Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
 - Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
+- Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
+
 
 ## Copyright and license
 
