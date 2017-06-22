@@ -13,13 +13,13 @@ npm install node-red-contrib-viseo-ms-graph
 
 ### Register the Application
 
-1. Sign into the App Registration Portal using either your personal or work or school account.
+1. Sign into the [App Registration Portal](https://apps.dev.microsoft.com/) using either your personal or work or school account.
 2. Choose Add an app.
 3. Enter a name for the app, and choose Create application. The registration page displays, listing the properties of your app.
 4. Copy the Application Id. This is the unique identifier for your app.
 5. Under Application Secrets, choose Generate New Password. Copy the password from the New password generated dialog. You'll use the application ID and password (secret) to configure the sample app in the next section.
 6. Under Platforms, choose Add Platform.
-7. Choose Web.
+7. Choose Web. (You already should have Native Platform, otherwise add it too)
 8. Enter https://server.url:1880/callback-auth as the Redirect URI.
 9. Choose Save.
 
