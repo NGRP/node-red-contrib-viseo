@@ -2,7 +2,7 @@
 
 A Node-RED wrapper on top of [Microsoft Bot Builder](https://github.com/Microsoft/BotBuilder) Framework.
 
-![Framework](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-botbuilder/docframework.png?raw=true)
+![Framework](https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/master/node-red-contrib-botbuilder/doc/framework.png)
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
@@ -22,7 +22,7 @@ The absolute path to this file must be defined in ENV var `BOTBUILDER_CFG`.
 
 ### Get Started
 
-Here is a [sample configuration](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-botbuilder/doc/flow-start.json?raw=true) to start you server. 
+Here is a [sample configuration](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-botbuilder/doc/flow-start.json) to start you server. 
 Switch will route to the convenient SendCard according to business logic.
 
 ![Kickstart Nodes](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-botbuilder/doc/node_start.jpg?raw=true)
