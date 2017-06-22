@@ -43,7 +43,7 @@ Each module can be installed using `npm` command.
 npm install node-red-contrib-viseo-{filename}
 ```
 
-#### Install Modules: Template
+#### Templates
 
 Use this [Project Template](http://bot.viseo.io) to get started with a ChatBot
 
