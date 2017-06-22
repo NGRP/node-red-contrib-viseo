@@ -14,18 +14,6 @@ npm install node-red-contrib-viseo-botbuilder
 
 ## Documentation
 
-| Node        | Description                                |
-| ----------- |--------------------------------------------|
-| Bot         | Microsoft BotBuilder Server                |
-| Send Card   | Send a reply message to the user           |
-| Luis        | Query MS LUIS and return first intent      |
-| Event       | Handle bot's event like replies            |
-| Profile     | Update user's profile from current message |
-| FB Profile  | Update user's profile from facebook data   |
-| FB Greeting | Set Messenger Greeting message             |
-| FB Log      | Send custom events to Facebook analytics   |
-| Attachement | Download message attachements              |
-
 Configuration can be set in nodes or in a [configuration file](https://gist.github.com/JpEncausse/40a917ade2e044eb5c9f5a5381d886dc).
 A configuration is easier to manage with multiple server. 
 The absolute path to this file must be defined in ENV var `BOTBUILDER_CFG`. 

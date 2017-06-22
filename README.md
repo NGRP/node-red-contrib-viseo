@@ -2,21 +2,7 @@
 
 A set Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) Technologies.
 
-
-| Node                                                                                                           | Description |
-| -------------------------------------------------------------------------------------------------------------- |-------------|
-| [api.ai](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-api-ai)             | Wrapper on NLP Api.ai                                      |
-| [blink](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-blink)               | Wrapper on BlinkForHome unnoficial API                     |
-| [botbuilder](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-botbuilder)     | wrapper on top of Microsoft Bot Builder Framework and LUIS |
-| [ffmpeg](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ffmpeg)             | Wrapper on CLI FFmpeg                                      |
-| [file](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-file)                 | Improve i/o and file management                            |
-| [jimp](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-jimp)                 | Wrapper on JIMP library work on images                     |
-| [oxford](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford)          | Wrapper on Microsoft Cognitive Services                    |
-| [nedb](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-nedb)                 | set/get data from NeDB Database                            |
-| [phantomjs](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-phantomjs)       | Snapshot webpage using phantomJS (for graphics)            |
-| [random](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-random)             | Perform random call between outputs                        |
-| [sensit](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-sensit)             | Wrapper on Sensit (Sigfox demo) API v1                     |
-| [socketio](https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-socketio)         | Wrapper on SocketIO to forward a JSON object               |
+![Framework](https://github.com/NGRP/node-red-contrib-viseo/blob/master/doc/framework.png?raw=true)
 
 ## Getting Started
 
@@ -57,6 +43,14 @@ Each module can be installed using `npm` command.
 npm install node-red-contrib-viseo-{filename}
 ```
 
+#### Install Modules: Template
+
+Use this [Project Template](http://bot.viseo.io) to get started with a ChatBot
+
+```
+git clone https://github.com/NGRP/node-red-viseo-bot.git directory
+```
+
 ### Start Node-RED
 
 Start [Node-RED](https://nodered.org/docs/getting-started/running) with a predefined configuration file
@@ -65,15 +59,17 @@ Start [Node-RED](https://nodered.org/docs/getting-started/running) with a predef
 node node-red/red.js
 ```
 
-We used to create a `/data` folder to store all generated files. You should copy `settings.js` 
-to that folder and run Node-RED with `-s` parameter:
+The template store all critical files in `/data` directory. 
+The file `data/node-red-config.js` is a copy of `settings.js` to manage custom configuration.
 
 ```
 node node-red/red.js -s data/node-red-config.js
 ```
 
-See also sample [node-red-conf.js](https://gist.github.com/JpEncausse/1d2e72c65749d7704df59a9c38273f7f). 
-Do not forget to [set a password](http://nodered.org/docs/security) ! Here is a [start.sh](https://gist.github.com/JpEncausse/20af7c946e4bb105ac7da7f24a287ca5)
+This command line is improved to be used with PM2 in `start.sh` and `start.bat`
+
+You MUST update [the password](http://nodered.org/docs/security) defined in the configuration file. 
+
 
 ## Getting Help
 
@@ -83,17 +79,12 @@ For further help, or general discussion, please use the [github issue tracker](h
 
 ## Developers
 
-If you want to run the latest code from git, here's how to get started:
+All framework modules are installed with NPM. 
+Custom private modules should be deployed in a `node-red-contrib` directory. 
+(The project template already contains this directory)
 
-Clone the code in a `node-red-contrib` folder
 
-```
-mkdir node-red-contrib
-git clone https://github.com/NGRP/node-red-contrib-viseo.git
-```
-
-Update `nodesDir` property of [Node-RED configuration](https://nodered.org/docs/configuration) 
-to use absolue path to the `node-red-contrib` folder as a module repository.
+Update `nodesDir` property of [Node-RED configuration](https://nodered.org/docs/configuration) to use absolue path to the `node-red-contrib` folder as a module repository.
 
 ## Contributing
 
@@ -107,4 +98,4 @@ Please report unacceptable behavior to any of the project's core team.
 
 Icons are made by [Freepik](http://www.freepik.com) from [Flaticon](http://www.flaticon.com) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
-Copyright 2016 [VISEO](http://www.viseo.com/) under the Apache 2.0 license.
+Copyright 2016-2017 [VISEO](http://www.viseo.com/) under the Apache 2.0 license.
