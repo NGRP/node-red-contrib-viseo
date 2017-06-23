@@ -28,20 +28,27 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("send-card", register, {});
 }
 
-let buttonsStack = {
-    _stack: [],
-    push: function(buttons) {
-        this._stack = this._stack.concat(buttons);        
-    },
-    popAll: function() {
-        let buttons = this._stack;       
+const buttonsStack = {
 
-        this._stack = []; 
+    push: function(data, buttons) {
+
+        if(data._buttonsStack === undefined) {
+            data._buttonsStack = [];
+        }
+
+        data._buttonsStack = data._buttonsStack.concat(buttons);
+    },
+    popAll: function(data) {
+
+        let buttons = data._buttonsStack;       
+        data._buttonsStack = []; 
+
         return buttons;
     }
 };
@@ -116,9 +123,7 @@ const input = (node, data, config) => {
             "speech"  : speech
         }, data);
 
-        if (config.prompt){
-            buttonsStack.push(buttons);
-        }
+        buttonsStack.push(data, buttons);
         
         if (config.carousel){
             let carousel = data.context.carousel = data.context.carousel || [];
@@ -240,7 +245,7 @@ const sendData = (node, data, config) => {
         let acceptValue = false;
 
         // 1. BUTTONS: the middle outputs
-        let buttons = buttonsStack.popAll();
+        let buttons = buttonsStack.popAll(data);
 
         //checks whether we should accept the input value
         if(config.assert) {
