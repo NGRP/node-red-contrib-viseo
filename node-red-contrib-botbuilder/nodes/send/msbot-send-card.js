@@ -116,7 +116,9 @@ const input = (node, data, config) => {
             "speech"  : speech
         }, data);
 
-        buttonsStack.push(buttons);
+        if (config.prompt){
+            buttonsStack.push(buttons);
+        }
         
         if (config.carousel){
             let carousel = data.context.carousel = data.context.carousel || [];
