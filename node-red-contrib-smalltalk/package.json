@@ -1,0 +1,22 @@
+{
+  "name": "node-red-contrib-viseo-smalltalk",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "@google-cloud/speech": "^0.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Klervix/node-red-contrib"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+	  "smalltalk-types": "viseo-smalltalk-types.js",
+	  "smalltalk-labels": "viseo-smalltalk-labels.js"
+    }
+  }
+}

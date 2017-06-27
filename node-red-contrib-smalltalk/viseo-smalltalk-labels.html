@@ -1,0 +1,42 @@
+<script type="text/javascript">
+    RED.nodes.registerType('smalltalk-labels',{
+        category: 'VISEO_NLP',
+        color: '#3FADB5',
+        defaults: { 
+            name :       { value: undefined },
+            sheet :      { value: undefined, required: true },
+            text :       { value: undefined }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "kws.svg",
+        align: "left",
+        paletteLabel: "Labels",
+        label: function() { return this.name || "Labels"; },
+    });
+</script>
+
+<script type="text/x-red" data-template-name="smalltalk-labels">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sheet"><i class="icon-tag"></i> Sheet ID</label>
+        <input type="text" id="node-input-sheet" placeholder="">
+    <div class="form-row">
+        <label for="node-input-text"><i class="icon-tag"></i> Text</label>
+        <input type="text" id="node-input-text" placeholder="payload">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="smalltalk-labels">
+    <p>This node uses a 3-columns Google sheet to recognize intentions froms words. </p>
+    <p>INPUT</p>
+    <p><b>Name :</b> Label of the node.</p>
+    <p><b>Sheet ID :</b> Sheet ID. First line is : 'intent', 'label' and 'forms'. The 'forms' cell contains all the possible forms, separated with ','.</p>
+    <p><b>! WARNING ! </b> The first one contains the words to match, separated with comas. If one of them is matched, the content of the other columns is available in the payload area. First column should be named 'first'.</p>
+    <p><b>Text :</b> Text to compare.</p>
+    <p>OUTPUT</p>
+    <p>If all went well, the msg.payload field contains <b>the results</b>. If an error occured, the error is displayed in this field.</p>
+</script>
