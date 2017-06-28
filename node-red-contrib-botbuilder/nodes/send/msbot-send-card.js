@@ -139,6 +139,10 @@ const input = (node, data, config) => {
                 outMsg.data.attachments = carousel;
                 data.context.carousel = []; // clean
             }
+
+            if(!config.prompt) {
+                buttonsStack.popAll(data);
+            } //else, buttons popped on prompt
         }
     }
 
@@ -148,6 +152,8 @@ const input = (node, data, config) => {
     }
 
     let reply = () => {
+
+
         if (!data.user) return sendData(node, data, config);
 
         // Event
