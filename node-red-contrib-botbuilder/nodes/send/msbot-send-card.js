@@ -270,10 +270,10 @@ const sendData = (node, data, config) => {
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
 
-                let rgxp = new RegExp(button.regexp || button.value, 'i');
+                let rgxp = new RegExp(button.regexp || '^'+button.value+'$', 'i');
 
                 if (!rgxp.test(data.prompt.text)) {
-                    rgxp = new RegExp(button.value, 'i');
+                    rgxp = new RegExp('^'+button.value+'$', 'i');
                     if (!rgxp.test(data.prompt.text)) {
                         continue;
                     }
