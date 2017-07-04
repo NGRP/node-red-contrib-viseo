@@ -89,7 +89,11 @@ const getFBProfile = exports.getUserProfile = (node, uid, config, callback) => {
     let url = URL + uid + QS + token;
     request(url, (err, response, body) => {
         if (err || response.statusCode !== 200) {
-            error(err);
+            if(err) {
+                error(err);
+            } else {
+                error("Unexpected Facebook profile response code : "+response.statusCode);
+            }
             return callback();
         }
         let json = JSON.parse(body);
