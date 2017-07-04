@@ -58,10 +58,11 @@ var LUISClient = function(initData) {
   validateAppInfoParam(appId, "Application Id");
   validateAppInfoParam(appKey, "Subscription Key");
   verbose = validateBooleanParam(verbose, "Verbose");
-  const LUISURL = "api.projectoxford.ai";
+  const LUISURL = initData.host;
   const LUISPredictMask = "/luis/v2.0/apps/%s?subscription-key=%s&q=%s&verbose=%s";
   const LUISReplyMask = "/luis/v2.0/apps/%s?subscription-key=%s&q=%s&contextid=%s&verbose=%s";
   const LUISVerbose = verbose ? "true" : "false";
+
   return {
     /**
      * Initiates the prediction procedure

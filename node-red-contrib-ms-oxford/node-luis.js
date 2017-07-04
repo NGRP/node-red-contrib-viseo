@@ -10,7 +10,11 @@ const LUISClient = require("./luis");
 module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
+        
+        this.config = RED.nodes.getNode(config.config);
+
         var node = this;
+
         try { start(node, config); } catch (ex){ node.warn(ex) }
         this.on('input', (data)  => { try { input(node, data, config) } catch (ex){ node.warn(ex) }});
         this.on('close', (cb)    => { try { stop(node, cb, config) }    catch (ex){ node.warn(ex) }});
@@ -25,14 +29,15 @@ const stop  = (node, callback, config) => {
 }
 
 const start = (node, config) => {
-    if (!config.appId || !config.subKey){
+    if (!config.config){
         return node.status({fill:"red", shape:"ring", text: 'Missing credential'});
     }
 
-    if(LUISclients[config.appId] === undefined) {
-        LUISclients[config.appId] = LUISClient({
-            appId:  config.appId.trim(),
-            appKey: config.subKey.trim(),
+    if(LUISclients[node.config.credentials.appId] === undefined) {
+        LUISclients[node.config.credentials.appId] = LUISClient({
+            appId:  node.config.credentials.appId,
+            appKey: node.config.credentials.subKey,
+            host: node.config.host,
             verbose: true
         });
     }
@@ -42,7 +47,7 @@ const start = (node, config) => {
 }
 
 const input = (node, data, config) => {
-    let client = LUISclients[config.appId];
+    let client = LUISclients[node.config.credentials.appId];
 
     if (client === undefined) {
         return node.send(data);

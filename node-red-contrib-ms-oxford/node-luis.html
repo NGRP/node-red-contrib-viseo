@@ -4,8 +4,7 @@
         color: '#3FADB5',
         defaults: { 
             name:    { value: undefined },
-            appId:   { value: undefined },
-            subKey:  { value: undefined },
+            config:  { value: undefined, type: "ms-luis-config" }, 
             text:    { value: undefined },
             intent:  { value: undefined },
         },
@@ -23,12 +22,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-appId"><i class="icon-tag"></i> App Id</label>
-        <input type="text" id="node-input-appId" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-input-subKey"><i class="icon-tag"></i> App Key</label>
-        <input type="text" id="node-input-subKey" placeholder="">
+        <label for="node-input-config"><i class="icon-tag"></i> App config</label>
+        <input type="text" id="node-input-config" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-input-text"><i class="icon-tag"></i> Text</label>
