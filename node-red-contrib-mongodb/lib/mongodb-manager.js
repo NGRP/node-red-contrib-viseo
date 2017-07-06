@@ -78,9 +78,17 @@ class MongoDBManager extends DatabaseManager {
     }
 
     find(key, data, config, callback) { 
-	    var collection = this.db.collection(config.collection);
+	    let collection = this.db.collection(config.collection);
 	    collection.find(key).toArray(function(err, documents) {
 	    	callback(err, data, documents);
+	    });
+	}
+
+	update(key, value, data, config, callback) {
+
+		let collection = this.db.collection(config.collection);
+	    collection.updateOne(key, { $set: value }, { upsert: true }, function(err, result) {
+	        callback(err, data, result);
 	    });
 	}
 

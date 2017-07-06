@@ -57,7 +57,7 @@ module.exports = function(RED) {
             this.server.databaseManager.end(done);
         });
        
-       
+
         this.on('input', (data)  => { input(node, data, config) });
 
     }
@@ -101,7 +101,7 @@ const get = function(node, data, config) {
     }
     node.server.databaseManager.find({ id: dbKey }, data, config, function(err, data, results) {
         if (err) {
-            return node.error(err);
+            return error(err);
         }
         if(results) {
             let result = results[0];
@@ -138,9 +138,58 @@ const find = function(node, data, config) {
     }
     node.server.databaseManager.find(dbKey, data, config, function(err, data, results) { 
         if (err) {
-            return node.error(err);
+            return error(err);
         }
         helper.setByString(data, config.value || 'payload', results);
         node.send(data);
     });
 };
+
+const set = (node, data, config) => {
+
+    let dbKey = helper.getByString(data, config.key);
+    let value = helper.getByString(data, config.value);
+    
+    if (!value) {
+        return error('No values: '+ config.value);
+    }
+    
+    value.id = dbKey;
+    value.mdate = Date.now();
+
+    node.server.databaseManager.update({ id: dbKey }, value, data, config, function(err, data, result) {
+        if(err) {
+            error(err);
+        }
+        data.payload = result;      
+        node.send(data);
+    });
+
+};
+
+const update = function(node, data, config) {
+
+    let value = helper.getByString(data, config.value);
+    let dbKey = config.key;
+    
+    if (dbKey.indexOf('{') !== 0) {
+        dbKey = helper.getByString(data, config.key);
+    }
+    
+    if (!value) {
+        node.warn('No values: '+ config.value);
+        node.send(data);
+        return;
+    }
+
+    node.server.databaseManager.update(dbKey, value, data, config, function(err, data, result) {
+        
+        if(err) {
+            error(err);
+        }
+
+        data.payload = result;      
+        node.send(data);
+
+    })
+}
