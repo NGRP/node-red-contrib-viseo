@@ -92,128 +92,25 @@ class MongoDBManager extends DatabaseManager {
 	    });
 	}
 
-   
+	add(values, data, config, callback) {
+	    // Get the documents collection
+	    let collection = db.collection(config.collection);
 
+	    collection.insertMany(values, function(err, result) {
+	    	callback(err, data, result);
+	    });
+
+	}
+
+	remove(key, data, config, callback) {
+	    // Get the documents collection
+	    let collection = db.collection(config.collection);
+	    
+	    collection.deleteOne(key, function(err, result) {
+	        callback(err, data, result);
+	    });    
+
+	}
 };
 
 module.exports = MongoDBManager;
-// ------------------------------------------
-//  GET / SET / ADD / UPDATE / DELETE / FIND
-// ------------------------------------------
-
-/*
-const set = (node, data, config, db) => {
-
-    let dbKey = helper.getByString(data, config.key);
-    let value = helper.getByString(data, config.value);
-    
-    if (!value) {
-        return error('No values: '+ config.value);
-    }
-    
-    value.id = dbKey;
-    value.mdate = Date.now(); 
-
-    var collection = db.collection(node.collection);
-
-    collection.updateOne({ id: dbKey }, { $set: value }, { upsert: true }, function (err, result) {
-        if(err) {
-            error(err);
-        }
-        data.payload = result;      
-        node.send(data);
-    });
-}
-
-const update = (node, data, config, db) => {
-
-    let value = helper.getByString(data, config.value);
-    let dbKey = config.key;
-    
-    if (dbKey.indexOf('{') !== 0) {
-        dbKey = helper.getByString(data, config.key);
-    }
-    
-    if (!value) {
-        node.warn('No values: '+ config.value);
-        node.send(data);
-        return;
-    }
-
-    var collection = db.collection(node.collection);
-
-    collection.updateOne(dbKey, { $set: value }, { upsert: true }, function(err, result) {
-        if(err) {
-            error(err);
-        }
-        data.payload = result;      
-        node.send(data);
-    });
-}
-
-const find = (node, data, config, db) => { 
-    // Kludge test to avoid logs exception for inline JSON
-    
-    let dbKey = config.key;
-    if (dbKey.indexOf('{') !== 0) {
-        dbKey = helper.getByString(data, config.key || 'payload');
-    }
-
-    if (typeof dbKey === 'string'){
-        dbKey = JSON.parse(dbKey);
-    }
-    if (!dbKey) {
-        node.warn('No condition found for search. Do Nothing.');
-        return node.send(data);
-    }
-
-    var collection = db.collection(node.collection);
-
-    collection.find(dbKey).toArray(function(err, documents) { 
-        if (err) return node.error(err);
-
-        helper.setByString(data, config.value || 'payload', documents);
-        node.send(data);
-    });
-}
-
-const add = (node, data, config, db) => {
-    // Get the documents collection
-    let collection = db.collection(node.collection);
-
-    let value = helper.getByString(data, config.value);
-    //check value
-    if(Array.isArray(value) && typeof value[0] === "object" && value !== null) {
-        // Insert some documents
-        collection.insertMany(value, function(err, result) {
-
-            if(err) {
-                error(err);
-            }
-            data.payload = result;
-            node.send(data);
-        });
-    } else {
-        node.warn("Could not insert value. Operation ignored");
-        node.send(data);
-    }
-}
-
-
-const remove = (node, data, config, db) => {
-    // Get the documents collection
-    let collection = db.collection(node.collection);
-    let dbKey = config.key;
-    if (dbKey.indexOf('{') !== 0) {
-        dbKey = helper.getByString(data, config.key || 'payload');
-    }
-
-    collection.deleteOne(dbKey, function(err, result) {
-        if(err) {
-            error(err);
-        }
-        data.payload = result;      
-        node.send(data);
-    });    
-
-}*/

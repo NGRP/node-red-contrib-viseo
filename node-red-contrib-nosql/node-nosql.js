@@ -41,7 +41,7 @@ module.exports = function(RED) {
         }
 
         //the config node is incomplete and doesn't define a database manager
-        if(this.server.databaseManager === undefined) {
+        if(this.server.databaseManager === undefined || this.server.databaseManager instanceof DatabaseManager !== 'DatabaseManager') {
             error("Database Manager for "+config.type+" must be set.");
         }
 
@@ -192,4 +192,40 @@ const update = function(node, data, config) {
         node.send(data);
 
     })
+}
+
+const add = (node, data, config) => {
+
+    let values = helper.getByString(data, config.value);
+    //check value
+    if(Array.isArray(values) && typeof values[0] === "object" && values !== null) {
+        node.server.databaseManager.add(values, data, config, function(err, data, results) {
+            if(err) {
+                error(err);
+            }
+            data.payload = results;
+            node.send(data);
+        });
+       
+    } else {
+        node.warn("Could not insert value. Operation ignored");
+        node.send(data);
+    }
+}
+
+const remove = (node, data, config) => {
+    
+    let dbKey = config.key;
+    if (dbKey.indexOf('{') !== 0) {
+        dbKey = helper.getByString(data, config.key || 'payload');
+    }
+
+    node.server.databaseManager.remove(dbKey, data, config, function(err, data, result) {
+        if(err) {
+            error(err);
+        }
+        data.payload = result;      
+        node.send(data);
+    });
+
 }
