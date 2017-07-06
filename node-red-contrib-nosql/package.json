@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Get/Set content in a NoSQL database",
   "dependencies": {
-    "node-red-viseo-helper": "*"
+    "node-red-viseo-helper": "*",
+    "extend"    : "^3.0.0"
   },
   "repository": {
     "type": "git",

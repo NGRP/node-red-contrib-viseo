@@ -1,6 +1,8 @@
 'use strict';
 
-const helper        = require('node-red-viseo-helper');
+const helper                = require('node-red-viseo-helper');
+const extend                = require('extend');
+const DbSelectorFactory     = require('./lib/database-selector.js');
 
 // --------------------------------------------------------------------------
 //  LOGS
@@ -20,33 +22,43 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+        
+        node.status({});    
 
-        if(config["server-mongo"] !== undefined) {
-            this.server = RED.nodes.getNode(config["server-mongo"]);
+
+        //select the config node depending on config
+        let selectorFactory = new DbSelectorFactory();
+        let selector = selectorFactory.create(config);
+        if(!selector) {
+            return node.status({ fill: "red", shape: "dot", text: "Database type '"+config["server-type"]+"' is not defined" });
         }
 
-        node.status({});
+        this.server = RED.nodes.getNode(selector.config);
 
-        if(this.server) {
-
-            if(this.server.databaseManager === undefined) {
-                error("Database Manager for "+config.type+" must be set.");
-            }
-
-            let err = this.server.databaseManager.getStatus(config);
-            if(err) {
-                node.status({ fill: "red", shape: "dot", text: err });
-            }
-
-            this.on('close', (done) => {
-                this.server.databaseManager.end(done);
-            });
-           
-        } else {
+        //the config node can't be found in the flow
+        if(!this.server) {
             return node.status({ fill: "red", shape: "dot", text: "Database configuration missing" });
         }
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        //the config node is incomplete and doesn't define a database manager
+        if(this.server.databaseManager === undefined) {
+            error("Database Manager for "+config.type+" must be set.");
+        }
+
+
+        //Some information is missing in the node
+        let err = this.server.databaseManager.getStatus(config);
+        if(err) {
+            node.status({ fill: "red", shape: "dot", text: err });
+        }
+
+        //remember to close connections on node-red stop
+        this.on('close', (done) => {
+            this.server.databaseManager.end(done);
+        });
+       
+       
+        this.on('input', (data)  => { input(node, data, config) });
 
     }
 

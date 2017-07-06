@@ -1,8 +1,6 @@
 'use strict';
 const DatabaseManager = require('node-red-viseo-nosql-manager');
-const helper        = require('node-red-viseo-helper');
 const MongoClient   = require('mongodb').MongoClient;
-const extend        = require('extend');
 
 class MongoDBManager extends DatabaseManager {
 

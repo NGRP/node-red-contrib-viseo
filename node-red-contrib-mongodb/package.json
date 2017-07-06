@@ -3,9 +3,7 @@
   "version": "0.0.1",
   "description": "Get/Set content in MongoDB",
   "dependencies": {
-    "extend"    : "^3.0.0",
-    "mongodb": "^2.2.29",
-    "node-red-viseo-helper": "*"
+    "mongodb": "^2.2.29"
   },
   "repository": {
     "type": "git",

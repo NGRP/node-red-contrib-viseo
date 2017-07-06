@@ -4,9 +4,9 @@
         color: '#3FADB5',
         defaults: { 
             name:               { value: undefined },
-            type:               { value: undefined }, 
             server:             { value: undefined }, 
-            "server-mongo" :    { value: undefined, type: "mongodb" }, 
+            "server-type":      { value: undefined }, 
+            "server-mongodb" :  { value: undefined, type: "mongodb" }, 
             collection:         { value: undefined },
             key:                { value: undefined },
             value:              { value: undefined },
@@ -30,17 +30,14 @@
 
     <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Config</h4>
     <div class="form-row">
-        <label for="node-input-type"><i class="icon-tag"></i> Source</label>
-        <select id="node-input-type" style="width:125px">
-            <option value="nedb">NeDB</option>
+        <label for="node-input-server-type"><i class="icon-tag"></i> Source</label>
+        <select id="node-input-server-type" style="width:125px">
             <option value="mongodb">MongoDB</option>
-            <option value="cosmodb">CosmoDB</option>
-            <option value="firebase">Firebase</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-server-mongo"><i class="icon-tag"></i> Mongo Config</label>
-        <input type="text" id="node-input-server-mongo">
+        <label for="node-input-server-mongo"><i class="icon-tag"></i> Mongo</label>
+        <input type="text" id="node-input-server-mongodb">
     </div>
    
 
@@ -60,12 +57,16 @@
     <div class="form-row">
         <label for="node-input-operation"><i class="icon-tag"></i> Operation</label>
         <select id="node-input-operation" style="width:125px">
-            <option value="set">set</option>
-            <option value="get">get</option>
-            <option value="update">update</option>
-            <option value="find">find</option>
-            <option value="add">add</option>
-            <option value="delete">delete</option>
+            <optgroup>
+                <option value="get">get</option>
+                <option value="set">set</option>
+            </optgroup>
+            <optgroup label="------------">
+                <option value="find">find</option>
+                <option value="update">update</option>
+                <option value="add">add</option>
+                <option value="delete">delete</option>
+            </optgroup>
         </select>
     </div>
     <div class="form-row">
