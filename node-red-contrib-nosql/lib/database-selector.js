@@ -13,11 +13,11 @@ class DatabaseSelector {
 class DatabaseSelectorFactory {
 	
 	constructor() {
-		this.authorizedTypes = ["mongodb"];
 	}
 
-	create(config) {
-		if(this.authorizedTypes.indexOf(config['server-type']) === -1) {
+	create(config, authorizedTypes) {
+
+		if(authorizedTypes.indexOf(config['server-type']) === -1) {
 			console.log(config['server-type']+" is not allowed");
 			return null;
 		}

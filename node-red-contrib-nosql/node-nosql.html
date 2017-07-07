@@ -1,25 +1,72 @@
 <script type="text/javascript">
-    RED.nodes.registerType('nosql',{
-        category: 'VISEO_DB',
-        color: '#3FADB5',
-        defaults: { 
-            name:               { value: undefined },
-            server:             { value: undefined }, 
-            "server-type":      { value: undefined }, 
-            "server-mongodb" :  { value: undefined, type: "mongodb" }, 
-            collection:         { value: undefined },
-            key:                { value: undefined },
-            value:              { value: undefined },
-            operation:          { value: undefined },
-            merge:              { value: undefined }
-        },
-        inputs:  1,
-        outputs: 1,
-        icon: "db.svg",
-        align: "left",
-        paletteLabel: "NoSQL",
-        label: function() { return this.name || this.collection || "no SQL" }
+
+    $.ajax({
+        url: '/nosql/manager/',
+        success: function(result) {
+            var defaults = {
+                name:               { value: undefined },
+                server:             { value: undefined }, 
+                "server-type":      { value: undefined },
+                collection:         { value: undefined },
+                key:                { value: undefined },
+                value:              { value: undefined },
+                operation:          { value: undefined },
+                merge:              { value: undefined }
+            };
+
+
+            var $html = $('<div>'),
+                $script = $("script[data-template-name=nosql]");
+
+            $html.append($script.html());
+            var $select = $html.find('#node-input-server-type'),
+                $selectSection = $html.find('#server-type-section');
+
+            for(var index in result) {
+                var qName = result[index].qName;
+
+                defaults['server-'+qName] = { value: undefined, type: qName };
+
+                $select.append(
+                    '<option value="'+qName+'">'+
+                        result[index].name +
+                    '</option>');
+
+                $choice = $('<div class="form-row server-type" id="section-server-'+qName+'"></div>');
+                $choice.append('<label for="node-input-server-'+qName+'"><i class="icon-tag"></i> '+result[index].name+'</label>');
+                $choice.append('<input type="text" id="node-input-server-'+qName+'">');
+
+                $choice.insertAfter($selectSection);
+            }
+                
+            $script.html($html.html());
+
+            RED.nodes.registerType('nosql', {
+                
+                category: 'VISEO_DB',
+                color: '#3FADB5',
+                defaults: defaults,
+                inputs:  1,
+                outputs: 1,
+                icon: "db.svg",
+                align: "left",
+                paletteLabel: "NoSQL",
+                label: function() { return this.name || this.collection || "no SQL" },
+                oneditprepare: function() {
+                    $('.server-type').hide();
+                    if(this['server-type']) {
+                        $('#node-input-server-type option[value="'+this['server-type']+'"]').prop('selected', true);
+                    }
+
+                    $('#node-input-server-type').on('change', function() {
+                        $('.server-type').hide();
+                        $('#section-server-'+this.value).show();
+                    })
+                }
+            });
+        }
     });
+    
 </script>
 
 <script type="text/x-red" data-template-name="nosql">
@@ -29,15 +76,10 @@
     </div>
 
     <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Config</h4>
-    <div class="form-row">
+    <div class="form-row" id="server-type-section">
         <label for="node-input-server-type"><i class="icon-tag"></i> Source</label>
         <select id="node-input-server-type" style="width:125px">
-            <option value="mongodb">MongoDB</option>
         </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-server-mongo"><i class="icon-tag"></i> Mongo</label>
-        <input type="text" id="node-input-server-mongodb">
     </div>
    
 

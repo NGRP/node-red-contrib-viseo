@@ -1,6 +1,7 @@
 'use strict';
-const DatabaseManager = require('node-red-viseo-nosql-manager');
+const DatabaseManager = require('node-red-viseo-nosql-manager').DbManager;
 const MongoClient   = require('mongodb').MongoClient;
+
 
 class MongoDBManager extends DatabaseManager {
 
@@ -16,6 +17,13 @@ class MongoDBManager extends DatabaseManager {
 
     get database() {
     	return _database;
+    }
+
+    static get definition() {
+        return {
+            name : "MongoDB",
+            qName : "mongodb"
+        };
     }
 
     getStatus(config) {
@@ -67,6 +75,7 @@ class MongoDBManager extends DatabaseManager {
     }
 
     end(callback) {
+    	
     	if(this.db !== null) {
 
 	        this.db.close();
@@ -78,6 +87,7 @@ class MongoDBManager extends DatabaseManager {
     }
 
     find(key, data, config, callback) { 
+
 	    let collection = this.db.collection(config.collection);
 	    collection.find(key).toArray(function(err, documents) {
 	    	callback(err, data, documents);
@@ -93,9 +103,8 @@ class MongoDBManager extends DatabaseManager {
 	}
 
 	add(values, data, config, callback) {
-	    // Get the documents collection
-	    let collection = db.collection(config.collection);
 
+	    let collection = db.collection(config.collection);
 	    collection.insertMany(values, function(err, result) {
 	    	callback(err, data, result);
 	    });
@@ -103,9 +112,8 @@ class MongoDBManager extends DatabaseManager {
 	}
 
 	remove(key, data, config, callback) {
-	    // Get the documents collection
+
 	    let collection = db.collection(config.collection);
-	    
 	    collection.deleteOne(key, function(err, result) {
 	        callback(err, data, result);
 	    });    
