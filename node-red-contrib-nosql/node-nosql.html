@@ -1,5 +1,4 @@
 <script type="text/javascript">
-
     $.ajax({
         url: '/nosql/manager/',
         success: function(result) {
@@ -42,7 +41,7 @@
             $script.html($html.html());
 
             RED.nodes.registerType('nosql', {
-                
+
                 category: 'VISEO_DB',
                 color: '#3FADB5',
                 defaults: defaults,

@@ -4,6 +4,7 @@
   "description": "Get/Set content in a NoSQL database",
   "dependencies": {
     "node-red-viseo-helper": "*",
+    "node-red-contrib-viseo-nosql-manager": "*",
     "extend"    : "^3.0.0"
   },
   "repository": {

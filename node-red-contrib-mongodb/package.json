@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Get/Set content in MongoDB",
   "dependencies": {
-    "mongodb": "^2.2.29"
+    "mongodb": "^2.2.29",
+    "node-red-contrib-viseo-nosql-manager": "*"
   },
   "repository": {
     "type": "git",
