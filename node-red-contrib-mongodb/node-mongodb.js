@@ -1,7 +1,6 @@
 'use strict';
 
 const MongoDBManager = require('./lib/mongodb-manager.js');
-const databaseRegistry = require('node-red-viseo-nosql-manager').dbRegistry;
 
 
 // --------------------------------------------------------------------------
@@ -24,15 +23,13 @@ module.exports = function(RED) {
 
         this.database = config.database;
         this.databaseManager = new MongoDBManager(this);
-        
+
         //remember to close connections on node-red stop
         this.on('close', (done) => {
             this.databaseManager.end(done);
         });
            
     }
-
-    databaseRegistry.register(MongoDBManager);
 
     RED.nodes.registerType("mongodb", register, {
         credentials: {
