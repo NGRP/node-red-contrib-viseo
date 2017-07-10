@@ -2,10 +2,10 @@
 
 A set Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) Technologies.
 
-![Framework](https://github.com/NGRP/node-red-contrib-viseo/blob/master/doc/framework.png?raw=true)
-
 - [Getting started](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started)
 - [FAQ](https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ)
+
+![Framework](https://github.com/NGRP/node-red-contrib-viseo/blob/master/doc/framework.png?raw=true)
 
 ## Getting Help
 
