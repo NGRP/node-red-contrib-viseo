@@ -37,6 +37,10 @@
 
                 $choice.insertAfter($selectSection);
             }
+
+            if(result.length === 0) {
+                $select.replaceWith($('<span>No SQL Manager installed.</span>'));
+            }
                 
             $script.html($html.html());
 
