@@ -1,6 +1,7 @@
 'use strict';
 
 const MongoDBManager = require('./lib/mongodb-manager.js');
+const dbRegistry = require('node-red-viseo-nosql-manager').dbRegistry;
 
 
 // --------------------------------------------------------------------------
@@ -39,6 +40,8 @@ module.exports = function(RED) {
             password:  { type: "text" } 
         }
     });
+
+    dbRegistry.register(MongoDBManager);
 
 
 }
