@@ -55,11 +55,6 @@ module.exports = function(RED) {
             node.status({ fill: "red", shape: "dot", text: err });
         }
 
-        //remember to close connections on node-red stop
-        this.on('close', (done) => {
-            this.server.databaseManager.end(done);
-        });
-       
 
         this.on('input', (data)  => { input(node, data, config) });
 

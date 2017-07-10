@@ -24,6 +24,12 @@ module.exports = function(RED) {
 
         this.database = config.database;
         this.databaseManager = new MongoDBManager(this);
+        
+        //remember to close connections on node-red stop
+        this.on('close', (done) => {
+            this.databaseManager.end(done);
+        });
+           
     }
 
     databaseRegistry.register(MongoDBManager);
@@ -36,5 +42,7 @@ module.exports = function(RED) {
             password:  { type: "text" } 
         }
     });
+
+
 }
 
