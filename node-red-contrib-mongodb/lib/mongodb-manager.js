@@ -67,8 +67,7 @@ class MongoDBManager extends DatabaseManager {
                     manager.db = db;
                     info("Connected to database "+manager.url);
                 } else {
-                    error(err);
-                    node.warn("Could not connect to database "+manager.url);
+                    error("Could not connect to database "+manager.url+' : '+err);
                 }
             });
         }

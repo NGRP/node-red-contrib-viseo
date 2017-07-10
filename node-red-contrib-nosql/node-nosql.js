@@ -11,16 +11,12 @@ const DatabaseManager       = require('node-red-viseo-nosql-manager').DbManager;
 //  LOGS
 // --------------------------------------------------------------------------
 
-let info  = console.log;
-let error = console.log;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
 
 module.exports = function(RED) {
-    info  = RED.log.info;
-    error = RED.log.error;
 
     const register = function(config) {
         RED.nodes.createNode(this, config);
@@ -45,7 +41,7 @@ module.exports = function(RED) {
 
         //the config node is incomplete and doesn't define a database manager
         if(this.server.databaseManager === undefined || this.server.databaseManager instanceof DatabaseManager === false) {
-            error("Database Manager for "+config.type+" must be set.");
+            node.error("Database Manager for "+config.type+" must be set.");
         }
 
 
@@ -103,7 +99,7 @@ const get = function(node, data, config) {
     }
     node.server.databaseManager.find({ id: dbKey }, data, config, function(err, data, results) {
         if (err) {
-            return error(err);
+            return node.error(err);
         }
         if(results) {
             let result = results[0];
@@ -140,7 +136,7 @@ const find = function(node, data, config) {
     }
     node.server.databaseManager.find(dbKey, data, config, function(err, data, results) { 
         if (err) {
-            return error(err);
+            return node.error(err);
         }
         helper.setByString(data, config.value || 'payload', results);
         node.send(data);
@@ -153,7 +149,7 @@ const set = (node, data, config) => {
     let value = helper.getByString(data, config.value);
     
     if (!value) {
-        return error('No values: '+ config.value);
+        return node.error('No values: '+ config.value);
     }
     
     value.id = dbKey;
@@ -161,7 +157,7 @@ const set = (node, data, config) => {
 
     node.server.databaseManager.update({ id: dbKey }, value, data, config, function(err, data, result) {
         if(err) {
-            error(err);
+            node.error(err);
         }
         data.payload = result;      
         node.send(data);
@@ -187,7 +183,7 @@ const update = function(node, data, config) {
     node.server.databaseManager.update(dbKey, value, data, config, function(err, data, result) {
         
         if(err) {
-            error(err);
+            node.error(err);
         }
 
         data.payload = result;      
@@ -203,7 +199,7 @@ const add = (node, data, config) => {
     if(Array.isArray(values) && typeof values[0] === "object" && values !== null) {
         node.server.databaseManager.add(values, data, config, function(err, data, results) {
             if(err) {
-                error(err);
+                node.error(err);
             }
             data.payload = results;
             node.send(data);
@@ -224,7 +220,7 @@ const remove = (node, data, config) => {
 
     node.server.databaseManager.remove(dbKey, data, config, function(err, data, result) {
         if(err) {
-            error(err);
+            node.error(err);
         }
         data.payload = result;      
         node.send(data);
