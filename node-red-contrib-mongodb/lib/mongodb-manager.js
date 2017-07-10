@@ -11,10 +11,6 @@ class MongoDBManager extends DatabaseManager {
         this._init(node);
     }
 
-    get key() {
-        return this.host + '_' + this.database;
-    }
-
     get database() {
     	return _database;
     }
