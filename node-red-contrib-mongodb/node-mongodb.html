@@ -1,10 +1,11 @@
 <script type="text/javascript">
-    RED.nodes.registerType('mongodb',{
+    RED.nodes.registerType('mongodb', {
         category: 'config',
         color: '#3FADB5',
         defaults: { 
             name:      { value: undefined },
-            database:  { value: undefined }
+            database:  { value: undefined },
+            ssl:       { value: false }, 
         },
         credentials: {
             host:      { type: "text" },
@@ -45,6 +46,10 @@
     <div class="form-row">
         <label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
         <input type="text" id="node-config-input-password" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-ssl"><i class="icon-tag"></i> SSL</label>
+        <input type="checkbox" id="node-config-input-ssl">
     </div>
 </script>
 

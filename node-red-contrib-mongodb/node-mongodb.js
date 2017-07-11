@@ -23,6 +23,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
 
         this.database = config.database;
+        this.ssl = config.ssl;
         this.databaseManager = new MongoDBManager(this);
 
         //remember to close connections on node-red stop

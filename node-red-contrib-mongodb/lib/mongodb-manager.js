@@ -48,12 +48,17 @@ class MongoDBManager extends DatabaseManager {
         this._database = node.database;
         this.user = node.credentials.user;
         this.password = node.credentials.password;
-
+        this.ssl = node.ssl;
 
 		if(this.db === null && this.getStatus() === '') {
 
             this.url =  'mongodb://'+node.credentials.user+':'+encodeURIComponent(node.credentials.password)
                     +'@'+node.credentials.host+':'+node.credentials.port+'/'+node.database;
+
+            if(this.ssl) {
+                this.url += '?ssl=true';
+            }
+
             let manager = this;
 
                 //CONNECT DATABASE
