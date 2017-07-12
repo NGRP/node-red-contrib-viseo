@@ -15,7 +15,7 @@ This project is also the v5 and full re-engineering of a SmartHome Assistant nam
 - we choose Node-RED platform to let developpers switch between pieces of NLP, Computer Vision, etc ...
 - we open-sourced our work to share the state of the art between our customers
 
-If you are a company looking for help to build a project of textual and/or vocal conversationnal assistant, feel free to contact us: contact [at] viseo [dot] io
+**If you are** a company **looking for experts** to build a project of textual and/or vocal conversationnal assistant, feel free to contact us: **contact [at] viseo [dot] io**
 
 ## Getting Help
 
