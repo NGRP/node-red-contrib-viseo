@@ -1,11 +1,21 @@
 # Node-RED: VISEO
 
-A set Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) Technologies.
-
-- [Getting started](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started)
-- [FAQ](https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ)
+This project contains a set of Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) to build Conversational Assistant. 
+- It is architectured on top of (Microsoft Bot Framework)[https://dev.botframework.com/] in order to connect to multiple channels. 
+- New channels like WeChat, Google Home, Amazon Echo are also in the roadmap.
 
 ![Framework](https://github.com/NGRP/node-red-contrib-viseo/blob/master/doc/framework.png?raw=true)
+
+This project is also the v5 and full re-engineering of a SmartHome Assistant named [SARAH](http://sarah.encausse.net) (build in 2012).
+
+- A roadmap is available on [GitHub Project](https://github.com/NGRP/node-red-contrib-viseo/projects/1)
+- A documentation is available on (GitHub Wiki: Getting Started)[https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started]
+
+[VISEO](http://www.viseo.com/) is not a Software Editor but a Consulting Company (1300 people). Since 2016, everybody wants to build it's own bot. We believe that the key is to **focus on User Exprience** because technologies are not mature. That's why 
+- we choose Node-RED platform to let developpers switch between pieces of NLP, Computer Vision, etc ...
+- we open-sourced our work to share the state of the art between our customers
+
+If you are a company looking for help to build a project of textual and/or vocal conversationnal assistant, feel free to contact us: contact [at] viseo [dot] io
 
 ## Getting Help
 
