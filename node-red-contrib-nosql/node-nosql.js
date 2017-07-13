@@ -159,7 +159,6 @@ const set = (node, data, config) => {
         if(err) {
             node.error(err);
         }
-        data.payload = result;      
         node.send(data);
     });
 
@@ -186,7 +185,6 @@ const update = function(node, data, config) {
             node.error(err);
         }
 
-        data.payload = result;      
         node.send(data);
 
     })
@@ -201,7 +199,6 @@ const add = (node, data, config) => {
             if(err) {
                 node.error(err);
             }
-            data.payload = results;
             node.send(data);
         });
        
@@ -222,7 +219,6 @@ const remove = (node, data, config) => {
         if(err) {
             node.error(err);
         }
-        data.payload = result;      
         node.send(data);
     });
 
