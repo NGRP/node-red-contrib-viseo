@@ -24,7 +24,7 @@
             for(var index in result) {
                 var qName = result[index].qName;
 
-                defaults['server-'+qName] = { value: undefined, type: qName };
+                defaults['server-'+qName] = { value: undefined, type: qName, required: false };
 
                 $select.append(
                     '<option value="'+qName+'">'+
