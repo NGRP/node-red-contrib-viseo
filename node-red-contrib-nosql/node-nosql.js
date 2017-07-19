@@ -97,23 +97,28 @@ const get = function(node, data, config) {
         node.warn('No id Found. Do nothing');
         return node.send(data);
     }
+
     node.server.databaseManager.find({ id: dbKey }, data, config, function(err, data, results) {
+
         if (err) {
             return node.error(err);
         }
         if(results) {
             let result = results[0];
-            if (config.merge) {
-                let value = helper.getByString(data, config.value);
-                if (value && (typeof value) === 'object') {
-                    extend(true, value, result);
-                    node.send(data);
-                }
+
+            if(result) {
+                if (config.merge) {
+                    let value = helper.getByString(data, config.value);
+                    if (value && (typeof value) === 'object') {
+                        extend(true, value, result);
+                        node.send(data);
+                    }
+                }            
+
+                helper.setByString(data, config.value, result);
             }
-            helper.setByString(data, config.value, result);
         }
 
-        
         node.send(data);
     });
 };
