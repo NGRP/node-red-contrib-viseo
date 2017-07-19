@@ -1,0 +1,67 @@
+<script type="text/javascript">
+    RED.nodes.registerType('mongodb', {
+        category: 'config',
+        color: '#3FADB5',
+        defaults: { 
+            name:      { value: undefined },
+            database:  { value: undefined },
+            ssl:       { value: false }, 
+        },
+        credentials: {
+            host:      { type: "text" },
+            port:      { type: "text" },
+            user:      { type: "text" },
+            password:  { type: "text" } 
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "db.svg",
+        align: "left",
+        paletteLabel: "MongoDB",
+        label: function() { return this.name || this.database; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="mongodb">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
+        <input type="text" id="node-config-input-host" placeholder="localhost">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="icon-tag"></i> Port</label>
+        <input type="text" id="node-config-input-port" placeholder="27017">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-database"><i class="icon-tag"></i> DB</label>
+        <input type="text" id="node-config-input-database" placeholder="database">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-user"><i class="icon-tag"></i> User</label>
+        <input type="text" id="node-config-input-user" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
+        <input type="text" id="node-config-input-password" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-ssl"><i class="icon-tag"></i> SSL</label>
+        <input type="checkbox" id="node-config-input-ssl">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="mongodb">
+    Connection to a MongoDB database.
+    <h2>Fields</h2>
+    <ul>
+        <li><b>Name:</b> can be used to override the default name of the node.</li>
+        <li><b>Host:</b> server name where MongoDB is installed </li>
+        <li><b>Port:</b> server port on which MongoDB will respond.</li>
+        <li><b>DB:</b> database name
+        <li><b>User:</b> username for authentication
+        <li><b>password:</b> password for authentication
+    </ul>
+</script>
