@@ -139,17 +139,6 @@
             // QuickReplies
             this.quickreplies = this.quickreplies || [];
             setButtons(this.quickreplies, '.quickbt', '#addquick');
-
-            $('#node-input-action-id').on('change', function() {
-            	var type = $(this).val();
-            	if (type === 'askLocation') {
-            		$('#node-input-quick-txt-id').disabled = true;
-            	    $('#node-input-quick-reg-id').disabled = true;
-            	} else {
-            		$('#node-input-quick-txt-id').disabled = false;
-            	    $('#node-input-quick-reg-id').disabled = false;
-            	}
-            })
         },
         oneditsave: function(){
 
@@ -437,8 +426,8 @@
 
             <div class="form-row quickbt section-type section-quick">
                 <label><i class="red-ui-editableList-item-handle fa fa-bars"></i> QuickReply</label>
-                <input  style="width: 80px" class="node-input-title"  type="text" placeholder="Label" id="node-input-quick-txt-id">
-                <select style="width: 80px" class="node-input-action" id="node-input-action-id">
+                <input  style="width: 80px" class="node-input-title"  type="text" placeholder="Label">
+                <select style="width: 80px" class="node-input-action">
                     <option value="postBack">Post Back</option>
                     <option value="askLocation">Ask Location</option>
                     <option value="imBack">IM Back</option>
@@ -449,7 +438,7 @@
                     <option value="call">Call</option>
                 </select>
                 <input  style="width: 80px" class="node-input-value" type="text" placeholder="Value">
-                <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp" id="node-input-quick-reg-id">
+                <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
             </div>
 
             <div class="form-row">
