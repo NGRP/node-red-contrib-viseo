@@ -9,6 +9,7 @@ const builder = require('botbuilder');
 
 const ACTIONS_TYPES = [
     'postBack',
+    'askLocation',
     'imBack',
     'openUrl',
     'showImage',
@@ -143,8 +144,9 @@ const getMessage = (cards, options) => {
 };
 
 const buildQuickReplyObject = (obj) => {
+
     return {
-        content_type: 'text',
+        content_type: obj.action === 'askLocation' ? 'location' : 'text',
         title: obj.title,
         payload: obj.value
     };
