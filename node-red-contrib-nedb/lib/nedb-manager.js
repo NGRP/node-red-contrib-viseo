@@ -1,6 +1,6 @@
 'use strict';
 
-const DatabaseManager = require('node-red-viseo-nosql-manager').DbManager;
+const DatabaseManager = require('node-red-contrib-viseo-nosql-manager').DbManager;
 const Datastore = require('nedb');
 const xlsx      = require('node-xlsx')
 const path      = require('path');

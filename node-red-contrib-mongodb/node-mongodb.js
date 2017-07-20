@@ -1,7 +1,7 @@
 'use strict';
 
 const MongoDBManager = require('./lib/mongodb-manager.js');
-const dbRegistry = require('node-red-viseo-nosql-manager').dbRegistry;
+const dbRegistry = require('node-red-contrib-viseo-nosql-manager').dbRegistry;
 
 
 // --------------------------------------------------------------------------

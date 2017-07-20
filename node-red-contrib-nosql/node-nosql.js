@@ -3,8 +3,8 @@
 const helper                = require('node-red-viseo-helper');
 const extend                = require('extend');
 const DbSelectorFactory     = require('./lib/database-selector.js');
-const databaseRegistry      = require('node-red-viseo-nosql-manager').dbRegistry;
-const DatabaseManager       = require('node-red-viseo-nosql-manager').DbManager;
+const databaseRegistry      = require('node-red-contrib-viseo-nosql-manager').dbRegistry;
+const DatabaseManager       = require('node-red-contrib-viseo-nosql-manager').DbManager;
 
 
 // --------------------------------------------------------------------------

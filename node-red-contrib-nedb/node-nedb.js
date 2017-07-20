@@ -1,7 +1,7 @@
 'use strict';
 
 const NeDBManager = require('./lib/nedb-manager.js');
-const dbRegistry = require('node-red-viseo-nosql-manager').dbRegistry;
+const dbRegistry = require('node-red-contrib-viseo-nosql-manager').dbRegistry;
 const helper   = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------

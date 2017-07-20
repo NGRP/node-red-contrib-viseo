@@ -1,5 +1,5 @@
 'use strict';
-const DatabaseManager = require('node-red-viseo-nosql-manager').DbManager;
+const DatabaseManager = require('node-red-contrib-viseo-nosql-manager').DbManager;
 const MongoClient   = require('mongodb').MongoClient;
 
 
