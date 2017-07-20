@@ -1,6 +1,6 @@
 <script type="text/javascript">
     $.ajax({
-        url: '/nosql/manager/',
+        url: window.location.pathname + 'nosql/manager/',
         success: function(result) {
             var defaults = {
                 name:               { value: undefined },
