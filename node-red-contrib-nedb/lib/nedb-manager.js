@@ -49,7 +49,7 @@ class NeDBManager extends DatabaseManager {
             let rows = this._xlsx2json(this.file, tab);
             callback = (db) => {
                 manager.add(rows, {}, {}, function (err, data, newDocs) { 
-                    if (err) { error(err); } 
+                    if (err) { error(node.path + ' - ' + err); } 
                     node.log('Inserting ' + newDocs.length + ' documents');
                 });
             }
@@ -62,7 +62,7 @@ class NeDBManager extends DatabaseManager {
         this.db.loadDatabase((err) => {
             if (err) { 
                 manager.db = undefined; 
-                return node.error(err); 
+                return node.error(node.path + ' - ' + err); 
             }
             node.log('Loading DataBase:' + manager.file);
             if (callback) {

@@ -104,7 +104,7 @@ class MongoDBManager extends DatabaseManager {
 
 	add(values, data, config, callback) {
 
-	    let collection = db.collection(config.collection);
+	    let collection = this.db.collection(config.collection);
 	    collection.insertMany(values, function(err, result) {
 	    	callback(err, data, result);
 	    });
@@ -113,7 +113,7 @@ class MongoDBManager extends DatabaseManager {
 
 	remove(key, data, config, callback) {
 
-	    let collection = db.collection(config.collection);
+	    let collection = this.db.collection(config.collection);
 	    collection.deleteOne(key, function(err, result) {
 	        callback(err, data, result);
 	    });    
