@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-contrib-viseo-ms-cognitive-services",
+    "version"       : "0.0.1",
+    "description"   : "",
+    "dependencies"  : {
+		"extend"    : "^3.0.0",
+		"node-red-viseo-helper" : "*",
+		"request-promise" : "^4.1.1" ,
+	},
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/Klervix/node-red-contrib"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "ms-config": "node-ms-config.js",
+			"vision-get-description": "node-vision-get-description.js",
+			"vision-get-persons": "node-vision-get-persons.js"
+        }
+    }
+}

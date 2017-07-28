@@ -1,0 +1,23 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-config',{
+        category: 'config',
+        defaults: {
+            name:           { value: undefined },
+            key:            { value: undefined },
+        },
+        label: function() {
+            return this.name || "Microsoft API config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-key"><i class="fa fa-lock"></i> Key</label>
+        <input type="text" id="node-config-input-key" placeholder="">
+    </div>
+</script>
