@@ -23,8 +23,10 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [Jean-Philippe Encausse](http://www.encausse.net) for the [SARAH](http://sarah.encausse.net) home automation project.
-This node was developped by [Klervix](https://github.com/Klervix) for VISEO Innovation.
+This project is a creation of [VISEO](http://www.viseo.com) Innovation.
+
+- Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Klervi Menoret [@Klervix](https://github.com/Klervix)
 
 ## Copyright and license
 

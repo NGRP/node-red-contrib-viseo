@@ -27,10 +27,10 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [VISEO](http://www.viseo.com) Technology.
+This project is a creation of [VISEO](http://www.viseo.com) Innovation.
 
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
-- Klervi Menoret [@Klervix](https://twitter.com/klervix)
+- Klervi Menoret [@Klervix](https://github.com/Klervix)
 
 
 ## Copyright and license
