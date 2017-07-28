@@ -36,8 +36,7 @@
             "msbot-fb-profile":  "nodes/channel/msbot-fb-profile.js",
             "msbot-fb-greeting": "nodes/channel/msbot-fb-greeting.js",
             "msbot-fb-log":      "nodes/channel/msbot-fb-log.js",
-            "msbot-fb-config":   "nodes/channel/msbot-fb-config.js",
-			"msbot-loop-management": "nodes/tools/msbot-loop-management.js"
+            "msbot-fb-config":   "nodes/channel/msbot-fb-config.js"
         }
     }
 }
