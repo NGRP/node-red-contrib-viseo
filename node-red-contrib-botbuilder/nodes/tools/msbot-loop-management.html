@@ -1,0 +1,314 @@
+<script type="text/javascript">
+    RED.nodes.registerType('loop-management',{
+        category: 'function',
+        color: '#E2D96E',
+        defaults: { 
+            name:           { value: undefined },
+            location:       { value: undefined, required:true}, 
+            locationT:      { value: "msg"}, 
+            loopType:       { value: "for"}, 
+            forVarInitValue:    { value: undefined },
+            forVarInitValueT:   { value: "num" },
+            forRunCondSign:     { value: "min"},
+            forRunCondValue:    { value: undefined },
+            forRunCondValueT:   { value: "num" },
+            forIncExprValue:    { value: undefined },
+            forIncExprValueT:   { value: "num" },
+            forofObject:        { value: undefined },
+            forofObjectT:       { value: "msg" },
+            forinObject:        { value: undefined },
+            forinObjectT:       { value: "msg" },
+            whileVarInitValue:  { value: undefined },
+            whileVarInitValueT: { value: "msg" },
+            whileRunCondSign:   { value: "eq" },
+            whileRunCondValue:  { value: undefined },
+            whileRunCondValueT: { value: "num" },
+            dwhileVarInitValue: { value: undefined },
+            dwhileVarInitValueT:{ value: "msg" },
+            dwhileRunCondSign:  { value: "eq" },
+            dwhileRunCondValue: { value: undefined },
+            dwhileRunCondValueT:{ value: "num" }
+        },
+        inputs:  1,
+        outputs: 2,
+        icon: "loop.png", align: "left",
+        paletteLabel: "loop",
+        label: function() { return this.name || "loop"; },
+        oneditprepare: function() {
+
+            console.log("prep");
+            console.log(this.whileVarInitValueT);
+            console.log(this.whileRunCondValueT);
+
+            $("#node-input-location").typedInput({types:['msg','global']});
+            $("#node-input-location").typedInput('type',this.locationT);
+
+            $("#node-input-loopType").val(this.loopType);
+
+            $("#node-input-forVarInitValue").typedInput({types:['num','msg','global']});
+            $("#node-input-forVarInitValue").typedInput('type',this.forVarInitValueT);
+            $("#node-input-forRunCondValue").typedInput({types:['num','msg','global']});
+            $("#node-input-forRunCondValue").typedInput('type',this.forRunCondValueT);
+            $("#node-input-forIncExprValue").typedInput({types:['num','msg','global']});
+            $("#node-input-forIncExprValue").typedInput('type',this.forIncExprValueT);
+            $("#node-input-forofObject").typedInput({types:['msg','global']});
+            $("#node-input-forofObject").typedInput('type',this.forofObjectT);
+            $("#node-input-forinObject").typedInput({types:['msg','global']});
+            $("#node-input-forinObject").typedInput('type',this.forinObjectT);
+            $("#node-input-whileVarInitValue").typedInput({types:['msg','global']});
+            $("#node-input-whileVarInitValue").typedInput('type',this.whileVarInitValueT);
+            $("#node-input-whileRunCondValue").typedInput({types:['num','str','msg','global']});
+            $("#node-input-whileRunCondValue").typedInput('type',this.whileRunCondValueT);
+            $("#node-input-dwhileVarInitValue").typedInput({types:['msg','global']});
+            $("#node-input-dwhileVarInitValue").typedInput('type',this.dwhileVarInitValueT);
+            $("#node-input-dwhileRunCondValue").typedInput({types:['num','str','msg','global']});
+            $("#node-input-dwhileRunCondValue").typedInput('type',this.dwhileRunCondValueT);
+
+            $("#node-input-loopType").on("change", function() {
+                $(".loop-properties").hide();
+
+                if (this.value === "for") $("#type-for").show();
+                else if (this.value === "forof") $("#type-forof").show();
+                else if (this.value === "forin") $("#type-forin").show();
+                else if (this.value === "while") $("#type-while").show();
+                else if (this.value === "dwhile") $("#type-dwhile").show();
+                
+            }).change();
+
+            $("#node-input-whileRunCondSign").on("change", function() {
+                if (this.value === "istrue" || this.value === "isfalse") {
+                    $("#node-input-whileRunCondValue").prop('disabled', true);
+                } else $("#node-input-whileRunCondValue").prop('disabled', false);
+            });
+
+            $("#node-input-dwhileRunCondSign").on("change", function() {
+                if (this.value === "istrue" || this.value === "isfalse") {
+                    $("#node-input-dwhileRunCondValue").prop('disabled', true);
+                } else $("#node-input-dwhileRunCondValue").prop('disabled', false);
+            });
+        },
+        oneditsave: function() {
+
+            this.locationT = $("#node-input-location").typedInput('type');
+
+            this.forVarInitValueT = $("#node-input-forVarInitValue").typedInput('type');
+            this.forRunCondValueT = $("#node-input-forRunCondValue").typedInput('type');
+            this.forIncExprValueT = $("#node-input-forIncExprValue").typedInput('type');
+            this.forofObjectT = $("#node-input-forofObject").typedInput('type');
+            this.forinObjectT = $("#node-input-forinObject").typedInput('type');
+            this.whileVarInitValueT = $("#node-input-whileVarInitValue").typedInput('type');
+            this.whileRunCondValueT = $("#node-input-whileRunCondValue").typedInput('type');
+            this.dwhileVarInitValueT = $("#node-input-dwhileVarInitValue").typedInput('type');
+            this.dwhileRunCondValueT = $("#node-input-dwhileRunCondValue").typedInput('type');
+            this.loopType = $("#node-input-loopType").val();
+
+            console.log("save");
+            console.log($("#node-input-whileVarInitValue").typedInput('type'));
+            console.log($("#node-input-whileVarInitValue").typedInput('value'));
+
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="loop-management">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <p style="margin-left:110px;">Loop variables and information location:</p>
+        <label for="node-input-location"><i class="icon-tag"></i> Location</label>
+        <input type="text" id="node-input-location" placeholder="" style="width:70%;">
+    </div>
+
+    <div class="form-row">
+        <p style="margin-left:110px;">Type of loop and settings:</p>
+        <label for="node-input-loopType"><i class="fa fa-dot-circle-o"></i> Loop type</label>
+        <select type="text" id="node-input-loopType" style="width:70%;">
+            <option value="for">For</option>
+            <option value="forof">For/of</option>
+            <option value="forin">For/in</option>
+            <option value="while">While</option>
+            <option value="dwhile">Do/while</option>
+        </select>
+    </div>
+
+    <div id="type-for" class="loop-properties">
+        <code style="margin-left:100px">for ( <font color="red">statement 1</font> ; <font color="red">statement 2</font> ; <font color="red">statement 3</font>) {...}</code><br>
+
+        <br><p style="margin-left:20px;">Statement 1 : <b>Loop variable initialization</b></p>
+
+        <div class="form-row">
+            <label for="node-input-forVarInitValue"><i class="icon-tag"></i> Initial value</label>
+            <input type="text" id="node-input-forVarInitValue" style="width:50%;">
+        </div>
+
+        <br><p style="margin-left:20px;">Statement 2 : <b>Running condition</b></p>
+
+        <div class="form-row">
+            <span><select type="text" id="node-input-forRunCondSign" style="width:100px;">
+                <option value="min"><</option>
+                <option value="eqmin"><=</option>
+                <option value="eqmax">>=</option>
+                <option value="max">></option>
+            </select>
+            <input type="text" id="node-input-forRunCondValue" style="width:50%;"></span>
+        </div>
+
+        <br><p style="margin-left:20px;">Statement 3 : <b>Increment expression</b></p>
+
+        <div class="form-row">
+            <span><label for="node-input-forIncExprValue"><i class="icon-tag"></i>    += / -=</label>
+            <input type="text" id="node-input-forIncExprValue" style="width:50%;"></span>
+        </div>
+    </div>
+
+    <div id="type-forof" class="loop-properties">
+        <code style="margin-left:100px;">for ( <font color="red">variable</font> of <font color="red">object</font> ) {...}</code><br>
+
+        <br><p style="margin-left:20px;"><b>Main object</b></p>
+
+        <div class="form-row">
+            <label for="node-input-forofObject"><i class="icon-tag"></i> Location</label>
+            <input type="text" id="node-input-forofObject" style="width:50%;">
+        </div>
+    </div>
+
+    <div id="type-forin" class="loop-properties">
+        <code style="margin-left:100px;">for ( <font color="red">variable</font> in <font color="red">object</font> ) {...}</code><br>
+
+        <br><p style="margin-left:20px;"><b>Main object</b></p>
+
+        <div class="form-row">
+            <label for="node-input-forinObject"><i class="icon-tag"></i> Location</label>
+            <input type="text" id="node-input-forinObject" style="width:50%;">
+        </div>
+    </div>
+
+    <div id="type-while" class="loop-properties">
+        <code style="margin-left:100px">while ( <font color="red">condition</font> ) {...}</code><br>
+
+        <br><p style="margin-left:20px;"><b>Loop variable</b></p>
+
+        <div class="form-row">
+            <label for="node-input-whileVarInitValue"><i class="icon-tag"></i> Initial value</label>
+            <input type="text" id="node-input-whileVarInitValue" style="width:50%;">
+        </div>
+
+        <br><p style="margin-left:20px;"><b>Running condition</b></p>
+
+        <div class="form-row">
+            <span><select type="text" id="node-input-whileRunCondSign" style="width:100px;">
+                <option value="eq">==</option>
+                <option value="neq">!=</option>
+                <option value="min"><</option>
+                <option value="eqmin"><=</option>
+                <option value="eqmax">>=</option>
+                <option value="max">></option>
+                <option value="istrue">is true</option>
+                <option value="isfalse">is false</option>
+            </select>
+            <input type="text" id="node-input-whileRunCondValue" style="width:50%;"></span>
+        </div>
+    </div>
+
+    <div id="type-dwhile" class="loop-properties">
+        <code style="margin-left:100px">do {...} while ( <font color="red">condition</font> )</code><br>
+
+        <br><p style="margin-left:20px;"><b>Loop variable </b></p>
+
+        <div class="form-row">
+            <label for="node-input-dwhileVarInitValue"><i class="icon-tag"></i> Initial value</label>
+            <input type="text" id="node-input-dwhileVarInitValue" style="width:50%;">
+        </div>
+
+        <br><p style="margin-left:20px;"><b>Running condition</b></p>
+
+        <div class="form-row">
+            <span><select type="text" id="node-input-dwhileRunCondSign" style="width:100px;">
+                <option value="eq">==</option>
+                <option value="neq">!=</option>
+                <option value="min"><</option>
+                <option value="eqmin"><=</option>
+                <option value="eqmax">>=</option>
+                <option value="max">></option>
+                <option value="istrue">is true</option>
+                <option value="isfalse">is false</option>
+            </select>
+            <input type="text" id="node-input-dwhileRunCondValue" style="width:50%;"></span>
+        </div>
+    </div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="loop-management">
+    <p>This node helps you to manage your loops.</p>
+
+    <h2>Main properties</h2>
+    <p>
+        <li><b>Location</b>: where to stock the variables needed for the loop management. 
+        <li><b>Loop type</b>: the type of loop to process.
+    </p>
+    <p>
+        <li><b>OUT[0]:</b> go to the loop body. 
+        <li><b>OUT[1]:</b> go to the flow (after the loop execution).
+    </p>
+    <h2 style="color:red;">Warnings</h2>
+    <p>
+        <li>Please ensure that the location field is undefined, empty or not important before setting it as the location, because it will be deleted at the end of the loop.
+        <li>The first out (OUT[0]) has to be linked to the input of the loop node.
+    </p>
+
+    <h2>Types of loops</h2>
+
+    <h3>For loop</h3>
+    <ol>
+    <p>
+        <li><b>Statement 1</b>: set a new number, of depends on a number in a field. <i style="color:blue;">let i = 0</i>
+        <li><b>Statement 2</b>: set the running condition sign, and the value to check. <i style="color:blue;">i < 10</i>
+        <li><b>Statement 3</b>: set the increment value to add (or -) to the value at each iteration. <i style="color:blue;">i++</i>
+    </p>
+    <p><b>Note:</b> 
+        <li>Please don't modify the values in the location field in the loop body.
+    </p>
+    </ol>
+
+    <h3>For/of loop</h3>
+    <ol>
+    <p>
+        <li><b>Location</b>: set the location of the array to scan. <i style="color:blue;">myArray = ['a','b','c']</i>
+    </p>
+    <p><b>Notes:</b> 
+        <li>You can modify the array in the location field, getting [location].value.
+        <li>The real array will be replace with the one in the location field after the loop execution.
+    </p>
+    </ol>
+
+    <h3>For/in loop</h3>
+    <ol>
+    <p>
+        <li><b>Location</b>: set the location of the object to scan. <i style="color:blue;">myObject = {'lisa':0, 'marc':3}</i>
+    </p>
+    <p><b>Notes:</b> 
+        <li>You can modify the object in the location field, getting [location].value and [location].property.
+        <li>The real object will be replace with the one in the location field after the loop execution.
+    </p>
+    </ol>
+
+    <h3>While and do/while loops</h3>
+    <ol>
+    <p>
+        <li><b>Loop variable</b>: depends on a number, a boolean or a string in a field. <i style="color:blue;">x = 0</i>
+        <li><b>Running condition</b>: set the running condition sign, and the value to check. <i style="color:blue;">while (x == 0)</i>
+    </p>
+    <p><b>Notes:</b> 
+        <li>Please don't modify the values in the location field in the loop body.
+        <li>The value is evaluated according to the real variable before (while) or after (do/while) each passage in the node.
+    </p>
+    </ol>
+
+
+</script>
