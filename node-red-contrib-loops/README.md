@@ -6,6 +6,7 @@ A Node-RED node to manage loops in flows.
 
 ```
 npm install node-red-contrib-loops
+```
 
 ## Getting Help
 
