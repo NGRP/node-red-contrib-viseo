@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('loop-management',{
-        category: 'function',
-        color: '#E2D96E',
+        category: 'VISEO_HELPER',
+        color: '#3FADB5',
         defaults: { 
             name:           { value: undefined },
             location:       { value: undefined, required:true}, 
@@ -32,8 +32,8 @@
         inputs:  1,
         outputs: 2,
         icon: "loop.png", align: "left",
-        paletteLabel: "loop",
-        label: function() { return this.name || "loop"; },
+        paletteLabel: "Loop",
+        label: function() { return this.name || "Loop"; },
         oneditprepare: function() {
 
             console.log("prep");
