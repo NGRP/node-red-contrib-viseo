@@ -1,6 +1,9 @@
 # Node-RED
 
-A Node-RED node to use microsoft cognitive services.
+A Node-RED node to add AI to your chatbot, connected to Microsoft Cognitive Services API.
+These are nodes related to IRMA, an Image Recognition Magic App available [here](irma.viseo.io). 
+
+This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
 ## Quick Start
 
@@ -27,6 +30,7 @@ Please report unacceptable behavior to any of the project's core team.
 This project is a creation of [Jean-Philippe Encausse](http://www.encausse.net) for the [SARAH](http://sarah.encausse.net) home automation project.
 
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Klervi Menoret [@Klervix](https://github.com/Klervix)
 
 
 ## Copyright and license
