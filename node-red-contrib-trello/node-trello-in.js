@@ -31,14 +31,13 @@ module.exports = function(RED) {
     });
 }
 
-const route = (node) => {
-    return (req, res, next) => { node.send({'payload' : req.body}); }
-}
 
 const stop  = (done) => { done(); }
 const start = (RED, node, config) => {
-    RED.httpNode.get ('/trello-callback/'+config.model+'/', route(node));
-    RED.httpNode.post('/trello-callback/'+config.model+'/', route(node));
+    let uri = '/trello-callback/'+config.model+'/';
+    node.warn('Add route to: '+ uri)
+    RED.httpNode.get  (uri, (req, res, next) => { console.log('GET');  node.send({'payload' : req.body}); res.sendStatus(200); });
+    RED.httpNode.post (uri, (req, res, next) => { console.log('POST'); node.send({'payload' : req.body}); res.sendStatus(200); });
 }
 
 const input = (node, data, config) => {
@@ -52,7 +51,7 @@ const input = (node, data, config) => {
         url: url,
         method: 'POST',
         headers: {'ContentType': 'application/json'},
-        body: JSON.stringify(json)
+        form: json
     };
 
     console.log(req);
