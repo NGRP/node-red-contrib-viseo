@@ -1,0 +1,21 @@
+{
+    "name"          : "node-red-contrib-viseo-qrcode",
+    "version"       : "0.0.1",
+    "description"   : "Decodes a given QrCode",
+    "dependencies"  : {
+        "jsqr": "^0.2.2",
+        "jimp": "^0.2.27",
+        "request": "^2.81.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":""
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "qrcode": "node-qrcode.js"
+        }
+    }
+}

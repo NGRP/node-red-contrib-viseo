@@ -1,0 +1,64 @@
+<script type="text/javascript">
+    RED.nodes.registerType('qrDecode', {
+        category: 'VISEO_UTILS',
+        color: '#3FADB5',
+        defaults: {
+            name:     { value: undefined },
+            path:     { value: "prompt.attachments[0].contentUrl"},
+            output:   { value: undefined },
+            propertyType: { value:"msg" },
+            source: { value: "URL" },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'cloud.svg',
+        align: 'left',
+        paletteLabel: 'QRDECODE',
+        label: function () { return this.name || 'QRDECODE' },
+        oneditprepare: function() {
+            $("#node-input-path").typedInput({default:this.propertyType||'msg',types:['msg']});
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="qrDecode">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="QRDECODE">
+    </div>
+    <div class="form-row">
+        <label for=""><i class="fa fa-envelope"></i> Source</label>
+        <select id="node-input-source">
+            <option value="URL">URL</option>
+            <option value="Buffer">Buffer</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label>Property</label>
+        <input type="text" id="node-input-path" style="width: 70%"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" placeholder="payload">
+    </div>
+</script>
+
+<style>
+    .help-section > h4,
+    .help-section > h3 { font-weight: bold; }
+</style>
+
+<script type="text/x-red" data-help-name="qrDecode">
+    <section class="help-section">
+        <h3>Help</h3>
+        <p>Get the URL in the prompt of the attached image.</p>
+        <p>Decode the image, parse the json data and save it to specified the output location.</p>
+        <p>NB: The qrCode must be generated with a text message in json format.<p>
+        <h4>Name</h4>
+        <p>Type in a name to override the node default name</p>
+        <h4>Path Url</h4>
+        <p>Path where to find image url in msg</p>
+        <h4>Output</h4>
+        <p>Specify output location in msg object. Default is payload.</p>
+    </section>
+</script>
