@@ -3,9 +3,9 @@
         category: 'VISEO_REST',
         color: '#3FADB5',
         defaults: { 
-            name:  { value: undefined },
+            path:  { value: undefined, required: true },
             key:   { value: undefined, required: true, type: 'trello-config'},
-            model: { value: undefined }
+            model: { value: undefined, required: true }
         },
         inputs:  0,
         outputs: 1,
@@ -30,22 +30,26 @@
                 });
             }
         },
-        label: function() { return this.name || "Trello In"; }
+        label: function() { return this.path || "Trello In"; }
     })
 </script>
-
+<style>
+    .input-info { font-size: 12px; padding-left: 104px; font-style: italic; }
+</Style>
 <script type="text/x-red" data-template-name="trello-in">
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <label for="node-input-path"><i class="icon-tag"></i> Path</label>
+        <input type="text" id="node-input-path" placeholder="/myitem">
+        <div class="input-info">Explicit path append to /trello-callback to avoid Trello messy conf.</div>
     </div>
     <div class="form-row">
-        <label for="node-input-key"><i class="fa fa-lock"></i>Trello Key</label>
+        <label for="node-input-key"><i class="fa fa-lock"></i> Trello Key</label>
         <input type="text" id="node-input-key" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-input-model"><i class="fa fa-lock"></i>Model ID</label>
+        <label for="node-input-model"><i class="fa fa-lock"></i> Model ID</label>
         <input type="text" id="node-input-model" placeholder="00000000">
+        <div class="input-info">A Node-RED restart is required to clean previous routes.</div>
     </div>
 </script>
 

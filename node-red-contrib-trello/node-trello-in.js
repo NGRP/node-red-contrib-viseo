@@ -34,17 +34,17 @@ module.exports = function(RED) {
 
 const stop  = (done) => { done(); }
 const start = (RED, node, config) => {
-    let uri = '/trello-callback/'+config.model+'/';
-    node.warn('Add route to: '+ uri)
-    RED.httpNode.get  (uri, (req, res, next) => { console.log('GET');  node.send({'payload' : req.body}); res.sendStatus(200); });
-    RED.httpNode.post (uri, (req, res, next) => { console.log('POST'); node.send({'payload' : req.body}); res.sendStatus(200); });
+    let uri = '/trello-callback'+config.path+'/';
+    node.warn('Add Trello route to: '+ uri)
+    RED.httpNode.get  (uri, (req, res, next) => { node.send({'payload' : req.body}); res.sendStatus(200); });
+    RED.httpNode.post (uri, (req, res, next) => { node.send({'payload' : req.body}); res.sendStatus(200); });
 }
 
 const input = (node, data, config) => {
     let url  = 'https://api.trello.com/1/tokens/'+node.key.token+'/webhooks/?key='+node.key.key; 
     let json = {
         description: "Trello Webhook " + (config.name || node.id),
-        callbackURL: CONFIG.server.host + 'trello-callback/'+config.model+'/',
+        callbackURL: CONFIG.server.host + 'trello-callback'+config.path+'/',
         idModel: config.model,
     }
     let req  = {
@@ -54,11 +54,10 @@ const input = (node, data, config) => {
         form: json
     };
 
-    console.log(req);
-    let n = node;
+    let nod = node;
     request(req, (err, response, body) => {
-        if (err) { return n.error(err); }
-        n.warn(body);
+        if (err) { return nod.error(err); }
+        nod.warn(body);
     });
 }
 
