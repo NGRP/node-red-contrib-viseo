@@ -10,6 +10,20 @@ This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/no
 npm install node-red-contrib-viseo-trello
 ```
 
+### Build the Node-RED Flow
+
+The `trello-in` will trigger an event of each action on the target ModelId (board, card, user, ...)
+
+![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-trello/doc/flow.jpg)
+
+
+### Limitations
+
+The `trello-in` node add routes to Node-RED server. Updating the node configuration will add new routes but won't remove previous. The Node-RES server must be restarted to clean up routes.
+
+The `trello-in` node trigger add/update Trello webhooks. Previous webhooks are not removed. That's why we use an explicit callback path to limit errors. A webhook can be removed with a DELETE request to trello.
+
+
 ## Getting Help
 
 For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :

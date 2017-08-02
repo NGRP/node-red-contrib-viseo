@@ -60,4 +60,3 @@ const input = (node, data, config) => {
         nod.warn(body);
     });
 }
-
