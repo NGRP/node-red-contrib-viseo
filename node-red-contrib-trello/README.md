@@ -16,6 +16,10 @@ The `trello-in` will trigger an event of each action on the target ModelId (boar
 
 ![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-trello/doc/flow.jpg)
 
+On a Trello URL, add `.json` to get the board description and retrieve all modelIds.
+
+Credential require a [Trello Application Key and a Token](https://trello.com/app-key).
+
 
 ### Limitations
 
