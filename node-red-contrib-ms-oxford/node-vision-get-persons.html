@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('vision-get-persons',{
-        category: 'MS_COGNITIVE',
+        category: 'VISEO_VISION',
         color: '#3FADB5',
         defaults: { 
             name:       { value: undefined },
@@ -25,9 +25,9 @@
             $("#node-input-celeb").change();
         },
         oneditsave: function () { },
-        icon: "vision.svg",
+        icon: "microsoft.svg",
         align: "left",
-        paletteLabel: "Vision : Persons",
+        paletteLabel: "MS Persons",
         label: function() { return this.name || "Get persons"; }
     });
 </script>
