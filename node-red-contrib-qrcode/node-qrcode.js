@@ -1,102 +1,84 @@
 'use strict';
-
-const jsQr = require('jsqr');
-const jimp = require('jimp');
+const helper  = require('node-red-viseo-helper');
+const jsQr    = require('jsqr');
+const jimp    = require('jimp');
 const request = require('request');
-
-const getQrCode = (url) => {
-  	return new Promise((resolve, reject) => {
-  		let requestSettings = {
-        url: url,
-        method: 'GET',
-        encoding: null //to get a binary buffer
-  		};
-
-  		request(requestSettings, (error, response, body) => {
-  			if(error){
-  				reject(error);
-  			}
-  			else{
-  				resolve(response);
-  			}
-		});
-	});
-}
-
-const decodeImageFromBuffer = (msg, buffer, node, RED) => {
-  //analyse QrCode
-  jimp.read(buffer, (err, image) => {
-    if(err){
-      return node.error(err);
-    }
-
-    //Decode
-    let jsonQrData = jsQr.decodeQRFromImage(image.bitmap.data, image.bitmap.width, image.bitmap.height);
-    //safe parsing of qrCode message to json object
-    try {
-      msg[node.output] = JSON.parse(jsonQrData);
-    } catch (ex) {
-      //if it is an URL
-      if(jsonQrData.match(/^http(s)?:\/\//)){
-        //Save the full URL
-        let urlTab, params, paramsTab, url = jsonQrData;
-        msg[node.output] = {};
-        msg[node.output].url = url;
-        urlTab = url.split('?');
-        if(urlTab.length > 1){
-          params = urlTab[1];
-          msg[node.output].params = {};
-          paramsTab = params.split('&');
-          //Save every params of the URL in an object
-          for(let e of paramsTab){
-            let [name,value]=e.split('=');
-            msg[node.output].params[name]=value;
-          }
-        }
-      }
-      else{
-        msg[node.output] = jsonQrData;
-      }
-
-    }
-    return node.send(msg);
-
-   });
-}
+const queryString = require('query-string');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
 
-module.exports = function (RED) {
-    const node_qrDecode = function (config) {
-        RED.nodes.createNode(this, config);
-        this.path = config.path || "prompt.attachments[0].contentUrl";
-        this.output = config.output || "payload";
-        this.source = config.source || "URL";
+module.exports = function(RED) {
+  const register = function(config) {
+    RED.nodes.createNode(this, config);
+    let node = this;
+    
+    start(RED, node, config);
+    this.on('input', (data)  => { input(node, data, config) });
+    this.on('close', (done)  => { stop(done) });
+  }
+  RED.nodes.registerType("qrDecode", register, {});
+}
 
-        this.on('input', (msg) => {
-          //get data (URL or Buffer)
-          let data = RED.util.evaluateNodeProperty(this.path,"msg",this,msg);
+// Flow Function --------------------------------------
 
-          // source is a URL
-          if(this.source === "URL"){
-            //load image
-            getQrCode(data).then((response) => {
-              let imgBuffer = response.body;
-              decodeImageFromBuffer(msg,imgBuffer,this,RED);
+const stop  = (done) => { done(); }
+const start = (RED, node, config) => { }
+const input = (node, data, config) => {
 
-            }).catch((err) => {
-              return this.error(err);
-            });
-          }
+  let value = helper.getByString(data, config.input || 'prompt.attachments[0].contentUrl');
 
-          // source is a Buffer
-          else if(this.source === "Buffer"){
-            decodeImageFromBuffer(msg,data,this,RED);
-          }
-        });
+  // 3. End the node
+  let done  = (err, json) => {
+    if (err) return node.warn('Decode Error: '+err);
+    helper.setByString(data, config.output || 'payload', json);
+    node.send(data);
+  }
+
+  // 1. Buffer decode it
+  if (value instanceof Buffer){
+    return decodeBuffer(value, done);
+  }
+
+  // 2. URL download Image
+  if (typeof value === 'string' && value.indexOf('http') === 0){
+    request({ url: value, method: 'GET', encoding : null }, (err, res) => {
+        if (err) { return node.warn('HTTP Error: ' + err); }
+        decodeBuffer(res.body, done);
+    });
+  }
+
+}
+
+// Utility Function --------------------------------------
+
+const decodeBuffer = (buffer, callback) => {
+
+  // 1. Decode image
+  jimp.read(buffer, (err, image) => {
+    if (err){ return callback(err); }
+    
+    // 2. Decode QRCode
+    let data = jsQr.decodeQRFromImage(image.bitmap.data, image.bitmap.width, image.bitmap.height);
+
+    // 3. Check is JSON
+    try { 
+      let json = JSON.parse(data); 
+      return callback(undefined, json);
+    } catch (ex) { /* exception */ }
+
+    // 4. Is string
+    if (data.indexOf('http') !== 0) {
+      return callback(undefined, { 'text' : data });
     }
+    
+    // 5. Parse URL parameters
+    let qs  = data.indexOf('?')
+    if (qs  < 0) return callback(undefined, { url : data });
 
-    RED.nodes.registerType('qrDecode', node_qrDecode);
+        qs  = queryString.parse(data.substring(qs+1))
+    qs.url  = data
+    return callback(undefined, qs);
+  });
 }
