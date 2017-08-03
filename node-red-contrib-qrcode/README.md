@@ -24,10 +24,11 @@ The `qrDecode` node
 
 ### Best Practices
 
+[ZXing](https://zxing.appspot.com/generator/) webservice can be use to generate a QRCode.
+
 Generated QRCode should contains an URL with parameters.
 - Anyone using the QRCode will be redirected to that URL (that could explain the webservice)
 - Decoding the QRCode will still works
-
 
 ## Getting Help
 
