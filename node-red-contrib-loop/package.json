@@ -1,14 +1,14 @@
 {
-    "name"          : "node-red-contrib-viseo-log",
-    "version"       : "0.0.5",
+    "name"          : "node-red-contrib-viseo-loop",
+    "version"       : "0.0.7",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
-    "description"   : "Logging nodes",
+    "description"   : "Loop node",
     "dependencies"  : { 
         "node-red-viseo-helper" : "*"
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-log"
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-loop"
     },
     "license": "Apache-2.0",
     "keywords": [ "node-red" ],
