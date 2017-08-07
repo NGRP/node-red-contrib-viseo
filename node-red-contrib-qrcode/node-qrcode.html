@@ -1,0 +1,42 @@
+<script type="text/javascript">
+    RED.nodes.registerType('qrDecode', {
+        category: 'VISEO_HELPER',
+        color: '#3FADB5',
+        defaults: {
+            name:     { value: undefined },
+            input:    { value: undefined },
+            output:   { value: undefined },
+            pptTypeIn:  { value:"msg"  },
+            pptTypeOut: { value:"msg"  },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'qr-code.svg',
+        align: 'left',
+        paletteLabel: 'QRDecode',
+        label: function () { return this.name || 'QRDecode' },
+        oneditprepare: function() {
+            $("#node-input-input") .typedInput({ default: this.pptTypeIn  || 'msg', types:['msg']});
+            $("#node-input-output").typedInput({ default: this.pptTypeout || 'msg', types:['msg']});
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="qrDecode">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="QRDecode">
+    </div>
+    <div class="form-row">
+        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="prompt.attachments[0].contentUrl"/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>  
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="qrDecode">
+
+</script>

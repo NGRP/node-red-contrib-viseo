@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('vision-get-description',{
-        category: 'MS_COGNITIVE',
+        category: 'VISEO_VISION',
         color: '#3FADB5',
         defaults: { 
             name:       { value: undefined },
@@ -10,9 +10,9 @@
         },
         inputs:  1,
         outputs: 1,
-        icon: "vision.svg",
+        icon: "microsoft.svg",
         align: "left",
-        paletteLabel: "Vision : Description",
+        paletteLabel: "MS Descr",
         label: function() { return this.name || "Get description"; }
     });
 </script>
