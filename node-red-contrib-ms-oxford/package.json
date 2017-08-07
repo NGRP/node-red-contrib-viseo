@@ -24,9 +24,9 @@
             "ms-luis":               "node-luis.js",
             "ms-qna":                "node-qna.js",
             "ms-luis-config":        "node-luis-config.js",
-			"ms-config": "node-ms-config.js",
-			"vision-get-description": "node-vision-get-description.js",
-			"vision-get-persons": "node-vision-get-persons.js"
+			"ms-config": 			 "node-ms-config.js",
+			"vision-get-description":"node-vision-get-description.js",
+			"vision-get-persons":	 "node-vision-get-persons.js"
         }
     }
 }
