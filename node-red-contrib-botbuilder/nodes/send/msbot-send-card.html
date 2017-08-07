@@ -1,6 +1,7 @@
 <script type="text/javascript">
 
     $(document).on('change', '.section-quick select', function() {
+
         var $parent = $(this).parent('.section-quick'),
             disabled = $(this).val() === 'askLocation';
         $parent.find('input').prop('disabled', disabled);
@@ -88,7 +89,7 @@
 
         oneditprepare: function () {
 
-            
+
             var setButtons = function(buttons, query, add) {
                 var $add = $(add);
                 $add.on('click', function(){
@@ -442,12 +443,6 @@
                 <select style="width: 80px" class="node-input-action">
                     <option value="postBack">Post Back</option>
                     <option value="askLocation">Ask Location</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
                 </select>
                 <input  style="width: 80px" class="node-input-value" type="text" placeholder="Value">
                 <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
