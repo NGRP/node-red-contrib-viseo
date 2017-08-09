@@ -13,10 +13,10 @@ npm install node-red-contrib-viseo-repeat
 ### Build the Node-RED Flow
 
 The `repeat` node 
-- *First call:* create a specific counter in a field according to the chosen scope, 
-- Send the message to the first output ;
-- *Next calls:* retrieve the counter and increment it,
-- Send the message to the corresponding output ;
+- *First call:* creates a specific counter in a field according to the chosen scope, 
+- Sends the message to the first output ;
+- *Next calls:* retrieves the counter and increment it,
+- Sends the message to the corresponding output ;
 
 When the value is reached, it is possible to select the node behavior:
 - Stopping sending messages ;
