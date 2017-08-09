@@ -1,4 +1,3 @@
-
 const helper    = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
@@ -14,22 +13,48 @@ module.exports = function(RED) {
     RED.nodes.registerType("random", register, {});
 }
 
+let COUNTER = [];
 const input = (node, data, config) => {
     let out  = new Array(parseInt(config.outputs));
-    let rand = Math.round(Math.random() * (out.length-1));
+    let scope = config.scope || 'msg';
 
-    if (config.once){
-        let order = helper.getByString(data, config.once, undefined);
-        if (!order || order.length <= 0){ order = [];
-            for(let i=0; i < config.outputs ; i++){ order.push(i); }
-            shuffle(order);
-            helper.setByString(data, config.once, order);
+    // 1. Scope: Global
+    if (scope === 'global') {
+        // Increment counter
+        console.log(COUNTER);
+
+        if (COUNTER.length === 0){
+            // Complete the array with the outputs
+            for (let i=0; i < config.outputs ; i++) COUNTER.push(i);
+            // Shuffle the outputs
+            shuffle(COUNTER);
         }
-        rand = order.pop();
+        out[COUNTER.pop()] = data;
+        return node.send(out);
     }
 
-    out[rand] = data;
-    node.send(out);
+    // 2. Scope flow
+    let rand = Math.round(Math.random() * (out.length-1));
+    let _tmp = data._tmp = data._tmp || {};
+
+     // 3. Scope User
+    if (scope === 'user'){
+        data.user = data.user || {};
+        _tmp = data.user._tmp = data.user._tmp ||{};
+    } 
+
+     // Get array
+    let arr = _tmp['rpt_'+node.id] || [] ;
+
+    // Reset the array
+    if (arr.length === 0) {
+        for (let i=0; i < config.outputs ; i++) arr.push(i);
+        shuffle(arr);
+    } 
+
+    out[arr.pop()] = data;
+    _tmp['rpt_'+node.id] = arr;
+    return node.send(out);
 }
 
 const shuffle = (a) => {

@@ -1,6 +1,6 @@
 # Node-RED
 
-A Node-RED node to perform random call between outputs.
+A Node-RED node to perform random calls according to outputs.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
@@ -9,6 +9,25 @@ This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/no
 ```
 npm install node-red-contrib-viseo-random
 ```
+
+### Build the Node-RED Flow
+
+The `random` node 
+- *First call:* creates an array containing all the possible output values in a field according to the chosen scope.
+- Randomly shuffles the array.
+- *All calls:* retrieve the array,
+- Gets the value of the last element of the array,
+- Deletes this element from the array,
+- Sends the message to the output corresponding to the value.
+
+When all the outputs were used, the array is reset and shuffled.
+
+The scope can be set to:
+- *msg* - The current message in the flow ;
+- *user* - The msg.user field in the flow (can be stored in a database) ;
+- *global* - The node context (could be not working on multi-server networks) ;
+
+![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-random/doc/flow.jpg)
 
 ## Getting Help
 
@@ -33,4 +52,5 @@ This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
 ## Copyright and license
 
+Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
 Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.

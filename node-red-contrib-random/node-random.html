@@ -4,15 +4,24 @@
         color: '#3FADB5',
         defaults: { 
             name:     { value: undefined },
-            outputs:  { value: 1 },
-            once:     { value: undefined },
+            outputs:    { value: '2', required:true, validate:RED.validators.number() },
+            scope:      { value: "msg" }
         },
         inputs:1,
-        outputs: function(){ return this.outputs },
+        outputs: function(){ 
+            return Number(this.outputs);
+        },
         icon: "random.svg",
         align: "left",
         paletteLabel: "Random",
-        label: function() { return this.name || "Random"; }
+        label: function() { return this.name || "Random" },
+        oneditprepare: function() {
+            $("#node-input-outputs" ).spinner({min:2});
+            $("#node-input-scope").val(this.scope);
+        },
+        oneditsave: function() {
+            this.scope = $("#node-input-scope").val();
+        }
     });
 </script>
 
@@ -22,15 +31,60 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-outputs"><i class="icon-tag"></i> Outputs</label>
-        <input type="text" id="node-input-outputs" placeholder="1">
+        <label for="node-input-scope"><i class="fa fa-globe"></i> Scope</label>
+        <select id="node-input-scope" style="width:210px">
+            <option value="msg">msg</option>
+            <option value="user" >user</option>
+            <option value="global">global</option>
+        </select>
     </div>
     <div class="form-row">
-        <label for="node-input-once"><i class="icon-tag"></i> Once</label>
-        <input type="text" id="node-input-once" placeholder="user.profile.topic">
+        <label for="node-input-outputs"><i class="fa fa-random"></i> Random</label>
+        <input type="text" id="node-input-outputs" placeholder="1">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="random">
-    <p>Forward message at random between outputs</p>
+    <p>This node forwards the message to a random outputs.</p>
+
+        <h2>Main properties</h2>
+    <p>
+        <li><b>Scope</b>: where to stock the outputs array. 
+        <li><b>Random</b>: number of outputs.
+    </p>
+
+<h2><i>Random</i> property</h2>
+    <ol>  
+        <p>An array containing all the possible output values (from <code>0</code> to <code>random value-1</code>) is set at the node intialization. 
+        <br>This array is randomly shuffled and stored (depending on the scope). Each time an output is used, it is deleted from the array.
+        <br>When the array is empty, it is randomly reset and it can continue sending messages.
+        <br>
+        <br><b>Example:</b> Random = 3, used output in blue.
+            <ol style="margin-left:50px;">
+                <li> <i style="color:grey;">Array: [1,2,0] ---->  </i> <b style="color:blue;">[0]</b> [1] [2] 
+                <li> <i style="color:grey;">Array: [1,2,_] ---->  </i> [0] [1] <b style="color:blue;">[2]</b> 
+                <li> <i style="color:grey;">Array: [1,_,_] ---->  </i> [0] <b style="color:blue;">[1]</b> [2] 
+                <li> <i style="color:grey;">Array: [1,0,2] ---->  </i> [0] [1] <b style="color:blue;">[2]</b>
+                <li> <i style="color:grey;">Array: [1,0,_] ---->  </i> <b style="color:blue;">[0]</b> [1] [2] 
+                <li> <i style="color:grey;">Array: [1,_,_] ---->  </i> [0] <b style="color:blue;">[1]</b> [2] 
+                <li> ...
+            </ol>
+        </p>
+    </ol>
+
+    <h2><i>Scope</i> property</h2>
+    <ol>
+        <h3>Global</h3>
+        <p> The counter is stored in a global variable. It is independent from the user or the current message.
+            <br><b>WARNING:</b> The 'global' scope is using a global variable which is set in the node source code. It could not be working on multi-server networks.
+        </p>
+        <h3>Msg</h3>
+        <p> The counter is stored in the 'msg._tmp' field.
+            <br><b>WARNING:</b> The 'msg' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
+        </p>
+        <h3>User</h3>
+        <p> The counter is stored in the 'msg.user._tmp' field. It can be stored in a database.
+            <br><b>WARNING:</b> The 'user' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
+        </p>
+    </ol>
 </script>
