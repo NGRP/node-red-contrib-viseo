@@ -3,6 +3,8 @@
         category: 'config',
         defaults: {
             name:   { value: undefined },
+        },
+        credentials: {
             key:    { value: undefined },
             token:  { value: undefined },
         },
@@ -24,5 +26,29 @@
     <div class="form-row">
         <label for="node-config-input-key"><i class="fa fa-lock"></i> Token</label>
         <input type="text" id="node-config-input-token" placeholder="">
+    </div>
+</script>
+
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('trello-item-id',{
+        category: 'config',
+        defaults: {
+            name: { value: undefined },
+            item: { value: undefined },
+        },
+        label: function() { return this.name || "Trello Item Id"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="trello-item-id">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-item"><i class="icon-tag"></i> Id</label>
+        <input type="text" id="node-config-input-item" placeholder="">
     </div>
 </script>

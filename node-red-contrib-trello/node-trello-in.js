@@ -8,10 +8,12 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.key = RED.nodes.getNode(config.key);
+        
+        if (!config.key) {node.status({fill:"red", shape:"ring", text: 'Missing credential'}); }
+        let key = RED.nodes.getNode(config.key);
         
         start(RED, node, config);
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(node, data, config, key.credentials)  });
         this.on('close', (done)  => { stop(done) });
     }
     RED.nodes.registerType("trello-in", register, {});
@@ -40,8 +42,8 @@ const start = (RED, node, config) => {
     RED.httpNode.post (uri, (req, res, next) => { node.send({'payload' : req.body}); res.sendStatus(200); });
 }
 
-const input = (node, data, config) => {
-    let url  = 'https://api.trello.com/1/tokens/'+node.key.token+'/webhooks/?key='+node.key.key; 
+const input = (node, data, config, credentials) => {
+    let url  = 'https://api.trello.com/1/tokens/'+credentials.token+'/webhooks/?key='+credentials.key; 
     let json = {
         description: "Trello Webhook " + (config.name || node.id),
         callbackURL: CONFIG.server.host + 'trello-callback'+config.path+'/',
@@ -54,9 +56,9 @@ const input = (node, data, config) => {
         form: json
     };
 
-    let nod = node;
+    let n = node;
     request(req, (err, response, body) => {
-        if (err) { return nod.error(err); }
-        nod.warn(body);
+        if (err) { return n.error(err); }
+        n.warn(body);
     });
 }

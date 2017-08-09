@@ -1,9 +1,21 @@
 module.exports = function(RED) {
-    const register = function (config) {
+
+    // CREDENTIALS
+    RED.nodes.registerType("trello-config", function(config){
         RED.nodes.createNode(this, config);
         this.name  = config.name;
-        this.key   = config.key;
-        this.token = config.token;
-    }
-    RED.nodes.registerType("trello-config", register, {});
+    }, {
+        credentials: {
+			key:        { type: "text" },
+	        token:      { type: "text" }
+    	}
+    });
+
+    // TRELLO-ID
+    RED.nodes.registerType("trello-item-id", function(config){
+        RED.nodes.createNode(this, config);
+        this.name  = config.name;
+        this.item  = config.item;
+    }, {});
+
 }
