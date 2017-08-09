@@ -3,15 +3,34 @@
         category: 'VISEO_HELPER',
         color: '#3FADB5',
         defaults: { 
-            name:     { value: undefined },
-            outputs:  { value: 1 },
+            name:       { value: undefined },
+            outputs:    { value: '2', required:true, validate:RED.validators.number() },
+            scope:      { value: "msg" },
+            reset:      { value: "" }
         },
-        inputs:1,
-        outputs: function(){ return this.outputs },
+        inputs: 1,
+        outputs: function(){ 
+            return Number(this.outputs);
+        },
         icon: "repeat.svg",
         align: "left",
         paletteLabel: "Repeat",
-        label: function() { return this.name || "Repeat"; }
+        label: function() { return this.name || "Repeat" },
+        oneditprepare: function() {
+            $("#node-input-outputs" ).spinner({min:2});
+            $("#node-input-scope").val(this.scope);
+            $("#node-input-reset").val(this.reset);
+
+            $("#node-input-scope").on("change", function() {
+                if (this.value === "global") $("#reset").hide();
+                else $("#reset").show();
+            });
+
+        },
+        oneditsave: function() {
+            this.scope = $("#node-input-scope").val();
+            this.reset = $("#node-input-reset").val();
+        }
     });
 </script>
 
@@ -21,11 +40,96 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-outputs"><i class="icon-tag"></i> Repeat</label>
+        <label for="node-input-scope"><i class="fa fa-globe"></i> Scope</label>
+        <select id="node-input-scope" style="width:210px">
+            <option value="msg">msg</option>
+            <option value="user" >user</option>
+            <option value="global">global</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-outputs"><i class="fa fa-repeat"></i> Repeat</label>
         <input type="text" id="node-input-outputs" placeholder="1">
+    </div>
+    <div class="form-row" id="reset">
+        <label for="node-input-reset"><i class="fa fa-edit"></i> Then</label>
+        <select id="node-input-reset" style="width:70%;">
+            <option value="">Never reset the counter and stop sending msg</option>
+            <option value="first" >Reset the counter when the value is reached</option>
+            <option value="last">Send to the last output when the value is overreached</option>
+        </select>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="repeat">
-    <p>Store a counter in the message flow. Select an output according to this counter. Starting at 1.</p>
+    <p>This node selects an output according to a stored counter. </p>
+
+        <h2>Main properties</h2>
+    <p>
+        <li><b>Scope</b>: where to stock the counter. 
+        <li><b>Repeat</b>: number of repetitions (outputs).
+        <li><b>Then</b>: behavior when the value is overreached.
+    </p>
+
+    <h2><i>Scope</i> property</h2>
+    <ol>
+        <h3>Global</h3>
+        <p> The counter is stored in a global variable. It is independent from the user or the current message.
+            <br><b>WARNING:</b> The 'global' scope is using a global variable which is set in the node source code. It could not be working on multi-server networks.
+        </p>
+        <h3>Msg</h3>
+        <p> The counter is stored in the 'msg._tmp' field.
+            <br><b>WARNING:</b> The 'msg' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
+        </p>
+        <h3>User</h3>
+        <p> The counter is stored in the 'msg.user._tmp' field. It can be stored in a database.
+            <br><b>WARNING:</b> The 'user' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
+        </p>
+    </ol>
+
+    <h2><i>Then</i> property</h2>
+    <ol>  
+        <h3>"Never reset the counter and stop sending msg"</h3>
+        <p>When the counter reaches the maximum value, it stops sending messages.
+        <br>
+        <br><b>Example:</b> Repeat = 3, used output in blue.
+            <ol style="margin-left:50px;">
+                <li> <b style="color:blue;">[0]</b> [1] [2]
+                <li> [0] <b style="color:blue;">[1]</b> [2]
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> [0] [1] [2]
+                <li> [0] [1] [2]
+                <li> [0] [1] [2]
+                <li> ...
+            </ol>
+        </p>
+        <h3>"Reset the counter when the value is reached"</h3>
+        <p>When the counter reaches the maximum value, it is reset to 1 and start counting again.
+        <br>
+        <br><b>Example:</b> Repeat = 3, used output in blue.
+            <ol style="margin-left:50px;">
+                <li> <b style="color:blue;">[0]</b> [1] [2]
+                <li> [0] <b style="color:blue;">[1]</b> [2]
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> <b style="color:blue;">[0]</b> [1] [2]
+                <li> [0] <b style="color:blue;">[1]</b> [2]
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> ...
+            </ol>
+        </p>
+        <h3>"Send to the last output when the value is overreached"</h3>
+        <p>When the counter reaches the maximum value, it continues to send messages to the last output.
+        <br>
+        <br><b>Example:</b> Repeat = 3, used output in blue.
+            <ol style="margin-left:50px;">
+                <li> <b style="color:blue;">[0]</b> [1] [2]
+                <li> [0] <b style="color:blue;">[1]</b> [2]
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> ...
+            </ol>
+        </p>
+    </ol>
 </script>

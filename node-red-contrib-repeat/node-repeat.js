@@ -1,10 +1,9 @@
-
 const helper    = require('node-red-viseo-helper');
-
+ 
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
-
+ 
 module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
@@ -13,22 +12,50 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("repeat", register, {});
 }
-
+ 
+let COUNTER = 0;
 const input = (node, data, config) => {
-    let max  = parseInt(config.outputs);
-    let out  = new Array(max);
-    
-    // Retrieve counter
-    data._tmp = data._tmp || {}
-    let cpt  = data._tmp['rpt_'+node.id] || 0
-    if (cpt >= max) return;
+    let max   = parseInt(config.outputs);
+    let out   = new Array(max);
+    let scope = config.scope || 'msg';
+ 
+    // 1. Scope: Global
+    if (scope === 'global') {
+ 
+        // Increment counter
+        COUNTER = (COUNTER >= max) ? 1 : COUNTER+1;
 
-    // Set data
+        // Set data
+        out[COUNTER-1] = data;
+        return node.send(out);
+    }
+     
+    // 2. Scope flow
+    let _tmp = data._tmp = data._tmp || {};
+ 
+    // 3. Scope User
+    if (scope === 'user'){
+        data.user = data.user || {};
+        _tmp = data.user._tmp = data.user._tmp ||{};
+    } 
+
+    // Get value
+    let cpt = _tmp['rpt_'+node.id] || 0;
+ 
+    // Default behavior
+    if (cpt < max) {
+        out[cpt] = data;
+        _tmp['rpt_'+node.id] = cpt + 1;
+        return node.send(out);
+    }
+ 
+    // No reset
+    if (!config.reset) return;
+ 
+    // Reset to last or first
+    cpt = (config.reset === 'last') ? max-1 : 0;
+
+    _tmp['rpt_'+node.id] = cpt;
     out[cpt] = data;
-
-    // Store counter
-    data._tmp['rpt_'+node.id] = cpt + 1;
-
-    // Forward message
-    node.send(out);
+    return node.send(out);
 }

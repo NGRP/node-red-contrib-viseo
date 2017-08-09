@@ -1,6 +1,6 @@
 # Node-RED
 
-A Node-RED node to perform repeat call between outputs.
+A Node-RED node to perform different repeat calls according to outputs.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
@@ -9,6 +9,26 @@ This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/no
 ```
 npm install node-red-contrib-viseo-repeat
 ```
+
+### Build the Node-RED Flow
+
+The `repeat` node 
+- *First call:* create a specific counter in a field according to the chosen scope, 
+- Send the message to the first output ;
+- *Next calls:* retrieve the counter and increment it,
+- Send the message to the corresponding output ;
+
+When the value is reached, it is possible to select the node behavior:
+- Stopping sending messages ;
+- Reset the counter and continue with the normal node behavior ;
+- Always use the last output ;
+
+The scope can be set to:
+- *msg* - The current message in the flow ;
+- *user* - The msg.user field in the flow (can be stored in a database) ;
+- *global* - The node context (could be not working on multi-server networks) ;
+
+![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-repeat/doc/flow.jpg)
 
 ## Getting Help
 
