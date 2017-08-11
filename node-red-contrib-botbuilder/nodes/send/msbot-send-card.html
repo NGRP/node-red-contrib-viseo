@@ -1,13 +1,5 @@
 <script type="text/javascript">
 
-    $(document).on('change', '.section-quick select', function() {
-
-        var $parent = $(this).parent('.section-quick'),
-            disabled = $(this).val() === 'askLocation';
-        $parent.find('input').prop('disabled', disabled);
-
-    });
-
     RED.nodes.registerType('send-card',{
         category: 'VISEO_BOT',
         color: '#3FADB5',
@@ -89,6 +81,16 @@
 
         oneditprepare: function () {
 
+            $(document).on('change', '.section-quick select', function() {
+
+                var $parent = $(this).parent('.section-quick');
+                $parent.find('input').prop('disabled', false);
+
+                if ($(this).val() === 'askLocation') $parent.find('input').prop('disabled', true);
+                else if ($(this).val() !== 'postBack' && $(this).val() !== 'imBack') {
+                    $parent.find('.node-input-regexp').prop('disabled', true);
+                }
+            });
 
             var setButtons = function(buttons, query, add) {
                 var $add = $(add);
@@ -218,6 +220,23 @@
             $(panelId).removeClass('hide');
             $this.parent('.send-card-tab').addClass('active');
         })
+
+        // info section
+        $(document).on('click', '#send-card-tabs-help .red-ui-tab-label', function(){
+            $('.send-card-panel-help').addClass('hide');
+            $('.send-card-tab-help').removeClass('active');
+            $('#help-types .node-info-header').removeClass('expanded');
+            $('#help-buttons .node-info-header').removeClass('expanded');
+            $('#help-types p').hide();
+            $('#help-buttons p').hide();
+            $('#help-buttons pre').hide();
+
+            var $this = $(this)
+            var panelId = $this.attr('href');
+            $(panelId).removeClass('hide');
+            $this.parent('.send-card-tab-help').addClass('active');
+        })
+
     });
 
 </script>
@@ -442,7 +461,8 @@
                 <input  style="width: 80px" class="node-input-title"  type="text" placeholder="Label">
                 <select style="width: 80px" class="node-input-action">
                     <option value="postBack">Post Back</option>
-                    <option value="askLocation">Ask Location</option>
+                    <option value="imBack">IM Back</option>
+                    <option value="askLocation">Location</option>
                 </select>
                 <input  style="width: 80px" class="node-input-value" type="text" placeholder="Value">
                 <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
@@ -464,5 +484,144 @@
 </script>
 
 <script type="text/x-red" data-help-name="send-card">
+    <div class="red-ui-tabs" style="margin-bottom: 10px;">
+        <div>
+            <ul id="send-card-tabs-help">
+                <li class="send-card-tab-help active" style="min-width:100px;"><a href="#help-over" class="red-ui-tab-label"><span class="bidiAware" dir="">Overview</span></a></li>
+                <li class="send-card-tab-help" style="min-width:100px;"><a href="#help-types" class="red-ui-tab-label"><span class="bidiAware" dir="">Types</span></a></li>
+                <li class="send-card-tab-help" style="min-width:100px;"><a href="#help-buttons" class="red-ui-tab-label"><span class="bidiAware" dir="">Buttons</span></a></li>
+            </ul>
+        </div>
+    </div>
 
+
+    <div id="help-over" class="send-card-panel-help">
+        <h2>Main properties</h2>
+        <ol> 
+            <p>This node allows to send messages to users.</p><br>
+
+            <b>Config</b>
+            <p style="margin-left: 20px;"><b>Delay</b>: delay (ms) before sending the message.</p>
+
+            <b>Prompt</b>
+            <p style="margin-left: 20px;">If the node is waiting for a user answer (prompt.text by default).
+               <br><b>Prompt</b>: where to check the user answer.
+               <br><b>Assert</b>: validate user answer (regEx).
+            </p>
+            
+            <b>Speech</b>
+            <p style="margin-left: 20px;">Converts text in audio format.</p>
+
+            <b>Send format</b>
+            <p style="margin-left: 20px;"><b>Type</b>: type of message to send.</p>
+        </ol> 
+    </div>
+
+    <div id="help-types" class="send-card-panel-help hide">
+        <h2>Types of messages</h2>
+        <ol>  
+            <h3>Text</h3>
+            <p>Send simple text to the user.</p>
+            <p style="margin-left: 20px;">
+                <b>Text</b>: text to send to the user.
+                <br><b>Random</b>: choose a random line between each lines of text.
+            </p>
+            
+            <h3>Image</h3>
+            <p>Send an image to the user.</p>
+            <p style="margin-left: 20px;">
+                <b>Media</b>: path to the image (serveur or url).
+            </p>
+
+            <h3>Card</h3>
+            <p>Send a card to the user.
+            <br>Learn more about cards: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Messenger generic templates</a></p>
+            <p style="margin-left: 20px;">
+                <b>Carousel</b>: send several cards (several nodes are needed).
+                <br><b>Title</b>: title of the card.
+                <br><b>Subtitle</b>: subtitle of the card.
+                <br><b>Attachement</b>: image to add to the card.
+                <br><b>Buttons</b>: buttons to add to the card.
+            </p>
+
+            <h3>Quick replies</h3>
+            <p>Send quick replies to the user.
+            <br>Learn more about quick replies: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Messenger quick replies</a></p>
+            <p style="margin-left: 20px;">
+                <b>Text</b>: text to send to the user.
+                <br><b>Buttons</b>: buttons to add to the card.
+            </p>
+
+            <h3>SignIn</h3>
+            <p>Signin to an account.</p>
+            <p style="margin-left: 20px;">
+                <b>Text</b>: text to send to the user.
+                <br><b>Button</b>: text on the button.
+                <br><b>URL</b>: signin URL.
+            </p>
+        </ol>
+    </div>
+
+    <div id="help-buttons" class="send-card-panel-help hide">
+        <h2>Buttons properties</h2>
+        <ol>            
+            <h3>Cards</h3>
+
+            <p><b>Post-back / IM Back</b></p>
+            <p style="margin-left: 20px;">
+                <b>Label</b>: displayed text on the button.
+                <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
+                <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
+            </p>
+
+            <p><b>Call</b></p>
+            <p style="margin-left: 20px;">
+                This option allows to call the user (Skype only for the moment).
+            </p>
+
+            <p><b>Other options</b></p>
+            <p style="margin-left: 20px;">
+                <b>Label</b>: displayed text on the button.
+                <br><b>Value</b>: 
+                <br><b>Open URL</b>: URL to open.
+                <br><b>Show image</b>: path to the image to display - URL (computers)/ image (cellphones).
+                <br><b>Play audio / Play video</b> path to the audio/video to send.
+                <br><br>
+            </p>
+
+            <h3>Quick replies</h3>
+
+            <p><b>Post-back / IM Back</b></p>
+            <p style="margin-left: 20px;">
+                <b>Label</b>: displayed text on the button.
+                <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
+                <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
+            </p>
+
+            <p><b>Location</b></p>
+            <p style="margin-left: 20px;">
+                This quick reply asks the user to send its location, then sends it to Node-Red as an attachment.
+            <br>
+            </p>
+
+            <h3>Dynamic buttons</h3>
+            <p>You can dynamically add buttons in a function node before the send-card node. 
+            <br>Don't forget to delete them after using them. 
+            <pre type="javascript" style="width:400px"> msg.buttons = [];
+    msg.buttons.push({
+        title  : 'Choice 1',
+        action : 'postBack',
+        value  : 'choice1',
+        regexp : 'one|first|choice 1'
+    });     </pre>
+            </p>
+
+            <h3>Carousels</h3>
+
+            <p>To create a caroussel (several cards side by side), branch several send-card nodes together, and click the 'Carousel' option.
+            <br>In the last send-card node, don't click this option.
+            </p>
+
+        </ol>
+    </div>
 </script>
