@@ -1,12 +1,29 @@
 # Node-RED
 
-A Node-RED node to manage loops in flows.
+A Node-RED node to perform loops on objects.
+
+This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-loops
+npm install node-red-contrib-viseo-loop
 ```
+
+### Build the Node-RED Flow
+
+The `loop` node 
+- *First call:* creates a specific field according to the chosen scope to stock the information, 
+- *All calls:* retrieves the counter in the field and increment it,
+- IF (value < object length): sends the message to the first output, with the current value of the object ;
+- ELSE: forgot the informations and sends the message to the last output ;
+
+The scope can be set to:
+- *msg* - The current message in the flow ;
+- *user* - The msg.user field in the flow (can be stored in a database) ;
+- *global* - The node context (could be not working on multi-server networks) ;
+
+![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-loop/doc/flow.jpg)
 
 ## Getting Help
 
@@ -24,12 +41,11 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [VISEO](http://www.viseo.com) Innovation.
+This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
-- Klervi Menoret [@Klervix](https://github.com/Klervix)
+
 
 ## Copyright and license
 
-Copyright 2012-2017 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.
 Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
