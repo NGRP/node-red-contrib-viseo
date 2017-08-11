@@ -44,7 +44,7 @@ const input = (node, data, config) => {
     } 
 
      // Get array
-    let arr = _tmp['rpt_'+node.id] || [] ;
+    let arr = _tmp['rand_'+node.id] || [] ;
 
     // Reset the array
     if (arr.length === 0) {
@@ -53,7 +53,7 @@ const input = (node, data, config) => {
     } 
 
     out[arr.pop()] = data;
-    _tmp['rpt_'+node.id] = arr;
+    _tmp['rand_'+node.id] = arr;
     return node.send(out);
 }
 

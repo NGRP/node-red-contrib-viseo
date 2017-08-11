@@ -47,30 +47,11 @@
 <script type="text/x-red" data-help-name="random">
     <p>This node forwards the message to a random outputs.</p>
 
-        <h2>Main properties</h2>
+    <h2>Main properties</h2>
     <p>
         <li><b>Scope</b>: where to stock the outputs array. 
         <li><b>Random</b>: number of outputs.
     </p>
-
-<h2><i>Random</i> property</h2>
-    <ol>  
-        <p>An array containing all the possible output values (from <code>0</code> to <code>random value-1</code>) is set at the node intialization. 
-        <br>This array is randomly shuffled and stored (depending on the scope). Each time an output is used, it is deleted from the array.
-        <br>When the array is empty, it is randomly reset and it can continue sending messages.
-        <br>
-        <br><b>Example:</b> Random = 3, used output in blue.
-            <ol style="margin-left:50px;">
-                <li> <i style="color:grey;">Array: [1,2,0] ---->  </i> <b style="color:blue;">[0]</b> [1] [2] 
-                <li> <i style="color:grey;">Array: [1,2,_] ---->  </i> [0] [1] <b style="color:blue;">[2]</b> 
-                <li> <i style="color:grey;">Array: [1,_,_] ---->  </i> [0] <b style="color:blue;">[1]</b> [2] 
-                <li> <i style="color:grey;">Array: [1,0,2] ---->  </i> [0] [1] <b style="color:blue;">[2]</b>
-                <li> <i style="color:grey;">Array: [1,0,_] ---->  </i> <b style="color:blue;">[0]</b> [1] [2] 
-                <li> <i style="color:grey;">Array: [1,_,_] ---->  </i> [0] <b style="color:blue;">[1]</b> [2] 
-                <li> ...
-            </ol>
-        </p>
-    </ol>
 
     <h2><i>Scope</i> property</h2>
     <ol>
@@ -85,6 +66,26 @@
         <h3>User</h3>
         <p> The counter is stored in the 'msg.user._tmp' field. It can be stored in a database.
             <br><b>WARNING:</b> The 'user' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
+        </p>
+    </ol>
+
+    <h2><i>Random</i> property</h2>
+    <ol> 
+        <h3>Behavior</h3>
+        <p>Each time a message goes through the node, it takes a random output.
+        <br>Each time an output is used, its probability to be used again is lower.</p>
+
+        <h3>Example:</h3>
+        <p>Random = 3, used output in blue
+            <ol style="margin-left:50px;">
+                <li> <b style="color:blue;">[0]</b> [1] [2] 
+                <li> [0] [1] <b style="color:blue;">[2]</b> 
+                <li> [0] <b style="color:blue;">[1]</b> [2] 
+                <li> [0] [1] <b style="color:blue;">[2]</b>
+                <li> <b style="color:blue;">[0]</b> [1] [2] 
+                <li> [0] <b style="color:blue;">[1]</b> [2] 
+                <li> ...
+            </ol>
         </p>
     </ol>
 </script>

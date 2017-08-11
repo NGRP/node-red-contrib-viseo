@@ -89,47 +89,50 @@
 
     <h2><i>Then</i> property</h2>
     <ol>  
-        <h3>"Never reset the counter and stop sending msg"</h3>
-        <p>When the counter reaches the maximum value, it stops sending messages.
-        <br>
-        <br><b>Example:</b> Repeat = 3, used output in blue.
-            <ol style="margin-left:50px;">
-                <li> <b style="color:blue;">[0]</b> [1] [2]
-                <li> [0] <b style="color:blue;">[1]</b> [2]
-                <li> [0] [1] <b style="color:blue;">[2]</b>
-                <li> [0] [1] [2]
-                <li> [0] [1] [2]
-                <li> [0] [1] [2]
-                <li> ...
-            </ol>
-        </p>
-        <h3>"Reset the counter when the value is reached"</h3>
-        <p>When the counter reaches the maximum value, it is reset to 1 and start counting again.
-        <br>
-        <br><b>Example:</b> Repeat = 3, used output in blue.
-            <ol style="margin-left:50px;">
-                <li> <b style="color:blue;">[0]</b> [1] [2]
-                <li> [0] <b style="color:blue;">[1]</b> [2]
-                <li> [0] [1] <b style="color:blue;">[2]</b>
-                <li> <b style="color:blue;">[0]</b> [1] [2]
-                <li> [0] <b style="color:blue;">[1]</b> [2]
-                <li> [0] [1] <b style="color:blue;">[2]</b>
-                <li> ...
-            </ol>
-        </p>
-        <h3>"Send to the last output when the value is overreached"</h3>
-        <p>When the counter reaches the maximum value, it continues to send messages to the last output.
-        <br>
-        <br><b>Example:</b> Repeat = 3, used output in blue.
-            <ol style="margin-left:50px;">
-                <li> <b style="color:blue;">[0]</b> [1] [2]
-                <li> [0] <b style="color:blue;">[1]</b> [2]
-                <li> [0] [1] <b style="color:blue;">[2]</b>
-                <li> [0] [1] <b style="color:blue;">[2]</b>
-                <li> [0] [1] <b style="color:blue;">[2]</b>
-                <li> [0] [1] <b style="color:blue;">[2]</b>
-                <li> ...
-            </ol>
-        </p>
+        <h3>Case 1: "Never reset the counter and stop sending msg"</h3>
+        <p>When the counter reaches the maximum value, it stops sending messages.</p>
+
+        <h3>Case 2: "Reset the counter when the value is reached"</h3>
+        <p>When the counter reaches the maximum value, it is reset to 1 and start counting again.</p>
+
+        <h3>Case 3: "Send to the last output when the value is overreached"</h3>
+        <p>When the counter reaches the maximum value, it continues to send messages to the last output.</p>
+            
+        <h3>Examples:</h3>
+        <p>Repeat=3, used output in blue </p>
+        <span>
+        <div style="display: inline-block; margin-right: 50px;"><p><b>Case 1: </b>
+                <br><b style="color:blue;">[0]</b> [1] [2]
+                <br>[0] <b style="color:blue;">[1]</b> [2]
+                <br>[0] [1] <b style="color:blue;">[2]</b>
+                <br>[0] [1] [2]
+                <br>[0] [1] [2]
+                <br>[0] [1] [2]
+                <br> ...
+            </p>
+        </div>
+        <div style="display: inline-block; margin-right: 50px;"><p><b>Case 2: </b>
+                <br><b style="color:blue;">[0]</b> [1] [2]
+                <br>[0] <b style="color:blue;">[1]</b> [2]
+                <br>[0] [1] <b style="color:blue;">[2]</b>
+                <br><b style="color:blue;">[0]</b> [1] [2]
+                <br>[0] <b style="color:blue;">[1]</b> [2]
+                <br>[0] [1] <b style="color:blue;">[2]</b>
+                <br> ...
+            </p>
+        </div>
+        <div style="display: inline-block;"><p><b>Case 3: </b>
+                <br><b style="color:blue;">[0]</b> [1] [2]
+                <br>[0] <b style="color:blue;">[1]</b> [2]
+                <br>[0] [1] <b style="color:blue;">[2]</b>
+                <br>[0] [1] <b style="color:blue;">[2]</b>
+                <br>[0] [1] <b style="color:blue;">[2]</b>
+                <br>[0] [1] <b style="color:blue;">[2]</b>
+                <br> ...
+            </p>
+        </div>
+        </span>
+
+
     </ol>
 </script>
