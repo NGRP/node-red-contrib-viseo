@@ -20,6 +20,14 @@ On a Trello URL, add `.json` to get the board description and retrieve all model
 
 Credential require a [Trello Application Key and a Token](https://trello.com/app-key).
 
+The `trello-card` will retrieve, create or update a card. 
+- A POST (create) is performed if there is no Card Id
+- A PUT (update) is performed if there is a Card Id and a List Id
+- A GET (read) is performed if there is a Card Id but no List Id
+
+![Flow 2](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-trello/doc/flow2.jpg)
+
+Configuration can be static or retrieved from the flow (`payload.card.id`). A Good practice is to retrieve a card from it's Id then chain it with an other node to perform an update.
 
 ### Limitations
 

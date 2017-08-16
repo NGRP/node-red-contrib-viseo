@@ -19,73 +19,135 @@ module.exports = function(RED) {
 }
 
 const input = (RED, node, data, config, credentials) => { 
-    let req    = { headers: {'ContentType': 'application/json'}};
 
-    // Retrieve previous Trello card
-    req.form = helper.getByString(data, config.input, {});
 
-    
-    if (config.title)       { req.form.name        =    helper.resolve(config.title,       data, undefined); }
-    if (config.desc)        { req.form.desc        =    helper.resolve(config.desc,        data, undefined); }
-    
-    if (config.pos)         { req.form.pos         =    helper.resolve(config.pos,         data, undefined); }
-    if (config.due)         { req.form.due         =    helper.resolve(config.due,         data, undefined); }
-    if (config.dueComplete) { req.form.dueComplete =  !!helper.resolve(config.dueComplete, data, undefined); }
-    if (config.closed)      { req.form.closed      =  !!helper.resolve(config.closed,      data, undefined); }
-    
-    if (config.idCard) {
-        let card = RED.nodes.getNode(config.idCard);
-        req.form.id = helper.resolve(card.item, data, undefined); 
-    }
+    // ------------------------------------------
+    //  PARAMETERS
+    // ------------------------------------------
 
-    if (config.idList) {
-        let list = RED.nodes.getNode(config.idList);
-        req.form.idList = helper.resolve(list.item, data, undefined); 
-    }
+    // Retrieve previous Trello card and merge with configuration
+    let form = helper.getByString(data, config.input, {});
+        form = buildParameters(RED, config, data, form);
 
-    if (config.idMembers)  { 
-        let members = helper.resolve(config.idMembers, data, undefined);
-        if (members){
-            members = members.split(',');
-            req.form.idMembers = req.form.idMembers || [];
-            for (let mbr of members){ req.form.idMembers.push(mbr); }
-        }
-    }
-    if (config.idLabels)  { 
-        let labels = helper.resolve(config.idLabels, data, undefined);
-        if (labels){
-            labels = labels.split(',');
-            req.form.idLabels = req.form.idLabels || [];
-            for (let lbl of labels){ req.form.idLabels.push(lbl); }
-        }
-    }
+    // Build a GET/PST/PUT Request
+    let req  = buildRequest(credentials, form.id, undefined, form.idList ? form : undefined)
 
-    // PUT update a given Card ID
-    if (req.form.id && req.form.idList){
-        req.method = 'PUT'
-        req.url    = 'https://api.trello.com/1/cards/'        + req.form.id + '?key='+credentials.key + '&token='+credentials.token
-    }
-    
-    // GET find the given Card ID
-    if (req.form.id && !req.form.idList){
-        req.method = 'GET'
-        req.url    = 'https://api.trello.com/1/cards/'        + req.form.id + '?key='+credentials.key + '&token='+credentials.token
+    // Inner function to handle attachment
+    let setAttachment = (json, callback) => {
+        
+        // Skip GET
+        if (req.method === 'GET'){ return callback(undefined, json); }
+
+        // Check fields
+        let attachURL = helper.resolve(config.attachURL,  data, undefined);
+        if (!attachURL){ return callback(undefined, json); }
+
+        // Should we check if an attachment with the same name already existss ?
+        // If true should we remove it or let it go ?
+
+        // Build POST Request
+        let atchReq = buildRequest(credentials, form.id, '/attachments', {
+            'url'     : attachURL.indexOf('http') === 0 ? attachURL : (CONFIG.server.host + attachURL),
+            'mimeType': helper.resolve(config.attachMIME, data, undefined),
+            'name'    : helper.resolve(config.attachName, data, undefined)
+        })
+
+        request(atchReq, (err, response, body) => {
+            if (err) { return callback(err); }
+            let atchBody   = JSON.parse(body)
+            let coverReq   = buildRequest(credentials, form.id, undefined, { 'idAttachmentCover':  atchBody.id })
+            request(coverReq, (err, response, body) => {
+                if (err) { return callback(err); }
+                callback(undefined, atchBody);
+            });
+        });
     }
 
-    // POST create a new given Card
-    if (!req.form.id && req.form.idList){
-        req.method = 'POST'
-        req.url    = 'https://api.trello.com/1/cards?idList=' + req.form.idList + '&key='+credentials.key + '&token='+credentials.token
-    }
 
     let n = node;
     request(req, (err, response, body) => {
         if (err) { return n.error(err); }
         try {
             let json = JSON.parse(body)
-            helper.setByString(data, config.output || 'payload', json);
-            n.send(data);
+
+            // Handle Attachement
+            setAttachment(json, function(err, attach){
+                if (err) { return n.warn(err); }
+                helper.setByString(data, config.output || 'payload', json);
+                n.send(data);
+            })
+
         } catch (ex){ n.warn('Error: ' + body); }
     });
+}
 
+const buildRequest = (credentials, cardId, subpath, form) => {
+
+    subpath = subpath || '';
+    cardId  = cardId  || '';
+    let req     = { headers: {'ContentType': 'application/json'} };
+
+    // POST create a new given Card
+    if (!cardId || subpath){ // Kludge
+        req.form   = form || {};
+        req.method = 'POST'
+        req.url    = 'https://api.trello.com/1/cards/' + cardId + subpath +  '?key='+credentials.key + '&token='+credentials.token
+        return req;
+    }
+
+    // PUT update a given Card ID
+    if (form){
+        req.form   = form || {};
+        req.method = 'PUT'
+        req.url    = 'https://api.trello.com/1/cards/' + cardId + subpath + '?key='+credentials.key + '&token='+credentials.token
+        return req;
+    }
+    
+    // GET find the given Card ID
+    req.qs = form || {};
+    req.qs.attachments = true;
+    req.qs.pluginData  = true;
+    req.method = 'GET'
+    req.url    = 'https://api.trello.com/1/cards/' + cardId + subpath + '?key='+credentials.key + '&token='+credentials.token
+    return req;
+}
+
+const buildParameters = (RED, config, data, form) => {
+    form = form || {};
+
+    if (config.title)       { form.name        =    helper.resolve(config.title,       data, undefined); }
+    if (config.desc)        { form.desc        =    helper.resolve(config.desc,        data, undefined); }
+    
+    if (config.pos)         { form.pos         =    helper.resolve(config.pos,         data, undefined); }
+    if (config.due)         { form.due         =    helper.resolve(config.due,         data, undefined); }
+    if (config.dueComplete) { form.dueComplete =  !!helper.resolve(config.dueComplete, data, undefined); }
+    if (config.closed)      { form.closed      =  !!helper.resolve(config.closed,      data, undefined); }
+    
+    if (config.idCard) {
+        form.id = helper.resolve(config.idCard, data, undefined); 
+    }
+
+    if (config.idList) {
+        let list = RED.nodes.getNode(config.idList);
+        form.idList = helper.resolve(list.item, data, undefined); 
+    }
+
+    if (config.idMembers)  { 
+        let members = helper.resolve(config.idMembers, data, undefined);
+        if (members){
+            members = members.split(',');
+            form.idMembers = form.idMembers || [];
+            for (let mbr of members){ form.idMembers.push(mbr); }
+        }
+    }
+    if (config.idLabels)  { 
+        let labels = helper.resolve(config.idLabels, data, undefined);
+        if (labels){
+            labels = labels.split(',');
+            form.idLabels = form.idLabels || [];
+            for (let lbl of labels){ form.idLabels.push(lbl); }
+        }
+    }
+
+    return form;
 }

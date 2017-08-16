@@ -32,17 +32,17 @@
 
 
 <script type="text/javascript">
-    RED.nodes.registerType('trello-item-id',{
+    RED.nodes.registerType('trello-list-id',{
         category: 'config',
         defaults: {
             name: { value: undefined },
             item: { value: undefined },
         },
-        label: function() { return this.name || "Trello Item Id"; }
+        label: function() { return this.name || "Trello List"; }
     });
 </script>
 
-<script type="text/x-red" data-template-name="trello-item-id">
+<script type="text/x-red" data-template-name="trello-list-id">
     <div class="form-row">
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="">

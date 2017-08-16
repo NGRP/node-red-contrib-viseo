@@ -7,13 +7,16 @@
             'input'      : { value: undefined },
             'output'     : { value: undefined },
             'key'        : { value: undefined, type: 'trello-config', required: true },
-            'idCard'     : { value: undefined, type: 'trello-item-id', required: false},
+            'idCard'     : { value: undefined },
             'title'      : { value: undefined },
             'desc'       : { value: undefined },
             'closed'     : { value: undefined },
             'idMembers'  : { value: undefined },
-            'idList'     : { value: undefined, type: 'trello-item-id', required: false },
+            'idList'     : { value: undefined, type: 'trello-list-id', required: false },
             'idLabels'   : { value: undefined },
+            'attachURL'  : { value: undefined },
+            'attachMIME' : { value: undefined },
+            'attachName' : { value: undefined },
             'pos'        : { value: undefined },
             'due'        : { value: undefined },
             'dueComplete': { value: undefined },
@@ -80,6 +83,7 @@
             <ul id="trello-card-tabs">
                 <li class="trello-card-tab active"><a href="#general" class="red-ui-tab-label"><span class="bidiAware" dir="">General</span></a></li>
                 <li class="trello-card-tab"><a href="#meta" class="red-ui-tab-label"><span class="bidiAware" dir="">Metadata</span></a></li>
+                <li class="trello-card-tab"><a href="#attach" class="red-ui-tab-label"><span class="bidiAware" dir="">Attachment</span></a></li>
                 <li class="trello-card-tab"><a href="#advanced" class="red-ui-tab-label" title="debug"><span class="bidiAware" dir="">Advanced</span></a></li>
             </ul>
         </div>
@@ -94,7 +98,7 @@
         <div class="form-row">
             <label for="node-input-idList"><i class="icon-tag"></i> List</label>
             <input type="text" id="node-input-idList" placeholder="">
-            <div class="input-info">The ID of the list the card should be created in</div>
+            <div class="input-info">The ID of the card's list (required to create/update a card)</div>
         </div>
         <div class="form-row">
             <label for="node-input-title"><i class="icon-tag"></i> Title</label>
@@ -117,14 +121,27 @@
             <input type="text" id="node-input-idMembers" placeholder="">
             <div class="input-info">Comma-separated list of member IDs to add to the card</div>
         </div>
+    </div>
+    <div id="trello-card-attach" class="trello-card-panel hide">
+        <div class="form-row">
+            <label for="node-input-attachURL"><i class="icon-tag"></i> Attachment</label>
+            <input type="text" id="node-input-attachURL" placeholder="">
+        </div>
+        <div class="form-row">
+            <label for="node-input-attachMIME"><i class="icon-tag"></i> MIME</label>
+            <input type="text" id="node-input-attachMIME" placeholder="">
+        </div>
+        <div class="form-row">
+            <label for="node-input-attachName"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-attachName" placeholder="">
+        </div>
+    </div>
+    <div id="trello-card-advanced" class="trello-card-panel hide">
         <div class="form-row">
             <label for="node-input-pos"><i class="icon-tag"></i> Position</label>
             <input type="text" id="node-input-pos" placeholder="">
             <div class="input-info">The position of the new card. top, bottom, or a positive float</div>
         </div>
-    </div>
-
-    <div id="trello-card-advanced" class="trello-card-panel hide">
         <div class="form-row">
             <label for="node-input-closed"><i class="icon-tag"></i> Closed</label>
             <input type="checkbox" style="width: auto;" id="node-input-closed"> <span class="checkbox-info">Mark as closed</span>
