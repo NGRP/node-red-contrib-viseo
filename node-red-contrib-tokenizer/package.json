@@ -1,10 +1,10 @@
 {
     "name"          : "node-red-contrib-viseo-tokenizer",
-    "version"       : "0.0.2",
+    "version"       : "0.0.3",
     "description"   : "",
     "dependencies"  : { 
         "crypto-js" : "^3.1.9-1",
-        "node-red-viseo-helper" : "*"
+        "node-red-viseo-helper" : "~0.0"
     },
     "repository" : {
         "type":"git",

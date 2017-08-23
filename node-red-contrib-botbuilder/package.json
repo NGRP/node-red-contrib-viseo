@@ -15,7 +15,7 @@
         "wechat"    : "^2.0.3",
         "wechat-api": "^1.28.0",
         "lodash"    : "^4.15.0",
-        "node-red-viseo-helper" : "*"
+        "node-red-viseo-helper" : "~0.0"
     },
     "repository" : {
         "type":"git",
