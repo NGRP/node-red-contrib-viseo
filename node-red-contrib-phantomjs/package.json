@@ -1,10 +1,10 @@
 {
     "name"          : "node-red-contrib-viseo-phantomjs",
-    "version"       : "0.0.4",
+    "version"       : "0.0.5",
     "description"   : "Wrapper on PhantomJS",
     "dependencies"  : {
         "phantomjs-prebuilt" : "^2.1.0",
-        "node-red-viseo-helper" : "*"
+        "node-red-viseo-helper" : "~0.0"
     },
     "repository" : {
         "type":"git",

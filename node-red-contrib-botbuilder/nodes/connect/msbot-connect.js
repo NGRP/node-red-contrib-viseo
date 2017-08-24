@@ -8,7 +8,6 @@ const event   = require('../../lib/event.js');
 const helper  = require('../../lib/helper.js');
 
 // Retrive requirements
-require('../../lib/config.js').init();
 require('../../lib/i18n.js').init();
 
 // Retrieve server

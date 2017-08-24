@@ -1,12 +1,12 @@
 {
     "name"          : "node-red-contrib-viseo-ms-graph",
-    "version"       : "0.0.4",
+    "version"       : "0.0.5",
     "author"        : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Wrapper of Microsoft Graph",
     "dependencies"  : {  
         "oauth"     : "*",
         "node-uuid" : "*",
-        "node-red-viseo-helper" : "*"
+        "node-red-viseo-helper" : "~0.0"
     },
     "repository" : {
         "type":"git",

@@ -1,12 +1,12 @@
 {
   "name"        : "node-red-contrib-viseo-api-ai",
-  "version"     : "0.0.6",
+  "version"     : "0.0.7",
   "description" : "API.AI Wrapper",
   "dependencies": {
     "apiai"     : "^3.0.3",
     "joi"       : "^10.1.0",
     "md5"       : "^2.2.1",
-    "node-red-viseo-helper" : "*"
+    "node-red-viseo-helper" : "~0.0"
   },
   "repository": {
     "type": "git",

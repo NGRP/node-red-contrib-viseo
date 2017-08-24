@@ -14,12 +14,6 @@ Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 npm install node-red-contrib-viseo-botbuilder
 ```
 
-## Documentation
-
-Configuration can be set in nodes with data stored in flow.json.
-
-Some data can also be stored is in a [configuration file](https://gist.github.com/JpEncausse/40a917ade2e044eb5c9f5a5381d886dc)
-and set with ENV var `BOTBUILDER_CFG` (requires an absolute path)
 
 ### Get Started
 
