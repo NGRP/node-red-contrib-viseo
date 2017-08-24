@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-botbuilder",
-    "version"       : "0.2.50",
+    "version"       : "0.2.51",
     "description"   : "A MS BotBuilder implementation for Node-RED",
     "dependencies"  : {
         "botbuilder": "^3.*.*",
@@ -11,7 +11,8 @@
         "guid"	    : "^0.0.12",
         "node-xlsx" : "^0.7.4",
         "mustache"  : "^2.3.0",
-        "request-promise": "^4.1.1",
+        "request-promise-native": "^1.0.4",
+        "es6-promisify": "^5.0.0",
         "wechat"    : "^2.0.3",
         "wechat-api": "^1.28.0",
         "lodash"    : "^4.15.0",
@@ -31,7 +32,7 @@
             "msbot-profile":     "nodes/connect/msbot-profile.js",
             "msbot-event":       "nodes/connect/msbot-event.js",
             "msbot-continue":    "nodes/connect/msbot-continue.js",
-            "msbot-attachement": "nodes/attachment/msbot-attachement.js",
+            "msbot-attachment":  "nodes/attachment/msbot-attachment.js",
             "msbot-fb-profile":  "nodes/channel/msbot-fb-profile.js",
             "msbot-fb-greeting": "nodes/channel/msbot-fb-greeting.js",
             "msbot-fb-log":      "nodes/channel/msbot-fb-log.js",

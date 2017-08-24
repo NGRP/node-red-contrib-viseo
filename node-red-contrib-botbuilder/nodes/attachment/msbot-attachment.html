@@ -1,0 +1,69 @@
+<script type="text/javascript">
+    RED.nodes.registerType('attachment',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:       { value: undefined },
+            input:      { value: undefined },
+            output:     { value: undefined },
+            filter:     { value: undefined },
+            token:      { value: undefined },
+            pptTypeIn:  { value:"msg", required: false  },
+            pptTypeOut: { value:"msg", required: false  },
+        },
+        inputs:  1,
+        outputs: 1,
+		icon: "file.svg",  
+		align: "left",
+		paletteLabel: "Attachment",
+		label: function() { return this.name || "Attachment"; },
+		oneditprepare: function() {
+            $("#node-input-input") .typedInput({ default: this.pptTypeIn  || 'msg', types:['msg']});
+            $("#node-input-output").typedInput({ default: this.pptTypeout || 'msg', types:['msg']});
+        }
+    });
+</script>
+<style>
+    .input-info    { font-size: 12px; padding-left: 104px; font-style: italic; }
+    .checkbox-info { font-size: 12px; }
+</Style>
+<script type="text/x-red" data-template-name="attachment">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+	</div>
+	<div class="form-row">
+        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
+        <input type="text" id="node-input-input" placeholder="message.attachments" style="width: 70%" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" placeholder="message.attachments" style="width: 70%" >
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Filter</label>
+        <select id="node-input-filter">
+            <option value=""></option>
+            <option value="image/jpeg|image/gif|image/png">Any images</option>
+            <option value="image/jpeg">image/jpeg</option>
+            <option value="image/gif">image/gif</option>
+            <option value="image/png">image/png</option>
+            <option value="text/plain">Text</option>
+        </select>
+        <div class="input-info">Filter output (or payload) with matching files</div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-token"><i class="icon-tag"></i> Token</label>
+        <input type="checkbox" style="width: auto;" id="node-input-token"> <span class="checkbox-info">(Always retrieve files using a secure token skype & msteams)</span>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="attachment">
+    This node download a Buffer for each attachments of ChatBot's message 
+    (that should be in data.message.attachments[]).
+    <ul>
+        <li>The Buffer is linked to attachment object</li>
+        <li>The attachment list is also returned in output field or payload</li>
+        <li>The download task is performed only on matching filter</li>
+    </ul>
+</script>
