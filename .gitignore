@@ -48,6 +48,11 @@ Thumbs.db
 # Project
 ##########################################
 
+TMP
+node_modules
+!node_modules/node-red-viseo-helper
+!node_modules/node-red-contrib-viseo-nosql-manager
+
 node-red-contrib-*/node_modules
 node-red-contrib-sarah
 node-red-direct-energie
