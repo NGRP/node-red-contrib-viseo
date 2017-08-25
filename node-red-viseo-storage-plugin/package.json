@@ -1,0 +1,19 @@
+{
+    "name": "node-red-viseo-storage-plugin",
+    "version": "0.0.1",
+    "description": "Storage plugin to replace node-red's defaults file system",
+    "dependencies": {
+        "node-red": "0.17.5",
+        "fs-extra": "1.0.0",
+        "when": "3.7.8"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-viseo-storage-plugin"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "viseo",
+        "sarah"
+    ]
+}
