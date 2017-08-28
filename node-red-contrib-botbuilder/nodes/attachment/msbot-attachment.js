@@ -38,7 +38,6 @@ const input = (node, data, config) => {
 		helper.setByString(data, config.output || "payload", files);
 		node.send(data);
 	});
-	node.send(data);
 }
 
 // Utility Function --------------------------------------
