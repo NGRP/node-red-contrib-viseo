@@ -111,7 +111,7 @@ const get = function(node, data, config) {
                     let value = helper.getByString(data, config.value);
                     if (value && (typeof value) === 'object') {
                         extend(true, value, result);
-                        node.send(data);
+                        return node.send(data);
                     }
                 }            
 
