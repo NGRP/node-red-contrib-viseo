@@ -110,7 +110,8 @@ const get = function(node, data, config) {
                 if (config.merge) {
                     let value = helper.getByString(data, config.value);
                     if (value && (typeof value) === 'object') {
-                        extend(true, result, value);
+                        result = extend(true, {}, result, value);
+                        helper.setByString(data, config.value, result);
                         return node.send(data);
                     }
                 }            
