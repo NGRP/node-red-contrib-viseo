@@ -3,7 +3,8 @@
     "version"       : "0.0.5",
     "description"   : "",
     "dependencies"  : {
-		"request"   : "^2.76.0"
+        "request"   : "^2.76.0",
+        "node-red-viseo-helper" : "~0.0"
 	},
     "repository" : {
         "type":"git",
