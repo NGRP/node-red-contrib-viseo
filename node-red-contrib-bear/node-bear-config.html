@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    RED.nodes.registerType('bear-config',{
+        category: 'config',
+        defaults: {
+            name: { value: undefined },
+        },
+        credentials:  {
+            username: { value: undefined },
+            password: { value: undefined },
+        },
+        label: function() {
+            return this.name || "BEAR API config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="bear-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="fa fa-lock"></i> Login</label>
+        <input type="text" id="node-config-input-username" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
+        <input type="text" id="node-config-input-password" placeholder="">
+    </div>
+</script>
