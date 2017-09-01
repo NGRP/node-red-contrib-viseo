@@ -3,17 +3,27 @@
         category: 'VISEO_SPEECH',
         color: '#3FADB5',
         defaults: { 
-            name:  { value: undefined },
-            key:   { value: undefined },
-            file:  { value: undefined },
-            contentType:  { value: undefined },
+            name:        { value: undefined },
+            input:       { value: undefined },
+            output:      { value: undefined },
+            language:    { value: undefined },
+            contentType: { value: undefined },
+            pptTypeIn:   { value: "msg"  },
+            pptTypeOut:  { value: "msg"  },
+        },
+        credentials: {
+            key:         { value: undefined },
         },
         inputs:  1,
         outputs: 1,
         icon: "microsoft.svg",
         align: "left",
         paletteLabel: 'MS Speech',
-        label: function() { return this.name || "MS Speech2Text"; }
+        label: function() { return this.name || "Bing Speech"; },
+        oneditprepare: function() {
+            $("#node-input-input") .typedInput({ default: this.pptTypeIn  || 'msg', types:['msg']});
+            $("#node-input-output").typedInput({ default: this.pptTypeout || 'msg', types:['msg']});
+        }
     });
 </script>
 
@@ -23,15 +33,23 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-key"><i class="icon-tag"></i> Key</label>
-        <input type="text" id="node-input-key" placeholder="">
+        <label for="node-input-key"><i class="fa fa-lock"></i> Subscription</label>
+        <input type="text" id="node-input-key" placeholder="00000000-0000-0000-0000-000000000000">
     </div>
     <div class="form-row">
-        <label for="node-input-file"><i class="icon-tag"></i> File</label>
-        <input type="text" id="node-input-file" placeholder="{payload}">
+        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>  
     </div>
     <div class="form-row">
-        <label for="node-input-contentType"><i class="icon-tag"></i> Content Type</label>
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-language"><i class="icon-tag"></i> Language</label>
+        <input type="text" id="node-input-language" placeholder="fr-FR">
+    </div>
+    <div class="form-row">
+        <label for="node-input-contentType"><i class="icon-tag"></i> ContentType</label>
         <input type="text" id="node-input-contentType" placeholder="audio/wav; codec=audio/pcm; samplerate=16000">
     </div>
 </script>
