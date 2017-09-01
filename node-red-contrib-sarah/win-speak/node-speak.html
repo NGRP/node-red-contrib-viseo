@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType('win-speak',{
+        category: 'SARAH',
+        color: '#3FADB5',
+        defaults: { 
+            name:      { value: undefined },
+        },
+        inputs:1,
+        outputs:1,
+        icon: "speak.svg",
+        align: "left",
+        paletteLabel: "Speak",
+        label: function() { return this.name || "Speak"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="win-speak">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="win-speak">
+    <p>Perform text to speech</p>
+</script>

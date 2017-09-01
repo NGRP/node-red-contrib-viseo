@@ -1,0 +1,67 @@
+<script type="text/javascript">
+    RED.nodes.registerType('win-listen',{
+        category: 'SARAH',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            process:    { value: undefined },
+            language:   { value: undefined },
+            confidence: { value: undefined },
+            recognizer: { value: undefined },
+            hotword:    { value: undefined },
+            input:      { value: undefined },
+            output:     { value: undefined },
+            pptTypeIn:  { value: "msg"  },
+            pptTypeOut: { value: "msg"  },
+        },
+        inputs:1,
+        outputs:1,
+        icon: "listen.svg",
+        align: "left",
+        paletteLabel: "Listen",
+        label: function() { return this.name || "Listen"; },
+        oneditprepare: function() {
+            $("#node-input-input") .typedInput({ default: this.pptTypeIn  || 'msg', types:['msg']});
+            $("#node-input-output").typedInput({ default: this.pptTypeout || 'msg', types:['msg']});
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="win-listen">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-confidence"><i class="icon-tag"></i> Confidence</label>
+        <input type="text" id="node-input-confidence" placeholder="0.7">
+    </div>
+    <div class="form-row">
+        <label for="node-input-language"><i class="icon-tag"></i> Language</label>
+        <input type="text" id="node-input-language" placeholder="fr-FR">
+    </div>
+    <div class="form-row">
+        <label for="node-input-hotword"><i class="icon-tag"></i> Hotword</label>
+        <input type="text" id="node-input-hotword" placeholder="SARAH">
+    </div>
+    <div class="form-row">
+        <label for="node-input-process"><i class="icon-tag"></i> Process</label>
+        <input type="text" id="node-input-process" placeholder="/bin/listen.exe">
+    </div>
+    <div class="form-row">
+        <label for="node-input-recognizer"><i class="icon-tag"></i> Recognizer</label>
+        <input type="text" id="node-input-recognizer" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="win-listen">
+    <p>Listen server</p>
+</script>
