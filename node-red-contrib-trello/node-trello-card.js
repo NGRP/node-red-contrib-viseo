@@ -1,5 +1,5 @@
 const request = require('request');
-const helper   = require('node-red-viseo-helper');
+const helper  = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
