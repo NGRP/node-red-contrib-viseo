@@ -1,0 +1,36 @@
+<script type="text/javascript">
+    RED.nodes.registerType('win-sarah',{
+        category: 'SARAH',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            options:    { value: undefined, type: 'win-listen-config', required: true },
+            grammar:    { value: undefined },
+        },
+        inputs: 0,
+        outputs:1,
+        icon: "sarah.svg",
+        align: "left",
+        paletteLabel: "SARAH",
+        label: function() { return this.name || "SARAH"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="win-sarah">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-options"><i class="icon-tag"></i> Options</label>
+        <input type="text" id="node-input-options" placeholder=""/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-grammar"><i class="icon-tag"></i> Grammar</label>
+        <input type="text" id="node-input-grammar" placeholder="{cwd}/data/grammar">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="win-sarah">
+
+</script>

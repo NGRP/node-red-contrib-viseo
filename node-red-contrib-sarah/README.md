@@ -1,13 +1,23 @@
 # Node-RED
 
-A Node-RED node wrapper of Sensit (sigfox) API.
+Node-RED nodes to trigger CLI windows .exe for SARAH
 
-This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
+This module is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
+
+This module is the v5 of [SARAH project](http://sarah.encausse.net)
+
+TODO:
+- Update listen.exe to return a JSON of XML Path
+- Add a listen node taking a grammar as input
+- Add an option to stop process after first match
+- Add an option to stop/start listening
+- How to retrieve grammar from third party plugins (spreads everywhere) ?
+- Nodes listen/speak should use SocketIO or DirectLine to communicate with a Server. In case of SocketIO we should add an algorithm to handle replies and prompts.
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-sensit
+npm install node-red-contrib-viseo-sarah
 ```
 
 ## Getting Help
