@@ -8,12 +8,10 @@ const helper  = require('node-red-viseo-helper');
 //  https://docs.microsoft.com/en-us/azure/cognitive-services/speech/getstarted/getstartedrest
 // --------------------------------------------------------------------------
 
-let stderr = undefined;
 module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        stderr = function(data){ node.log(data.toString()); }
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("ms-speech-text", register, { credentials: { key: {type:"text"}}});
