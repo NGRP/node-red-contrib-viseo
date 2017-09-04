@@ -15,6 +15,9 @@ module.exports = function(RED) {
  
 let COUNTER = 0;
 const input = (node, data, config) => {
+
+    const repeatKey = 'rpt_' + node.id.replace('.', '_');
+
     let max   = parseInt(config.outputs);
     let out   = new Array(max);
     let scope = config.scope || 'msg';
@@ -40,12 +43,12 @@ const input = (node, data, config) => {
     } 
 
     // Get value
-    let cpt = _tmp['rpt_'+node.id] || 0;
+    let cpt = _tmp[repeatKey] || 0;
  
     // Default behavior
     if (cpt < max) {
         out[cpt] = data;
-        _tmp['rpt_'+node.id] = cpt + 1;
+        _tmp[repeatKey] = cpt + 1;
         return node.send(out);
     }
  
@@ -55,7 +58,7 @@ const input = (node, data, config) => {
     // Reset to last or first
     cpt = (config.reset === 'last') ? max-1 : 0;
 
-    _tmp['rpt_'+node.id] = cpt;
+    _tmp[repeatKey] = cpt;
     out[cpt] = data;
     return node.send(out);
 }

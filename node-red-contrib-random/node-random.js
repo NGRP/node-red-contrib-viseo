@@ -15,6 +15,9 @@ module.exports = function(RED) {
 
 let COUNTER = [];
 const input = (node, data, config) => {
+
+    const randomKey = 'rand_' + node.id.replace('.', '_');
+
     let out  = new Array(parseInt(config.outputs));
     let scope = config.scope || 'msg';
 
@@ -44,7 +47,7 @@ const input = (node, data, config) => {
     } 
 
      // Get array
-    let arr = _tmp['rand_'+node.id] || [] ;
+    let arr = _tmp[randomKey] || [] ;
 
     // Reset the array
     if (arr.length === 0) {
@@ -53,7 +56,7 @@ const input = (node, data, config) => {
     } 
 
     out[arr.pop()] = data;
-    _tmp['rand_'+node.id] = arr;
+    _tmp[randomKey] = arr;
     return node.send(out);
 }
 

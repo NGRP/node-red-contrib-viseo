@@ -18,6 +18,8 @@ module.exports = function(RED) {
 let CONF = {};
 const input = (node, data, config) => {
 
+    const loopKey = 'loop' + node.id.replace('.', '_');
+
     // 1. SCOPE : confObject
     // 1.1. Scope: Flow
     let scope = config.scope || 'msg',
@@ -31,7 +33,7 @@ const input = (node, data, config) => {
 
     // 1.3. Scope: Global
     let confObject = CONF;
-    if (scope !== 'global') confObject = _tmp['loop_'+node.id] || {};
+    if (scope !== 'global') confObject = _tmp[loopKey] || {};
 
     // 2. PREMIER PASSAGE : init object
     if (JSON.stringify(confObject) === '{}') {
@@ -69,15 +71,17 @@ const input = (node, data, config) => {
     let len = (confObject.array !== undefined) ? confObject.array.length : confObject.properties.length;
 
     // 4.1. Out of loop
-    if (confObject.count >= len) {  (scope === 'global') ? CONF = {} : _tmp['loop_'+node.id] = undefined;
+    if (confObject.count >= len) {  (scope === 'global') ? CONF = {} : _tmp[loopKey] = undefined;
                                     helper.setByString(loc, outputObject, undefined);
                                     return node.send([undefined,data]); }
 
     // 4.2. Increment
-    (scope === 'global') ? CONF = confObject : _tmp['loop_'+node.id] = confObject;
+    (scope === 'global') ? CONF = confObject : _tmp[loopKey] = confObject;
     let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};
 
     helper.setByString(loc, outputObject, outObject);
     node.send([data, undefined]);
+
+
     
 }

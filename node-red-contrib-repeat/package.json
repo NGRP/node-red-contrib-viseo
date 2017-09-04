@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-repeat",
-    "version"       : "0.1.1",
+    "version"       : "0.1.2",
     "description"   : "Iterate on calls between outputs",
     "dependencies"  : { 
         "node-red-viseo-helper" : "~0.0"
