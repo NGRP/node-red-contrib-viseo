@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>New Age - Start Bootstrap Theme</title>
+    <title>VISEO Bot Framework</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="lib/device-mockups/device-mockups.min.css">
 
     <!-- Theme CSS -->
-    <link href="css/new-age.min.css" rel="stylesheet">
+    <link href="css/new-age.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,24 +42,18 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#viseo-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand page-scroll" href="#page-top">Start Bootstrap</a>
+                <a class="navbar-brand page-scroll" href="#page-top"><img src="img/logo-inno-white.png" alt="VISEO Bot Framework" style="height: 100%;" ></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div class="collapse navbar-collapse" id="viseo-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a class="page-scroll" href="#download">Download</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#features">Features</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#contact">Contact</a>
-                    </li>
+                    <li><a class="page-scroll" href="#features">Features</a></li>
+                    <li><a class="page-scroll" href="#download">Download</a></li>
+                    <li><a class="page-scroll" href="#contact">Contact</a></li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -73,18 +67,35 @@
                 <div class="col-sm-7">
                     <div class="header-content">
                         <div class="header-content-inner">
-                            <h1>New Age is an app landing page that will help you beautifully showcase your new mobile app, or anything else!</h1>
-                            <a href="#download" class="btn btn-outline btn-xl page-scroll">Start Now for Free!</a>
+                            
+                            <h1>Virtual assistant and native user interface powered by open-source framework</h1>
+                            <p align="left">
+                                <a href="#download" class="btn btn-background-secondary btn-outline btn-xl page-scroll">Explore the docs</a>
+                                <a href="#download" class="btn btn-background-white btn-outline btn-xl page-scroll">Download</a>
+                            </p>
+                            <!-- <p align="center"><img src="img/logo.png" alt="VISEO Bot Framework" width="60%" ></p> -->
+                            <p style="height:10em">&nbsp;</p>
+                            <h3>
+                                Billions of people are using messaging platforms everyday to perform simple task, 
+                                getting helps, stay informed, everywhere, anytime. 
+                            </h3>
+                            <h3>
+                                We combined the modularity of <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> 
+                                with the UI of <a href="https://nodered.org/">IBM Node-RED</a> to deliver the next generation of 
+                                conversational UI designer.
+                            </h3>
                         </div>
                     </div>
+                    
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-1"></div>
+                <div class="col-sm-4">
                     <div class="device-container">
                         <div class="device-mockup iphone6_plus portrait white">
                             <div class="device">
                                 <div class="screen">
                                     <!-- Demo image for screen mockup, you can put an image here, some HTML, an animation, video, or anything else! -->
-                                    <img src="img/demo-screen-1.jpg" class="img-responsive" alt="">
+                                    <img src="img/" class="img-responsive" alt="">
                                 </div>
                                 <div class="button">
                                     <!-- You can hook the "home button" to some JavaScript events or just remove it -->
@@ -96,17 +107,51 @@
             </div>
         </div>
     </header>
+    <section id="keys" class="keys">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <i class="icon-speech text-secondary feature-icon"></i>
+                        <h3 class="section-heading">Focus on User Experience</h3>
+                        <p>
+                            Because 75% of success relies on the conversational UX,
+                            we built a tool for Bot Owner (scenarist or ethnologist) 
+                            to manipulate components of a conversational flow.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <i class="icon-layers text-secondary feature-icon"></i>
+                        <h3 class="section-heading">Modular and Open-source</h3>
+                        <p></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <i class="icon-lock text-secondary feature-icon"></i>
+                        <h3 class="section-heading">Reliable, scalable and secure</h3>
+                        <p>
+                            The framework can be package into a Docker container and follow best pratices 
+                            provides by Microsoft, Facebook and IBM. All critical data are crypted 
+                            and message are secured through HTTPs connection.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <section id="download" class="download bg-primary text-center">
         <div class="container">
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
-                    <h2 class="section-heading">Discover what all the buzz is about!</h2>
-                    <p>Our app is available on any mobile device! Download now to get started!</p>
-                    <div class="badges">
-                        <a class="badge-link" href="#"><img src="img/google-play-badge.svg" alt=""></a>
-                        <a class="badge-link" href="#"><img src="img/app-store-badge.svg" alt=""></a>
-                    </div>
+                    <h2 class="section-heading">Give it a Try !</h2>
+                    <p>Our framework is available on Windows, MacOS, Linux! Download now to get started!</p>
+                    - Lien Windows
+                    - Lien Docker
+                    - Lien Linux
                 </div>
             </div>
         </div>

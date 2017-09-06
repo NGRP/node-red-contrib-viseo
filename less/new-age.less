@@ -10,6 +10,7 @@ body {
 
 body {
     .body-font;
+    color: #464a5c;
 }
 
 a {
@@ -47,6 +48,10 @@ p {
     margin-bottom: 20px;
 }
 
+I.feature-icon  {
+    font-size: 80px;
+}
+
 // Navigation
 
 .navbar-default {
@@ -71,7 +76,8 @@ p {
         > li {
             > a {
                 .alt-font;
-                font-size: 11px;
+                font-weight: bold;
+                font-size: 12px;
             }
             > a,
             > a:focus {
@@ -195,7 +201,7 @@ header {
     }
     @media (min-width: 992px) {
         .header-content .header-content-inner h1 {
-            font-size: 50px;
+            font-size: 40px;
         }
     }
 }
@@ -419,6 +425,13 @@ footer {
         background-color: @theme-primary;
         border-color: @theme-primary;
     }
+}
+.btn-background-secondary{
+    background-color: @theme-secondary;
+}
+.btn-background-white{
+    background-color: white;
+    color: @theme-secondary;
 }
 
 .btn {
