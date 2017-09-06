@@ -24,6 +24,9 @@
     <link rel="stylesheet" href="lib/simple-line-icons/css/simple-line-icons.css">
     <link rel="stylesheet" href="lib/device-mockups/device-mockups.min.css">
 
+    <!-- WebChat CSS -->
+    <link href="https://unpkg.com/botframework-webchat/botchat.css" rel="stylesheet" />
+
     <!-- Theme CSS -->
     <link href="css/new-age.css" rel="stylesheet">
 
@@ -93,7 +96,7 @@
                     <div class="device-container">
                         <div class="device-mockup iphone6_plus portrait white">
                             <div class="device">
-                                <div class="screen">
+                                <div id="chatbot" class="screen">
                                     <!-- Demo image for screen mockup, you can put an image here, some HTML, an animation, video, or anything else! -->
                                     <img src="img/" class="img-responsive" alt="">
                                 </div>
@@ -107,7 +110,7 @@
             </div>
         </div>
     </header>
-    <section id="keys" class="keys">
+    <section id="keys" class="keys text-center">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
@@ -278,6 +281,16 @@
 
     <!-- Theme JavaScript -->
     <script src="js/new-age.min.js"></script>
+
+    <script src="https://unpkg.com/botframework-webchat/botchat.js"></script>
+    <script>
+        BotChat.App({
+            directLine: { secret: 'DPeFHbiMdmQ.cwA.kF0.mT5lP1bs6Ujoeu_zjlZ7nvSll4X7HuBH3kqZwkl1ZZw' },
+            user: { id: 'userid' },
+            bot: { id: 'botid' },
+            resize: 'detect'
+        }, document.getElementById("chatbot"));
+    </script>
 
 </body>
 
