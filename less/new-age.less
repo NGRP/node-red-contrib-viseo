@@ -10,7 +10,7 @@ body {
 
 body {
     .body-font;
-    color: #464a5c;
+    color: @theme-text;
 }
 
 a {
@@ -222,7 +222,7 @@ section {
 }
 
 section.download {
-    padding: 150px 0;
+
     position: relative;
     h2 {
         margin-top: 0;
@@ -404,6 +404,10 @@ footer {
 // Bootstrap Overrides
 
 .bg-primary {
+    color:  @theme-text;
+    A       { color: @theme-text; }
+    A:hover { color: @theme-tertiary; text-decoration: none; }
+    
     background: @theme-primary;
     background: -webkit-linear-gradient(@theme-primary , darken(@theme-primary, 5%));
     background: linear-gradient(@theme-primary , darken(@theme-primary, 5%));
