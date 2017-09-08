@@ -1,5 +1,6 @@
 const fs = require('fs');
 const spawn = require('child_process').spawn;
+const helper  = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -15,9 +16,11 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
-    
+    let tts = helper.getByString(data, config.input || 'payload', undefined);
+    if (!tts) return;
+
     let path = __dirname+'/bin/speak.exe';
-    let args = ['-tts', data.payload.text];
+    let args = ['-tts', tts];
     const child = spawn(path, args);
     
     child.stdout.on('data', (data) => {
