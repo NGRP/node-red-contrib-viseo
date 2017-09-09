@@ -17,7 +17,7 @@ const kill = exports.kill = (id) => {
 }
 
 const stdErr = exports.stdErr = (id, data, logback) => {
-    logback('Error in process "listen.exe" for ID '+ id + ' : ' + data)
+    logback(data.toString('utf8'))
 }
 
 const close = exports.close = (id, code, logback) => {

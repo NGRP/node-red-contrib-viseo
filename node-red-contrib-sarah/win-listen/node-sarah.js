@@ -31,7 +31,7 @@ const start = (RED, node, config) => {
     let options = RED.nodes.getNode(config.options);
     
     let setup   = options.setup()
-    setup.grammar = config.grammar || GRAMMAR;
+    setup.grammar = helper.resolve(config.grammar || GRAMMAR);
 
     listen.start(options.name, setup, (json) => {
         let data = {}
