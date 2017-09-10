@@ -4,8 +4,8 @@
     "author"        : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Wrapper of Microsoft Graph",
     "dependencies"  : {  
-        "oauth"     : "*",
-        "node-uuid" : "*",
+        "oauth"     : "0.9.15",
+        "node-uuid" : "3.0.0",
         "node-red-viseo-helper" : "~0.0"
     },
     "repository" : {
