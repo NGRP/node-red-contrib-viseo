@@ -8,10 +8,11 @@ let PROCESS = { }
 let BUFFERS = { }
 
 const kill = exports.kill = (id) => {
+    console.log('Killing', id)
     let child = PROCESS[id];
     if (!child){ return; }
 
-    try { child.kill(); } catch(ex){ console.log(ex) }
+    try { child.kill('SIGKILL'); } catch(ex){ console.log(ex) }
     PROCESS[id] = undefined;
     BUFFERS[id] = undefined;
 }
@@ -55,6 +56,7 @@ const start = exports.start = (id, options, callback, logback) => {
     child.on(       'error', (err)  => { close (id, err,  logback); });
 
     // store process
+    console.log('Starting', id)
     PROCESS[id] = child;
     BUFFERS[id] = '';
 }
