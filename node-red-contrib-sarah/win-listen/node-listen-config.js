@@ -4,7 +4,7 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("win-listen-config", function(config){
         RED.nodes.createNode(this, config);
-        this.name  = config.name;
+        this.name        = config.name;
         this.setup = () => {
             return  { 
                 proc: helper.resolve(config.process),   

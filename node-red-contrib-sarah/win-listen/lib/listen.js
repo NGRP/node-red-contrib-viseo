@@ -48,7 +48,7 @@ const start = exports.start = (id, options, callback, logback) => {
     if (options.hotword){    args.push('-hotword');    args.push(options.hotword); }
  
     // run process
-    let child = spawn(proc, args);
+    let child = spawn(proc, args); logback('Starting: ' + proc + ' ' + args.join(' '));
     child.stdout.on('data',  (data) => { handleBuffer(id, data, callback); })
     child.stderr.on('data',  (data) => { stdErr(id, data, console.log); })
     child.on(       'close', (code) => { close (id, code, logback); })
@@ -70,10 +70,10 @@ const handleBuffer = (id, data, callback) => {
     let start = buffer.indexOf('<JSON>')
     if (start < 0){ return true; }
 
-    let json   = buffer.substring(start + 6, end);
+    let json    = buffer.substring(start + 6, end);
     BUFFERS[id] = buffer.substring(end   + 7);
 
-    try { json = JSON.parse(json); } catch(ex){ console.log('Parsing Error:', ex); return; }
+    try { json  = JSON.parse(json); } catch(ex){ console.log('Parsing Error:', ex, json); return; }
     json.buffer = Buffer.from(json.base64, 'base64');
 
     callback(json);

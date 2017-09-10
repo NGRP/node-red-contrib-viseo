@@ -29,7 +29,6 @@ const start = (RED, node, config) => {
         node.status({fill:"red", shape:"ring", text: 'Missing configuration'}); 
     }
     let options = RED.nodes.getNode(config.options);
-    
     let setup   = options.setup()
     setup.grammar = helper.resolve(config.grammar || GRAMMAR);
 
