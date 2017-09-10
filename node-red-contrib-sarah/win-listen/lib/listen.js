@@ -50,7 +50,7 @@ const start = exports.start = (id, options, callback, logback) => {
     // run process
     let child = spawn(proc, args);
     child.stdout.on('data',  (data) => { handleBuffer(id, data, callback); })
-    child.stderr.on('data',  (data) => { stdErr(id, data, logback); })
+    child.stderr.on('data',  (data) => { stdErr(id, data, console.log); })
     child.on(       'close', (code) => { close (id, code, logback); })
     child.on(       'error', (err)  => { close (id, err,  logback); });
 
