@@ -4,7 +4,7 @@
     "author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description": "Wrapper of Google Speech Recognition",
     "dependencies": {
-        "@google-cloud/speech": "^0.10.2",
+        "@google-cloud/speech": "~0.10.2",
         "node-red-viseo-helper": "~0.0"
     },
     "repository": {
