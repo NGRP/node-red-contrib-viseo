@@ -1,8 +1,8 @@
-const fs     = require('fs');
-const path   = require('path');
-const spawn  = require('child_process').spawn;
-const kill   = require('tree-kill');
-let LISTEN   =  __dirname + '/../bin/listen.exe';
+const fs      = require('fs');
+const path    = require('path');
+const spawn   = require('child_process').spawn;
+const killPID = require('tree-kill');
+let LISTEN    =  __dirname + '/../bin/listen.exe';
 
 let PIDS    = { }
 let BUFFERS = { }
@@ -12,7 +12,7 @@ const kill = exports.kill = (id) => {
     let pid = PIDS[id]; 
     if (!pid){ return; }
     console.log('@@@ Killing ['+ id + '] PID:', pid)
-    try { kill(pid); } catch(ex){ console.log('Kill Error:',ex) }
+    try { killPID(pid); } catch(ex){ console.log('Kill Error:',ex) }
     PIDS[id] = undefined;
     BUFFERS[id] = undefined;
 }
