@@ -1,21 +1,25 @@
 {
-    "name"          : "node-red-contrib-viseo-sarah",
-    "version"       : "0.0.9",
-    "description"   : "Windows nodes for SARAH",
-    "dependencies"  : { 
-        "node-red-viseo-helper" : "~0.0"
+    "name": "node-red-contrib-viseo-sarah",
+    "version": "0.0.10",
+    "description": "Windows nodes for SARAH",
+    "dependencies": {
+        "node-red-viseo-helper": "~0.0",
+        "tree-kill": "^1.1.0"
     },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-sarah"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-sarah"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "sarah" ],
-    "node-red" : {
+    "keywords": [
+        "node-red",
+        "sarah"
+    ],
+    "node-red": {
         "nodes": {
-            "win-speak":         "win-speak/node-speak.js",
+            "win-speak": "win-speak/node-speak.js",
             "win-listen-config": "win-listen/node-listen-config.js",
-            "win-sarah":         "win-listen/node-sarah.js"
+            "win-sarah": "win-listen/node-sarah.js"
         }
     }
-} 
+}
