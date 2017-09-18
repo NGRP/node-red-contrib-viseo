@@ -30,51 +30,6 @@
             signintext:   { value: undefined },
             signintitle:  { value: undefined },
             signinurl:    { value: undefined },
-
-            // Kludge Backward compatibility ------------------------------------------
-            bt1lbl:          { value: undefined },
-            bt2lbl:          { value: undefined },
-            bt3lbl:          { value: undefined },
-            bt1action:       { value: "postBack" },
-            bt2action:       { value: "postBack" },
-            bt3action:       { value: "postBack" },
-            bt1value:        { value: undefined },
-            bt2value:        { value: undefined },
-            bt3value:        { value: undefined },
-            quickbt1lbl:     { value: undefined },
-            quickbt2lbl:     { value: undefined },
-            quickbt3lbl:     { value: undefined },
-            quickbt4lbl:     { value: undefined },
-            quickbt5lbl:     { value: undefined },
-            quickbt6lbl:     { value: undefined },
-            quickbt7lbl:     { value: undefined },
-            quickbt8lbl:     { value: undefined },
-            quickbt9lbl:     { value: undefined },
-            quickbt10lbl:    { value: undefined },
-            quickbt11lbl:    { value: undefined },
-            quickbt1action:  { value: "postBack" },
-            quickbt2action:  { value: "postBack" },
-            quickbt3action:  { value: "postBack" },
-            quickbt4action:  { value: "postBack" },
-            quickbt5action:  { value: "postBack" },
-            quickbt6action:  { value: "postBack" },
-            quickbt7action:  { value: "postBack" },
-            quickbt8action:  { value: "postBack" },
-            quickbt9action:  { value: "postBack" },
-            quickbt10action: { value: "postBack" },
-            quickbt11action: { value: "postBack" },
-            quickbt1value:   { value: undefined },
-            quickbt2value:   { value: undefined },
-            quickbt3value:   { value: undefined },
-            quickbt4value:   { value: undefined },
-            quickbt5value:   { value: undefined },
-            quickbt6value:   { value: undefined },
-            quickbt7value:   { value: undefined },
-            quickbt8value:   { value: undefined },
-            quickbt9value:   { value: undefined },
-            quickbt10value:  { value: undefined },
-            quickbt11value:  { value: undefined },
-            // ------------------------------------------ ------------------------------------------
         },
         inputs:  1, 
         outputs: 1,
@@ -123,29 +78,6 @@
                 $('.section-type').addClass('hide')
                 $('.section-'+type).removeClass('hide')
             });
-
-            // Kludge Backward compatibility ------------------------------------------
-            if (!this.buttons){
-                this.buttons = []
-                for (let i = 1 ; i < 4 ; i++){
-                    this.buttons.push({
-                        'title'  : this['bt'+i+'lbl'],
-                        'action' : this['bt'+i+'action'],
-                        'value'  : this['bt'+i+'value']
-                    })
-                }
-            }
-            if (!this.quickreplies){
-                this.quickreplies = []
-                for (let i = 1 ; i < 12 ; i++){
-                    this.quickreplies.push({
-                        'title'  : this['quickbt'+i+'lbl'],
-                        'action' : this['quickbt'+i+'action'],
-                        'value'  : this['quickbt'+i+'value']
-                    })
-                }
-            }
-            // ------------------------------------------ ------------------------------------------
 
             // Buttons
             this.buttons = this.buttons || [];

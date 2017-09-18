@@ -2,12 +2,9 @@
 const path     = require('path');
 const builder  = require('botbuilder');
 const mustache = require('mustache');
-const event    = require('../../lib/event.js');
 const msbot    = require('../../lib/msbot.js');
 const i18n     = require('../../lib/i18n.js');
 const helper   = require('node-red-viseo-helper');
-
-const TYPING_DELAY_CONSTANT = 2000;
 
 const marshall = (locale, str, data, def) => {
     if (!str) return def;
@@ -18,7 +15,6 @@ const marshall = (locale, str, data, def) => {
 
     return str;
 }
-
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -35,36 +31,50 @@ module.exports = function(RED) {
 }
 
 const buttonsStack = {
-
     push: function(data, buttons) {
-
         if(data._buttonsStack === undefined) {
             data._buttonsStack = [];
         }
-
         data._buttonsStack = data._buttonsStack.concat(buttons);
     },
     popAll: function(data) {
-
         let buttons = data._buttonsStack;       
         data._buttonsStack = []; 
-
         return buttons;
     }
 };
 
+const getButtons = (locale, config, data) => {
+    if (data.buttons) return data.buttons
+    
+    let buttons = undefined
+    if (config.sendType === 'quick'){
+        buttons = JSON.parse(JSON.stringify(config.quickreplies));
+    } else if (config.sendType === 'card'){
+        buttons = JSON.parse(JSON.stringify(config.buttons));
+    }
+
+    if (!buttons || buttons.length <= 0) return;
+    for (let button of buttons){
+        if (!button.title || !button.action || !button.value) continue;
+
+        button.title  = marshall(locale, button.title,  data, '')
+        button.action = marshall(locale, button.action, data, '')
+        button.value  = marshall(locale, button.value,  data, '')
+        button.regexp = marshall(locale, button.regexp, data, '')
+
+    }
+    return buttons;
+}
+
 const input = (node, data, config) => {
     let outMsg  = undefined;
-    let locale = getLocale(data);
-
-    if (!data.context)
-         data.context = {}; // FIXME: Should be set in a global variable
-
-    let convId = (data.user && data.user.address) ? data.user.address.conversation.id : undefined;
+    let locale = msbot.getLocale(data);
+    let convId = msbot.getConvId(data)
 
     // Go for prompt
     if (config.prompt){
-        msbot.promptNext(convId, (prompt) => {
+        helper.delayCallback(convId, (prompt) => {
             data.prompt = prompt
             sendData(node, data, config)
         })
@@ -151,77 +161,21 @@ const input = (node, data, config) => {
         outMsg.inputHint('expectingInput');
     }
 
-    let reply = () => {
-
-
-        if (!data.user) return sendData(node, data, config);
-
-        // Event
-        event.emit('reply', {'to': data.user.address, 'outMsg': outMsg, 'data': data }, node, config);
-
-        // Reply
-        let to = data.user.address; 
-        msbot.replyTo(to, outMsg, (err) => {
-            if (err){ node.warn(err); }
-            data.reply = outMsg; // for next nodes
-            event.emit('replied', data, node, config);
-            if (!config.prompt){ sendData(node, data, config); }
-        });
-    }
-
-    // Send Message
-    let delay = config.delay !== undefined ? parseInt(config.delay) : 0
-    if (data.context.session){
-        msbot.typing(data.context.session, () => {
-            let handle = setTimeout(reply, delay + TYPING_DELAY_CONSTANT)
-            msbot.saveTimeout(convId, handle);
-        });
-    } else if (delay > 0) { 
-        let handle = setTimeout(reply, delay) 
-        msbot.saveTimeout(convId, handle);
-    } else {
-        reply();
-    }
-}
-
-const getLocale = (data) => {
-    let locale  = 'fr_FR';
-    
-    if (data.user && data.user.profile && data.user.profile.locale){
-        locale  = data.user.profile.locale;
-    }
-
-    return locale;
-}
-
-const getButtons = (locale, config, data) => {
-    if (data.buttons) return data.buttons
-    
-    let buttons = undefined
-    if (config.sendType === 'quick'){
-        buttons = JSON.parse(JSON.stringify(config.quickreplies));
-    } else if (config.sendType === 'card'){
-        buttons = JSON.parse(JSON.stringify(config.buttons));
-    }
-
-    if (!buttons || buttons.length <= 0) return;
-    for (let button of buttons){
-        if (!button.title || !button.action || !button.value) continue;
-
-        button.title  = marshall(locale, button.title,  data, '')
-        button.action = marshall(locale, button.action, data, '')
-        button.value  = marshall(locale, button.value,  data, '')
-        button.regexp  = marshall(locale, button.regexp,  data, '')
-
-    }
-    return buttons;
+    // Emit reply message
+    data.reply = outMsg;
+    helper.emitAsyncEvent('reply', node, data, config, () => {
+        helper.emitEvent('replied', node, data, config)
+        if (config.prompt){ return; }
+        sendData(node, data, config);
+    });
 }
 
 const sendData = (node, data, config) => {
+
     let out  = new Array(parseInt(config.outputs || 1));
     let promptText = undefined;
 
-    if(config.promptText) {
+    if (config.promptText) {
         promptText = helper.resolve(config.promptText, data, undefined);
     }
 
@@ -245,9 +199,7 @@ const sendData = (node, data, config) => {
     }
 
 
-
     if (config.prompt){
-
         let acceptValue = false;
 
         // 1. BUTTONS: the middle outputs
@@ -296,19 +248,15 @@ const sendData = (node, data, config) => {
         // 2. EVENTS: Cross Messages
         config.promptText = promptText;
         if(config.assert && acceptValue === false) {
-            
-            event.emitAsync('prompt', data, node, config, (data) => {
-                event.emitAsync('prompt-unexpected', data, node, config, (data) => {
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {
+                helper.emitAsyncEvent('prompt-unexpected', node, data, config, (data) => {
                     _continue(data);
                 });
             });
         } else {
-            event.emitAsync('prompt', data, node, config, (data) => {  _continue(data); });
-
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  _continue(data); });
         }
-
         return;
     }
     _continue(data);
 }   
-

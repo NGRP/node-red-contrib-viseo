@@ -1,5 +1,4 @@
-
-const event    = require('../../lib/event.js');
+const helper   = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -22,17 +21,17 @@ const setup  = (RED, node, config) => {
     let listen = CACHE[node.id].listen = config.listen;
     if (!listen) return;
 
-    let listener = CACHE[node.id].listener = (data) => { 
-        node.send(data); 
+    let listener = CACHE[node.id].listener = (srcNode, data, config) => { 
+        node.send(data);
     }
-    event.listen(listen, listener)
+    helper.listenEvent(listen, listener)
 }
 
 const close = (node, done) => { 
     CACHE[node.id] = CACHE[node.id] || {};
     if (!CACHE[node.id].listener){ done(); }
 
-    event.removeListener(CACHE[node.id].listen, CACHE[node.id].listener);
+    helper.removeListener(CACHE[node.id].listen, CACHE[node.id].listener);
     CACHE[node.id].listen   = undefined;
     CACHE[node.id].listener = undefined;
     done();

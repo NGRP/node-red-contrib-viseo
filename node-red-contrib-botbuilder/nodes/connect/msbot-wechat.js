@@ -3,7 +3,6 @@
 const helper    = require('node-red-viseo-helper');
 const builder   = require('botbuilder');
 const connector = require('./msbot-wechat-connector.js');
-const event     = require('../../lib/event.js');
 const msbot     = require('../../lib/msbot.js');
 const srv       = require('../../lib/server.js');
 
