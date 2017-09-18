@@ -51,7 +51,8 @@ Thumbs.db
 TMP
 node_modules
 !node_modules/node-red-viseo-helper
-!node_modules/node-red-contrib-viseo-nosql-manager
+!node_modules/node-red-viseo-bot-manager
+!node_modules/node-red-contrib-viseo-nosql-manager 
 
 !node-red-contrib-sarah/*/bin/*.exe
 !node-red-contrib-sarah/*/bin/*.dll

@@ -3,6 +3,7 @@
 const fs      = require("fs");
 const builder = require('botbuilder');
 const helper  = require('node-red-viseo-helper');
+const botmgr  = require('node-red-viseo-bot-manager');
 
 // ------------------------------------------
 //  VALIDATORS
@@ -104,19 +105,18 @@ const bindDialogs = exports.bindDialogs = (bot, callback) => {
 
         // Build data
         let message = session.message;
-        let data = helper.buildMessageFlow({ context, message, 'payload': message.text }, {})
+        let data = botmgr.buildMessageFlow({ context, message, 'payload': message.text }, { agent: 'botbuilder' })
 
         // Clear timeouts
         let convId  = getConvId(data)
         clearHandles(convId);
     
         // Handle Prompt
-        if (helper.hasDelayedCallback(convId, data.message)) return;
+        if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
         callback(undefined, data, 'received');
     }]);
 }
-
 
 
 // ------------------------------------------

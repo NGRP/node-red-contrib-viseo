@@ -5,6 +5,7 @@ const mustache = require('mustache');
 const msbot    = require('../../lib/msbot.js');
 const i18n     = require('../../lib/i18n.js');
 const helper   = require('node-red-viseo-helper');
+const botmgr   = require('node-red-viseo-bot-manager');
 
 const marshall = (locale, str, data, def) => {
     if (!str) return def;
@@ -74,7 +75,7 @@ const input = (node, data, config) => {
 
     // Go for prompt
     if (config.prompt){
-        helper.delayCallback(convId, (prompt) => {
+        botmgr.delayCallback(convId, (prompt) => {
             data.prompt = prompt
             sendData(node, data, config)
         })

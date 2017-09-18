@@ -1,10 +1,9 @@
 const helper  = require('node-red-viseo-helper');
-
+const botmgr  = require('node-red-viseo-bot-manager');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
-
 
 module.exports = function(RED) {
     const register = function(config) {
@@ -19,11 +18,11 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => { 
-    data = helper.buildMessageFlow(data, config)
+    data = botmgr.buildMessageFlow(data, config)
 
     // Handle Prompt
     let convId  = helper.getByString(data, 'user.address.conversation.id', undefined)
-    if (helper.hasDelayedCallback(convId, data.message)) return;
+    if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
     // Trigger received message
     helper.emitEvent('received', node, data, config);
@@ -44,7 +43,10 @@ const stop = (node, config, done) => {
 }
 
 const reply = (node, data, config) => { 
-    if (data.message.source !== 'custom') return;
+
+    if (!botmgr.isReplyCarrier(data, config.source)) return;
     node.send([undefined, data]);
+
+    // Let <continue> node to perform that
     // helper.fireAsyncCallback(data);
 }

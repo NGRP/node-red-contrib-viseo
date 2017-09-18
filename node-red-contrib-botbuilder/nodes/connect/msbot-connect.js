@@ -5,6 +5,7 @@ const path    = require('path');
 const builder = require('botbuilder');
 const logger  = require('../../lib/logger.js');
 const helper  = require('node-red-viseo-helper');
+const botmgr  = require('node-red-viseo-bot-manager');
 
 // Retrive requirements
 require('../../lib/i18n.js').init();
@@ -54,25 +55,16 @@ const stop = (node, config, done) => {
 // --------------------------------------------------------------------------
 
 const reply = (bot, node, data, config) => { 
-    if (data.message.agent !== 'botbuilder') return;
-
+    
+    if (!botmgr.isReplyCarrier(data, 'botbuilder')) return;
     let message = data.reply;
-    if (!message) return;
-
-    let address = msbot.getUserAddress(data); 
-    if (!address) return;
-
-    // Set the message address
-    message.address(address);
 
     // Send the message
     let doReply = () => {
-        try { 
-            bot.send(message, (err) => {
+        try {bot.send(message, (err) => {
                 if (err){ return node.warn(err); }
                 helper.fireAsyncCallback(data);
-            }) 
-        } catch (ex) { node.warn(ex); }
+        })} catch (ex) { node.warn(ex); }
     }
 
     // Handle the delay
