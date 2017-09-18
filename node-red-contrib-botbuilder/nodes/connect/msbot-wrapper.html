@@ -1,0 +1,70 @@
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('bot-wrapper',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:      { value: undefined },
+            userId:    { value: undefined },
+            userName:  { value: undefined },
+            convId:    { value: undefined },
+            source:    { value: undefined, required: true },
+            payload:   { value: undefined },
+            context:   { value: undefined },
+
+            typeUserId:   { value: "msg", required: false },
+            typeUserName: { value: "msg", required: false },
+            typeConvId:   { value: "msg", required: false },
+            typePayload:  { value: "msg", required: false },
+            typeContext:  { value: "msg", required: false },
+        },
+        inputs:  1,
+        outputs: 2,
+        icon: "wrapper.svg",  align: "left",
+        paletteLabel: "Wrapper",
+        label: function() { return this.name || "Wrapper"; },
+        oneditprepare: function() {
+            $("#node-input-userId")   .typedInput({ default: this.typeUserId   || 'msg', types:['msg']});
+            $("#node-input-userName") .typedInput({ default: this.typeUserName || 'msg', types:['msg']});
+            $("#node-input-convId")   .typedInput({ default: this.typeConvId   || 'msg', types:['msg']});
+            $("#node-input-payload")  .typedInput({ default: this.typePayload  || 'msg', types:['msg']});
+            $("#node-input-context")  .typedInput({ default: this.typeContext  || 'msg', types:['msg']});
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="bot-wrapper">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-source"><i class="icon-tag"></i> Source</label>
+        <input type="text" id="node-input-source" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-userId"><i class="icon-tag"></i> UserId</label>
+        <input type="text" id="node-input-userId" style="width: 70%" placeholder=""/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-userName"><i class="icon-tag"></i> UserName</label>
+        <input type="text" id="node-input-userName" style="width: 70%" placeholder="Unknow"/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-convId"><i class="icon-tag"></i> ConvId</label>
+        <input type="text" id="node-input-convId" style="width: 70%" placeholder=""/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-payload"><i class="icon-tag"></i> Payload</label>
+        <input type="text" id="node-input-payload" style="width: 70%" placeholder="payload">
+    </div>
+    <div class="form-row">
+        <label for="node-input-context"><i class="icon-tag"></i> Context</label>
+        <input type="text" id="node-input-context" style="width: 70%" placeholder="context">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="bot-wrapper">
+
+</script>

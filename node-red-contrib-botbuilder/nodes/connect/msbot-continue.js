@@ -1,10 +1,8 @@
-
-const event    = require('../../lib/event.js');
+const helper   = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
-
 
 module.exports = function(RED) {
     const register = function(config) {
@@ -16,11 +14,5 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
-    if (!data._tmp) return;
-    
-    let callback = data._tmp.event_emitter.callback;
-    if (!callback) return;
-    
-    delete data._tmp.event_emitter;
-    callback(data);
+    helper.fireAsyncCallback(data);
 }

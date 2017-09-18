@@ -1,19 +1,19 @@
-const fs     = require('fs');
-const path   = require('path');
-const spawn  = require('child_process').spawn;
+const fs      = require('fs');
+const path    = require('path');
+const spawn   = require('child_process').spawn;
+const killPID = require('tree-kill');
+let LISTEN    =  __dirname + '/../bin/listen.exe';
 
-let LISTEN   =  __dirname + '/../bin/listen.exe';
-
-let PROCESS = { }
+let PIDS    = { }
 let BUFFERS = { }
 
 const kill = exports.kill = (id) => {
-    console.log('Killing', id)
-    let child = PROCESS[id];
-    if (!child){ return; }
-
-    try { child.kill('SIGKILL'); } catch(ex){ console.log(ex) }
-    PROCESS[id] = undefined;
+    
+    let pid = PIDS[id]; 
+    if (!pid){ return; }
+    console.log('@@@ Killing ['+ id + '] PID:', pid)
+    try { killPID(pid); } catch(ex){ console.log('Kill Error:',ex) }
+    PIDS[id] = undefined;
     BUFFERS[id] = undefined;
 }
 
@@ -22,9 +22,7 @@ const stdErr = exports.stdErr = (id, data, logback) => {
 }
 
 const close = exports.close = (id, code, logback) => {
-    logback('Process "listen.exe" closed with ('+ code + ') for ID '+ id)
-    PROCESS[id] = undefined;
-    BUFFERS[id] = undefined;
+    logback('@@@ Process "listen.exe" closed with ('+ code + ') for ID '+ id + ' pid: ' + PIDS[id])
 }
 
 const start = exports.start = (id, options, callback, logback) => {
@@ -50,14 +48,15 @@ const start = exports.start = (id, options, callback, logback) => {
  
     // run process
     let child = spawn(proc, args); logback('Starting: ' + proc + ' ' + args.join(' '));
+    child.stdin.setEncoding('utf-8');
     child.stdout.on('data',  (data) => { handleBuffer(id, data, callback); })
     child.stderr.on('data',  (data) => { stdErr(id, data, console.log); })
-    child.on(       'close', (code) => { close (id, code, logback); })
-    child.on(       'error', (err)  => { close (id, err,  logback); });
+    child.on(       'close', (code) => { close (id, code, console.log); })
+    child.on(       'error', (err)  => { close (id, err,  console.log); });
 
     // store process
-    console.log('Starting', id)
-    PROCESS[id] = child;
+    console.log('@@@ Starting Process', id, child.pid)
+    PIDS[id] = child.pid;
     BUFFERS[id] = '';
 }
 

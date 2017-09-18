@@ -1,7 +1,8 @@
 "use strict";
 
-const fs = require("fs");
+const fs      = require("fs");
 const builder = require('botbuilder');
+const helper  = require('node-red-viseo-helper');
 
 // ------------------------------------------
 //  VALIDATORS
@@ -39,8 +40,37 @@ const absURL = (url) => {
     return CONFIG.server.host + url;
 }
 
+const getUserAddress = exports.getUserAddress = (data) => {
+    return helper.getByString(data, 'user.address', undefined)
+}
+
+const getConvId = exports.getConvId = (data) => {
+    return helper.getByString(data, 'user.address.conversation.id', undefined)
+}
+
+const getContext = exports.getContext = (data) => {
+    if (!data.context) data.context = {};
+    return data.context;
+}
+
+const getSession = exports.getSession = (data) => {
+    let context = getContext(data)
+    return context.session
+}
+
+const getUserProfile = exports.getUserProfile = (data) => {
+    if (!data.user) data.user = {};
+    if (!data.user.profile) data.user.profile = {};
+    return data.user.profile;
+}
+
+const getLocale = exports.getLocale = (data) => {
+    let profile = getUserProfile(data);
+    return profile.locale || 'fr_FR';
+}
+
 // ------------------------------------------
-//  MESSAGES
+//  SERVER
 // ------------------------------------------
 
 let BOT_CONTEXT = {};
@@ -54,47 +84,64 @@ const bindDialogs = exports.bindDialogs = (bot, callback) => {
     bot.on('contactRelationUpdate', (message) => { 
         if (message.action !== 'add') { /* delete user data */ return; }
         
-        // Add User to data stream
-        // (not in context because some node may access to user properties)
-        // MUST be overrided by storage nodes 
-        var usr = {"id": message.user.id, profile: {}}
-
-        // Add context obejct to store the lifetime of the stream
-        var context = BOT_CONTEXT[Date.now()] = {};
+        // Add context object to store the lifetime of the stream
+        let context = BOT_CONTEXT[Date.now()] = {};
         context.bot = bot;
 
-        // Send 
-        let data = { "context": context, "message": message, "user": usr }
+        // Build data
+        let data = helper.buildMessageFlow({ context, message, 'payload': message.text }, {})
+
         callback(undefined, data, 'greeting');
     });
 
     // Root Dialog
     bot.dialog('/', [(session) => { 
 
-        let message = session.message;
-        let convId  = message.address.conversation.id
-
-        // Clear all delayed messages
-        clearHandles(convId);
-
-        // Handle Prompts
-        if (hasPrompt(convId, message)) return;
-
-        // Add User to data stream
-        // (not in context because some node may access to user properties)
-        // MUST be overrided by storage nodes 
-        let usr = {"id": message.user.id, address: message.address, profile: {}}
-
-        // Add context obejct to store the lifetime of the stream
+        // Add context object to store the lifetime of the stream
         let context = BOT_CONTEXT[Date.now()] = {};
         context.bot     = bot;
         context.session = session;
 
-        // Send message
-        let data = { "context": context, "message": message, "payload": message.text, "user": usr }
-        callback(undefined, data, 'received');
+        // Build data
+        let message = session.message;
+        let data = helper.buildMessageFlow({ context, message, 'payload': message.text }, {})
 
+        // Clear timeouts
+        let convId  = getConvId(data)
+        clearHandles(convId);
+    
+        // Handle Prompt
+        if (helper.hasDelayedCallback(convId, data.message)) return;
+
+        callback(undefined, data, 'received');
     }]);
+}
+
+
+
+// ------------------------------------------
+//   TYPING
+// ------------------------------------------
+
+var TIMEOUT_HANDLES = {}
+const saveTimeout = exports.saveTimeout = (convId, handle) => {
+    if (!TIMEOUT_HANDLES[convId])
+        TIMEOUT_HANDLES[convId] = [];
+    TIMEOUT_HANDLES[convId].push(handle)
+}
+
+const clearHandles = exports.clearTimeout = (convId) => { 
+    if (!TIMEOUT_HANDLES[convId]) return;
+    for (let handle of TIMEOUT_HANDLES[convId]){
+        clearTimeout(handle);
+    }
+    TIMEOUT_HANDLES[convId] = []
+}
+
+const typing = exports.typing = (session, callback) => {
+    if (undefined === session) return;
+    session.sendTyping();
+    callback();
 }
 
 // ------------------------------------------
@@ -107,7 +154,7 @@ const bindDialogs = exports.bindDialogs = (bot, callback) => {
  * - with ONLY an 'image' attribute to create an image (raw) message 
  * - with ONLY card's attribute to create a Card message
  */
-const getMessage = (cards, options) => {
+const getMessage = exports.getMessage = (cards, options) => {
 
     // Object means already decoded
     if ('object' === typeof cards) {
@@ -264,76 +311,3 @@ const getHeroCard = (opts) => {
 
     return card;
 }
-
-// ------------------------------------------
-//   PROMPTS
-// ------------------------------------------
-
-var PROMPT_CALLBACK = {}
-const promptNext = (convId, callback) => {
-    if (!convId) return;
-    PROMPT_CALLBACK[convId] = callback;
-}
-
-const hasPrompt = (convId, data) => {
-    if (!convId) return;
-
-    let cb = PROMPT_CALLBACK[convId];
-    if (undefined === cb) return false;
-
-    delete PROMPT_CALLBACK[convId];
-    cb(data);
-    return true;
-}
-
-// ------------------------------------------
-//   TYPING
-// ------------------------------------------
-
-var TIMEOUT_HANDLES = {}
-const saveTimeout = (convId, handle) => { console.log('saveTimeout', convId)
-    if (!TIMEOUT_HANDLES[convId])
-        TIMEOUT_HANDLES[convId] = [];
-    TIMEOUT_HANDLES[convId].push(handle)
-}
-const clearHandles = (convId) => { console.log('clearHandles', convId)
-    if (!TIMEOUT_HANDLES[convId]) return;
-    for (let handle of TIMEOUT_HANDLES[convId]){
-        clearTimeout(handle);
-    }
-    TIMEOUT_HANDLES[convId] = []
-}
-const typing = (session, callback) => {
-    if (undefined === session) return;
-    session.sendTyping();
-    callback();
-}
-
-// ------------------------------------------
-//   REPLY
-// ------------------------------------------
-
-const replyTo = (address, outMsg, next) => {
-    if (undefined === address) return;
-    if (undefined === outMsg) return;
-
-    // Set the message address
-    outMsg.address(address);
-
-    // Send the message
-    try {
-        global.botbuilder.send(outMsg, next);
-    } catch (ex) { error(ex); next(); }
-}
-
-// ------------------------------------------
-//   EXPORTS
-// ------------------------------------------
-
-exports.promptNext = promptNext;
-exports.hasPrompt = hasPrompt;
-exports.getMessage = getMessage;
-exports.replyTo = replyTo;
-exports.typing = typing;
-exports.saveTimeout = saveTimeout;
-exports.clearTimeout = clearHandles;

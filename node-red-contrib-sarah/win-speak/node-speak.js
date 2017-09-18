@@ -24,7 +24,7 @@ const input = (node, data, config) => {
     const child = spawn(path, args);
     
     child.stdout.on('data', (data) => {
-        console.log(data)
+        // console.log(data)
     });
     child.stderr.on('data', (data) => {
         console.log('stderr: ' + data);
