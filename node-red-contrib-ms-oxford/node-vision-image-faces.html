@@ -1,0 +1,161 @@
+<script type="text/javascript">
+    RED.nodes.registerType('vision-image-faces',{
+        category: 'VISEO_VISION',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            image:      { value: undefined },
+            imageType:  { value: 'msg'},
+            faceid:     { value: true },
+            landmarks:  { value: true },
+            attributes: { value: true },
+            gender:     { value: true },
+            age:        { value: true },
+            facialhair: { value: true },
+            glasses:    { value: true },
+            emotions:   { value: true },
+            smile:      { value: true },
+            headPose:   { value: true },
+            hair:       { value: true },
+            makeup:     { value: true },
+            accessories:{ value: true },
+            occlusion:  { value: true },
+            blur:       { value: true },
+            exposure:   { value: true },
+            noise:      { value: true },
+            celeb:      { value: false },
+            facekey:    { value: undefined, required: true,  type: 'ms-config'},
+            visionkey:  { value: undefined, required: false, type: 'ms-config'}
+        },
+        inputs:  1,
+        outputs: 1,
+        oneditprepare: function () {
+            $("#node-input-image").typedInput({types:['msg','global','str']});
+            $("#node-input-image").typedInput('type', this.imageType || 'msg');
+
+            $("#node-input-image").on('change', function(type, value) {
+                if (value === 'str') $("#node-input-image").attr("placeholder","http://link.to/image");
+                else                 $("#node-input-image").attr("placeholder","message.attachments[0].contentUrl");
+            });
+
+            $("#node-input-attributes").change( function() {
+                if ($(this).is(":checked")) {
+                    $(".column").prop('checked',true);
+                    $(".column").attr("disabled", true);
+                }
+                else $(".column").attr("disabled", false);
+            });
+
+            $("#node-input-celeb").change( function() {
+                if ($(this).is(":checked")) {
+                    $("#visionkey").show();
+                } else {
+                    $("#visionkey").hide();
+                    $('#node-input-visionkey').val('');
+                }
+            }).change();
+
+        },
+        oneditsave: function () { 
+            this.imageType = $("#node-input-image").typedInput('type');
+        },
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: "MS Image: Face",
+        label: function() { return this.name || "Face detection"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="vision-image-faces">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <p><b>Image</b></p>
+    <div class="form-row">
+        <label for="node-input-image"><i class="fa fa-tasks"></i> Location</label>
+        <input type="text" id="node-input-image" style="width:70%;">
+    </div>
+
+    <p><b>Options</b></p>
+    <div class="form-row" style="width:500px;">
+        <label for="node-input-faceid"><i class="fa fa-tasks"></i> Face ID</label>
+        <input type="checkbox" id="node-input-faceid" style="display: inline-block; width: auto; vertical-align: top;">
+        <br>
+        <label for="node-input-landmarks"><i class="fa fa-tasks"></i> Landmarks</label>
+        <input type="checkbox" id="node-input-landmarks" style="display: inline-block; width: auto; vertical-align: top;">
+        <br>
+        <label for="node-input-attributes"><i class="fa fa-tasks"></i> Attributes</label>
+        <input type="checkbox" id="node-input-attributes" style="display: inline-block; width: auto; vertical-align: top;"> <i>All</i>
+        <br>
+        <div style="float:left; margin:0; margin-left: 105px; width:120px;">
+            <input type="checkbox" class="column" id="node-input-gender" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Gender</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-age" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Age</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-facialhair" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Facial hair</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-glasses" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Glasses</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-emotions" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Emotions</i>
+        </div>
+        <div style="float:left; margin:0;width:120px;">
+            <input type="checkbox" class="column" id="node-input-smile" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Smile</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-headPose" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Head pose</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-hair" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Hair</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-makeup" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Makeup</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-accessories" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Accessories</i>
+        </div>
+        <div style="float:left; margin:0;width:120px">
+            <input type="checkbox" class="column" id="node-input-occlusion" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Occlusion</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-blur" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Blur</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-exposure" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Exposure</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-noise" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Noise</i>
+        </div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-celeb"><i class="fa fa-tasks"></i> Celebrities</label>
+        <input type="checkbox" id="node-input-celeb" style="display: inline-block; width: auto; vertical-align: top;">
+    </div>   
+
+    <p><b>Keys</b></p>
+    <div class="form-row">
+        <label for="node-input-facekey"><i class="fa fa-lock"></i> Face API</label>
+        <input type="text" id="node-input-facekey" placeholder="">
+    </div>
+    <div class="form-row" id="visionkey">
+        <label for="node-input-visionkey"><i class="fa fa-lock"></i> Vision API</label>
+        <input type="text" id="node-input-visionkey" placeholder="">
+    </div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="vision-image-faces">
+    <p>This node uses the Microsoft Cognitive Services Face API to detect human faces in an image. </p>
+
+    <h2>Main properties</h2>
+    <p>
+        <li><b>Image</b> location: Where to get the image. It can be a buffer (in a 'msg' or 'global' field) or an url (directly by chosing 'str' or in a field of 'msg' or 'global'). 
+        <li><b>Options</b> checkboxes: Informations to get from the image. Note that 'Celebrities' required a Microsoft Cognitive Services Vision API key. When none of the checkboxes are checked, it only returns the FaceRectangle.
+        <li><b>Keys</b> values: A key for the Face API is at least required for the process.
+    </p>
+    <p>
+        <li><b>OUT[0]:</b> Returns an array in the msg.payload field with the informations (an item per found person).
+    </p>
+
+    <h2>Getting help</h2>
+    <p>
+        <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a>
+        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a>
+        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a>
+    </p>
+</script>
