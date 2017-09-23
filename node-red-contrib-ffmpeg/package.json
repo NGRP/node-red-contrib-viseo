@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-ffmpeg",
-    "version"       : "0.0.4",
+    "version"       : "0.0.5",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "CLI wrapper of FFMPEG",
     "dependencies"  : { },
@@ -9,7 +9,7 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ffmpeg"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "sarah" ],
+    "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
             "gif":       "node-gif.js",

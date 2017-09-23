@@ -1,22 +1,24 @@
 {
   "name"        : "node-red-contrib-viseo-api-ai",
-  "version"     : "0.0.8",
+  "version"     : "0.0.10",
   "description" : "API.AI Wrapper",
   "dependencies": {
     "apiai"     : "^3.0.3",
     "joi"       : "^10.1.0",
     "md5"       : "^2.2.1",
-    "node-red-viseo-helper" : "~0.1"
+    "node-red-viseo-helper" : "~0.1",
+    "node-red-viseo-bot-manager" : "~0.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-api-ai"
   },
   "license": "Apache-2.0",
-  "keywords": ["node-red"],
+  "keywords": ["viseo", "sarah", "node-red"],
   "node-red": {
     "nodes": {
-      "api-ai": "node-api-ai.js"
+      "api-ai":        "node-api-ai.js",
+      "api-ai-server": "server-api-ai.js",
     }
   }
 }

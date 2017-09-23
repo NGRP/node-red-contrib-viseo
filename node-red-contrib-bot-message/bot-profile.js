@@ -1,5 +1,5 @@
 const path = require('path');
-const i18n = require('../../lib/i18n.js');
+const i18n = require('./lib/i18n.js');
 
 
 // --------------------------------------------------------------------------

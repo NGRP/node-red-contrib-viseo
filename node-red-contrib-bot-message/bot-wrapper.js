@@ -21,7 +21,7 @@ const input = (node, data, config) => {
     data = botmgr.buildMessageFlow(data, config)
 
     // Handle Prompt
-    let convId  = helper.getByString(data, 'user.address.conversation.id', undefined)
+    let convId  = botmgr.getConvId(data)
     if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
     // Trigger received message
@@ -44,7 +44,16 @@ const stop = (node, config, done) => {
 
 const reply = (node, data, config) => { 
 
-    if (!botmgr.isReplyCarrier(data, config.source)) return;
+    // Assume we send the message to the current user address
+    let address = botmgr.getUserAddress(data)
+    if (!address || address.carrier !== config.source) return false;
+
+    // Building the message
+    let message = data.reply;
+    if (!message) return false;
+
+    // Set the user address to the message
+    message.address = address
     node.send([undefined, data]);
 
     // Let <continue> node to perform that
