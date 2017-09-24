@@ -81,6 +81,7 @@ const reply = (node, data, config) => {
     if (!address || address.carrier !== CARRIER) return false;
 
     // Building the message
+    node.warn(data.reply);
     let message = getMessage(data.reply);
     if (!message) return false;
 
@@ -90,9 +91,7 @@ const reply = (node, data, config) => {
 
     // Write the message to the response
     res.end(JSON.stringify(message));
-
-    // Debug
-    console.log('Reply to API.ai', message);
+    node.warn(message);
 
     // Trap the event in order to continue
     helper.fireAsyncCallback(data);
@@ -101,12 +100,12 @@ const reply = (node, data, config) => {
 
 // ------------------------------------------
 //  MESSAGES
-// https://github.com/api-ai/fulfillment-webhook-nodejs/blob/master/functions/index.js
+//  https://github.com/api-ai/fulfillment-webhook-nodejs/blob/master/functions/index.js
 // ------------------------------------------
 
 // https://api.ai/docs/fulfillment#response
 const getMessage = exports.getMessage = (replies) => { 
-    console.log('>>> REPLIES <<<', replies)
+    if (!replies) return;
     let msg = {}
 
     // Data source
@@ -132,6 +131,7 @@ const getMessage = exports.getMessage = (replies) => {
 }
 
 const getGoogleMessage = exports.getGoogleMessage = (replies) => {
+    if (!replies) return;
 
     // Build a sur message for Google
     let google = {}
@@ -141,7 +141,10 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
 
     // Indicates whether the app is expecting a user response. 
     // This is true when the conversation is ongoing, false when the conversation is done.
-    google.expectUserResponse = true
+    google.expectUserResponse = false
+    for (let reply of replies){ 
+        if (reply.prompt) { google.expectUserResponse = true }
+    }
 
     // Indicates whether the text to speech is SSML or not.
     google.isSsml = false
@@ -192,7 +195,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
             // https://developers.google.com/actions/reference/rest/Shared.Types/OptionInfo
             item.optionInfo = { key: card.title, synonyms: [] }
             if (card.buttons){
-                let button = buttons[0];
+                let button = card.buttons[0];
                 if ("string" === typeof button) {
                     item.optionInfo.key = button
                 } else {
@@ -218,15 +221,20 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
         // Require an Image or formatedText
         if (reply.media || reply.attach) {
             item.image = reply.media ? { url: helper.absURL(reply.media) } : { url: helper.absURL(reply.attach) }
-        } else {
-            item.formattedText = item.formattedText || item.subtitle || item.title
+        } else if (!item.formattedText){
+            if (item.subtitle){
+                item.formattedText = item.subtitle
+                item.subtitle = undefined
+            } else if (item.title) {
+                item.formattedText = item.title
+                item.title = undefined
+            }
         }
-
         
         if (reply.buttons){
             item.buttons = [];
             for (let btn of reply.buttons){
-                if (btn.action !== '') continue;
+                if (btn.action !== 'openUrl') continue;
                 item.buttons.push({
                     title: btn.title,
                     openUrlAction: { url: helper.absURL(btn.value) }
@@ -239,5 +247,25 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
         }
     }
 
+    if (reply.type === 'quick'){
+        let item = { title: reply.title,  items: [] };
+        google.richResponse.items.push({'listSelect' : item})
+
+        // A unique key that will be sent back to the agent if this response is given.
+        // https://developers.google.com/actions/reference/rest/Shared.Types/OptionInfo
+        for (let button of reply.buttons){
+            let btn = {}
+            item.items.push(btn);
+            if ("string" === typeof button) {
+                btn.title = button
+                btn.optionInfo = { key: button, synonyms: [button] }
+            } else {
+                btn.title = button.title
+                btn.optionInfo = { key: button.value, synonyms: [button.title] }
+            }
+            // btn.description = ''
+            // btn.image = ''
+        }
+    }
     return google;
 }

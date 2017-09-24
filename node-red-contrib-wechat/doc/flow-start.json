@@ -1,0 +1,116 @@
+[
+    {
+        "id": "c7121754.6ec158",
+        "type": "send-card",
+        "z": "bd95e24.b107d2",
+        "name": "",
+        "prompt": false,
+        "delay": 0,
+        "sendType": "text",
+        "text": "Hey buddy",
+        "random": false,
+        "media": "",
+        "title": "",
+        "subtitle": "",
+        "subtext": "",
+        "attach": "",
+        "carousel": false,
+        "buttons": [],
+        "quicktext": "",
+        "quickreplies": [],
+        "bt1action": "postBack",
+        "bt2action": "postBack",
+        "bt3action": "postBack",
+        "quickbt1action": "postBack",
+        "quickbt2action": "postBack",
+        "quickbt3action": "postBack",
+        "quickbt4action": "postBack",
+        "quickbt5action": "postBack",
+        "quickbt6action": "postBack",
+        "quickbt7action": "postBack",
+        "quickbt8action": "postBack",
+        "quickbt9action": "postBack",
+        "quickbt10action": "postBack",
+        "quickbt11action": "postBack",
+        "x": 470,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2e5843e7.e7af2c",
+        "type": "bot",
+        "z": "bd95e24.b107d2",
+        "name": "",
+        "port": "",
+        "appId": "",
+        "appPassword": "",
+        "fmsg": "markdown",
+        "x": 120,
+        "y": 100,
+        "wires": [
+            [],
+            [
+                "bc3c4420.419ee8"
+            ]
+        ]
+    },
+    {
+        "id": "3a3d6ec9.d221a2",
+        "type": "profile",
+        "z": "bd95e24.b107d2",
+        "name": "",
+        "x": 303,
+        "y": 163,
+        "wires": [
+            [
+                "533957d5.fc5c68"
+            ]
+        ]
+    },
+    {
+        "id": "a6d205d0.d17178",
+        "type": "nedb",
+        "z": "bd95e24.b107d2",
+        "name": "Save User",
+        "key": "user.id",
+        "value": "user",
+        "operation": "set",
+        "x": 283,
+        "y": 243,
+        "wires": [
+            [
+                "c7121754.6ec158"
+            ]
+        ]
+    },
+    {
+        "id": "533957d5.fc5c68",
+        "type": "fb-profile",
+        "z": "bd95e24.b107d2",
+        "x": 293,
+        "y": 203,
+        "wires": [
+            [
+                "a6d205d0.d17178"
+            ]
+        ]
+    },
+    {
+        "id": "bc3c4420.419ee8",
+        "type": "nedb",
+        "z": "bd95e24.b107d2",
+        "name": "Fetch User",
+        "key": "user.id",
+        "value": "user",
+        "operation": "get",
+        "x": 283,
+        "y": 123,
+        "wires": [
+            [
+                "3a3d6ec9.d221a2"
+            ]
+        ]
+    }
+]

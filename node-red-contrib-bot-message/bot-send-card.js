@@ -80,8 +80,9 @@ const input = (node, data, config) => {
 
     // Retrieve replies
     let replies = buildReply(node, data, config);
+    if (!replies){ sendData(node, data, config); }
     console.log(replies);
-
+    
     // Emit reply message
     data.reply = replies;
     helper.emitAsyncEvent('reply', node, data, config, () => {
