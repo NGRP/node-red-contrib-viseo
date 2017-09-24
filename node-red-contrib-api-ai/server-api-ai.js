@@ -1,5 +1,3 @@
-try {
-
 const helper  = require('node-red-viseo-helper')
 const botmgr  = require('node-red-viseo-bot-manager')
 const CARRIER = "GoogleHome"
@@ -76,7 +74,8 @@ const receive = (node, config, req, res) => {
 // ------------------------------------------
 
 const reply = (node, data, config) => { 
-    
+    node.warn('>>> REPLY <<<')
+    try {
     // Assume we send the message to the current user address
     let address = botmgr.getUserAddress(data)
     if (!address || address.carrier !== CARRIER) return false;
@@ -97,6 +96,7 @@ const reply = (node, data, config) => {
 
     // Trap the event in order to continue
     helper.fireAsyncCallback(data);
+    } catch(ex){ console.log(ex) }
 }
 
 // ------------------------------------------
@@ -105,28 +105,30 @@ const reply = (node, data, config) => {
 // ------------------------------------------
 
 // https://api.ai/docs/fulfillment#response
-const getMessage = exports.getMessage = (replies) => {
-  let msg = {}
+const getMessage = exports.getMessage = (replies) => { 
+    console.log('>>> REPLIES <<<', replies)
+    let msg = {}
 
-  // Data source
-  msg.source = 'VISEO'
+    // Data source
+    msg.source = 'VISEO'
 
-  // Response to the request.
-  msg.speech = '';
+    // Response to the request.
+    msg.speech = '';
 
-  // Text displayed on the user device screen.
-  msg.displayText = '';
+    // Text displayed on the user device screen.
+    msg.displayText = '';
 
-  // Specific data for Google
-  msg.data.google = getGoogleMessage(replies);
+    // Specific data for Google
+    msg.data = {};
+    msg.data.google = getGoogleMessage(replies);
 
-  // Array of context objects set after intent completion. Example: 
-  // msg.contextOut = [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]
+    // Array of context objects set after intent completion. Example: 
+    // msg.contextOut = [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]
 
-  // Event name and optional parameters sent from the web service to API.AI.
-  // msg.followupEvent = {"name":"<event_name>","data":{"<parameter_name>":"<parameter_value>"}}
+    // Event name and optional parameters sent from the web service to API.AI.
+    // msg.followupEvent = {"name":"<event_name>","data":{"<parameter_name>":"<parameter_value>"}}
 
-  return msg;
+    return msg;
 }
 
 const getGoogleMessage = exports.getGoogleMessage = (replies) => {
@@ -164,7 +166,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
     // SimpleResponse (always one at first)
     // https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#simpleresponse
     let simple = {};
-    google.richResponse.items.push(simple)
+    google.richResponse.items.push({'simpleResponse' : simple})
 
     let text = reply.text || reply.quicktext || (reply.title + ' ' + (reply.subtitle||''))
     simple.displayText = text      // (optional) chat bubble 640 chars. max
@@ -177,7 +179,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
     // Carousel of cards
     if (replies.length > 1){
         let carousel = { items : [] }
-        google.richResponse.items.push(carousel)
+        google.richResponse.items.push({'carouselSelect' : carousel})
 
         for (let card of replies){
             let item = {};
@@ -206,14 +208,20 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
     // https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#BasicCard
     if (reply.type === 'media' || reply.type === 'signin' || reply.type === 'card') {
         let item = {};
-        google.richResponse.items.push(item)
+        google.richResponse.items.push({'basicCard' : item})
 
-        if (reply.title){      item.title         = reply.title }
-        if (reply.subtitle){   item.subtitle      = reply.subtitle }
-        if (reply.media){      item.image         = { url: helper.absURL(reply.media) } }
-        if (reply.attach){     item.image         = { url: helper.absURL(reply.attach) } }
+        if (reply.title){      item.title    = reply.title }
+        if (reply.subtitle){   item.subtitle = reply.subtitle }
         if (reply.text){       item.formattedText = reply.text }
         if (reply.quicktext){  item.formattedText = reply.quicktext }
+
+        // Require an Image or formatedText
+        if (reply.media || reply.attach) {
+            item.image = reply.media ? { url: helper.absURL(reply.media) } : { url: helper.absURL(reply.attach) }
+        } else {
+            item.formattedText = item.formattedText || item.subtitle || item.title
+        }
+
         
         if (reply.buttons){
             item.buttons = [];
@@ -233,6 +241,3 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
 
     return google;
 }
-
-
-} catch (ex) { console.log(ex) }

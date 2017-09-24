@@ -80,7 +80,8 @@ const input = (node, data, config) => {
 
     // Retrieve replies
     let replies = buildReply(node, data, config);
-    
+    console.log(replies);
+
     // Emit reply message
     data.reply = replies;
     helper.emitAsyncEvent('reply', node, data, config, () => {
@@ -167,7 +168,7 @@ const buildReply = (node, data, config) => {
         buttonsStack.popAll(data);
     } //else, buttons popped on prompt
 
-    return carousel;
+    return carousel.length > 0 ? carousel : [reply];
 }
 
 const sendData = (node, data, config) => {
