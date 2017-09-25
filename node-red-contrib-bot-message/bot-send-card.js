@@ -47,14 +47,16 @@ const buttonsStack = {
 const getButtons = (locale, config, data) => {
     if (data.buttons) return data.buttons
     
-    let buttons = undefined
+    let buttons = [];
     if (config.sendType === 'quick'){
         buttons = JSON.parse(JSON.stringify(config.quickreplies));
     } else if (config.sendType === 'card'){
         buttons = JSON.parse(JSON.stringify(config.buttons));
     }
 
-    if (!buttons || buttons.length <= 0) return;
+    if (!buttons || buttons.length <= 0) {
+        return [];
+    }
     for (let button of buttons){
         if (!button.title || !button.action || !button.value) continue;
 
