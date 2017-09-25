@@ -80,7 +80,10 @@ const input = (node, data, config) => {
 
     // Retrieve replies
     let replies = buildReply(node, data, config);
-    if (!replies){ sendData(node, data, config); }
+    if (!replies){ 
+        sendData(node, data, config); 
+        return;
+    }
     console.log(replies);
     
     // Emit reply message
@@ -139,17 +142,24 @@ const buildReply = (node, data, config) => {
     let buttons = getButtons(locale, config, data);
     buttonsStack.push(data, buttons);
 
+
     let reply = {
         "type": config.sendType,
-        "quicktext" : marshall(locale, config.quicktext, data, ''),
-        "title"     : marshall(locale, config.title,     data, ''),
-        "subtitle"  : marshall(locale, config.subtitle,  data, ''),
-        "subtext"   : marshall(locale, config.subtext,   data, ''),
-        "attach"    : marshall(locale, config.attach,    data, ''),
         "buttons"   : buttons,
         "speech"    : speech,
         "prompt"    : config.prompt
     };
+
+
+    // Quick replies
+    if(config.sendType === 'quick') {
+        reply.quicktext = marshall(locale, config.quicktext, data, '');
+    } else if(config.sendType === 'card') {
+        reply.title = marshall(locale, config.title,     data, '');
+        reply.subtitle = marshall(locale, config.subtitle,  data, '');
+        reply.subtext = marshall(locale, config.subtext,   data, '');
+        reply.attach = marshall(locale, config.attach,    data, '');
+    }
     
     // Forward data without sending anything
     if (config.carousel){
