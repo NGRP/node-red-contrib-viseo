@@ -182,7 +182,13 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
     // Carousel of cards
     if (replies.length > 1){
         let carousel = { items : [] }
-        google.richResponse.items.push({'carouselSelect' : carousel})
+        google.systemIntent = {
+            intent: "actions.intent.OPTION",
+            data: {
+                "@type":"type.googleapis.com/google.actions.v2.OptionValueSpec"
+            }
+        }
+        google.systemIntent.data.carouselSelect = carousel;
 
         for (let card of replies){
             let item = {};
@@ -267,5 +273,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
             // btn.image = ''
         }
     }
+
+
     return google;
 }
