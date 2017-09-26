@@ -89,7 +89,7 @@ var WechatConnector = (function() {
 
         addr = {
             channelId: 'wechat',
-            user: { id: wechatMessage.FromUserName, name: 'Unknow' },
+            user: { id: wechatMessage.FromUserName, name: 'Unknown' },
             bot: { id: wechatMessage.ToUserName, name: 'Bot' },
             conversation: { id: 'Convo1' }
         };
