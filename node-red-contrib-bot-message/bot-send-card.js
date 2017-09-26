@@ -78,6 +78,7 @@ const input = (node, data, config) => {
             data.prompt = prompt
             sendData(node, data, config)
         })
+
     }
 
     // Retrieve replies
@@ -90,9 +91,11 @@ const input = (node, data, config) => {
     
     // Emit reply message
     data.reply = replies;
-    helper.emitAsyncEvent('reply', node, data, config, () => {
+    helper.emitAsyncEvent('reply', node, data, config, (data) => {
         helper.emitEvent('replied', node, data, config)
-        if (config.prompt){ return; }
+        if (config.prompt) { 
+            return; 
+        }
         sendData(node, data, config);
     });
 }
@@ -164,17 +167,18 @@ const buildReply = (node, data, config) => {
     }
     
     // Forward data without sending anything
+    let context = botmgr.getContext(data);
     if (config.carousel){
-        let carousel = data.context.carousel = data.context.carousel || [];
+        let carousel = context.carousel = context.carousel.carousel || [];
         carousel.push(reply);
         return;    
     }
     
     // Handle carousel
-    let carousel = data.context.carousel = data.context.carousel || [];
+    let carousel = context.carousel =context.carousel || [];
     if (carousel.length > 0){
         carousel.push(reply)
-        data.context.carousel = []; // clean
+        context.carousel = []; // clean
     }
 
     if (!config.prompt) {
@@ -209,7 +213,8 @@ const sendData = (node, data, config) => {
 
         // 4. DEFAULT: the first output
         out[0] = data;
-        node.send(out);
+
+        return node.send(out);
     }
 
 
@@ -254,6 +259,7 @@ const sendData = (node, data, config) => {
 
                 if (config.btnOutput || config.quickOutput){ 
                     out[i+1] = data; 
+
                     return node.send(out);
                 } 
             }
@@ -268,7 +274,9 @@ const sendData = (node, data, config) => {
                 });
             });
         } else {
-            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  _continue(data); });
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
+                _continue(data); 
+            });
         }
         return;
     }
