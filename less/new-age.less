@@ -15,10 +15,10 @@ body {
 
 a {
     .transition-all;
-    color: @theme-primary;
+    color: @theme-secondary;
     &:hover,
     &:focus {
-        color: darken(@theme-primary, 10%);
+        color: darken(@theme-secondary, 10%);
     }
 }
 
@@ -49,6 +49,8 @@ p {
 }
 
 
+
+
 // VISEO Updates
 I.feature-icon  {
     font-size: 80px;
@@ -56,6 +58,46 @@ I.feature-icon  {
 
 .wc-console {
     color: #000; 
+}
+
+//////Specific mobile 
+.not-mobile {
+    
+    display: none;
+}
+    
+.only-mobile {
+        
+    display: inherit;
+}
+    
+@media (min-width: 768px) {
+    .not-mobile {
+        
+        display: inherit;
+    }
+    
+    .only-mobile {
+
+        display: none;
+    }
+}
+
+////// Navigation
+
+.navbar.affix-top img.backwhite {
+    display: none;
+}
+
+.navbar.affix img.backblue {
+    display: none;
+}
+
+.feature-item img {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    text-align: center;
 }
 
 // Navigation
@@ -405,8 +447,8 @@ footer {
 
 .bg-primary {
     color:  @theme-text;
-    A       { color: @theme-text; }
-    A:hover { color: @theme-tertiary; text-decoration: none; }
+ //   A       { color: @theme-text; }
+  //  A:hover { color: @theme-tertiary; text-decoration: none; }
     
     background: @theme-primary;
     background: -webkit-linear-gradient(@theme-primary , darken(@theme-primary, 5%));
