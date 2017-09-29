@@ -47,14 +47,16 @@ const buttonsStack = {
 const getButtons = (locale, config, data) => {
     if (data.buttons) return data.buttons
     
-    let buttons = undefined
+    let buttons = [];
     if (config.sendType === 'quick'){
         buttons = JSON.parse(JSON.stringify(config.quickreplies));
     } else if (config.sendType === 'card'){
         buttons = JSON.parse(JSON.stringify(config.buttons));
     }
 
-    if (!buttons || buttons.length <= 0) return;
+    if (!buttons || buttons.length <= 0) {
+        return [];
+    }
     for (let button of buttons){
         if (!button.title || !button.action || !button.value) continue;
 
@@ -76,18 +78,24 @@ const input = (node, data, config) => {
             data.prompt = prompt
             sendData(node, data, config)
         })
+
     }
 
     // Retrieve replies
     let replies = buildReply(node, data, config);
-    if (!replies){ sendData(node, data, config); }
+    if (!replies){ 
+        sendData(node, data, config); 
+        return;
+    }
     console.log(replies);
     
     // Emit reply message
     data.reply = replies;
-    helper.emitAsyncEvent('reply', node, data, config, () => {
+    helper.emitAsyncEvent('reply', node, data, config, (data) => {
         helper.emitEvent('replied', node, data, config)
-        if (config.prompt){ return; }
+        if (config.prompt) { 
+            return; 
+        }
         sendData(node, data, config);
     });
 }
@@ -139,30 +147,38 @@ const buildReply = (node, data, config) => {
     let buttons = getButtons(locale, config, data);
     buttonsStack.push(data, buttons);
 
+
     let reply = {
         "type": config.sendType,
-        "quicktext" : marshall(locale, config.quicktext, data, ''),
-        "title"     : marshall(locale, config.title,     data, ''),
-        "subtitle"  : marshall(locale, config.subtitle,  data, ''),
-        "subtext"   : marshall(locale, config.subtext,   data, ''),
-        "attach"    : marshall(locale, config.attach,    data, ''),
         "buttons"   : buttons,
         "speech"    : speech,
         "prompt"    : config.prompt
     };
+
+
+    // Quick replies
+    if(config.sendType === 'quick') {
+        reply.quicktext = marshall(locale, config.quicktext, data, '');
+    } else if(config.sendType === 'card') {
+        reply.title = marshall(locale, config.title,     data, '');
+        reply.subtitle = marshall(locale, config.subtitle,  data, '');
+        reply.subtext = marshall(locale, config.subtext,   data, '');
+        reply.attach = marshall(locale, config.attach,    data, '');
+    }
     
     // Forward data without sending anything
+    let context = botmgr.getContext(data);
     if (config.carousel){
-        let carousel = data.context.carousel = data.context.carousel || [];
+        let carousel = context.carousel = context.carousel.carousel || [];
         carousel.push(reply);
         return;    
     }
     
     // Handle carousel
-    let carousel = data.context.carousel = data.context.carousel || [];
+    let carousel = context.carousel =context.carousel || [];
     if (carousel.length > 0){
         carousel.push(reply)
-        data.context.carousel = []; // clean
+        context.carousel = []; // clean
     }
 
     if (!config.prompt) {
@@ -197,7 +213,8 @@ const sendData = (node, data, config) => {
 
         // 4. DEFAULT: the first output
         out[0] = data;
-        node.send(out);
+
+        return node.send(out);
     }
 
 
@@ -242,6 +259,7 @@ const sendData = (node, data, config) => {
 
                 if (config.btnOutput || config.quickOutput){ 
                     out[i+1] = data; 
+
                     return node.send(out);
                 } 
             }
@@ -256,7 +274,9 @@ const sendData = (node, data, config) => {
                 });
             });
         } else {
-            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  _continue(data); });
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
+                _continue(data); 
+            });
         }
         return;
     }

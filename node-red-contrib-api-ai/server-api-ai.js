@@ -54,9 +54,14 @@ const receive = (node, config, req, res) => {
         inputType:  'message.originalRequest.data.inputs[0].rawInputs[0].inputType',
         source:     CARRIER
     })
-    
-    data.context.req = req;
-    data.context.res = res;
+
+    let context = botmgr.getContext(data)
+    context.req = req
+    context.res = res
+
+    if(json.originalRequest.data.inputs[0].arguments !== undefined) {
+        data.message.text = json.originalRequest.data.inputs[0].arguments[0].textValue
+    }
 
     // Handle Prompt
     let convId  = helper.getByString(data, 'user.address.conversation.id', undefined)
@@ -86,7 +91,9 @@ const reply = (node, data, config) => {
     if (!message) return false;
 
     // The address is not used because we reply to HTTP Response
-    let res = data.context.res
+    let context = botmgr.getContext(data)
+    let res = context.res
+
     res.setHeader('Content-Type', 'application/json');
 
     // Write the message to the response
@@ -182,7 +189,13 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
     // Carousel of cards
     if (replies.length > 1){
         let carousel = { items : [] }
-        google.richResponse.items.push({'carouselSelect' : carousel})
+        google.systemIntent = {
+            intent: "actions.intent.OPTION",
+            data: {
+                "@type":"type.googleapis.com/google.actions.v2.OptionValueSpec"
+            }
+        }
+        google.systemIntent.data.carouselSelect = carousel;
 
         for (let card of replies){
             let item = {};
@@ -249,7 +262,13 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
 
     if (reply.type === 'quick'){
         let item = { title: reply.title,  items: [] };
-        google.richResponse.items.push({'listSelect' : item})
+        google.systemIntent = {
+            intent: "actions.intent.OPTION",
+            data: {
+                "@type":"type.googleapis.com/google.actions.v2.OptionValueSpec"
+            }
+        }
+        google.systemIntent.data.listSelect = item;
 
         // A unique key that will be sent back to the agent if this response is given.
         // https://developers.google.com/actions/reference/rest/Shared.Types/OptionInfo
@@ -267,5 +286,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
             // btn.image = ''
         }
     }
+
+
     return google;
 }

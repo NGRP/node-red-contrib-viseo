@@ -1,6 +1,7 @@
 const promisify = require("es6-promisify");
 const request   = require('request-promise-native').defaults({ encoding: null });
 const helper    = require('node-red-viseo-helper');
+const botmgr  	= require('node-red-viseo-bot-manager');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -30,7 +31,7 @@ const input = (node, data, config) => {
 	// Skype & MSTeams
 	let obtainToken = undefined;
 	if (config.token || checkRequiresToken(data.message)){
-		let connector = data.context.bot.connector();
+		let connector = botmgr.getContext(data).bot.connector();
 		obtainToken = promisify(connector.getAccessToken.bind(connector)); 
 	}
 	

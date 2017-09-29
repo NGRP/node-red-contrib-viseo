@@ -2,6 +2,7 @@
 
 const fs      = require('fs');
 const helper  = require('node-red-viseo-helper');
+const botmgr  = require('node-red-viseo-bot-manager');
 
 /**
  * Locale is defined in bot builder with the following order:
@@ -62,7 +63,7 @@ exports.translate = (locale, key, def) => {
 }
 
 exports.resolve = (data) => {
-    let session = data.context.session;
+    let session = botmgr.getContext(data).session;
     if (!session) return;
     
     return session.preferredLocale();
