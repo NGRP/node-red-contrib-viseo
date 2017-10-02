@@ -1,0 +1,135 @@
+<script type="text/javascript">
+    RED.nodes.registerType('inbenta-request',{
+        category: 'VISEO_NLP',
+        color: '#3FADB5',
+        defaults: { 
+            name:   	        { value: undefined },
+            ibConfig:           { value: undefined, required: true},
+            ibConfigType:       { value: 'msg'},
+            action:             { value: 'search', required: true},
+            question:           { value: undefined},
+            questionType:       { value: 'msg'},
+            objectId:           { value: undefined},
+            objectIdType:       { value: 'msg'},
+            objectRating:       { value: undefined},
+            objectRatingType:   { value: 'msg'},
+            objectComment:      { value: undefined},
+            objectCommentType:  { value: 'msg'},
+        },
+        inputs:  1, 
+        outputs: 1,
+        icon: "inbenta.png",
+        align: "left",
+        paletteLabel: "Inbenta",
+        label: function() { 
+            if (this.name !== undefined && this.name !== "") return this.name;
+            else {
+                let name = "Search FAQ";
+                if      (this.action === "click")  name = "Send click";
+                else if (this.action === "rate")   name = "Send rate";
+                return  name;
+            }
+        },
+        oneditprepare: function() {
+            if (!this.questionType) this.questionType = 'msg';
+            if (!this.ibConfigType) this.ibConfigType = 'msg';
+            if (!this.objectIdType) this.objectIdType = 'msg';
+            if (!this.objectRatingType) this.objectRatingType = 'msg';
+            if (!this.objectCommentType) this.objectCommentType = 'msg';
+
+            $("#node-input-question").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-questionType") });
+            $("#node-input-ibConfig").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-ibConfigType") });
+            $("#node-input-objectId").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectIdType") });
+            $("#node-input-objectRating").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectRatingType") });
+            $("#node-input-objectComment").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectCommentType") });
+
+            $("#node-input-action").change( function() {
+                $(".actionSearch").hide();
+                $(".actionClick").hide();
+                $(".actionRate").hide();
+
+                let value = $(this).val();
+                if      (value === "search")    $(".actionSearch").show();
+                else if (value === "click")     $(".actionClick").show();
+                else if (value === "rate")      $(".actionRate").show();
+            });
+        },
+        oneditsave: function() {}
+    });
+</script>
+
+
+
+<script type="text/x-red" data-template-name="inbenta-request">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Inbenta settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-ibConfig"><i class="fa fa-globe"></i> URL</label>
+        <input type="text" id="node-input-ibConfig" style="width:70%;">
+        <input type="hidden" id="node-input-ibConfigType">
+    </div>
+
+    <br>
+    <b>Request settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action" style="width:70%;">
+            <option value="search">Search</option>
+            <option value="click">Click</option>
+            <option value="rate">Rate</option>
+        </select>
+    </div>
+
+    <div class="form-row actionSearch">
+        <label for="node-input-question"><i class="fa fa-tasks"></i> Question</label>
+        <input type="text" id="node-input-question" style="width:70%;">
+        <input type="hidden" id="node-input-questionType">
+    </div>
+    <div class="form-row actionClick">
+        <label for="node-input-objectId"><i class="fa fa-tasks"></i> Id</label>
+        <input type="text" id="node-input-objectId" style="width:70%;">
+        <input type="hidden" id="node-input-objectIdType">
+    </div>
+    <div class="form-row actionRate">
+        <label for="node-input-objectRating"><i class="fa fa-tasks"></i> Rating</label>
+        <input type="text" id="node-input-objectRating" style="width:70%;">
+        <input type="hidden" id="node-input-objectRatingType">
+    </div>
+    <div class="form-row actionRate">
+        <label for="node-input-objectComment"><i class="fa fa-tasks"></i> Comment</label>
+        <input type="text" id="node-input-objectComment" style="width:70%;">
+        <input type="hidden" id="node-input-objectCommentType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="inbenta-request">
+    <h2>Main properties</h2>
+    <ol> 
+        <p>This node allows to connect your flow to Inbenta for NLP and FAQ usages.</p><br>
+
+        <b>Inbenta settings</b>
+        <p style="margin-left: 20px;"><b>URL</b>: Inbenta URL. Ex: https://f01.inenta.com/my_instance</p>
+
+        <b>Request settings</b>
+        <p style="margin-left: 20px;"><b>Question</b> (Search): User question to classify.
+           <br><b>Id</b> (Click): Inbenta Id of the selected content.
+           <br><b>Rating</b> (Rate): Yes/No/No-Comment Id of the selected content.
+           <br><b>Comment</b> (Rate): Comment to add if "No-Comment" was selected.
+        </p>
+        
+        <b>Tips</b>
+        <p style="margin-left: 20px;">► When there is a unique result after a search operation, there is no need to send back a 'click' on the content.</p>
+
+        <b>Response</b>
+        <p style="margin-left: 20px;"><b>Payload</b>: this field contains the request response.</p>
+    </ol> 
+</script>
