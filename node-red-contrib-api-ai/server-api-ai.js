@@ -2,6 +2,8 @@ const helper  = require('node-red-viseo-helper')
 const botmgr  = require('node-red-viseo-bot-manager')
 const CARRIER = "GoogleHome"
 
+const userManager = require('./lib/user.js');
+
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
@@ -14,20 +16,46 @@ module.exports = function(RED) {
         start(RED, node, config);
         this.on('close', (done)  => { stop(node, config, done) });
     }
-    RED.nodes.registerType("api-ai-server", register, {});
+    RED.nodes.registerType("api-ai-server", register, {
+        credentials: {
+            clientId:   { type: "text" },
+            projectId:  { type: "text" },
+            secretKey:  { type: "text" }
+        }
+    });
 }
 
 let LISTENERS = {};
 const start = (RED, node, config) => {  
 
     // Start HTTP Route
-    let uri = '/api-ai-server/'; // FIXME: Authentication !!!
+    let uri = '/api-ai-server/'; 
+
+    //Authentication for api ai
+    if(! node.credentials.clientId || !node.credentials.secretKey || ! node.credentials.projectId) {
+        node.status({ fill: "red", shape: "dot", text: "Client ID, Project ID and Client Secret are mandatory for Api AI Server" })
+        return;
+    }
+
+    node.status({});
+    userManager.Authentication(RED.httpNode, uri, node.credentials.projectId, node.credentials.clientId, node.credentials.secretKey, function(user) {
+        let data = {
+            user: user
+        };
+
+        console.log(user);
+
+        node.send([data, undefined]);
+    });
+
+
     node.warn('Add GET/POST route to: '+ uri);
     RED.httpNode.post (uri, (req, res, next) => { receive(node, config, req, res); });
 
     // Add listener to reply
     let listener = LISTENERS[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
     helper.listenEvent('reply', listener)
+
 }
 
 const stop = (node, config, done) => {
@@ -45,6 +73,12 @@ const receive = (node, config, req, res) => {
     let json = req.body
     node.warn(json);
     // try { json = JSON.parse(json); } catch (ex) { console.log('Parsing Error', ex, json) }
+
+    if(json.originalRequest == undefined) {
+        console.log(json);
+        node.warn('Empty request received');
+        return;
+    }
 
     let data = botmgr.buildMessageFlow({ message : json }, {
         userLocale: 'message.originalRequest.data.user.locale',
@@ -71,7 +105,7 @@ const receive = (node, config, req, res) => {
     helper.emitEvent('received', node, data, config);
     node.warn('>>> RECEIVE <<<')
     node.warn(data);
-    node.send(data);
+    node.send([undefined, data]);
 }
 
 // ------------------------------------------
@@ -149,9 +183,11 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
     // Indicates whether the app is expecting a user response. 
     // This is true when the conversation is ongoing, false when the conversation is done.
     google.expectUserResponse = false
-    for (let reply of replies){ 
-        if (reply.prompt) { google.expectUserResponse = true }
-    }
+    //for (let reply of replies){ 
+    //    if (reply.prompt) { 
+            google.expectUserResponse = true 
+    //    }
+    //}
 
     // Indicates whether the text to speech is SSML or not.
     google.isSsml = false
