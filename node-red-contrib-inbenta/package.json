@@ -11,7 +11,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/NGRP/node-red-contrib-viseo"
+		"url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-inbenta"
 	},
 	"license": "Apache-2.0",
 	"keywords": [
