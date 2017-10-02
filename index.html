@@ -289,31 +289,48 @@
                 <h2 class="section-heading">They trust us with their experience</h2>
             </div>
             <div class="row">
-            <div class="col-md-3">
-                <div class="feature-item">
-                    <img src="img/accor-hotels.jpg">
-                </div>       
-            </div>
-            <div class="col-md-3">
+                <div class="col-md-3">
                     <div class="feature-item">
-                        <img src="img/accor-hotels.jpg">
+                        <img src="img/accor-hotels.png">
                     </div>       
-            </div>
-            <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
                     <div class="feature-item">
-                        <img src="img/accor-hotels.jpg">
+                        <img src="img/jo&amp;joe.png">
                     </div>       
-            </div>
-            <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
                     <div class="feature-item">
-                        <img src="img/accor-hotels.jpg">
+                        <img src="img/Direct_Energie_logo_2012.png">
                     </div>       
-            </div>
-        </div>
-            <div class="col-md-3">
+                </div>
+                <div class="col-md-3">
                     <div class="feature-item">
-                        <img src="img/accor-hotels.jpg">
-                    </div>       
+                        <img src="img/microsoft-gray.png">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="feature-item">
+                        <img src="img/EMLYON_logo_corp.png">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-item">
+                        <img src="img/logo-pernod-ricard.png">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-item">
+                        <img src="img/groupama.png">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="feature-item">
+                        <img src="img/weshgros.png">
+                    </div>
+                </div>
             </div>
                 
     </div>
@@ -378,12 +395,23 @@
     <script src="js/main.js"></script>
     
     <script>
+         const botConnection = new BotChat.DirectLine({
+            secret: 'e6mim3_Hy8A.cwA.eyk.-GCk1zNlOfp59Iyw-wHP1mig2i1cR9-9iGzxqnunRxc'
+        });
+
+
         BotChat.App({
-            directLine: { secret: 'e6mim3_Hy8A.cwA.eyk.-GCk1zNlOfp59Iyw-wHP1mig2i1cR9-9iGzxqnunRxc' },
+            //directLine: { secret: 'e6mim3_Hy8A.cwA.eyk.-GCk1zNlOfp59Iyw-wHP1mig2i1cR9-9iGzxqnunRxc' },
+            botConnection : botConnection,
             user: { id: 'userid' },
             bot: { id: '0dda10e5-096f-4c28-9336-1f5f9c5f7e2d' },
             resize: 'detect'
         }, document.getElementById("chatbot"));
+        /*
+        setTimeout(function(){
+            $('.wc-shellinput').val('hello').trigger('change')
+            $('.wc-send').click()
+        }, 1000)*/
     </script>
 
 </body>
