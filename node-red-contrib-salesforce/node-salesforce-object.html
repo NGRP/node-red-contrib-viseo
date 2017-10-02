@@ -1,0 +1,184 @@
+<script type="text/javascript">
+    RED.nodes.registerType('salesforce-object',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:   	    { value: undefined },
+            sfConfig:       { value: undefined, required: true, type: 'salesforce-config' },
+            token: 	        { value: undefined },
+            tokenType:      { value: 'msg'},
+            action:         { value: 'get', required: true},
+            object:         { value: 'Account', required: true},
+            objectLabel:       { value: undefined},
+            objectLabelType:   { value: 'msg'},
+            objectId:          { value: undefined},
+            objectIdType:      { value: 'msg'},
+            objectObject:      { value: undefined},
+            objectObjectType:  { value: 'msg'},
+            querySelect:       { value: undefined},
+            querySelectType:   { value: 'msg'},
+            queryWhere:        { value: undefined},
+            queryWhereType:    { value: 'msg'},
+            queryEquals:       { value: undefined},
+            queryEqualsType:   { value: 'msg'}
+        },
+        inputs:  1, 
+        outputs: 1,
+        icon: "salesforce.png",
+        align: "left",
+        paletteLabel: "Salesforce",
+        label: function() { 
+            if (this.name !== undefined && this.name !== "") return this.name;
+            else {
+                let name = "Get ";
+                if      (this.action === "post")    name = "New ";
+                else if (this.action === "patch")   name = "Update ";
+                else if (this.action === "delete")  name = "Delete ";
+                else if (this.action === "query")   name = "Query ";
+                if      (this.object === "Customer_Survey__c") name += "survey";
+                else if (this.object === "else") name += "object";
+                else    name += (this.object).toLowerCase();
+                return  name;
+            }
+        },
+        oneditprepare: function() {
+
+            if (!this.tokenType) this.tokenType = 'msg';
+            if (!this.objectLabelType) this.objectLabelType = 'msg';
+            if (!this.objectIdType) this.objectIdType = 'msg';
+            if (!this.objectObjectType) this.objectIdType = 'msg';
+            if (!this.querySelectType) this.querySelectType = 'msg';
+            if (!this.queryWhereType) this.queryWhereType = 'msg';
+            if (!this.queryEqualsType) this.queryEqualsType = 'msg';
+
+            $("#node-input-token").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-tokenType") });
+            $("#node-input-objectLabel").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectLabelType") });
+            $("#node-input-objectId").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectIdType") });
+            $("#node-input-objectObject").typedInput({ default: 'msg', types: ['msg','json','global'], typeField: $("#node-input-objectObjectType") });
+            $("#node-input-querySelect").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-querySelectType") });
+            $("#node-input-queryWhere").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-queryWhereType") });
+            $("#node-input-queryEquals").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-queryEqualsType") });
+
+            $("#node-input-action").change( function() {
+                $(".query").hide();
+                $(".actionId").hide();
+                $(".actionObject").hide();
+
+                let value = $(this).val();
+                if (value === "get" || value === "patch" || value === "delete") $(".actionId").show();
+                if (value === "post" || value === "patch") $(".actionObject").show();
+                if (value === "query") $(".query").show();
+            });
+
+            $("#node-input-object").change( function() {
+                $(".actionLabel").hide();
+                if ($(this).val() === "else") $(".actionLabel").show();
+            });
+        },
+        oneditsave: function() {}
+    });
+</script>
+
+
+
+<script type="text/x-red" data-template-name="salesforce-object">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Salesforce settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-sfConfig"><i class="fa fa-lock"></i> Config</label>
+        <input type="text" id="node-input-sfConfig" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-token"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-input-token" style="width:70%;">
+        <input type="hidden" id="node-input-tokenType">
+    </div>
+
+    <br>
+    <b>Object settings</b>
+
+    <div class="form-row">
+        <br>
+        <select id="node-input-action" style="width:100px; display:inline-block;">
+            <option value="get">Get</option>
+            <option value="query">Query</option>
+            <option value="post">New</option>
+            <option value="patch">Update</option>
+            <option value="delete">Delete</option>
+        </select>
+        <select id="node-input-object" style="width:70%; display:inline-block;">
+            <option value="Account">Account</option>
+            <option value="Asset">Asset</option>
+            <option value="Attachment">Attachment</option>
+            <option value="Case">Case</option>
+            <option value="Customer_Survey__c">Customer Survey</option>
+            <option value="Event">Event</option>
+            <option value="Order">Order</option>
+            <option value="else">Else...</option>
+        </select>
+    </div>
+
+    <div class="form-row actionLabel">
+        <label for="node-input-objectLabel"><i class="icon-tag"></i> Object</label>
+        <input type="text" id="node-input-objectLabel" style="width:70%;">
+        <input type="hidden" id="node-input-objectLabelType">
+    </div>
+    <div class="form-row actionId">
+        <label for="node-input-objectId"><i class="fa fa-tasks"></i> Id</label>
+        <input type="text" id="node-input-objectId" style="width:70%;">
+        <input type="hidden" id="node-input-objectIdType">
+    </div>
+    <div class="form-row actionObject">
+        <label for="node-input-objectObject"><i class="fa fa-tasks"></i> Body</label>
+        <input type="text" id="node-input-objectObject" style="width:70%;">
+        <input type="hidden" id="node-input-objectObjectType">
+    </div>
+    <div class="form-row query">
+        <label for="node-input-querySelect"><i class="fa fa-tasks"></i> Select</label>
+        <input type="text" id="node-input-querySelect" style="width:70%;">
+        <input type="hidden" id="node-input-querySelectType">
+    </div>
+    <div class="form-row query">
+        <label for="node-input-queryWhere"><i class="fa fa-tasks"></i> Where</label>
+        <input type="text" id="node-input-queryWhere" style="display:inline-block; width:70%;">
+        <input type="hidden" id="node-input-queryWhereType">
+    </div>
+    <div class="form-row query">
+        <label for="node-input-queryEquals" style="display:inline-block; margin-left: 100px;  width:10%; text-align:center;">=</label>
+        <input type="text" id="node-input-queryEquals" style="display:inline-block; width:60%;">
+        <input type="hidden" id="node-input-queryEqualsType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="salesforce-object">
+    <h2>Main properties</h2>
+    <ol> 
+        <p>This node allows to connect your flow to Salesforce objects.</p><br>
+
+        <b>Salesforce settings</b>
+        <p style="margin-left: 20px;"><b>Config</b>: required information to connect to Salesforce.
+        <br><b>Token</b>: facultative. If empty, a request is send to get it (slower).</p>
+
+        <b>Object settings</b>
+        <p style="margin-left: 20px;">The object to get/create/update/query on...
+           <br><b>Id</b> (Get/Update/Delete): ID of the object.
+           <br><b>Body</b> (New/Update): Body of the object (JSON). Read the documentation to get more info about the required field. 
+           <br><b>Select</b> (Query): Fields of the object to select, separated with ','.
+           <br><b>Where</b> (Query): Field of the object to check, and value (=).
+        </p>
+        
+        <b>Tips</b>
+        <p style="margin-left: 20px;">► You can send a "GET" request on an object with a empty ID field to get the object description.
+        <br>► You can specify your own object by selecting "Else" as the object, and by typing its API label in the "Object" filed.</p>
+
+        <b>Response</b>
+        <p style="margin-left: 20px;"><b>Payload</b>: this field contains the request response, and a "token" field to keep it.</p>
+    </ol> 
+</script>

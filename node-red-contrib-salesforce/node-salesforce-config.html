@@ -1,0 +1,40 @@
+<script type="text/javascript">
+    RED.nodes.registerType('salesforce-config',{
+        category: 'config',
+        defaults: {
+            name:      { value: undefined }
+        },
+        credentials: {
+            id:       { type:"text" },
+            secret:   { type:"text" },
+            instance: { type:"text" },
+            refresh:  { type:"text" }
+        },
+        label: function() {
+            return this.name || "Salesforce's token";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="salesforce-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-id"><i class="fa fa-lock"></i> Client ID</label>
+        <input type="text" id="node-config-input-id" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-secret"><i class="fa fa-lock"></i> Client secret</label>
+        <input type="text" id="node-config-input-secret" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-instance"><i class="fa fa-lock"></i> Instance</label>
+        <input type="text" id="node-config-input-instance" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-refresh"><i class="fa fa-lock"></i> Refresh</label>
+        <input type="text" id="node-config-input-refresh" placeholder="">
+    </div>
+</script>
