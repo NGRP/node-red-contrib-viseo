@@ -1,19 +1,19 @@
 {
     "name"          : "node-red-contrib-viseo-ms-graph",
-    "version"       : "0.0.5",
+    "version"       : "0.0.8",
     "author"        : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Wrapper of Microsoft Graph",
     "dependencies"  : {  
         "oauth"     : "0.9.15",
-        "node-uuid" : "3.0.0",
-        "node-red-viseo-helper" : "~0.0"
+        "uuid"      : "3.1.0",
+        "node-red-viseo-helper" : "~0.1"
     },
     "repository" : {
         "type":"git",
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-graph"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "sarah" ],
+    "keywords": ["viseo", "sarah", "node-red"],
     "node-red" : {
         "nodes": {
             "node-ms-graph-oauth":   "node-ms-graph-oauth.js"

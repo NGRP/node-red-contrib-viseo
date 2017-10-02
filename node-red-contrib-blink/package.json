@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-blink",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Implements CURL Blink for Home API",
     "dependencies"  : {
@@ -11,7 +11,7 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-blink"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "sarah" ],
+    "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
             "login": "node-blink-login.js",

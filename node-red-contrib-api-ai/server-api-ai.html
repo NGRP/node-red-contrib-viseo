@@ -1,0 +1,26 @@
+<script type="text/javascript">
+    RED.nodes.registerType('api-ai-server',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: { 
+            name: { value: undefined },
+        },
+        inputs:  0,
+        outputs: 1,
+        icon: "google.svg",
+        align: "left",
+        paletteLabel: 'API.ai',
+        label: function() { return this.name || "API.ai"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="api-ai-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="api-ai-server">
+
+</script>

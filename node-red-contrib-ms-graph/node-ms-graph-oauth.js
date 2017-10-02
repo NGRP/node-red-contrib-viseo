@@ -1,6 +1,6 @@
 const helper = require('node-red-viseo-helper');
 const OAuth  = require('oauth');
-const uuid   = require('node-uuid');
+const uuidv4 = require('uuid/v4');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -71,7 +71,7 @@ const getAuthUrl = (CREDENTIALS) => {
     '&redirect_uri=' + CREDENTIALS.redirect_uri +
     '&scope=' + CREDENTIALS.scope +
     '&response_mode=query' +
-    '&nonce=' + uuid.v4() +
+    '&nonce=' + uuidv4() +
     '&state=' + CREDENTIALS.state;
 }
 
@@ -92,7 +92,7 @@ const getTokenFromCode = (CREDENTIALS, code, callback) => {
       grant_type: 'authorization_code',
       redirect_uri: CREDENTIALS.redirect_uri,
       response_mode: 'form_post',
-      nonce: uuid.v4(),
+      nonce: uuidv4(),
       state: CREDENTIALS.state
     },
     (e, accessToken, refreshToken) => {
@@ -117,7 +117,7 @@ const getTokenFromRefreshToken = (CREDENTIALS, refreshToken, callback) => {
       grant_type: 'refresh_token',
       redirect_uri: CREDENTIALS.redirect_uri,
       response_mode: 'form_post',
-      nonce: uuid.v4(),
+      nonce: uuidv4(),
       state: CREDENTIALS.state
     },
     function (e, accessToken) {

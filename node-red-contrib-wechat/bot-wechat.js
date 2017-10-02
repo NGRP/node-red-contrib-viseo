@@ -1,10 +1,12 @@
 "use strict";
 
+/*
 const helper    = require('node-red-viseo-helper');
 const builder   = require('botbuilder');
-const connector = require('./msbot-wechat-connector.js');
+const connector = require('./bot-wechat-connector.js');
 const msbot     = require('../../lib/msbot.js');
 const srv       = require('../../lib/server.js');
+*/
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -14,13 +16,13 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        start(RED, node, config);
-        this.on('input', (data)  => { input(node, data, config)  });
-        this.on('close', (cb)    => { stop(node, cb, config)     });
+        //start(RED, node, config);
+        //this.on('input', (data)  => { input(node, data, config)  });
+        //this.on('close', (cb)    => { stop(node, cb, config)     });
     }
     RED.nodes.registerType("wechat", register, {});
 }
-
+/*
 let bot;
 let BOT_CONTEXT = {};
 const start = (RED, node, config) => {
@@ -75,3 +77,4 @@ const stop = (node, cb, config) => { cb(); }
 const input = (node, data, config) => {
     if (!wechatAPI) return node.send(data);
 }
+*/

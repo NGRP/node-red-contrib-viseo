@@ -1,16 +1,16 @@
 {
     "name"          : "node-red-contrib-viseo-help",
-    "version"       : "0.0.5",
+    "version"       : "0.0.7",
     "description"   : "Help call between outputs",
     "dependencies"  : { 
-        "node-red-viseo-helper" : "~0.0"
+        "node-red-viseo-helper" : "~0.1"
     },
     "repository" : {
         "type":"git",
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-help"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red" ],
+    "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
             "help": "node-html.js"

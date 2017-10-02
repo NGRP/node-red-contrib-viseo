@@ -1,10 +1,10 @@
 
-const path     = require('path');
-const builder  = require('botbuilder');
 const mustache = require('mustache');
-const msbot    = require('../../lib/msbot.js');
-const i18n     = require('../../lib/i18n.js');
+const i18n     = require('./lib/i18n.js');
 const helper   = require('node-red-viseo-helper');
+const botmgr   = require('node-red-viseo-bot-manager');
+
+require('./lib/i18n.js').init();
 
 const marshall = (locale, str, data, def) => {
     if (!str) return def;
@@ -47,14 +47,16 @@ const buttonsStack = {
 const getButtons = (locale, config, data) => {
     if (data.buttons) return data.buttons
     
-    let buttons = undefined
+    let buttons = [];
     if (config.sendType === 'quick'){
         buttons = JSON.parse(JSON.stringify(config.quickreplies));
     } else if (config.sendType === 'card'){
         buttons = JSON.parse(JSON.stringify(config.buttons));
     }
 
-    if (!buttons || buttons.length <= 0) return;
+    if (!buttons || buttons.length <= 0) {
+        return [];
+    }
     for (let button of buttons){
         if (!button.title || !button.action || !button.value) continue;
 
@@ -68,106 +70,122 @@ const getButtons = (locale, config, data) => {
 }
 
 const input = (node, data, config) => {
-    let outMsg  = undefined;
-    let locale = msbot.getLocale(data);
-    let convId = msbot.getConvId(data)
+    let convId = botmgr.getConvId(data)
 
-    // Go for prompt
+    // Prepare the prompt
     if (config.prompt){
-        helper.delayCallback(convId, (prompt) => {
+        botmgr.delayCallback(convId, (prompt) => {
             data.prompt = prompt
             sendData(node, data, config)
         })
+
     }
+
+    // Retrieve replies
+    let replies = buildReply(node, data, config);
+    if (!replies){ 
+        sendData(node, data, config); 
+        return;
+    }
+    console.log(replies);
+    
+    // Emit reply message
+    data.reply = replies;
+    helper.emitAsyncEvent('reply', node, data, config, (data) => {
+        helper.emitEvent('replied', node, data, config)
+        if (config.prompt) { 
+            return; 
+        }
+        sendData(node, data, config);
+    });
+}
+
+const buildReply = (node, data, config) => {
+    let locale = botmgr.getLocale(data);
 
     // Prepare speech
     let speech = config.speechText ? marshall(locale, config.speechText, data, '') : config.speech;
 
-    // Send text message (see msbot.getMessage() documentation)
+    // Simple text message
     if (config.sendType === 'text'){
         let text = config.text;
         if (config.random){
             let txt = text.split('\n');
             text = txt[Math.round(Math.random() * (txt.length-1))]
         }
-        outMsg = msbot.getMessage({
+        return [{
             "type"   : config.sendType, 
             "text"   : marshall(locale, text, data, ''),
-            "speech" : speech
-        });
+            "speech" : speech,
+            "prompt" : config.prompt
+        }]
     }
 
-    // Send media message (see msbot.getMessage() documentation)
-    else if (config.sendType === 'media'){
-        outMsg = msbot.getMessage({
-            "type"  : config.sendType, 
-            "media" : marshall(locale, config.media, data, ''),
-            "speech": speech
-        });
+    // Simple media message
+    if (config.sendType === 'media'){
+        return [{
+            "type"   : config.sendType, 
+            "media"  : marshall(locale, config.media, data, ''),
+            "speech" : speech,
+            "prompt" : config.prompt
+        }]
     }
 
-    // Send media message (see msbot.getMessage() documentation)
-    else if (config.sendType === 'signin'){
-        outMsg = msbot.getMessage({
-            "type"  : config.sendType, 
-            "text"  : marshall(locale, config.signintext,  data, ''),
-            "title" : marshall(locale, config.signintitle, data, ''),
-            "url"   : marshall(locale, config.signinurl,   data, ''),
-            "speech": speech
-        });
+    // Card "signin" message
+    if (config.sendType === 'signin'){
+        return [{
+            "type"   : config.sendType, 
+            "text"   : marshall(locale, config.signintext,  data, ''),
+            "title"  : marshall(locale, config.signintitle, data, ''),
+            "url"    : marshall(locale, config.signinurl,   data, ''),
+            "speech" : speech,
+            "prompt" : config.prompt
+        }]
     }
 
-    // Send card message (see msbot.getMessage() documentation)
-    else {
+    // Other card message
+    let buttons = getButtons(locale, config, data);
+    buttonsStack.push(data, buttons);
 
-        let buttons = getButtons(locale, config, data);
 
-        outMsg = msbot.getMessage({
-            type: config.sendType,
-            quicktext : marshall(locale, config.quicktext, data, ''),
-            "title"   : marshall(locale, config.title,     data, ''),
-            "subtitle": marshall(locale, config.subtitle,  data, ''),
-            "subtext" : marshall(locale, config.subtext,   data, ''),
-            "attach"  : marshall(locale, config.attach,    data, ''),
-            "buttons" : buttons,
-            "speech"  : speech
-        }, data);
+    let reply = {
+        "type": config.sendType,
+        "buttons"   : buttons,
+        "speech"    : speech,
+        "prompt"    : config.prompt
+    };
 
-        buttonsStack.push(data, buttons);
-        
-        if (config.carousel){
-            let carousel = data.context.carousel = data.context.carousel || [];
-            carousel.push(outMsg.data.attachments[0]);
-            // Forward data without sending anything
-            return sendData(node, data, config);
-            
-        } else {
-            let carousel = data.context.carousel = data.context.carousel || [];
-            if (carousel.length > 0){
-                carousel.push(outMsg.data.attachments[0])
-                outMsg.attachmentLayout(builder.AttachmentLayout.carousel);
-                outMsg.data.attachments = carousel;
-                data.context.carousel = []; // clean
-            }
 
-            if(!config.prompt) {
-                buttonsStack.popAll(data);
-            } //else, buttons popped on prompt
-        }
+    // Quick replies
+    if(config.sendType === 'quick') {
+        reply.quicktext = marshall(locale, config.quicktext, data, '');
+    } else if(config.sendType === 'card') {
+        reply.title = marshall(locale, config.title,     data, '');
+        reply.subtitle = marshall(locale, config.subtitle,  data, '');
+        reply.subtext = marshall(locale, config.subtext,   data, '');
+        reply.attach = marshall(locale, config.attach,    data, '');
+    }
+    
+    // Forward data without sending anything
+    let context = botmgr.getContext(data);
+    if (config.carousel){
+        let carousel = context.carousel = context.carousel.carousel || [];
+        carousel.push(reply);
+        return;    
+    }
+    
+    // Handle carousel
+    let carousel = context.carousel =context.carousel || [];
+    if (carousel.length > 0){
+        carousel.push(reply)
+        context.carousel = []; // clean
     }
 
-    // Speech Input HINTS
-    if (config.speech && config.prompt && outMsg.inputHint){
-        outMsg.inputHint('expectingInput');
-    }
+    if (!config.prompt) {
+        buttonsStack.popAll(data);
+    } //else, buttons popped on prompt
 
-    // Emit reply message
-    data.reply = outMsg;
-    helper.emitAsyncEvent('reply', node, data, config, () => {
-        helper.emitEvent('replied', node, data, config)
-        if (config.prompt){ return; }
-        sendData(node, data, config);
-    });
+    return carousel.length > 0 ? carousel : [reply];
 }
 
 const sendData = (node, data, config) => {
@@ -195,7 +213,8 @@ const sendData = (node, data, config) => {
 
         // 4. DEFAULT: the first output
         out[0] = data;
-        node.send(out);
+
+        return node.send(out);
     }
 
 
@@ -240,6 +259,7 @@ const sendData = (node, data, config) => {
 
                 if (config.btnOutput || config.quickOutput){ 
                     out[i+1] = data; 
+
                     return node.send(out);
                 } 
             }
@@ -254,7 +274,9 @@ const sendData = (node, data, config) => {
                 });
             });
         } else {
-            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  _continue(data); });
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
+                _continue(data); 
+            });
         }
         return;
     }

@@ -1,0 +1,25 @@
+{
+    "name"          : "node-red-contrib-viseo-bot-message",
+    "version"       : "0.0.7",
+    "description"   : "",
+    "dependencies"  : {
+        "mustache"                   : "^2.3.0",
+        "node-red-viseo-helper"      : "~0.1",
+        "node-red-viseo-bot-manager" : "~0.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-bot-message"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "viseo", "sarah", "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "send-card":    "bot-send-card.js",
+            "profile":      "bot-profile.js",
+            "bot-event":    "bot-event.js",
+            "bot-continue": "bot-continue.js",
+            "bot-wrapper":  "bot-wrapper.js"
+        }
+    }
+}
