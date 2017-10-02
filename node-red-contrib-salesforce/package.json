@@ -6,7 +6,7 @@
 	"dependencies": {
 		"request": "^2.76.0",
 		"extend": "^3.0.0",
-		"node-red-viseo-helper": "~0.0",
+		"node-red-viseo-helper": "~0.1",
 		"request-promise": "^4.1.1"
 	},
 	"repository": {
