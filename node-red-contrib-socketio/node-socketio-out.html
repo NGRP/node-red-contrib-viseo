@@ -5,14 +5,26 @@
         defaults: { 
             name:   { value: undefined },
             path:   { value: undefined },
+            pathType:   { value: "str" },
             value:  { value: undefined },
+            valueType:   { value: "msg" }
         },
         inputs:1,
         outputs:0,
         icon: "socketio.svg",
         align: "right",
-        paletteLabel: 'socket IO out',
-        label: function() { return this.name || "SocketIO OUT"; }
+        paletteLabel: 'SocketIO OUT',
+        label: function() { 
+            if (this.name !== undefined && this.name !== "") return this.name;
+            else if (this.path === undefined || this.path === "") return "SocketIO OUT";
+            else return this.path;
+        },
+        oneditprepare: function() {
+            if (!this.pathType) this.pathType = 'str';
+            if (!this.valueType) this.valueType = 'msg';
+            $("#node-input-path").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-pathType") });
+            $("#node-input-value").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-valueType") });
+        }
     });
 </script>
 
@@ -22,12 +34,14 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-path"><i class="icon-tag"></i> Path</label>
+        <label for="node-input-path"><i class="fa fa-globe"></i> Path</label>
         <input type="text" id="node-input-path" placeholder="/ws/path">
+        <input type="hidden" id="node-input-pathType">
     </div>
     <div class="form-row">
         <label for="node-input-value"><i class="icon-tag"></i> Value</label>
         <input type="text" id="node-input-value" placeholder="">
+        <input type="hidden" id="node-input-valueType">
     </div>
 </script>
 

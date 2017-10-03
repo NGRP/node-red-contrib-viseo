@@ -17,14 +17,25 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
     let SOCKETS = node.context().global.get("sockets");
-    let payload = helper.getByString(data, config.value);
+
+    let path = config.path,
+        value = config.value;
+
+    if (config.pathType !== 'str') {
+        let loc = (config.pathType === 'global') ? node.context().global : data;
+        path = helper.getByString(loc, path);
+    }
+    if (config.valueType !== 'str') {
+        let loc = (config.valueType === 'global') ? node.context().global : data;
+        value = helper.getByString(loc, value);
+    }
 
     if (data.socket){
-        SOCKETS[data.socket].emit(config.path, payload);
+        SOCKETS[data.socket].emit(path, value);
         return;
     }
     
     for (let id in SOCKETS){
-        SOCKETS[id].emit(config.path, payload);
+        SOCKETS[id].emit(path, value);
     }
 }

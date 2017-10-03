@@ -51,7 +51,14 @@ const start = (RED, node, config) => {
 
     // Bind for a given path 
     ws.on('connection', function(socket){
-        socket.on(config.path, function (data) {
+
+        let path = config.path;
+        if (config.pathType !== 'str') {
+            let loc = (config.pathType === 'global') ? node.context().global : data;
+            path = helper.getByString(loc, path);
+        }
+        
+        socket.on(path, function (data) {
             node.send({ "payload" : data, "socket" : socket.id });
         });
     });
