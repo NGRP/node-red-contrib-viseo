@@ -17,7 +17,7 @@ The `search` node
 - If the key/value is found, returns the parent object.
 - If the 'deep' parameter is checked, it searches in all the child objects, and returns the parent object.
 
-![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-loop/doc/flow.jpg)
+![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-search/doc/flow.jpg)
 
 ## Getting Help
 
