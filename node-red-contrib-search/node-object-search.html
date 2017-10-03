@@ -1,0 +1,96 @@
+<script type="text/javascript">
+    RED.nodes.registerType('object-search',{
+        category: 'VISEO_HELPER',
+        color: '#3FADB5',
+        defaults: { 
+            name:           { value: undefined },
+            process:        { value: "properties" },
+            search:         { value: undefined, required: true },
+            searchType:     { value: "msg" },
+            location:       { value: undefined, required: true },
+            locationType:   { value: "msg" },
+            output:         { value: "payload" },
+            outputType:     { value: "msg" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "search.svg", align: "left",
+        paletteLabel: "Search",
+        label: function() { return this.name || "Search"; },
+        oneditprepare: function() {
+            if (!this.searchType) this.searchType = 'msg';
+            if (!this.locationType) this.locationType = 'msg';
+            if (!this.outputType) this.outputType = 'msg';
+
+            $("#node-input-search").typedInput({ default: 'msg', types: ['str','num', 'msg','global'], typeField: $("#node-input-searchType") });
+            $("#node-input-location").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-locationType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-outputType") });
+
+            $("#node-input-process").change( function() {
+                $(".advanced").hide();
+
+                let value = $(this).val();
+                if (value === "advanced") $(".advanced").show();
+            });
+
+        },
+        oneditsave: function() {}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="object-search">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <br><p style="margin-left:20px;"><b>Main properties</b></p>
+
+        <label for="node-input-process"><i class="fa fa-tasks"></i> In object's </label>
+        <select id="node-input-process" style="width:60%;">
+            <option value="properties">keys</option>
+            <option value="values">values</option>
+        </select>
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-location"><i class="fa fa-tasks"></i> Of </label>
+        <input type="text" id="node-input-location" style="width:60%;">
+        <input type="hidden" id="node-input-locationType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-search"><i class="fa fa-tasks"></i> Search </label>
+        <input type="text" id="node-input-search" style="width:60%;">
+        <input type="hidden" id="node-input-searchType">
+    </div>
+
+    <div class="form-row">
+        <br><p style="margin-left:20px;"><b>Output field</b></p>
+
+        <label for="node-input-output"><i class="fa fa-tasks"></i> Result in </label>
+        <input type="text" id="node-input-output" style="width:60%;">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="object-search">
+    <p>This node helps you to find a property in a given object.</p>
+
+    <h2>Main properties</h2>
+    <p>
+        <li><b>In</b>: search in the properties or in the values.
+        <li><b>Of</b>: the object to search in.
+        <li><b>Search</b>: the name of the object's key, or the object's value to search.
+        <li><b>Output</b>: where to stock the result.
+    </p>
+
+    <h2>Results</h2>
+    <p>
+        The result is sent in the output field.
+        <br>If the key (or the value) wasn't found, the field is null. If the key (or the value) is found, the parent object is returned.
+    </p>
+</script>
