@@ -1,27 +1,21 @@
 # Node-RED
 
-A Node-RED node to perform loops on objects.
+A Node-RED node to search keys or values in complex objects.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-loop
+npm install node-red-contrib-viseo-search
 ```
 
 ### Build the Node-RED Flow
 
-The `loop` node 
-- *First call:* creates a specific field according to the chosen scope to stock the information, 
-- *All calls:* retrieves the counter in the field and increment it,
-- IF (value < object length): sends the message to the first output, with the current value of the object ;
-- ELSE: forgot the informations and sends the message to the last output ;
-
-The scope can be set to:
-- *msg* - The current message in the flow ;
-- *user* - The msg.user field in the flow (can be stored in a database) ;
-- *global* - The node context (could be not working on multi-server networks) ;
+The `search` node 
+- searches if the key/value is in the sent object.
+- If the key/value is found, returns the parent object.
+- If the 'deep' parameter is checked, it searches in all the child objects, and returns the parent object.
 
 ![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-loop/doc/flow.jpg)
 

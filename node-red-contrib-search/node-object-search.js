@@ -17,7 +17,8 @@ const input = (node, data, config) => {
     let process = config.process,
         search = config.search,
         location = config.location,
-        output = config.output;
+        output = config.output,
+        deep = config.deep;
 
     let searchType = config.searchType,
         locationType = config.locationType,
@@ -34,7 +35,7 @@ const input = (node, data, config) => {
 
     if (location === null || location === undefined || typeof location !== 'object') return node.error("Unfound object");
 
-    let foundObject = searchValue(location, search, process);
+    let foundObject = searchValue(location, search, process, deep);
 
     loc = (outputType === 'global') ? node.context().global : data;
     helper.setByString(loc, output, foundObject);
@@ -43,14 +44,14 @@ const input = (node, data, config) => {
 
 }
 
-function searchValue(object, value, process) {
+function searchValue(object, value, process, deep) {
     if (typeof object !== 'object' || emptyObj(object)) return {};
     let foundObject = {};
 
     if (object.length !== undefined) {
         for (let item of object) {
             if (typeof item !== 'object') continue; 
-            foundObject = searchValue(item, value, process);
+            foundObject = searchValue(item, value, process, deep);
             if (emptyObj(foundObject) === false) break;
         }
     }
@@ -58,9 +59,10 @@ function searchValue(object, value, process) {
         if (process === "values" && contains(object, value)) foundObject = object;
         else if (process === "properties" && object.hasOwnProperty(value)) foundObject = object;
         else {
+            if (!deep) return foundObject;
             for (let [key, item] of  Object.entries(object)) {
                 if (typeof item !== 'object') continue;
-                foundObject = searchValue(item, value, process);
+                foundObject = searchValue(item, value, process, deep);
                 if (emptyObj(foundObject) === false) break;
             }
         }
@@ -81,7 +83,6 @@ function emptyObj(obj) {
 function contains(obj, value) {
     let values = Object.values(obj);
 
-    console.log(values);
     for (let val of values) {
         if (val === value) return true;
     }
