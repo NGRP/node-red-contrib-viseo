@@ -101,7 +101,7 @@
                         value  : $(this).find('.node-input-value').val(),
                         regexp : $(this).find('.node-input-regexp').val(),
                     }
-                    if (btn.title && btn.value){ buttons.push(btn); }
+                    if ((btn.title && btn.value) || btn.action === 'askLocation') { buttons.push(btn); }
                 })
             };
 
