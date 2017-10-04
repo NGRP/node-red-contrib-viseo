@@ -3,36 +3,71 @@
         category: 'VISEO_NLP',
         color: '#3FADB5',
         defaults: { 
-            name:    { value: undefined },
-            knowledgeBaseId:   { value: undefined, required: true },
-            subKey:  { value: undefined, required: true },
-            question:    { value: undefined },
+            name:               { value: undefined },
+            knowledgeBaseId:    { value: undefined, required: true },
+            knowledgeType:      { value: "msg" },
+            subKeyType:         { value: "msg" },
+            question:           { value: "payload" },
+            questionType:       { value: "msg" },
+            output:             { value: "payload" },
+            outputType:         { value: "msg" }
+        },
+        credentials: {
+            subKey:             { type: "text" }
         },
         inputs: 1,
         outputs:1,
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: 'MS QnA',
-        label: function() { return this.name || "MS QnA"; }
+        paletteLabel: 'QnA',
+        label: function() { return this.name || "QnA"; },
+        oneditprepare: function() {
+            if (!this.knowledgeType) this.knowledgeType = 'msg';
+            if (!this.subKeyType) this.subKeyType = 'msg';
+            if (!this.questionType) this.questionType = 'msg';
+            if (!this.outputType) this.outputType = 'msg';
+            $("#node-input-knowledgeBaseId").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-knowledgeType") });
+            $("#node-input-subKey").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-subKeyType") });
+            $("#node-input-question").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-questionType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-outputType") });
+        }
     });
 </script>
 
 <script type="text/x-red" data-template-name="ms-qna">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="QnA">
+    </div>
+
+    <br>
+    <b>QnA settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-subKey" style="width:160px;"><i class="fa fa-lock"></i> Subscription key</label>
+        <input type="text" id="node-input-subKey" style="width:57%;" placeholder="">
+        <input type="hidden" id="node-input-subKeyType">
     </div>
     <div class="form-row">
-        <label for="node-input-knowledgeBaseId"><i class="icon-tag"></i> Knowledge Base Id</label>
-        <input type="text" id="node-input-knowledgeBaseId" placeholder="">
+        <label for="node-input-knowledgeBaseId" style="width:160px;"><i class="fa fa-globe"></i> Knowledge Base ID</label>
+        <input type="text" id="node-input-knowledgeBaseId" style="width:57%;" placeholder="">
+        <input type="hidden" id="node-input-knowledgeType">
+    </div>
+
+    <br>
+    <b>NLP settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-question"><i class="fa fa-tasks"></i> Question</label>
+        <input type="text" id="node-input-question" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-questionType">
     </div>
     <div class="form-row">
-        <label for="node-input-subKey"><i class="icon-tag"></i> Subscription Key</label>
-        <input type="text" id="node-input-subKey" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-input-question"><i class="icon-tag"></i> Question</label>
-        <input type="text" id="node-input-question" placeholder="{payload}">
+        <label for="node-input-output"><i class="fa fa-tasks"></i> Output</label>
+        <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-outputType">
     </div>
    
 </script>

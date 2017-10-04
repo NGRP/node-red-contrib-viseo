@@ -16,8 +16,8 @@
         paletteLabel: "LUIS",
         label: function() { return this.name || "LUIS"; },
         oneditprepare: function() {
-            if (!this.textType) this.objectIdType = 'msg';
-            if (!this.intentType) this.objectRatingType = 'msg';
+            if (!this.textType) this.textType = 'msg';
+            if (!this.intentType) this.intentType = 'msg';
             $("#node-input-text").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-textType") });
             $("#node-input-intent").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-intentType") });
         }

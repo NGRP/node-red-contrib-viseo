@@ -25,10 +25,10 @@
         label: function () { return this.name || 'API.ai' },
         oneditprepare: function() {
             if (!this.tokenType) this.tokenType = 'str';
-            if (!this.sessionType) this.questionType = 'msg';
-            if (!this.languageType) this.ibConfigType = 'str';
-            if (!this.textType) this.objectIdType = 'msg';
-            if (!this.intentType) this.objectRatingType = 'msg';
+            if (!this.sessionType) this.sessionType = 'msg';
+            if (!this.languageType) this.languageType = 'str';
+            if (!this.textType) this.textType = 'msg';
+            if (!this.intentType) this.intentType = 'msg';
             $("#node-input-token").typedInput({ default: 'str', types: ['str'], typeField: $("#node-input-tokenType") });
             $("#node-input-session").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-sessionType") });
             $("#node-input-language").typedInput({ default: 'str', types: ['str'], typeField: $("#node-input-languageType") });

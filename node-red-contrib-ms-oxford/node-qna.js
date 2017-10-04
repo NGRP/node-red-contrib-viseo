@@ -1,4 +1,4 @@
-const request = require('request');
+const request = require('request-promise');
 const helper  = require('node-red-viseo-helper');
 const Entities = require('html-entities').XmlEntities;
 
@@ -12,22 +12,37 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         let node = this;
 
+        config.subKey = this.credentials.subKey;
+
         this.on('input', (data)  => { input(node, data, config)  });
     }
-    RED.nodes.registerType("ms-qna", register, {});
+    RED.nodes.registerType("ms-qna", register, { 
+        credentials: {
+            subKey:  { type: "text" }
+        }
+    });
 }
 
-const input = (node, data, config) => {
+async function input (node, data, config) {
 
-    const   baseUrl = 'https://westus.api.cognitive.microsoft.com/qnamaker/v2.0',
-            baseId = config.knowledgeBaseId,
-            subKey = config.subKey
-            query = {
-                "question" : helper.getByString(data, config.question || 'payload')
-            };
+    let knowledgeBaseId = config.knowledgeBaseId,
+        question = config.question,
+        output = config.output,
+        subKey = config.subKey;
 
-    if (baseId === undefined || subKey === undefined){
+    if (config.knowledgeType !== 'str') {
+        let loc = (config.knowledgeType === 'global') ? node.context().global : data;
+        knowledgeBaseId = helper.getByString(loc, knowledgeBaseId); }
+    if (config.subKeyType !== 'str') {
+        let loc = (config.subKeyType === 'global') ? node.context().global : data;
+        subKey = helper.getByString(loc, subKey); }
+    if (config.questionType !== 'str') {
+        let loc = (config.questionType === 'global') ? node.context().global : data;
+        question = helper.getByString(loc, question); }
 
+    let questionLoc = (config.outputType === 'global') ? node.context().global : data;
+
+    if (knowledgeBaseId === undefined || subKey === undefined) {
         return node.status({
             fill:"red", 
             shape:"ring", 
@@ -35,33 +50,34 @@ const input = (node, data, config) => {
         });
     }
 
-    // Send request
-   let requestObject = {
-        url: baseUrl + '/knowledgebases/' + baseId + '/generateAnswer',
+    try {
+        let json = await processRequest(subKey, question, knowledgeBaseId);
+            json = JSON.parse(json);
+
+        const entities = new Entities();
+        helper.setByString(questionLoc, output, entities.decode(json.answers[0].answer));
+        return node.send(data);
+    }
+    catch (err) {
+        return node.error(err); 
+    }
+
+}
+
+async function processRequest (subKey, question, knowledge) {
+    let url = 'https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/' + knowledge + '/generateAnswer';
+
+    let req = {
         method: 'POST',
+        uri: url,
         headers: {
             'ContentType': 'application/json',
             'Ocp-Apim-Subscription-Key': subKey
         },
-        rejectUnauthorized: false,
-        body: JSON.stringify(query)
+        body: JSON.stringify({
+            "question" : question
+        })
     };
-    request(requestObject, (err, response, body) => {
 
-        if (err) {
-            return node.error(err);
-        }
-
-        let json = JSON.parse(body);
-
-        if(json.Error) {
-            return node.error(json.Error.Code + ' : ' + json.Error.Message);
-        }
-        data.qna  = json;
-
-        const entities = new Entities();
-        data.payload = entities.decode(json.answers[0].answer);
-        node.send(data);
-    });
-
+    return request(req);
 }
