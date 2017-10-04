@@ -77,7 +77,7 @@ const input = (node, data, config) => {
 
     // 4.2. Increment
     (scope === 'global') ? CONF = confObject : _tmp[loopKey] = confObject;
-    let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};
+    let outObject = (confObject.array !== undefined) ? {'rank': confObject.count,'value':confObject.array[confObject.count]} : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};
 
     helper.setByString(loc, outputObject, outObject);
     node.send([data, undefined]);
