@@ -48,10 +48,24 @@ const start = (node, config) => {
 }
 
 const input = (node, data, config) => { 
-    let confidence = parseFloat(config.confidence)
-    find(confidence, data.payload, (err, score, match, sdx) => {
+    let confidence = config.confidence,
+        text = config.text,
+        output = config.output;
+
+    if (config.confidenceType !== 'num') {
+        let loc = (config.confidenceType === 'global') ? node.context().global : data;
+        confidence = helper.getByString(loc, confidence); }
+    confidence = parseFloat(config.confidence) ;
+
+    if (config.textType !== 'str') {
+        let loc = (config.textType === 'global') ? node.context().global : data;
+        text = helper.getByString(loc, text); }
+
+    let intentLoc = (config.outputType === 'global') ? node.context().global : data;
+
+    find(confidence, text, (err, score, match, sdx) => {
         if (err) return node.warn(err);
-        data.payload = {"match" : match, "score": score, "sdx" : sdx};
+        helper.setByString(intentLoc, output, {"match" : match, "score": score, "sdx" : sdx});
         node.send(data);
     })
     

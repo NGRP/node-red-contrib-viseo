@@ -3,9 +3,15 @@
         category: 'VISEO_NLP',
         color: '#3FADB5',
         defaults: { 
-            name :       { value: undefined },
-            confidence : { value: undefined },
-            sheet :      { value: undefined },
+            name :           { value: undefined },
+            text :           { value: "payload" },
+            textType :       { value: "msg" },
+            confidence :     { value: "0" },
+            confidenceType : { value: "num" },
+            sheet :          { value: undefined },
+            sheetType :      { value: "str" },
+            output :         { value: "payload" },
+            outputType :     { value: "msg" }
         },
         inputs:  1,
         outputs: 1,
@@ -13,6 +19,16 @@
         align: "left",
         paletteLabel: "Soundex",
         label: function() { return this.name || "Soundex"; },
+        oneditprepare: function() {
+            if (!this.confidenceType) this.confidenceType = 'num';
+            if (!this.sheetType) this.sheetType = 'str';
+            if (!this.outputType) this.outputType = 'msg';
+            if (!this.textType) this.textType = 'msg';
+            $("#node-input-confidence").typedInput({ default: 'msg', types: ['msg','num','global'], typeField: $("#node-input-confidenceType") });
+            $("#node-input-sheet").typedInput({ default: 'str', types: ['str'], typeField: $("#node-input-sheetType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-outputType") });
+            $("#node-input-text").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-textType") });
+        }
     });
 </script>
 
@@ -21,13 +37,29 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <br>
+    <b>NLP settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-text"><i class="icon-tag"></i> Text</label>
+        <input type="text" id="node-input-text" placeholder="payload" style="width:70%;">
+        <input type="hidden" id="node-input-textType">
+    </div>
     <div class="form-row">
         <label for="node-input-confidence"><i class="icon-tag"></i> Confidence</label>
-        <input type="text" id="node-input-confidence" placeholder="0">
+        <input type="text" id="node-input-confidence" placeholder="0" style="width:70%;">
+        <input type="hidden" id="node-input-confidenceType">
     </div>
     <div class="form-row">
         <label for="node-input-sheet"><i class="icon-tag"></i> Sheet ID</label>
-        <input type="text" id="node-input-sheet" placeholder="">
+        <input type="text" id="node-input-sheet" placeholder="" style="width:70%;">
+        <input type="hidden" id="node-input-sheetType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-tasks"></i> Output</label>
+        <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-outputType">
     </div>
 </script>
 
