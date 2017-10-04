@@ -122,6 +122,9 @@ const reply = (node, data, config) => {
     // Building the message
     node.warn(data.reply);
     let message = getMessage(data.reply);
+
+    
+
     if (!message) return false;
 
     // The address is not used because we reply to HTTP Response
@@ -298,17 +301,25 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
 
     if (reply.type === 'quick'){
         let item = { title: reply.title,  items: [] };
-        google.systemIntent = {
-            intent: "actions.intent.OPTION",
-            data: {
-                "@type":"type.googleapis.com/google.actions.v2.OptionValueSpec"
-            }
-        }
-        google.systemIntent.data.listSelect = item;
 
-        // A unique key that will be sent back to the agent if this response is given.
+         // A unique key that will be sent back to the agent if this response is given.
         // https://developers.google.com/actions/reference/rest/Shared.Types/OptionInfo
         for (let button of reply.buttons){
+
+            if(button.action === 'askLocation') {
+                google.systemIntent = {
+                    intent: "actions.intent.PERMISSION",
+                    data: {
+                        "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
+                        "optContext": button.title,
+                        "permissions": [
+                            "DEVICE_PRECISE_LOCATION"
+                        ]
+                    }
+                };
+                return google;
+            }
+
             let btn = {}
             item.items.push(btn);
             if ("string" === typeof button) {
@@ -321,8 +332,16 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
             // btn.description = ''
             // btn.image = ''
         }
-    }
 
+        google.systemIntent = {
+            intent: "actions.intent.OPTION",
+            data: {
+                "@type":"type.googleapis.com/google.actions.v2.OptionValueSpec"
+            }
+        }
+        google.systemIntent.data.listSelect = item;
+
+    }
 
     return google;
 }
