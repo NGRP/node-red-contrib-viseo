@@ -48,17 +48,21 @@ const start = (node, config) => {
 
 const input = (node, data, config) => {
     let client = LUISclients[node.config.credentials.appId];
+    if (client === undefined) return node.send(data);
 
-    if (client === undefined) {
-        return node.send(data);
-    }
+    let text = config.text || "payload",
+        intent = config.intent || "payload";
 
-    let text = helper.resolve(config.text || '{payload}', data);
+    if (config.textType !== 'str') {
+        let loc = (config.textType === 'global') ? node.context().global : data;
+        text = helper.getByString(loc, text); }
+
+    let intentLoc = (config.intentType === 'global') ? node.context().global : data;
+
     client.predict(text, {
-
         // On success of prediction
         onSuccess: function (response) {
-            helper.setByString(data, config.intent || 'payload', response);
+            helper.setByString(intentLoc, intent, response);
             node.send(data);
         },
 

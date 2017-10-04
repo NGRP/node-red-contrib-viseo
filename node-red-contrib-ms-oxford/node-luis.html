@@ -3,35 +3,55 @@
         category: 'VISEO_NLP',
         color: '#3FADB5',
         defaults: { 
-            name:    { value: undefined },
-            config:  { value: undefined, type: "ms-luis-config" }, 
-            text:    { value: undefined },
-            intent:  { value: undefined },
+            name:         { value: undefined },
+            config:       { value: undefined, type: "ms-luis-config" }, 
+            text:         { value: "payload" },
+            textType:     { value: "msg" },
+            intent:       { value: "payload" },
+            intentType:   { value: "msg" }
         },
         inputs: 1,
         outputs:1,
         icon: "microsoft.svg", align: "left",
         paletteLabel: "LUIS",
-        label: function() { return this.name || "LUIS"; }
+        label: function() { return this.name || "LUIS"; },
+        oneditprepare: function() {
+            if (!this.textType) this.objectIdType = 'msg';
+            if (!this.intentType) this.objectRatingType = 'msg';
+            $("#node-input-text").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-textType") });
+            $("#node-input-intent").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-intentType") });
+        }
     });
 </script>
 
 <script type="text/x-red" data-template-name="ms-luis">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="LUIS">
     </div>
+
+    <br>
+    <b>Luis settings </b>
+
     <div class="form-row">
-        <label for="node-input-config"><i class="icon-tag"></i> App config</label>
+        <br>
+        <label for="node-input-config"><i class="fa fa-lock"></i> App config</label>
         <input type="text" id="node-input-config" placeholder="">
     </div>
+
+    <br>
+    <b>NLP settings</b>
+
     <div class="form-row">
-        <label for="node-input-text"><i class="icon-tag"></i> Text</label>
-        <input type="text" id="node-input-text" placeholder="{payload}">
+        <br>
+        <label for="node-input-text"><i class="fa fa-tasks"></i> Text</label>
+        <input type="text" id="node-input-text" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-textType">
     </div>
     <div class="form-row">
-        <label for="node-input-intent"><i class="icon-tag"></i> Intent</label>
-        <input type="text" id="node-input-intent" placeholder="payload">
+        <label for="node-input-intent"><i class="fa fa-tasks"></i> Output</label>
+        <input type="text" id="node-input-intent" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-intentType">
     </div>
 </script>
 
