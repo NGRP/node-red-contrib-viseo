@@ -3,19 +3,38 @@
         category: 'VISEO_NLP',
         color: '#3FADB5',
         defaults: {
-            name:     { value: undefined },
-            token:    { value: undefined },
-            session:  { value: undefined },
-            language: { value: undefined },
-            text:     { value: undefined },
-            intent:   { value: undefined },
+            name:         { value: undefined },
+            tokenType:    { value: "str" },
+            session:      { value: "user.id" },
+            sessionType:  { value: "msg" },
+            language:     { value: "en" },
+            languageType: { value: "str" },
+            text:         { value: "payload" },
+            textType:     { value: "msg" },
+            intent:       { value: "payload" },
+            intentType:   { value: "msg" }
+        },
+        credentials:  {
+            token:        { type:"text" }
         },
         inputs: 1,
         outputs: 1,
         icon: 'google.svg',
         align: 'left',
         paletteLabel: 'API.ai',
-        label: function () { return this.name || 'API.ai' }
+        label: function () { return this.name || 'API.ai' },
+        oneditprepare: function() {
+            if (!this.tokenType) this.tokenType = 'str';
+            if (!this.sessionType) this.questionType = 'msg';
+            if (!this.languageType) this.ibConfigType = 'str';
+            if (!this.textType) this.objectIdType = 'msg';
+            if (!this.intentType) this.objectRatingType = 'msg';
+            $("#node-input-token").typedInput({ default: 'str', types: ['str'], typeField: $("#node-input-tokenType") });
+            $("#node-input-session").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-sessionType") });
+            $("#node-input-language").typedInput({ default: 'str', types: ['str'], typeField: $("#node-input-languageType") });
+            $("#node-input-text").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-textType") });
+            $("#node-input-intent").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-intentType") });
+        }
     });
 </script>
 
@@ -24,25 +43,40 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="API.ai">
     </div>
+
+    <br>
+    <b>API.AI settings </b>
+
     <div class="form-row">
-        <label for="node-input-token"><i class="icon-tag"></i> Client Token</label>
-        <input type="text" id="node-input-token" placeholder="000a0aaaa000000aa0000aaaa000aaa0">
+        <br>
+        <label for="node-input-token"><i class="fa fa-lock"></i> Client Token</label>
+        <input type="text" id="node-input-token" style="width:70%;">
+        <input type="hidden" id="node-input-tokenType">
     </div>
     <div class="form-row">
-        <label for="node-input-session"><i class="icon-tag"></i> Session ID</label>
-        <input type="text" id="node-input-session" placeholder="{user.id}">
+        <label for="node-input-session"><i class="fa fa-user"></i> Session ID</label>
+        <input type="text" id="node-input-session" style="width:70%;" placeholder="user.id">
+        <input type="hidden" id="node-input-sessionType">
+    </div>
+
+    <br>
+    <b>NLP settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-language"><i class="fa fa-tasks"></i> Language</label>
+        <input type="text" id="node-input-language" style="width:70%;" placeholder="en">
+        <input type="hidden" id="node-input-languageType">
     </div>
     <div class="form-row">
-        <label for="node-input-language"><i class="icon-tag"></i> Language</label>
-        <input type="text" id="node-input-language" placeholder="en">
+        <label for="node-input-text"><i class="fa fa-tasks"></i> Text</label>
+        <input type="text" id="node-input-text" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-textType">
     </div>
     <div class="form-row">
-        <label for="node-input-text"><i class="icon-tag"></i> Text</label>
-        <input type="text" id="node-input-text" placeholder="{payload}">
-    </div>
-    <div class="form-row">
-        <label for="node-input-intent"><i class="icon-tag"></i> Intent</label>
-        <input type="text" id="node-input-intent" placeholder="payload">
+        <label for="node-input-intent"><i class="fa fa-tasks"></i> Output</label>
+        <input type="text" id="node-input-intent" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-intentType">
     </div>
 </script>
 

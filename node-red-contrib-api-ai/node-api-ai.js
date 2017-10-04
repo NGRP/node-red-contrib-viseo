@@ -13,13 +13,19 @@ module.exports = function (RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        
+
+        config.token = this.credentials.token;
+
         start(node, config);
         this.on('input', (data)  => { input(node, data, config); });
         this.on('close', (cb)    => { stop(node, cb, config)  });
     }
 
-    RED.nodes.registerType('api-ai', register, {});
+    RED.nodes.registerType('api-ai', register, {
+        credentials:  {
+            token:    { type:"text" }
+        }
+    });
 };
 
 
@@ -36,7 +42,9 @@ const start = (node, config) => {
     let key = config.token;
     if (CACHE[key]) return; 
 
-    let apiConfig = { language: config.language || 'en' };
+    let language = config.language || "en";
+
+    let apiConfig = {language: language};
     CACHE[key] = apiAi(config.token, apiConfig);
     node.log('API AI Initialization completed');
 }
@@ -46,14 +54,26 @@ const input = (node, data, config) => {
     let key = config.token;
     let app = CACHE[key];
 
+    let session = config.session || "user.id",
+        text = config.text || "payload",
+        intent = config.intent || "payload";
+
+    if (config.sessionType !== 'str') {
+        let loc = (config.sessionType === 'global') ? node.context().global : data;
+        session = helper.getByString(loc, session); }
+    if (config.textType !== 'str') {
+        let loc = (config.textType === 'global') ? node.context().global : data;
+        text = helper.getByString(loc, text); }
+
+    let intentLoc = (config.intentType === 'global') ? node.context().global : data;
+
     try {
-        let text    = helper.resolve(config.text || '{payload}', data);
-        let session = helper.resolve(config.session, data);
         let request = app.textRequest(text, { sessionId: md5(session) });
 
         request.on('response', function (response) {
             node.log(JSON.stringify(response));
-            helper.setByString(data, config.intent || 'payload', response);
+
+            helper.setByString(intentLoc, intent, response);
             node.send(data);
         });
 
