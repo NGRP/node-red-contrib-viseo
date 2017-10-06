@@ -24,9 +24,6 @@
     <link rel="stylesheet" href="lib/simple-line-icons/css/simple-line-icons.css">
     <link rel="stylesheet" href="lib/device-mockups/device-mockups.min.css">
 
-    <!-- WebChat CSS -->
-    <link href="https://unpkg.com/botframework-webchat/botchat.css" rel="stylesheet" />
-
     <!-- Theme CSS -->
     <link href="css/new-age.css" rel="stylesheet">
 
@@ -36,6 +33,15 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107501061-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments)};
+        gtag('js', new Date());
+        gtag('config', 'UA-107501061-1');
+    </script>
 
 </head>
 
@@ -100,7 +106,7 @@
                             <div class="device">
                                 <div id="chatbot" class="screen">
                                     <!-- Demo image for screen mockup, you can put an image here, some HTML, an animation, video, or anything else! -->
-                                    <img src="img/" class="img-responsive" alt="">
+                                    <img src="img/gif-60sec.gif" class="img-responsive" alt="">
                                 </div>
                                 <div class="button">
                                     <!-- You can hook the "home button" to some JavaScript events or just remove it -->
@@ -421,42 +427,13 @@
     <!-- Plugin JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script src="https://unpkg.com/scrollreveal/dist/scrollreveal.min.js"></script>
-    <script src="https://unpkg.com/botframework-webchat/botchat.js"></script>
+
+
     <!-- Theme JavaScript -->
     <script src="js/new-age.min.js"></script>
 
     <!--- Custome JavaScript -->
     <script src="js/main.js"></script>
-    
-    <!-- Global Site Tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107501061-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments)};
-        gtag('js', new Date());
-
-        gtag('config', 'UA-107501061-1');
-    </script>
-
-    <script>
-         const botConnection = new BotChat.DirectLine({
-            secret: 'e6mim3_Hy8A.cwA.eyk.-GCk1zNlOfp59Iyw-wHP1mig2i1cR9-9iGzxqnunRxc'
-        });
-
-
-        BotChat.App({
-            //directLine: { secret: 'e6mim3_Hy8A.cwA.eyk.-GCk1zNlOfp59Iyw-wHP1mig2i1cR9-9iGzxqnunRxc' },
-            botConnection : botConnection,
-            user: { id: 'userid' },
-            bot: { id: '0dda10e5-096f-4c28-9336-1f5f9c5f7e2d' },
-            resize: 'detect'
-        }, document.getElementById("chatbot"));
-        /*
-        setTimeout(function(){
-            $('.wc-shellinput').val('hello').trigger('change')
-            $('.wc-send').click()
-        }, 1000)*/
-    </script>
 
 </body>
 
