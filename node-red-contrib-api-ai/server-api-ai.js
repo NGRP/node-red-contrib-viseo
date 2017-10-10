@@ -1,5 +1,6 @@
 const helper  = require('node-red-viseo-helper')
 const botmgr  = require('node-red-viseo-bot-manager')
+let ApiAiApp = require('actions-on-google').ApiAiApp;
 const CARRIER = "GoogleHome"
 
 const userManager = require('./lib/user.js');
@@ -34,7 +35,7 @@ const start = (RED, node, config) => {
     //Authentication for api ai
     if(! node.credentials.clientId || !node.credentials.secretKey || ! node.credentials.projectId) {
         node.status({ fill: "red", shape: "dot", text: "Client ID, Project ID and Client Secret are mandatory for Api AI Server" })
-        return;
+        //return;
     }
 
     node.status({});
@@ -69,7 +70,7 @@ const stop = (node, config, done) => {
 // ------------------------------------------
 
 const receive = (node, config, req, res) => { 
-
+    console.log("receive");
     let json = req.body
     node.warn(json);
     // try { json = JSON.parse(json); } catch (ex) { console.log('Parsing Error', ex, json) }
@@ -82,18 +83,22 @@ const receive = (node, config, req, res) => {
 
     let data = botmgr.buildMessageFlow({ message : json }, {
         userLocale: 'message.originalRequest.data.user.locale',
-        userId:     'message.originalRequest.data.user.userId',
+        userId:     'message.originalRequest.data.user.userId', 
         convId:     'message.originalRequest.data.conversation.conversationId',
         payload:    'message.originalRequest.data.inputs[0].rawInputs[0].query',
         inputType:  'message.originalRequest.data.inputs[0].rawInputs[0].inputType',
         source:     CARRIER
     })
 
+    data.user.accessToken = data.message.originalRequest.data.user.accessToken;
+
+
+
     let context = botmgr.getContext(data)
     context.req = req
     context.res = res
 
-    if(json.originalRequest.data.inputs[0].arguments !== undefined) {
+    if(json.originalRequest.data.inputs[0].arguments !== undefined && json.originalRequest.data.inputs[0].arguments.length > 0) {
         data.message.text = json.originalRequest.data.inputs[0].arguments[0].textValue
     }
 
@@ -106,6 +111,7 @@ const receive = (node, config, req, res) => {
     node.warn('>>> RECEIVE <<<')
     node.warn(data);
     node.send([undefined, data]);
+
 }
 
 // ------------------------------------------
@@ -115,30 +121,34 @@ const receive = (node, config, req, res) => {
 const reply = (node, data, config) => { 
     node.warn('>>> REPLY <<<')
     try {
-    // Assume we send the message to the current user address
-    let address = botmgr.getUserAddress(data)
-    if (!address || address.carrier !== CARRIER) return false;
+        // The address is not used because we reply to HTTP Response
+        let context = botmgr.getContext(data)
+        let res = context.res
 
-    // Building the message
-    node.warn(data.reply);
-    let message = getMessage(data.reply);
 
-    
+        // Assume we send the message to the current user address
+        let address = botmgr.getUserAddress(data)
+        if (!address || address.carrier !== CARRIER) return false;
 
-    if (!message) return false;
+        // Building the message
+        node.warn(data.reply);
+        let message = getMessage(data.reply, context);
 
-    // The address is not used because we reply to HTTP Response
-    let context = botmgr.getContext(data)
-    let res = context.res
+        if (!message) return false;
+        /*if(data.reply[0].type === "signin") {
+            console.log('already sent sign in');
+            return;
+        }*/
+        
+        res.setHeader('Content-Type', 'application/json');
 
-    res.setHeader('Content-Type', 'application/json');
+        // Write the message to the response
+        res.end(JSON.stringify(message));
+        node.warn(message);
 
-    // Write the message to the response
-    res.end(JSON.stringify(message));
-    node.warn(message);
+        // Trap the event in order to continue
+        helper.fireAsyncCallback(data);
 
-    // Trap the event in order to continue
-    helper.fireAsyncCallback(data);
     } catch(ex){ console.log(ex) }
 }
 
@@ -148,7 +158,8 @@ const reply = (node, data, config) => {
 // ------------------------------------------
 
 // https://api.ai/docs/fulfillment#response
-const getMessage = exports.getMessage = (replies) => { 
+const getMessage = exports.getMessage = (replies, context) => { 
+
     if (!replies) return;
     let msg = {}
 
@@ -163,7 +174,7 @@ const getMessage = exports.getMessage = (replies) => {
 
     // Specific data for Google
     msg.data = {};
-    msg.data.google = getGoogleMessage(replies);
+    msg.data.google = getGoogleMessage(replies, context);
 
     // Array of context objects set after intent completion. Example: 
     // msg.contextOut = [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]
@@ -174,7 +185,7 @@ const getMessage = exports.getMessage = (replies) => {
     return msg;
 }
 
-const getGoogleMessage = exports.getGoogleMessage = (replies) => {
+const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     if (!replies) return;
 
     // Build a sur message for Google
@@ -209,8 +220,8 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
     // The final response when the user input is not expected. It's a RichResponse !
     // google.finalResponse = {}
 
-
     let reply = replies[0]
+            
     
     // SimpleResponse (always one at first)
     // https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#simpleresponse
@@ -259,9 +270,43 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
         return google;
     }
 
+
+    if (reply.type === 'signin'){
+
+       /* const app = new ApiAiApp({request: context.req, response: context.res});
+        const actionMap = new Map();
+        actionMap.set('sign.in', function(app) {
+            console.log(app.getSignInStatus());
+        });
+
+        app.handleRequest(actionMap);
+
+        app.askForSignIn();
+
+        return;*/
+            
+        google.systemIntent = {
+            intent : "actions.intent.SIGN_IN",
+            data : {}
+        };
+        /* ASK for name
+        google.systemIntent = {
+            intent: "actions.intent.PERMISSION",
+            data: {
+                "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
+                "optContext": "test",
+                "permissions": [
+                    "NAME"
+                ]
+            }
+        };*/
+
+        return google;
+    }
+
     // BasicCard
     // https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#BasicCard
-    if (reply.type === 'media' || reply.type === 'signin' || reply.type === 'card') {
+    if (reply.type === 'media' || reply.type === 'card') {
         let item = {};
         google.richResponse.items.push({'basicCard' : item})
 
@@ -294,9 +339,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies) => {
             }
         }
 
-        if (reply.url && reply.type === 'signin'){
-            item.buttons = [{ title: 'Sign-In',  openUrlAction: { url: helper.absURL(reply.url) }}]
-        }
+        
     }
 
     if (reply.type === 'quick'){

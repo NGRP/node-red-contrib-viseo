@@ -3,7 +3,7 @@ const GoogleStrategy 	= require('passport-google-oauth20').Strategy;
 const passport 			= require('passport');
 const helper 			= require('node-red-viseo-helper');
 
-var Authentication = function(app, uri, projectId, clientId, secretKey, done) {
+var Authentication = function(app, uri, projectId, clientId, secretKey, callback) {
 
 	const OAUTH_HOST = 'https://oauth-redirect.googleusercontent.com/r/';
 	const callbackURL = uri + 'authCallback';
@@ -33,7 +33,7 @@ var Authentication = function(app, uri, projectId, clientId, secretKey, done) {
 		},
 
 		function(accessToken, refreshToken, params, profile, done) {
-			
+
 			let user = {
 				id: profile.id,
 				profile: profile,
@@ -94,16 +94,18 @@ var Authentication = function(app, uri, projectId, clientId, secretKey, done) {
 
 		passport.authenticate('google', 
 			function(err, user, info) {
+
 				if(err) {
 					console.log(err);
 					return;
 				}
-	        	done(user);
+
+	        	callback(user);
+	        	
 	        	res.redirect(self.redirect_uri+'#access_token='+user.token+'&token_type=bearer&state='+self.state);
 			}
 		)(req, res, next);
 	});
-
 	
 
 	this.checkAuthentication = function(headers, secretKey) {
@@ -120,6 +122,13 @@ var Authentication = function(app, uri, projectId, clientId, secretKey, done) {
 	        }
 
 	        return decoded;*/
+/*
+	        console.log(data.user.accessToken);
+    if(data.user.accessToken === "ya29.GlvgBM-3qW9FstwW-HC3KrjzIyNS7f2FrCBmQbCweWcgP7DG9vPrp-SyM5WCfSpmGXM2ZichkzchyyN09XL_34tYMpGonu2RPo5VZqUMMwFur-whkxgabiMCowI2") {
+        console.log('return error');
+        res.setHeader('WWW-Authenticate', 'Bearer');
+        return res.sendStatus(401);
+    }*/
 
 	        return true;
 	    }
