@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-wechat",
-    "version"       : "0.0.3",
+    "version"       : "0.1.0",
     "description"   : "A WeChat Bot Implementation",
     "dependencies"  : {
         "botbuilder"                 : "^3.*.*",
@@ -18,7 +18,8 @@
     "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
-            "wechat": "bot-wechat.js"
+            "wechat":        "bot-wechat.js",
+            "wechat-config": "wechat-config.js"
         }
     }
 }

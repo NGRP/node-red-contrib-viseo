@@ -1,0 +1,35 @@
+<script type="text/javascript">
+    RED.nodes.registerType('wechat-config',{
+        category: 'config',
+        defaults: {
+            name:      { value: undefined }
+        },
+        credentials: {
+            id:       { type:"text" },
+            secret:   { type:"text" },
+            token:    { type:"text" }
+        },
+        label: function() {
+            return this.name || "Wechat config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="wechat-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-id"><i class="fa fa-lock"></i> App ID</label>
+        <input type="text" id="node-config-input-id" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-secret"><i class="fa fa-lock"></i> App secret</label>
+        <input type="text" id="node-config-input-secret" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="fa fa-lock"></i> App token</label>
+        <input type="text" id="node-config-input-token" placeholder="">
+    </div>
+</script>
