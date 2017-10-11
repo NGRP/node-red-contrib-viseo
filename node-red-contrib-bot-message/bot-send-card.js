@@ -169,13 +169,13 @@ const buildReply = (node, data, config) => {
     // Forward data without sending anything
     let context = botmgr.getContext(data);
     if (config.carousel){
-        let carousel = context.carousel = context.carousel.carousel || [];
+        let carousel = context.carousel = context.carousel || [];
         carousel.push(reply);
         return;    
     }
     
     // Handle carousel
-    let carousel = context.carousel =context.carousel || [];
+    let carousel = context.carousel = context.carousel || [];
     if (carousel.length > 0){
         carousel.push(reply)
         context.carousel = []; // clean

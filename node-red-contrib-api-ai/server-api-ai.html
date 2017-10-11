@@ -5,8 +5,13 @@
         defaults: { 
             name: { value: undefined },
         },
+        credentials: {
+            clientId:   { type: "text" },
+            projectId:  { type: "text" },
+            secretKey:  { type: "text" }
+        },
         inputs:  0,
-        outputs: 1,
+        outputs: 2,
         icon: "google.svg",
         align: "left",
         paletteLabel: 'API.ai',
@@ -19,8 +24,25 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-row">
+        <label for="node-input-projectId"><i class="icon-tag"></i> Project Id</label>
+        <input type="text" id="node-input-projectId" placeholder="Project Id">
+    </div>
+    <div class="form-row">
+        <label for="node-input-clientId"><i class="icon-tag"></i> Client Id</label>
+        <input type="text" id="node-input-clientId" placeholder="Client Id">
+    </div>
+    <div class="form-row">
+        <label for="node-input-secretKey"><i class="icon-tag"></i> Secret Key</label>
+        <input type="text" id="node-input-secretKey" placeholder="Client secret code">
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="api-ai-server">
-
+        Receives messages from Api AI.
+        <h3>Outputs</h3>
+        <ul>
+            <li>1: User authorized to the bot</li>
+            <li>2: Message sent to the bot</li>
+        </ul>
 </script>
