@@ -343,8 +343,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     }
 
     if (reply.type === 'quick'){
-        let item = { title: reply.title,  items: [] };
-
+        google.richResponse.suggestions = [];
          // A unique key that will be sent back to the agent if this response is given.
         // https://developers.google.com/actions/reference/rest/Shared.Types/OptionInfo
         for (let button of reply.buttons){
@@ -364,25 +363,20 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
             }
 
             let btn = {}
-            item.items.push(btn);
+
+            google.richResponse.suggestions.push(btn);
+
             if ("string" === typeof button) {
                 btn.title = button
-                btn.optionInfo = { key: button, synonyms: [button] }
+               // btn.optionInfo = { key: button, synonyms: [button] }
             } else {
                 btn.title = button.title
-                btn.optionInfo = { key: button.value, synonyms: [button.title] }
+                //btn.optionInfo = { key: button.value, synonyms: [button.title] }
             }
             // btn.description = ''
             // btn.image = ''
         }
 
-        google.systemIntent = {
-            intent: "actions.intent.OPTION",
-            data: {
-                "@type":"type.googleapis.com/google.actions.v2.OptionValueSpec"
-            }
-        }
-        google.systemIntent.data.listSelect = item;
 
     }
 
