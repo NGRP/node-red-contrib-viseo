@@ -197,11 +197,11 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     // Indicates whether the app is expecting a user response. 
     // This is true when the conversation is ongoing, false when the conversation is done.
     google.expectUserResponse = false
-    //for (let reply of replies){ 
-    //    if (reply.prompt) { 
+    for (let reply of replies){ 
+        if (reply.prompt) { 
             google.expectUserResponse = true 
-    //    }
-    //}
+        }
+    }
 
     // Indicates whether the text to speech is SSML or not.
     google.isSsml = false
