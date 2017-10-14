@@ -21,6 +21,8 @@ The `speak` node is a windows CLI that use Microsoft Speech Synthesis to perform
 
 ![Speak](https://github.com/NGRP/node-red-contrib-viseo/blob/master/node-red-contrib-sarah/doc/speak.png?raw=true)
 
+The process will use the default windows 32bit voice (even on windows 64bit). To select a voice run following command  `%windir%\SysWOW64\speech\SpeechUX\sapi.cpl`
+
 ### Listen
 
 The `listen` node is a windows CLI that use Microsoft Speech Engine to trigger action matching given grammar (voice command).
