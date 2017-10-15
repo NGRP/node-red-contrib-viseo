@@ -30,7 +30,7 @@ const input = (node, data, cfg, credentials) => {
     let buffer  = helper.getByString(data, cfg.input || 'payload');
     if (typeof buffer === 'string') { buffer = fs.readFileSync(buffer) }
 
-    let config  = { encoding: 'LINEAR16', sampleRateHertz: 16000, languageCode: 'fr-FR' };
+    let config  = { encoding: 'LINEAR16', sampleRateHertz: 16000, languageCode: cfg.language };
     let audio   = { content: buffer.toString('base64') };
     let request = { audio, config };
 
