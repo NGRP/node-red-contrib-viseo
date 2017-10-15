@@ -5,7 +5,7 @@
         defaults: { 
             name:      { value: undefined },
             input:     { value: undefined },
-            pptTypeIn: { value: undefined },
+            typeInput: { value: undefined },
         },
         inputs:1,
         outputs:1,
@@ -14,7 +14,8 @@
         paletteLabel: "Speak",
         label: function() { return this.name || "Speak"; },
         oneditprepare: function() {
-            $("#node-input-input") .typedInput({ default: this.pptTypeIn  || 'str', types:['str','msg']});
+            $("#node-input-input") .typedInput({ default: 'str', types:['str','msg'], typeField:  $("#node-input-typeInput")});
+            $("#node-input-typeInput").typeInput('type',this.typeInput);
         }
     });
 </script>
@@ -26,7 +27,8 @@
     </div>
     <div class="form-row">
         <label for="node-input-input"><i class="icon-tag"></i> Input</label>
-        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>  
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>
+        <input type="text" id="node-input-typeInput" />
     </div>
 </script>
 

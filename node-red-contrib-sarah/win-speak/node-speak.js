@@ -16,7 +16,10 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
-    let tts = helper.getByString(data, config.input || 'payload', config.input);
+    let tts = config.input;
+    if (config.typeInput === 'msg'){
+        tts = helper.getByString(data, config.input || 'payload', undefined);
+    }
     if (!tts) return;
 
     let path = __dirname+'/bin/speak.exe';
