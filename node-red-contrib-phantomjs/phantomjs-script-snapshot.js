@@ -55,6 +55,7 @@ try {
 
 } catch (ex){
     log('Error in HTML: ' + ex);
+    log(ex.stack)
     phantom.exit();
 }
 
