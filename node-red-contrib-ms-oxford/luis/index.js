@@ -35,7 +35,7 @@
 
 "use strict";
 
-var https = require("https");
+var request = require("request");
 var util = require("util");
 var LUISResponse = require("./luis_response");
 
@@ -75,8 +75,7 @@ var LUISClient = function(initData) {
       text = validateText(text);
       validateResponseHandlers(responseHandlers);
       var LUISOptions = {
-        hostname: LUISURL,
-        path: util.format(LUISPredictMask, appId, appKey, encodeURIComponent(text), LUISVerbose)
+        uri: LUISURL + util.format(LUISPredictMask, appId, appKey, encodeURIComponent(text), LUISVerbose)
       };
       httpHelper(LUISOptions, responseHandlers);
     },
@@ -93,8 +92,7 @@ var LUISClient = function(initData) {
       validateLUISresponse(LUISresponse);
       validateResponseHandlers(responseHandlers);
       var LUISOptions = {
-        hostname: LUISURL,
-        path: util.format(LUISReplyMask, appId, appKey, encodeURIComponent(text),
+        uri: LUISURL + util.format(LUISReplyMask, appId, appKey, encodeURIComponent(text),
           LUISresponse.dialog.contextId, LUISVerbose)
       };
       if (forceSetParameterName !== null && typeof forceSetParameterName === "string") {
@@ -114,21 +112,20 @@ var LUISClient = function(initData) {
  * on the success or failure of the web request
  */
 var httpHelper = function (LUISOptions, responseHandlers) {
-  var req = https.request(LUISOptions, function (response) {
-    var JsonResponse = "";
-    response.on("data", function (chunk) {
-      JsonResponse += chunk;
-    });
-    response.on("end", function () {
+  
+  request(LUISOptions, function (error, response, body) {
+    
+    if(error) {
+      responseHandlers.onFailure(error);
+    } else {
       var LUISresponse = undefined
-      try {LUISresponse = LUISResponse(JsonResponse); }
-      catch (err) { return responseHandlers.onFailure(err); }
+      try {
+        LUISresponse = LUISResponse(body); 
+      } catch (err) { 
+        return responseHandlers.onFailure(err); 
+      }
       responseHandlers.onSuccess(LUISresponse);
-    });
-  });
-  req.end();
-  req.on("error", function (err) {
-    responseHandlers.onFailure(err);
+    }
   });
 };
 
