@@ -101,7 +101,7 @@
                         value  : $(this).find('.node-input-value').val(),
                         regexp : $(this).find('.node-input-regexp').val(),
                     }
-                    if ((btn.title && btn.value) || btn.action === 'askLocation') { buttons.push(btn); }
+                    if ((btn.title && btn.value) || btn.action === 'askLocation' || btn.action === 'askIdentity') { buttons.push(btn); }
                 })
             };
 
@@ -400,6 +400,7 @@
                     <option value="postBack">Post Back</option>
                     <option value="imBack">IM Back</option>
                     <option value="askLocation">Location</option>
+                    <option value="askIdentity">Identity</option>
                 </select>
                 <input  style="width: 80px" class="node-input-value" type="text" placeholder="Value">
                 <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">

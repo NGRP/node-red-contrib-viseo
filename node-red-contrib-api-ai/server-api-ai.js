@@ -228,7 +228,12 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     let simple = {};
     google.richResponse.items.push({'simpleResponse' : simple})
 
-    let text = reply.text || reply.quicktext || (reply.title + ' ' + (reply.subtitle||''))
+    let text = reply.text || reply.quicktext
+
+    if((!text) && reply.title) {
+        text = reply.title + ' ' + (reply.subtitle||'');
+    }
+
     simple.displayText = text      // (optional) chat bubble 640 chars. max
     if (reply.speech === true){
         simple.textToSpeech = text // plain text exclusive with ssml
@@ -289,13 +294,14 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
             intent : "actions.intent.SIGN_IN",
             data : {}
         };
-        /* ASK for name
-        google.systemIntent = {
+        //ASK for name
+        /*google.systemIntent = {
             intent: "actions.intent.PERMISSION",
             data: {
                 "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
                 "optContext": "test",
                 "permissions": [
+                    "EAP_ONLY_EMAIL",
                     "NAME"
                 ]
             }
@@ -343,9 +349,11 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     }
 
     if (reply.type === 'quick'){
-        google.richResponse.suggestions = [];
          // A unique key that will be sent back to the agent if this response is given.
         // https://developers.google.com/actions/reference/rest/Shared.Types/OptionInfo
+
+        google.richResponse.suggestions = [];
+
         for (let button of reply.buttons){
 
             if(button.action === 'askLocation') {
@@ -353,12 +361,28 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
                     intent: "actions.intent.PERMISSION",
                     data: {
                         "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
-                        "optContext": button.title,
+                        "optContext": text || '',
                         "permissions": [
                             "DEVICE_PRECISE_LOCATION"
                         ]
                     }
                 };
+
+                delete google.richResponse;
+                return google;
+            } else if(button.action === 'askIdentity') {
+                google.systemIntent = {
+                    intent: "actions.intent.PERMISSION",
+                    data: {
+                        "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
+                        "optContext": text || '',
+                        "permissions": [
+                            "EAP_ONLY_EMAIL",
+                            "NAME"
+                        ]
+                    }
+                };
+                delete google.richResponse;
                 return google;
             }
 
