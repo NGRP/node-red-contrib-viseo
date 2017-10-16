@@ -87,7 +87,6 @@ const input = (node, data, config) => {
         sendData(node, data, config); 
         return;
     }
-    console.log(replies);
     
     // Emit reply message
     data.reply = replies;

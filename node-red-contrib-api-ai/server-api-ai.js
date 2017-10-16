@@ -26,7 +26,8 @@ module.exports = function(RED) {
     });
 }
 
-let LISTENERS = {};
+let LISTENERS_REPLY = {};
+let LISTENERS_PROMPT = {};
 const start = (RED, node, config) => {  
 
     // Start HTTP Route
@@ -54,14 +55,20 @@ const start = (RED, node, config) => {
     RED.httpNode.post (uri, (req, res, next) => { receive(node, config, req, res); });
 
     // Add listener to reply
-    let listener = LISTENERS[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
-    helper.listenEvent('reply', listener)
+    let listenerReply = LISTENERS_REPLY[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
+    helper.listenEvent('reply', listenerReply)
+
+    let listenerPrompt = LISTENERS_PROMPT[node.id] = (srcNode, data, srcConfig) => { prompt(node, data, config) }
+    helper.listenEvent('prompt', listenerPrompt)
 
 }
 
 const stop = (node, config, done) => {
-    let listener = LISTENERS[node.id]
-    helper.removeListener('reply', listener)
+    let listenerReply = LISTENERS_REPLY[node.id]
+    helper.removeListener('reply', listenerReply)
+
+    let listenerPrompt = LISTENERS_PROMPT[node.id]
+    helper.removeListener('prompt', listenerPrompt)
     done();
 }
 
@@ -113,6 +120,38 @@ const receive = (node, config, req, res) => {
     node.send([undefined, data]);
 
 }
+
+// ------------------------------------------
+// PROMPT
+// ------------------------------------------
+
+const prompt = (node, data, config) => {
+
+    //GEO LOCATION
+    if(
+        data.prompt.originalRequest.data.device && 
+        data.prompt.originalRequest.data.device.location
+    ) {
+
+        data.user.location = data.prompt.originalRequest.data.device.location;
+    }
+
+    //IDENTITY
+    if(data.prompt.originalRequest.data.user.profile) {
+        //EMAIL
+        if(data.prompt.originalRequest.data.user.profile.email) {
+            data.user.profile.email = data.prompt.originalRequest.data.user.profile.email;
+        }
+        //NAME
+        if(data.prompt.originalRequest.data.user.profile.displayName) {
+            data.user.profile.displayName = data.prompt.originalRequest.data.user.profile.displayName;
+            data.user.profile.givenName = data.prompt.originalRequest.data.user.profile.givenName;
+            data.user.profile.familyName = data.prompt.originalRequest.data.user.profile.familyName;
+        }
+    }
+    helper.fireAsyncCallback(data);
+}
+
 
 // ------------------------------------------
 //  REPLY
