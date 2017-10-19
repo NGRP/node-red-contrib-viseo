@@ -53,7 +53,7 @@ const start = (RED, node, config) => {
     RED.httpNode.use('/wechat', middleware(node, config));
 
     // Add listener to reply
-    let listener = LISTENERS[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) };
+    let listener = LISTENERS[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config); };
     helper.listenEvent('reply', listener);
 }
 
@@ -64,14 +64,15 @@ const start = (RED, node, config) => {
 function middleware (node, config) {
     let token = config.credentials.token;
     let now = Date.now();
-    return wechat (token, function(req, res, next)  {
+
+    return wechat (token, function(req, res, next) {
 
         let data = botmgr.buildMessageFlow({ message : req.weixin }, {
             userId:     'message.FromUserName',
             convId:     'message.FromUserName',
             inputType:  'message.MsgType',
             source:     'wechat'
-        })
+        });
 
         switch (req.weixin.MsgType) {
             case "text":
@@ -139,62 +140,45 @@ function middleware (node, config) {
                 break;
         }
 
-        if (WAIT_MESSAGES === 0) {
-            res.status(200).end();
-            if (WAIT_QUEUE.length > 0) {
-                WAIT_QUEUE.push(data);
+        res.status(200).end();
 
-                if (WAIT_QUEUE[0].message.Event.match(/pic/)) {
-                    data = WAIT_QUEUE[0];
-                    data.message.attachments = [];
-                    for (let i = 1; i < WAIT_QUEUE.length; i++) {
-                        data.message.attachments.push({
-                            contentUrl: WAIT_QUEUE[i].message.PicUrl, 
-                            contentType: "image",
-                            contentId: WAIT_QUEUE[i].message.MediaId
-                        });
-                    }
-                } else {    data = WAIT_QUEUE[1];
-                            data.payload = WAIT_QUEUE[0].payload;
-                }
-                WAIT_QUEUE = [];
-            }
-
-            // Handle Prompt
-            let convId  = helper.getByString(data, 'user.address.conversation.id', undefined)
-            if (botmgr.hasDelayedCallback(convId, data.message)) return;
-
-            if (Object.keys(data.user.profile).length === 0 && data.user.profile.constructor === Object) {
-                api.getUser({openid: convId, lang:'en'}, 
-                    (err, result) => { 
-                        if (err) node.error(err);
-                        else {
-                            data.user.profile = result;
-                            data.user.profile['wcmdate'] = Date.now();
-                            node.send(data);
-                        }
-                    });
-            }
-            else {
-                if (Date.now() - data.user.profile.wcmdate > THRESHOLD) {
-                    api.getUser({openid: convId, lang:'en'}, 
-                    (err, result) => { 
-                        if (err) node.error(err);
-                        else {
-                            data.user.profile = result;
-                            data.user.profile['wcmdate'] = Date.now();
-                            node.send(data);
-                        }
-                    });
-                }
-                else node.send(data);
-            }
-        }
-        else {
-            res.status(200).end();
+        if (WAIT_MESSAGES > 0) {
             WAIT_QUEUE.push(data);
             WAIT_MESSAGES--;
+            return;
         }
+
+        if (WAIT_QUEUE.length > 0) {
+            WAIT_QUEUE.push(data);
+
+            if (WAIT_QUEUE[0].message.Event.match(/pic/)) {
+                data = WAIT_QUEUE[0];
+                data.message.attachments = [];
+                for (let i = 1; i < WAIT_QUEUE.length; i++) {
+                    data.message.attachments.push({
+                        contentUrl: WAIT_QUEUE[i].message.PicUrl, 
+                        contentType: "image",
+                        contentId: WAIT_QUEUE[i].message.MediaId
+                    });
+                }
+            } 
+            else {    
+                data = WAIT_QUEUE[1];
+                data.payload = WAIT_QUEUE[0].payload;
+            }
+            WAIT_QUEUE = [];
+        }
+
+        // Handle Prompt
+        let convId  = helper.getByString(data, 'user.address.conversation.id', undefined);
+        if (botmgr.hasDelayedCallback(convId, data.message)) return;
+
+        api.getUser({openid: convId, lang:'en'}, 
+            (err, result) => { 
+                if (err) { node.error(err); return; }
+                data.user.profile = result;
+                return node.send(data);
+            });  
     });
 }
 
@@ -209,14 +193,10 @@ const reply = (node, data, config) => {
         if (!address || address.carrier !== 'wechat') return false;
 
         // Building the message
-        let message = getMessage(data.reply, address.conversation.id, node);
-        if (!message) return false;
-
-        // Write the message to the response
-        //node.warn(message);
-
-        // Trap the event in order to continue
-        helper.fireAsyncCallback(data);
+        sendMessage(data.reply, address.conversation.id, (err) => {
+            if (err) { node.warn(err); }
+            helper.fireAsyncCallback(data);
+        });
     } 
     catch(ex){
          console.log("ERROR:", ex);
@@ -225,76 +205,55 @@ const reply = (node, data, config) => {
 
 
 const stop = (node, config, done) => {
-    let listener = LISTENERS[node.id]
-    helper.removeListener('reply', listener)
+    let listener = LISTENERS[node.id];
+    helper.removeListener('reply', listener);
     done();
 }
 
-const getMessage = exports.getMessage = (replies, id, node) => {
+const sendMessage = exports.sendMessage = (replies, id, callback) => {
     if (!replies) return;
     let msg = {};
 
-    if (replies.length === 1) {
-        let reply = replies[0];
-        let buttons = (reply.buttons !== undefined && reply.buttons.length > 0) ? true : false ;
-        let pmt = reply.prompt;
+    if (replies.length !== 1) callback("can't process several messages")
+    
+    let reply = replies[0];
+    let buttons = (reply.buttons !== undefined && reply.buttons.length > 0) ? true : false ;
+    let pmt = reply.prompt;
 
-        if (reply.type === "text" && !buttons) {        // Simple text
-            api.sendText(id, reply.text,
-                (err) => { if (err) { node.error(err);
-                return false; }});
-            return true;
-        }
-        else if (reply.type === "text" && buttons) {    // Text & quick replies
-            // TO DO
-        }
-        else if (reply.type === "media") {              // Image
-            // WARNING : pas d'URL !!! Uniquement des images du serveur.
-            //process.cwd() + "/webapp/static/viseo.png"
-            api.uploadMedia(reply.media, 'image', function (err, res) {
-                if (err) {
-                    node.warn(err);
-                    return false;
-                }
-
-                api.sendImage(id, res.media_id, function (err) { 
-                    if (err) { 
-                        node.error(err);
-                        return false; 
-                    }
-                });
-            })
-            return true; 
-        }
-        else if (reply.type === "card") {              // Card
-            let json = {
-                title : reply.title,
-                description: reply.subtitle,
-                url: undefined,
-                picurl: reply.attach ? reply.attach : undefined
-            };
-
-            if (buttons) {
-                let key = reply.buttons[0].value;
-                if (key.match(/^http/ig)) json.url = key;
-                else json.key = key;
-            }
-            
-            let myArray = [];
-            myArray.push(json);
-
-            api.sendNews(id, myArray, function (err) { 
-                if (err) { 
-                    node.error(err);
-                    return false; 
-                }
-            });
-        }
-        else return;
+    if (reply.type === "text") {               // Simple text
+        api.sendText(id, reply.text, callback);
+        return;
     }
-    else {
-        // TO DO
+    if (reply.type === "media") {              // Image
+        // WARNING : pas d'URL !!! Uniquement des images du serveur.
+        //process.cwd() + "/webapp/static/viseo.png"
+        api.uploadMedia(reply.media, 'image', function (err, res) {
+            if (err) { return callback(err); }
+            api.sendImage(id, res.media_id, callback);
+        })
+        return; 
     }
+    if (reply.type === "card") {              // Card
+        let json = {
+            title : reply.title,
+            description: reply.subtitle,
+            url: undefined,
+            picurl: reply.attach ? reply.attach : undefined
+        };
+
+        if (buttons) {
+            let key = reply.buttons[0].value;
+            if (key.match(/^http/ig)) json.url = key;
+            else json.key = key;
+        }
+        
+        let myArray = [];
+        myArray.push(json);
+
+        api.sendNews(id, myArray, callback);
+        return;
+    }
+    callback("can't process message")
  }
 
 // ------------------------------------------
