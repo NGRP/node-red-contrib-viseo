@@ -122,7 +122,10 @@ const prompt = (node, data, config) => {
             data.user.profile.familyName = data.prompt.originalRequest.data.user.profile.familyName;
         }
     }
-    helper.fireAsyncCallback(data);
+
+    if(helper.countListeners('prompt') === 1) {
+        helper.fireAsyncCallback(data);
+    }
 }
 
 
