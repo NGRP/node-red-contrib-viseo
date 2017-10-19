@@ -3,14 +3,11 @@
   "version": "0.2.0",
   "description": "API.AI Wrapper",
   "dependencies": {
-    "actions-on-google": "^1.4.0",
     "apiai": "^3.0.3",
     "joi": "^10.1.0",
     "md5": "^2.2.1",
     "node-red-viseo-bot-manager": "~0.0",
-    "node-red-viseo-helper": "~0.1",
-    "passport": "^0.4.0",
-    "passport-google-oauth20": "^1.0.0"
+    "node-red-viseo-helper": "~0.1"
   },
   "repository": {
     "type": "git",
