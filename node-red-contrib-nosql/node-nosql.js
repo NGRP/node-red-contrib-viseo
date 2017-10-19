@@ -178,7 +178,9 @@ const update = function(node, data, config) {
     if (dbKey.indexOf('{') !== 0) {
         dbKey = helper.getByString(data, config.key);
     }
-    
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
+    }
     if (!value) {
         node.warn('No values: '+ config.value);
         node.send(data);
@@ -219,6 +221,9 @@ const remove = (node, data, config) => {
     let dbKey = config.key;
     if (dbKey.indexOf('{') !== 0) {
         dbKey = helper.getByString(data, config.key || 'payload');
+    }
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
     }
 
     node.server.databaseManager.remove(dbKey, data, config, function(err, data, result) {

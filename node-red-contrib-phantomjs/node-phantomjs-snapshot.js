@@ -39,7 +39,7 @@ const snapshot  = (node, data, config, callback) => {
     let width   = config.width  || 1024;
     let height  = config.height || 768;
     let delay   = config.delay  || 0;
-    let json    = JSON.stringify(data.phantomjs.data) || '{}';
+    let json    = data.phantomjs ? JSON.stringify(data.phantomjs.data) : '{}';
     let childArgs = [ path.join(__dirname, 'phantomjs-script-snapshot.js'), config.url, outPath, width, height, delay, json]
 
     childProcess.execFile(binPath, childArgs, function(err, stdout, stderr) {

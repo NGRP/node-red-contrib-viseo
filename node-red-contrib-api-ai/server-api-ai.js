@@ -26,7 +26,8 @@ module.exports = function(RED) {
     });
 }
 
-let LISTENERS = {};
+let LISTENERS_REPLY = {};
+let LISTENERS_PROMPT = {};
 const start = (RED, node, config) => {  
 
     // Start HTTP Route
@@ -54,14 +55,20 @@ const start = (RED, node, config) => {
     RED.httpNode.post (uri, (req, res, next) => { receive(node, config, req, res); });
 
     // Add listener to reply
-    let listener = LISTENERS[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
-    helper.listenEvent('reply', listener)
+    let listenerReply = LISTENERS_REPLY[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
+    helper.listenEvent('reply', listenerReply)
+
+    let listenerPrompt = LISTENERS_PROMPT[node.id] = (srcNode, data, srcConfig) => { prompt(node, data, config) }
+    helper.listenEvent('prompt', listenerPrompt)
 
 }
 
 const stop = (node, config, done) => {
-    let listener = LISTENERS[node.id]
-    helper.removeListener('reply', listener)
+    let listenerReply = LISTENERS_REPLY[node.id]
+    helper.removeListener('reply', listenerReply)
+
+    let listenerPrompt = LISTENERS_PROMPT[node.id]
+    helper.removeListener('prompt', listenerPrompt)
     done();
 }
 
@@ -113,6 +120,38 @@ const receive = (node, config, req, res) => {
     node.send([undefined, data]);
 
 }
+
+// ------------------------------------------
+// PROMPT
+// ------------------------------------------
+
+const prompt = (node, data, config) => {
+
+    //GEO LOCATION
+    if(
+        data.prompt.originalRequest.data.device && 
+        data.prompt.originalRequest.data.device.location
+    ) {
+
+        data.user.location = data.prompt.originalRequest.data.device.location;
+    }
+
+    //IDENTITY
+    if(data.prompt.originalRequest.data.user.profile) {
+        //EMAIL
+        if(data.prompt.originalRequest.data.user.profile.email) {
+            data.user.profile.email = data.prompt.originalRequest.data.user.profile.email;
+        }
+        //NAME
+        if(data.prompt.originalRequest.data.user.profile.displayName) {
+            data.user.profile.displayName = data.prompt.originalRequest.data.user.profile.displayName;
+            data.user.profile.givenName = data.prompt.originalRequest.data.user.profile.givenName;
+            data.user.profile.familyName = data.prompt.originalRequest.data.user.profile.familyName;
+        }
+    }
+    helper.fireAsyncCallback(data);
+}
+
 
 // ------------------------------------------
 //  REPLY
@@ -197,11 +236,11 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     // Indicates whether the app is expecting a user response. 
     // This is true when the conversation is ongoing, false when the conversation is done.
     google.expectUserResponse = false
-    //for (let reply of replies){ 
-    //    if (reply.prompt) { 
+    for (let reply of replies){ 
+        if (reply.prompt) { 
             google.expectUserResponse = true 
-    //    }
-    //}
+        }
+    }
 
     // Indicates whether the text to speech is SSML or not.
     google.isSsml = false
@@ -228,7 +267,12 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     let simple = {};
     google.richResponse.items.push({'simpleResponse' : simple})
 
-    let text = reply.text || reply.quicktext || (reply.title + ' ' + (reply.subtitle||''))
+    let text = reply.text || reply.quicktext
+
+    if((!text) && reply.title) {
+        text = reply.title + ' ' + (reply.subtitle||'');
+    }
+
     simple.displayText = text      // (optional) chat bubble 640 chars. max
     if (reply.speech === true){
         simple.textToSpeech = text // plain text exclusive with ssml
@@ -289,13 +333,14 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
             intent : "actions.intent.SIGN_IN",
             data : {}
         };
-        /* ASK for name
-        google.systemIntent = {
+        //ASK for name
+        /*google.systemIntent = {
             intent: "actions.intent.PERMISSION",
             data: {
                 "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
                 "optContext": "test",
                 "permissions": [
+                    "EAP_ONLY_EMAIL",
                     "NAME"
                 ]
             }
@@ -343,9 +388,11 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     }
 
     if (reply.type === 'quick'){
-        google.richResponse.suggestions = [];
          // A unique key that will be sent back to the agent if this response is given.
         // https://developers.google.com/actions/reference/rest/Shared.Types/OptionInfo
+
+        google.richResponse.suggestions = [];
+
         for (let button of reply.buttons){
 
             if(button.action === 'askLocation') {
@@ -353,12 +400,28 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
                     intent: "actions.intent.PERMISSION",
                     data: {
                         "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
-                        "optContext": button.title,
+                        "optContext": text || '',
                         "permissions": [
                             "DEVICE_PRECISE_LOCATION"
                         ]
                     }
                 };
+
+                delete google.richResponse;
+                return google;
+            } else if(button.action === 'askIdentity') {
+                google.systemIntent = {
+                    intent: "actions.intent.PERMISSION",
+                    data: {
+                        "@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec",
+                        "optContext": text || '',
+                        "permissions": [
+                            "EAP_ONLY_EMAIL",
+                            "NAME"
+                        ]
+                    }
+                };
+                delete google.richResponse;
                 return google;
             }
 
