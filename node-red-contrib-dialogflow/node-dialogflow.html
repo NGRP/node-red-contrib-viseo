@@ -1,0 +1,244 @@
+<script type="text/javascript">
+    RED.nodes.registerType('dialogflow', {
+        category: 'VISEO_NLP',
+        color: '#3FADB5',
+        defaults: {
+            name:               { value: undefined },
+            token:              { value: undefined, required: true, type: 'dialogflow-config' },
+            session:            { value: "user.id" },
+            sessionType:        { value: "msg" },
+            language:           { value: "en" },
+            languageType:       { value: "str" },
+            text:               { value: "payload" },
+            textType:           { value: "msg" },
+            intent:             { value: "payload" },
+            intentType:         { value: "msg" },
+            action:             { value: "query" },
+            actionitemaddupd:   { value: "entities-single" },
+            actionitemget:      { value: "entities-single" },
+            actionitemdel:      { value: "entities-single" },
+            selaction:          { value: "get" },
+            itemid:             { value: undefined },
+            itemidType:         { value: "msg" },
+            object:             { value: undefined },
+            objectType:         { value: "msg" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'google.svg',
+        align: 'left',
+        paletteLabel: 'Dialogflow',
+        label: function () { return this.name || 'Dialogflow' },
+        oneditprepare: function() {
+            $("#node-input-session").typedInput({   default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-sessionType")  });
+            $("#node-input-language").typedInput({  default: 'str', types: ['msg','str','global'],  typeField: $("#node-input-languageType") });
+            $("#node-input-text").typedInput({      default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-textType")     });
+            $("#node-input-intent").typedInput({    default: 'msg', types: ['msg','global'],        typeField: $("#node-input-intentType")   });
+            $("#node-input-itemid").typedInput({    default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-itemidType")   });
+            $("#node-input-object").typedInput({    default: 'msg', types: ['msg','global','json'], typeField: $("#node-input-objectType")   });
+
+
+            // Change
+            $("#node-input-action").change(showSections);
+            $("#node-input-selaction").change(setOptions);
+            $("#node-input-actionitemaddupd, #node-input-actionitemget, #node-input-actionitemdel").change(showParameters);
+
+            function showParameters() {
+                if ($("#node-input-action").val() === "query") return;
+
+                let action = $("#node-input-selaction").val();
+
+                $(".id").hide();
+                $(".object").hide();
+
+                if      (action.match(/get/i) && $("#node-input-actionitemget").val().match(/single/i)) $(".id").show();
+                else if (action.match(/add/i)) $(".object").show();
+                else if (action.match(/del/i)) {
+                    if ($("#node-input-actionitemget").val().match(/entries/i)) $(".object").show();
+                    $(".id").show();
+                }
+                else if (action.match(/upd/i)) {
+                     if ($("#node-input-actionitemaddupd").val().match(/single/i)) $(".id").show();
+                     $(".object").show();
+                }
+            }
+
+            function showSections() {
+                $(".manage").hide();
+                $(".query").hide();
+                if ($("#node-input-action").val() === "query") $(".query").show();
+                else {  setOptions();
+                        $(".manage.main").show(); 
+                }
+            }
+
+            function setOptions() {
+                if ($("#node-input-action").val() === "query") return;
+                $("#node-input-actionitemaddupd, #node-input-actionitemget, #node-input-actionitemdel").hide();
+
+                let value = $("#node-input-selaction").val();
+
+                if (value === "add" || value === "upd") $("#node-input-actionitemaddupd").show();
+                if (value === "get") $("#node-input-actionitemget").show();
+                if (value === "del") $("#node-input-actionitemdel").show();
+
+                showParameters();
+            }
+        },
+        oneditsave: function() {
+            this.actionitem = $("#node-input-actionitem").val();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="dialogflow">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Dialogflow">
+    </div>
+
+    <br>
+    <b>Dialogflow settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-token"><i class="fa fa-lock"></i> Tokens</label>
+        <input type="text" id="node-input-token" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-session"><i class="fa fa-user"></i> Session ID</label>
+        <input type="text" id="node-input-session" style="width:70%;" placeholder="user.id">
+        <input type="hidden" id="node-input-sessionType">
+    </div>
+
+    <br>
+    <b>Requests settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-action"><i class="fa fa-navicon"></i> Action</label>
+        <select id="node-input-action" style="width:70%;">
+            <option value="query">Query</option>
+            <option value="manage">Manage</option>
+        </select>
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row query">
+        <label for="node-input-text" style="margin-left:15px; width: 85px; color:#848484"> Text</label>
+        <input type="text" id="node-input-text" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-textType">
+    </div>
+
+    <div class="form-row query">
+        <label for="node-input-language" style="margin-left:15px; width: 85px; color:#848484"> Language</label>
+        <input type="text" id="node-input-language" style="width:70%;" placeholder="en">
+        <input type="hidden" id="node-input-languageType">
+    </div>
+
+    <div class="form-row manage main">
+        <select id="node-input-selaction" style="margin-left:5px; width: 95px; display:inline-block; color:#848484">
+            <option style="color:#848484" value="get">Get</option>
+            <option style="color:#848484" value="add">Add</option>
+            <option style="color:#848484" value="upd">Update</option>
+            <option style="color:#848484" value="del">Delete</option>
+        </select>
+        <select id="node-input-actionitemaddupd" style="width:70%; display:inline-block;">
+            <option value="entities-single">A single entity</option>
+            <option value="intents-single">A single intent</option>
+            <option value="entities-multiple">Some entities</option>
+            <option value="entities-entries">Some entity entries from/to an entity</option>
+        </select>
+        <select id="node-input-actionitemget" style="width:70%; display:inline-block;">
+            <option value="entities-single">A single entity</option>
+            <option value="intents-single">A single intent</option>
+            <option value="entities-all">All entitiies</option>
+            <option value="intents-all">All intents</option>
+        </select>
+        <select id="node-input-actionitemdel" style="width:70%; display:inline-block;">
+            <option value="entities-single">A single entity</option>
+            <option value="intents-single">A single intent</option>
+            <option value="entities-entries">Some entity entries from/to an entity</option>
+        </select>
+    </div>
+
+    <div class="form-row manage id">
+        <label for="node-input-itemid" style="margin-left:15px; width: 85px; color:#848484"> Id</label>
+        <input type="text" id="node-input-itemid" style="width:70%;">
+        <input type="hidden" id="node-input-itemidType">
+    </div>
+    <div class="form-row manage object">
+        <label for="node-input-object" style="margin-left:15px; width: 85px; color:#848484"> Object</label>
+        <input type="text" id="node-input-object" style="width:70%;">
+        <input type="hidden" id="node-input-objectType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-intent"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-intent" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-intentType">
+    </div>
+</script>
+
+<style>
+    .help-section > ol > h4,
+    .help-section > h3 { font-weight: bold; }
+</style>
+
+<script type="text/x-red" data-help-name="dialogflow">
+    <section class="help-section">
+        <h3>Settings</h3>
+        <ol> 
+            <h4>Name</h4>
+            <p>
+                Type in a name to override the node default name
+            </p>
+            <h4>Tokens</h4>
+            <p>
+                Type in your client access token and your developper access token available on the Dialogflow website, in the configuration page of the agent you want to use.
+            </p>
+            <h4>Session ID</h4>
+            <p>
+                Type in the a session ID. The ID you choose will be hashed to ensure its unicity.
+            </p>
+        </ol> 
+
+        <h3>Query</h3>
+        <ol> 
+            <h4>Language</h4>
+            <p>
+                Type in the language code you want to use with Dialogflow. You can find the list of the recognized language codes <a href="https://dialogflow.com/docs/reference/language">here</a>.
+            </p>
+            <h4>Text</h4>
+            <p>
+                Type in the text you want to be analized by Dialogflow services. The text should be in the selected language.
+            </p>
+            <h4>Output</h4>
+            <p>
+                Chose the field where to put the results
+            </p>
+        </ol> 
+
+        <h3>Manage</h3>
+        <ol>
+            <h4>Intents</h4>
+            <p>
+                To add or modify intents, find the object structures <a href="https://dialogflow.com/docs/reference/agent/intents">here</a>.
+            </p>
+            <h4>Entities</h4>
+            <p>
+                To add or modify entities, find the object structures <a href="https://dialogflow.com/docs/reference/agent/entities">here</a>.
+            </p>
+        </ol> 
+
+    </section>
+
+
+</script>

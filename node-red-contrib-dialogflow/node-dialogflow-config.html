@@ -1,0 +1,30 @@
+<script type="text/javascript">
+    RED.nodes.registerType('dialogflow-config',{
+        category: 'config',
+        defaults: {
+            name:      { value: undefined }
+        },
+        credentials: {
+            clienttoken:    { type:"text" },
+            devtoken:       { type:"text" }
+        },
+        label: function() {
+            return this.name || "Dialogflow's tokens";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="dialogflow-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-clienttoken"><i class="fa fa-lock"></i> Client token</label>
+        <input type="text" id="node-config-input-clienttoken" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-devtoken"><i class="fa fa-lock"></i> Dev. token</label>
+        <input type="text" id="node-config-input-devtoken" placeholder="">
+    </div>
+</script>
