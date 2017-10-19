@@ -1,9 +1,6 @@
 const helper  = require('node-red-viseo-helper')
 const botmgr  = require('node-red-viseo-bot-manager')
-let ApiAiApp = require('actions-on-google').ApiAiApp;
 const CARRIER = "GoogleHome"
-
-const userManager = require('./lib/user.js');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -17,13 +14,7 @@ module.exports = function(RED) {
         start(RED, node, config);
         this.on('close', (done)  => { stop(node, config, done) });
     }
-    RED.nodes.registerType("api-ai-server", register, {
-        credentials: {
-            clientId:   { type: "text" },
-            projectId:  { type: "text" },
-            secretKey:  { type: "text" }
-        }
-    });
+    RED.nodes.registerType("api-ai-server", register);
 }
 
 let LISTENERS_REPLY = {};
@@ -31,25 +22,7 @@ let LISTENERS_PROMPT = {};
 const start = (RED, node, config) => {  
 
     // Start HTTP Route
-    let uri = '/api-ai-server/'; 
-
-    //Authentication for api ai
-    if(! node.credentials.clientId || !node.credentials.secretKey || ! node.credentials.projectId) {
-        node.status({ fill: "red", shape: "dot", text: "Client ID, Project ID and Client Secret are mandatory for Api AI Server" })
-        //return;
-    }
-
-    node.status({});
-    userManager.Authentication(RED.httpNode, uri, node.credentials.projectId, node.credentials.clientId, node.credentials.secretKey, function(user) {
-        let data = {
-            user: user
-        };
-
-        console.log(user);
-
-        node.send([data, undefined]);
-    });
-
+    let uri = '/api-ai-server/';
 
     node.warn('Add GET/POST route to: '+ uri);
     RED.httpNode.post (uri, (req, res, next) => { receive(node, config, req, res); });
@@ -149,7 +122,10 @@ const prompt = (node, data, config) => {
             data.user.profile.familyName = data.prompt.originalRequest.data.user.profile.familyName;
         }
     }
-    helper.fireAsyncCallback(data);
+
+    if(helper.countListeners('prompt') === 1) {
+        helper.fireAsyncCallback(data);
+    }
 }
 
 
