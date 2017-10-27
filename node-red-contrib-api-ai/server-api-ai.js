@@ -255,7 +255,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
     } else {
         simple.ssml = reply.speech // Structured spoken response to the user in the SSML format
     }
-
+    
     // Carousel of cards
     if (replies.length > 1){
         let carousel = { items : [] }
@@ -356,7 +356,10 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
                 item.buttons.push({
                     title: btn.title,
                     openUrlAction: { url: helper.absURL(btn.value) }
-                })
+                });
+
+                delete google.richResponse.items[0].simpleResponse.displayText;
+                break;
             }
         }
 
