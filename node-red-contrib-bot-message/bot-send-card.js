@@ -217,25 +217,18 @@ const sendData = (node, data, config) => {
     }
 
 
-    if (config.prompt){
-        let acceptValue = false;
+    if (config.prompt) {
 
         // 1. BUTTONS: the middle outputs
         let buttons = buttonsStack.popAll(data);
 
-        //checks whether we should accept the input value
-        if(config.assert) {
-            let regexp = new RegExp(config.assert, 'i');
-            acceptValue = regexp.test(data.prompt.text);
-        } else {
-            acceptValue = true;
-        }
-        
-        if (promptText && acceptValue) { // Save the prompt value to a given attribute
-            helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
-        }
+        config.promptText = promptText;
+
+        let acceptValue = false;
         
         if (buttons) {
+
+            
 
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
@@ -249,7 +242,6 @@ const sendData = (node, data, config) => {
                     }
                 }
 
-                //the value was accepted for at least one button
                 acceptValue = true;
 
                 if (promptText){ 
@@ -262,22 +254,27 @@ const sendData = (node, data, config) => {
                     return node.send(out);
                 } 
             }
+        } else {
+
+            acceptValue = true;
+            helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
         }
 
-        // 2. EVENTS: Cross Messages
-        config.promptText = promptText;
-        if(config.assert && acceptValue === false) {
+        if(acceptValue === false) {
+            //if we get here, it means that the prompted text doesn't match any button and wasn't expected
             helper.emitAsyncEvent('prompt', node, data, config, (data) => {
                 helper.emitAsyncEvent('prompt-unexpected', node, data, config, (data) => {
                     _continue(data);
                 });
             });
+
         } else {
             helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
                 _continue(data); 
             });
         }
-        return;
+
+    } else {
+        _continue(data);
     }
-    _continue(data);
 }   
