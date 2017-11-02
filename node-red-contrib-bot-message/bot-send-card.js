@@ -226,13 +226,10 @@ const sendData = (node, data, config) => {
 
         let acceptValue = false;
         
-        if (buttons) {
-
-            
+        if (buttons && buttons.length > 0) {
 
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
-
 
                 let rgxp = new RegExp(button.regexp || '^'+button.value+'$', 'i');
                 let testValue = data.prompt.text
@@ -273,7 +270,10 @@ const sendData = (node, data, config) => {
         } else {
 
             acceptValue = true;
-            helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
+
+            if (promptText) { 
+                helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
+            }
         }
 
         if(acceptValue === false) {
