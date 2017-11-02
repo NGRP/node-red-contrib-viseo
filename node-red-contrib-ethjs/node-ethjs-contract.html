@@ -1,0 +1,39 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ethjs-contract',{
+        category: 'config',
+        defaults: {
+            name       : { value: undefined },
+            address    : { value: undefined },
+            transaction: { value: undefined },
+            abi        : { value: undefined },
+            bin        : { value: undefined },
+        },
+        label: function() {
+            return this.name || "Ethereum Contract";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ethjs-contract">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-address"><i class="icon-tag"></i> Address</label>
+        <input type="text" id="node-config-input-address" placeholder="">
+    </div>
+    <div class="form-row"><span style="float: right; line-height: 0px;">OR</span></div>
+    <div class="form-row">
+        <label for="node-config-input-address"><i class="icon-tag"></i> Transaction</label>
+        <input type="text" id="node-config-input-transaction" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-abi"><i class="icon-tag"></i> Abi</label>
+        <textarea id="node-config-input-abi" rows="3" style="width:300px" placeholder="JSON content of the ABI file"></textarea>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-bin"><i class="icon-tag"></i> Bin</label>
+        <textarea id="node-config-input-bin" rows="3" style="width:300px" placeholder="Binary content of the BIN file"></textarea>
+    </div>
+</script>
