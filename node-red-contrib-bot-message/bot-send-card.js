@@ -233,11 +233,27 @@ const sendData = (node, data, config) => {
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
 
-                let rgxp = new RegExp(button.regexp || '^'+button.value+'$', 'i');
 
-                if (!rgxp.test(data.prompt.text)) {
+                let rgxp = new RegExp(button.regexp || '^'+button.value+'$', 'i');
+                let testValue = data.prompt.text
+
+                if(button.unaccentuate) {
+                    testValue = testValue.replace(new RegExp(/\s/g),"");
+                    testValue = testValue.replace(new RegExp(/[àáâãäå]/g),"a");
+                    testValue = testValue.replace(new RegExp(/æ/g),"ae");
+                    testValue = testValue.replace(new RegExp(/ç/g),"c");
+                    testValue = testValue.replace(new RegExp(/[èéêë]/g),"e");
+                    testValue = testValue.replace(new RegExp(/[ìíîï]/g),"i");
+                    testValue = testValue.replace(new RegExp(/ñ/g),"n");                
+                    testValue = testValue.replace(new RegExp(/[òóôõö]/g),"o");
+                    testValue = testValue.replace(new RegExp(/œ/g),"oe");
+                    testValue = testValue.replace(new RegExp(/[ùúûü]/g),"u");
+                    testValue = testValue.replace(new RegExp(/[ýÿ]/g),"y");
+                }
+
+                if (!rgxp.test(testValue)) {
                     rgxp = new RegExp('^'+button.value+'$', 'i');
-                    if (!rgxp.test(data.prompt.text)) {
+                    if (!rgxp.test(testValue)) {
                         continue;
                     }
                 }
