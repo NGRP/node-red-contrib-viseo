@@ -3,8 +3,6 @@
     "version"       : "0.1.0",
     "description"   : "A WeChat Bot Implementation",
     "dependencies"  : {
-        "botbuilder"                 : "^3.*.*",
-        "lodash"                     : "^4.15.0",
         "wechat"                     : "^2.0.3",
         "wechat-api"                 : "^1.28.0",
         "node-red-viseo-helper"      : "~0.1",
