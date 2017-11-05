@@ -1,0 +1,72 @@
+<script type="text/javascript">
+    RED.nodes.registerType('google-spreadsheet',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:    { value: undefined },
+            auth:    { value: undefined, type: 'google-service-account', required: true },
+            sheet:   { value: undefined },
+            range:   { value: undefined },
+            method:  { value: undefined },
+            clear:   { value: undefined },
+            fields:  { value: undefined },
+            input:   { value: undefined, required: false },
+            output:  { value: undefined, required: false },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "google.svg",
+        align: "left",
+        paletteLabel: 'Spreadsheet',
+        label: function() { return this.name || "Google Spreadsheet"; }
+    });
+</script>
+
+<style>
+    .input-info { font-size: 12px; padding-left: 104px; font-style: italic; }
+</style>
+
+<script type="text/x-red" data-template-name="google-spreadsheet">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-auth"><i class="fa fa-lock"></i> Credentials</label>
+        <input type="text" id="node-input-auth" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sheet"><i class="icon-tag"></i> Sheet</label>
+        <input type="text" id="node-input-sheet" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-range"><i class="icon-tag"></i> Range</label>
+        <input type="text" id="node-input-range" style="width: 50%" placeholder="">
+        <select id="node-input-clear" style="width: auto">
+            <option value=""></option>
+            <option value="clear">Clear</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 50%" placeholder=""/>  
+        <select id="node-input-method" style="width: auto">
+            <option value="append">Append</option>
+            <option value="update">Update</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder=""/>
+        <div class="input-info">Output rows of the given range OR Input action results</div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-fields"><i class="icon-tag"></i> Fields</label>
+        <textarea id="node-input-fields" rows="5" style="width:300px" placeholder="path.to.field"></textarea>
+        <div class="input-info">Works instead with array of objects</div>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="google-spreadsheet">
+
+</script>
