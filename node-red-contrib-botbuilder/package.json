@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-botbuilder",
-    "version"       : "0.4.5",
+    "version"       : "0.5.0",
     "description"   : "A MS BotBuilder implementation for Node-RED",
     "dependencies"  : {
         "botbuilder"                 : "^3.*.*",
@@ -27,8 +27,7 @@
             "msbot-attachment":  "nodes/attachment/msbot-attachment.js",
             "msbot-fb-profile":  "nodes/channel/msbot-fb-profile.js",
             "msbot-fb-greeting": "nodes/channel/msbot-fb-greeting.js",
-            "msbot-fb-log":      "nodes/channel/msbot-fb-log.js",
-            "msbot-fb-config":   "nodes/channel/msbot-fb-config.js"
+            "msbot-fb-log":      "nodes/channel/msbot-fb-log.js"
         }
     }
 }
