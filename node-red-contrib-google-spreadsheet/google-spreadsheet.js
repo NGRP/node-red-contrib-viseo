@@ -63,11 +63,14 @@ const input = (node, data, config) => {
                     else {
                         let rows   = response.values
                         let values = []
+                        node.warn(rows)
                         for (row of rows){
                             let obj = {}; values.push(obj);
                             for (let i = 0 ; i < row.length ; i++){
                                 helper.setByString(obj, fields[i], row[i])
                             }
+                            node.warn(row)
+                            node.warn(obj)
                         }
                         helper.setByString(data, config.output, values)  
                     }
