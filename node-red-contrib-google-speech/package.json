@@ -4,6 +4,7 @@
     "author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description": "Wrapper of Google Speech Recognition",
     "dependencies": {
+        "node-red-contrib-viseo-google-authentication": "~0.0",
         "@google-cloud/speech": "~0.10.2",
         "node-red-viseo-helper": "~0.1"
     },
@@ -15,7 +16,6 @@
     "keywords": ["viseo", "sarah", "node-red"],
     "node-red": {
         "nodes": {
-            "google-credentials": "google-credentials.js",
             "google-speech-text": "google-speech-text.js"
         }
     }

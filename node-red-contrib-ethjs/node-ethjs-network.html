@@ -1,0 +1,28 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ethjs-network',{
+        category: 'config',
+        defaults: {
+            name       : { value: undefined },
+            url        : { value: undefined },
+            description: { value: undefined },
+        },
+        label: function() {
+            return this.name || "Ethereum Network";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ethjs-network">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-url"><i class="icon-tag"></i> URL</label>
+        <input type="text" id="node-config-input-url" placeholder="http://url.of.network:8545">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-description"><i class="icon-tag"></i> Description</label>
+        <input type="text" id="node-config-input-description" placeholder="">
+    </div>
+</script>

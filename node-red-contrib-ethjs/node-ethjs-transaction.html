@@ -1,0 +1,72 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ethjs-transaction',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            'name'     : { value: undefined },
+            'network'  : { value: undefined, type: 'ethjs-network',  required: true },
+            'wallet'   : { value: undefined, type: 'ethjs-wallet',   required: false },
+            'contract' : { value: undefined, type: 'ethjs-contract', required: true },
+
+            'apiCall'  : { value: undefined },
+            'unit'     : { value: undefined },
+            'param1'   : { value: undefined },
+            'param2'   : { value: undefined },
+            'param3'   : { value: undefined },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "ethjs.svg",
+        align: "left",
+        paletteLabel: "Transaction",
+        label: function() { return this.name || "Ethereum Transaction"; }
+    })
+</script>
+<style>
+    .input-info    { font-size: 12px; padding-left: 104px; font-style: italic; }
+    .checkbox-info { font-size: 12px; }
+</Style>
+<script type="text/x-red" data-template-name="ethjs-transaction">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-network"><i class="icon-tag"></i> Network</label>
+        <input type="text" id="node-input-network" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-wallet"><i class="icon-tag"></i> Wallet</label>
+        <input type="text" id="node-input-wallet" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-contract"><i class="icon-tag"></i> Contract</label>
+        <input type="text" id="node-input-contract" placeholder="">
+    </div>
+    <span>----------</span>
+    <div class="form-row">
+        <label for="node-input-apiCall"><i class="icon-tag"></i> API Call</label>
+        <input type="text" id="node-input-apiCall" style="width:260px">
+        <select id="node-input-unit" style="width:auto">
+            <option value=""></option>
+            <option value="wei">Wei</option>
+            <option value="ether">Ether</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-param1"><i class="icon-tag"></i> Parameter1</label>
+        <input type="text" id="node-input-param1" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-param2"><i class="icon-tag"></i> Parameter2</label>
+        <input type="text" id="node-input-param2" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-param3"><i class="icon-tag"></i> Parameter3</label>
+        <input type="text" id="node-input-param3" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ethjs-transaction">
+    
+</script>

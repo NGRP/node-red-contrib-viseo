@@ -202,7 +202,7 @@ const add = (node, data, config) => {
 
     let values = helper.getByString(data, config.value);
     //check value
-    if(Array.isArray(values) && typeof values[0] === "object" && values !== null) {
+    if(values !== null && (typeof values == "object" || (Array.isArray(values) && typeof values[0] === "object"))) {
         node.server.databaseManager.add(values, data, config, function(err, data, results) {
             if(err) {
                 node.error(err);

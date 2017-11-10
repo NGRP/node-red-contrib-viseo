@@ -105,7 +105,7 @@ class MongoDBManager extends DatabaseManager {
 	add(values, data, config, callback) {
 
 	    let collection = this.db.collection(config.collection);
-	    collection.insertMany(values, function(err, result) {
+	    collection.insert(values, function(err, result) {
 	    	callback(err, data, result);
 	    });
 

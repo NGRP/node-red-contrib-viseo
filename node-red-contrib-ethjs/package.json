@@ -1,0 +1,22 @@
+{
+    "name"          : "node-red-contrib-viseo-ethjs",
+    "version"       : "0.0.1",
+    "description"   : "",
+    "dependencies"  : {
+        "ethjs" : "~0.2.8",
+        "node-red-viseo-helper" : "~0.1"
+	},
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/Klervix/node-red-contrib"
+    },
+    "license": "Apache-2.0",
+    "keywords": ["viseo", "sarah", "node-red"],
+    "node-red" : {
+        "nodes": {
+            "ethjs-wallet":      "node-ethjs-wallet.js",
+            "ethjs-contract":    "node-ethjs-contract.js",
+            "ethjs-transaction": "node-ethjs-transaction.js"
+        }
+    }
+}

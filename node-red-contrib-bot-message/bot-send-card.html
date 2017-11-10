@@ -11,7 +11,6 @@
             speech:       { value: undefined },
             speechText:   { value: undefined },
             delay:        { value: 0 },
-            assert:       { value: undefined }, 
             sendType:     { value: "text" },
             text:         { value: undefined },
             random:       { value: undefined },
@@ -253,11 +252,6 @@
             <input type="text" id="node-input-promptText" style="width:70%;" placeholder="prompt.text">
             <input type="hidden" id="node-input-promptTextType">
         </div>
-        <div class="form-row">
-            <label for="node-input-assert"><i class="icon-tag"></i> Assert</label>
-            <input type="text" id="node-input-assert" placeholder="Regexp">
-            <div class="input-info">prompt text populated only if value matches regexp</div>
-        </div>
     </div>
 
     <div id="send-card-speech" class="send-card-panel hide">
@@ -443,8 +437,7 @@
 
             <b>Prompt</b>
             <p style="margin-left: 20px;">If the node is waiting for a user answer (prompt.text by default).
-               <br><b>Prompt</b>: where to check the user answer.
-               <br><b>Assert</b>: validate user answer (regEx).
+               <br><b>Prompt</b>: where to check the user answer. When specified and if the Message contains buttons, this property is set only if the user's answer matches one of the buttons' values
             </p>
             
             <b>Speech</b>

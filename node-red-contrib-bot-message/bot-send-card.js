@@ -217,39 +217,44 @@ const sendData = (node, data, config) => {
     }
 
 
-    if (config.prompt){
-        let acceptValue = false;
+    if (config.prompt) {
 
         // 1. BUTTONS: the middle outputs
         let buttons = buttonsStack.popAll(data);
 
-        //checks whether we should accept the input value
-        if(config.assert) {
-            let regexp = new RegExp(config.assert, 'i');
-            acceptValue = regexp.test(data.prompt.text);
-        } else {
-            acceptValue = true;
-        }
+        config.promptText = promptText;
+
+        let acceptValue = false;
         
-        if (promptText && acceptValue) { // Save the prompt value to a given attribute
-            helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
-        }
-        
-        if (buttons) {
+        if (buttons && buttons.length > 0) {
 
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
 
                 let rgxp = new RegExp(button.regexp || '^'+button.value+'$', 'i');
+                let testValue = data.prompt.text
 
-                if (!rgxp.test(data.prompt.text)) {
+                if(button.unaccentuate) {
+                    testValue = testValue.replace(new RegExp(/\s/g),"");
+                    testValue = testValue.replace(new RegExp(/[àáâãäå]/g),"a");
+                    testValue = testValue.replace(new RegExp(/æ/g),"ae");
+                    testValue = testValue.replace(new RegExp(/ç/g),"c");
+                    testValue = testValue.replace(new RegExp(/[èéêë]/g),"e");
+                    testValue = testValue.replace(new RegExp(/[ìíîï]/g),"i");
+                    testValue = testValue.replace(new RegExp(/ñ/g),"n");                
+                    testValue = testValue.replace(new RegExp(/[òóôõö]/g),"o");
+                    testValue = testValue.replace(new RegExp(/œ/g),"oe");
+                    testValue = testValue.replace(new RegExp(/[ùúûü]/g),"u");
+                    testValue = testValue.replace(new RegExp(/[ýÿ]/g),"y");
+                }
+
+                if (!rgxp.test(testValue)) {
                     rgxp = new RegExp('^'+button.value+'$', 'i');
-                    if (!rgxp.test(data.prompt.text)) {
+                    if (!rgxp.test(testValue)) {
                         continue;
                     }
                 }
 
-                //the value was accepted for at least one button
                 acceptValue = true;
 
                 if (promptText){ 
@@ -262,22 +267,30 @@ const sendData = (node, data, config) => {
                     return node.send(out);
                 } 
             }
+        } else {
+
+            acceptValue = true;
+
+            if (promptText) { 
+                helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
+            }
         }
 
-        // 2. EVENTS: Cross Messages
-        config.promptText = promptText;
-        if(config.assert && acceptValue === false) {
+        if(acceptValue === false) {
+            //if we get here, it means that the prompted text doesn't match any button and wasn't expected
             helper.emitAsyncEvent('prompt', node, data, config, (data) => {
                 helper.emitAsyncEvent('prompt-unexpected', node, data, config, (data) => {
                     _continue(data);
                 });
             });
+
         } else {
             helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
                 _continue(data); 
             });
         }
-        return;
+
+    } else {
+        _continue(data);
     }
-    _continue(data);
 }   
