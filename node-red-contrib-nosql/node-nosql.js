@@ -84,6 +84,10 @@ const input = (node, data, config) => {
                 break;
             case 'delete':
                 remove(node, data, config);
+                break;
+            case 'count':
+                count(node, data, config);
+                break;
         }
 
     } catch (ex) { 
@@ -140,7 +144,52 @@ const find = function(node, data, config) {
         node.warn('No condition found for search. Do Nothing.');
         return node.send(data);
     }
+
+    if(config.limit) {
+        if(!config.offset) {
+            config.offset = 0;
+        } else {
+            if(config.offsetType === 'msg') {
+                config.offset = helper.getByString(data, config.offset)
+            } else {
+                config.offset = parseInt(config.offset)
+            }
+        }
+        if(config.limitType === 'msg') {
+            config.limit = helper.getByString(data, config.limit)
+        } else {
+            config.limit = parseInt(config.limit)
+        }
+    }
+
+
     node.server.databaseManager.find(dbKey, data, config, function(err, data, results) { 
+        if (err) {
+            return node.error(err);
+        }
+        helper.setByString(data, config.value || 'payload', results);
+        node.send(data);
+    });
+};
+
+const count = function(node, data, config) {
+
+    // Kludge test to avoid logs exception for inline JSON
+
+    let dbKey = config.key;
+    if (dbKey.indexOf('{') !== 0) {
+        dbKey = helper.getByString(data, config.key || 'payload');
+    }
+
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
+    }
+    if (!dbKey) {
+        node.warn('No condition found for search. Do Nothing.');
+        return node.send(data);
+    }
+
+    node.server.databaseManager.count(dbKey, data, config, function(err, data, results) { 
         if (err) {
             return node.error(err);
         }

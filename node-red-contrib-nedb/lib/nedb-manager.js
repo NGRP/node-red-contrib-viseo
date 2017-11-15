@@ -82,11 +82,22 @@ class NeDBManager extends DatabaseManager {
     }
 
     find(key, data, config, callback) { 
+        let cursor = this.db.find(key);
 
-	    this.db.find(key, function(err, documents) {
+        if(config.limit) {
+            cursor = cursor.skip(config.offset).limit(config.limit)
+        }
+
+        cursor.exec(function(err, documents) {
 	    	callback(err, data, documents);
 	    });
 	}
+
+    count(key, data, config, callback) { 
+        this.db.count(key, function(err, count) {
+            callback(err, data, count);
+        });
+    }
 
 	update(key, value, data, config, callback) {
 
