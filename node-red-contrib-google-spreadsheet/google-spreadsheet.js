@@ -26,6 +26,7 @@ module.exports = function(RED) {
 
 
 const input = (node, data, config) => {
+try {
     let method = 'get'
     let spreadsheetId = helper.resolve(config.sheet, data, config.sheet)
     let range = helper.resolve(config.range, data, config.range)
@@ -36,7 +37,7 @@ const input = (node, data, config) => {
         method = config.method
         parameters.valueInputOption= "USER_ENTERED"
         parameters.resource = {}
-        let rows = helper.getByString(data, config.input); node.warn(rows);
+        let rows = helper.getByString(data, config.input);
         if (Array.isArray(rows) && rows.length > 0){ 
             if (Array.isArray(rows[0])){ parameters.resource.values = rows }
             else if (fields) {
@@ -48,7 +49,6 @@ const input = (node, data, config) => {
                     }
                 }
                 parameters.resource.values = values
-                node.warn(values)
             }
         }
     }
@@ -56,23 +56,26 @@ const input = (node, data, config) => {
     let query = () => {
         sheets.spreadsheets.values[method](parameters, function(err, response) {
             if (err) { return node.warn(err); }
-            if (config.output){ 
-                     if (response.updates){ helper.setByString(data, config.output, response) }
-                else if (response.values){  
-                    if (!fields) { helper.setByString(data, config.output, response.values) }
-                    else {
-                        let rows   = response.values
-                        let values = []
-                        for (row of rows){
-                            let obj = {}; values.push(obj);
-                            for (let i = 0 ; i < row.length ; i++){
-                                helper.setByString(obj, fields[i], row[i])
-                            }
+
+            data._sheet = response;
+            if (!config.output){ return node.send(data); }
+
+            if (response.updates){ helper.setByString(data, config.output, response) } else
+            if (response.values){  
+                if (!fields) { helper.setByString(data, config.output, response.values) }
+                else {
+                    let rows   = response.values
+                    let values = []
+                    for (row of rows){
+                        let obj = {}; values.push(obj);
+                        for (let i = 0 ; i < row.length ; i++){
+                            helper.setByString(obj, fields[i], row[i])
                         }
-                        helper.setByString(data, config.output, values)  
                     }
+                    helper.setByString(data, config.output, values)  
                 }
             }
+            
             node.send(data)
         });
     }
@@ -87,4 +90,5 @@ const input = (node, data, config) => {
             query();
         });
     })
+} catch (ex){ console.log(ex); }
 }
