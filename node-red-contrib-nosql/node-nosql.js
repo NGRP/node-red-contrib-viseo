@@ -131,10 +131,11 @@ const get = function(node, data, config) {
 const find = function(node, data, config) {
 
     // Kludge test to avoid logs exception for inline JSON
+    let processed_config = JSON.parse(JSON.stringify(config))
 
-    let dbKey = config.key;
+    let dbKey = processed_config.key;
     if (dbKey.indexOf('{') !== 0) {
-        dbKey = helper.getByString(data, config.key || 'payload');
+        dbKey = helper.getByString(data, processed_config.key || 'payload');
     }
 
     if (typeof dbKey === 'string'){
@@ -145,29 +146,29 @@ const find = function(node, data, config) {
         return node.send(data);
     }
 
-    if(config.limit) {
-        if(!config.offset) {
-            config.offset = 0;
+    if(processed_config.limit) {
+        if(!processed_config.offset) {
+            processed_config.offset = 0;
         } else {
-            if(config.offsetType === 'msg') {
-                config.offset = helper.getByString(data, config.offset)
+            if(processed_config.offsetType === 'msg') {
+                processed_config.offset = helper.getByString(data, processed_config.offset)
             } else {
-                config.offset = parseInt(config.offset)
+                processed_config.offset = parseInt(processed_config.offset)
             }
         }
-        if(config.limitType === 'msg') {
-            config.limit = helper.getByString(data, config.limit)
+        if(processed_config.limitType === 'msg') {
+            processed_config.limit = helper.getByString(data, processed_config.limit)
         } else {
-            config.limit = parseInt(config.limit)
+            processed_config.limit = parseInt(processed_config.limit)
         }
     }
 
 
-    node.server.databaseManager.find(dbKey, data, config, function(err, data, results) { 
+    node.server.databaseManager.find(dbKey, data, processed_config, function(err, data, results) { 
         if (err) {
             return node.error(err);
         }
-        helper.setByString(data, config.value || 'payload', results);
+        helper.setByString(data, processed_config.value || 'payload', results);
         node.send(data);
     });
 };
