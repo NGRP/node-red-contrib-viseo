@@ -102,12 +102,12 @@ class MongoDBManager extends DatabaseManager {
         let err = null;
         let documents = [];
 
-        let cursor = collection.find(key);
-        if(config.limit) {
-            cursor = cursor.skip(config.offset).limit(config.limit);
-        } 
-
         try {
+
+            let cursor = collection.find(key);
+            if(config.limit) {
+                cursor = cursor.skip(config.offset).limit(config.limit);
+            } 
             while(await cursor.hasNext()) {
               documents.push(await cursor.next());
             }
