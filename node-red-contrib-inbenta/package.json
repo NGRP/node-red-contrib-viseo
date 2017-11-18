@@ -1,5 +1,5 @@
 {
-	"name": "node-red-contrib-inbenta",
+	"name": "node-red-contrib-viseo-inbenta",
 	"version": "0.0.2",
 	"author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
 	"description": "API requests to Inbenta",
