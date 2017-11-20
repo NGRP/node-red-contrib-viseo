@@ -8,6 +8,10 @@
                 "server-type":      { value: undefined },
                 collection:         { value: undefined },
                 key:                { value: undefined },
+                offset:             { value: undefined, validate: RED.validators.typedInput("offsetType") },
+                offsetType:         { value: undefined }, 
+                limit:              { value: undefined, validate: RED.validators.typedInput("limitType") },
+                limitType:          { value: undefined },
                 value:              { value: undefined },
                 operation:          { value: undefined },
                 merge:              { value: undefined }
@@ -56,6 +60,24 @@
                 paletteLabel: "NoSQL",
                 label: function() { return this.name || this.collection || "no SQL" },
                 oneditprepare: function() {
+
+                    const initLimits = function() {
+                        $("#node-input-offset").typedInput({ 
+                            default: 'num', 
+                            types: ['num', 'msg'], 
+                            typeField: $("#node-input-offsetType")
+                        })
+                        .typedInput('width', '100px');
+                        $("#node-input-limit").typedInput({ 
+                            default: 'num', 
+                            types: ['num', 'msg'], 
+                            typeField: $("#node-input-limitType")
+                        })
+                        .typedInput('width', '100px');
+                    }
+
+                    initLimits();
+
                     $('.server-type').hide();
                     if(this['server-type']) {
                         $('#node-input-server-type option[value="'+this['server-type']+'"]').prop('selected', true);
@@ -65,6 +87,17 @@
                         $('.server-type').hide();
                         $('#section-server-'+this.value).show();
                     })
+
+                    $('#node-input-operation').on('change', function() {
+                        if($(this).val() === 'find') {
+                            $('#row-limit').show()
+                            initLimits();
+                        } else {
+                            $('#row-limit').hide()
+                        }
+                    })
+
+
                 }
             });
         }
@@ -95,7 +128,7 @@
         <label for="node-input-key"><i class="icon-tag"></i> Key</label>
         <input type="text" id="node-input-key" placeholder="payload">
     </div>
-    <div class="form-row">
+   <div class="form-row">
         <label for="node-input-value"><i class="icon-tag"></i> Value</label>
         <input type="text" id="node-input-value" placeholder="payload">
     </div>
@@ -108,12 +141,23 @@
             </optgroup>
             <optgroup label="------------">
                 <option value="find">find</option>
+                <option value="count">count</option>
                 <option value="update">update</option>
                 <option value="add">add</option>
                 <option value="delete">delete</option>
             </optgroup>
         </select>
     </div>
+    <div class="form-row" id="row-limit" style="display:none">
+        <label for="node-input-offset"><i class="icon-tag"></i> Offset</label>
+        <input type="text" id="node-input-offset" >
+        <input type="hidden" id="node-input-offsetType">
+    
+        <label for="node-input-limit" style="text-align:right"><i class="icon-tag"></i> Limit</label>
+        <input  type="text" id="node-input-limit" >
+        <input type="hidden" id="node-input-limitType">
+    </div>
+    
     <div class="form-row">
         <label for="node-input-merge"></label>
         <input type="checkbox" style="width: auto;" id="node-input-merge"> <span style="font-size: 12px">(merge GET with existing property)</span>
@@ -131,5 +175,6 @@
         <li><b>Value:</b> filled with the property used as the value (mandatory).</li>
         <li><b>Operation:</b> <i>set</i> is used to store the value. <i>get</i> is used to 
         fetch the value according to a given id. <i>find</i> query database with JSON key</li>
+        <li><b>Offset/Limit: For find operations</b></li>
     </ul>
 </script>

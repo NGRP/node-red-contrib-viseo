@@ -86,13 +86,37 @@ class MongoDBManager extends DatabaseManager {
     	callback();
     }
 
-    find(key, data, config, callback) { 
+    count(key, data, config, callback) {
 
-	    let collection = this.db.collection(config.collection);
-	    collection.find(key).toArray(function(err, documents) {
-	    	callback(err, data, documents);
-	    });
-	}
+        const collection = this.db.collection(config.collection);
+        collection.find(key).count(function(err, count) {
+            callback(err, data, count)
+        });
+
+    }
+
+    async find(key, data, config, callback) { 
+
+        const collection = this.db.collection(config.collection);
+
+        let err = null;
+        let documents = [];
+
+        try {
+
+            let cursor = collection.find(key);
+            if(config.limit) {
+                cursor = cursor.skip(config.offset).limit(config.limit);
+            } 
+            while(await cursor.hasNext()) {
+              documents.push(await cursor.next());
+            }
+        } catch(e) {
+            err = e
+        }
+
+        callback(err, data, documents);
+    }
 
 	update(key, value, data, config, callback) {
 
