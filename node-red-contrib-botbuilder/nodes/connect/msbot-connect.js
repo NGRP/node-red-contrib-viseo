@@ -144,7 +144,6 @@ const getSession  = (data) => {
 // ------------------------------------------
 
 const getMessage = (replies) => {
-    
     let msg = new builder.Message();
 
     // The message will be a carousel
@@ -185,6 +184,7 @@ const getMessage = (replies) => {
     };
     
 const buildRawMessage = (msg, opts) => {
+
     if (opts.type === 'card') {
         return false;
     }
@@ -226,15 +226,17 @@ const buildRawMessage = (msg, opts) => {
         if (msg.speak && opts.speech) { // Set speech value
             msg.speak(opts.speech === true ? opts.text : opts.speech);
         }
+
         msg.data.address = { channelId: 'facebook' };
-        const quickRepliesObject = {
-            facebook: { quick_replies: [] }
-        };
+        const quickRepliesObject = { facebook: { quick_replies: [] } };
+        const newQuick = [];
 
         for (let button of opts.buttons){
             quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(button));
+            newQuick.push(builder.CardAction.imBack(undefined, button.value,button.title));
         }
         msg.sourceEvent(quickRepliesObject);
+        msg.suggestedActions( builder.SuggestedActions.create( undefined, newQuick ));
         return true;
     }
 
