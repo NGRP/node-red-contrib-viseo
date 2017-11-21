@@ -227,15 +227,8 @@ const buildRawMessage = (msg, opts) => {
             msg.speak(opts.speech === true ? opts.text : opts.speech);
         }
 
-        msg.data.address = { channelId: 'facebook' };
-        const quickRepliesObject = { facebook: { quick_replies: [] } };
         const newQuick = [];
-
-        for (let button of opts.buttons){
-            quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(button));
-            newQuick.push(builder.CardAction.imBack(undefined, button.value,button.title));
-        }
-        msg.sourceEvent(quickRepliesObject);
+        for (let button of opts.buttons) newQuick.push(builder.CardAction.imBack(undefined, button.value, button.title));
         msg.suggestedActions( builder.SuggestedActions.create( undefined, newQuick ));
         return true;
     }
