@@ -16,7 +16,8 @@
         "nodes": {
             "ethjs-wallet":      "node-ethjs-wallet.js",
             "ethjs-contract":    "node-ethjs-contract.js",
-            "ethjs-transaction": "node-ethjs-transaction.js"
+            "ethjs-transaction": "node-ethjs-transaction.js",
+            "ethjs-account":     "node-ethjs-account.js"
         }
     }
 }

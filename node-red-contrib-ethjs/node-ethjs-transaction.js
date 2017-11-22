@@ -49,7 +49,7 @@ const start = (node, RED, config) => {
 }
 
 const input = (node, data, config) => {
-    findContract(node, data, config, (err, contract) => {
+    findContract(node, data, config, (err, contract) => { 
         if (err){ return node.warn(err);  }
         data.contract = contract;
 
@@ -58,6 +58,9 @@ const input = (node, data, config) => {
         if (config.param1){ aArgs.push(helper.resolve(config.param1, data, config.param1)) }
         if (config.param2){ aArgs.push(helper.resolve(config.param2, data, config.param2)) }
         if (config.param3){ aArgs.push(helper.resolve(config.param3, data, config.param3)) }
+        
+        console.log(aArgs)
+
 
         func.apply(this, aArgs).then((result) => {
             data.result = result[0]

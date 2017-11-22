@@ -1,0 +1,49 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ethjs-account',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            'name'       : { value: undefined },
+            'input'      : { value: undefined, required: false },
+            'output'     : { value: undefined, required: true  },
+            'inputType'  : { value: 'msg'},
+            'outputType' : { value: 'msg'},
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "ethjs.svg",
+        align: "left",
+        paletteLabel: "Account",
+        label: function() { return this.name || "Ethereum Account"; },
+        oneditprepare: function() {
+            if (!this.inputType)  this.inputType  = 'msg';
+            if (!this.outputType) this.outputType = 'msg';
+            $("#node-input-input").typedInput({  default: 'msg', types: ['msg','str'], typeField: $("#node-input-inputType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-outputType") });
+        }
+    })
+</script>
+<style>
+    .input-info    { font-size: 12px; padding-left: 104px; font-style: italic; }
+    .checkbox-info { font-size: 12px; }
+</Style>
+<script type="text/x-red" data-template-name="ethjs-account">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder=""/>
+        <input type="hidden" id="node-input-inputType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ethjs-account">
+    
+</script>
