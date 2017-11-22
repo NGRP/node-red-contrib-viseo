@@ -90,7 +90,7 @@ const receive = (node, config, req, res) => {
     helper.emitEvent('received', node, data, config);
     node.warn('>>> RECEIVE <<<')
     node.warn(data);
-    node.send([undefined, data]);
+    node.send([data, data]);
 
 }
 
