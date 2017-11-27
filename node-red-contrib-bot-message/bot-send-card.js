@@ -233,6 +233,8 @@ const sendData = (node, data, config) => {
 
                 let rgxp = new RegExp(button.regexp || '^'+button.value+'$', 'i');
                 let testValue = data.prompt.text
+                let tmp = testValue
+                testValue = testValue.replace(new RegExp(/\:/g),"\\:");
 
                 if(button.unaccentuate) {
                     testValue = testValue.replace(new RegExp(/\s/g),"");
