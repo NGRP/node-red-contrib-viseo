@@ -32,8 +32,12 @@ const route = (callback, options, server) => {
 };
 
 const bindConnector = exports.bindConnector = (connector, options) => {
-    // Build new bot
+
     let bot = new builder.UniversalBot(connector, {
+        persistUserData: false,
+        persistConversationData: false,
+        autoBatchDelay: 0,
+        storage: new builder.MemoryBotStorage(),
         localizerSettings: {
             botLocalePath: "./locale",
             defaultLocale: options.defaultLocale || "fr_FR"
@@ -41,7 +45,7 @@ const bindConnector = exports.bindConnector = (connector, options) => {
     });
     
     // Put bot as a global variable
-    global.botbuilder = bot;
+    // global.botbuilder = bot;
 
     // Anytime the major version is incremented any existing conversations will be restarted.
     bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
