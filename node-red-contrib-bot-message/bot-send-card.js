@@ -230,11 +230,9 @@ const sendData = (node, data, config) => {
 
             for (let i = 0 ; i < buttons.length ; i++){
                 let button = buttons[i]; 
-
-                let rgxp = new RegExp(button.regexp || '^'+button.value+'$', 'i');
+                let buttonValue = (button.value || '').replace(new RegExp(/\:/g),"\\:")
+                let rgxp = new RegExp(button.regexp || '^'+buttonValue+'$', 'i');
                 let testValue = data.prompt.text
-                let tmp = testValue
-                testValue = testValue.replace(new RegExp(/\:/g),"\\:");
 
                 if(button.unaccentuate) {
                     testValue = testValue.replace(new RegExp(/\s/g),"");
@@ -251,7 +249,7 @@ const sendData = (node, data, config) => {
                 }
 
                 if (!rgxp.test(testValue)) {
-                    rgxp = new RegExp('^'+button.value+'$', 'i');
+                    rgxp = new RegExp('^'+buttonValue+'$', 'i');
                     if (!rgxp.test(testValue)) {
                         continue;
                     }
