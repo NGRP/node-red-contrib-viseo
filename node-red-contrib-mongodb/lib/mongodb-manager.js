@@ -89,7 +89,7 @@ class MongoDBManager extends DatabaseManager {
     count(key, data, config, callback) {
 
         const collection = this.db.collection(config.collection);
-        collection.find(key).count(function(err, count) {
+        collection.count(key, function(err, count) {
             callback(err, data, count)
         });
 
