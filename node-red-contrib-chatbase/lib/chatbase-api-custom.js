@@ -41,7 +41,7 @@ class ChatbaseApiCustom extends ChatbaseApi {
 
         let number = Number(value);
 
-        if(Number.isNaN(number)) {
+        if(Number.isNaN(number) || number.toString() !== value.toString()) {
 
             return 'string_value';
         }
