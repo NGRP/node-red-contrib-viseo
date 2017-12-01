@@ -1,0 +1,39 @@
+<script type="text/javascript">
+    RED.nodes.registerType('chatbase-config',{
+        category: 'config',
+        defaults: {
+            name:         { value: undefined },
+            platform:     { value: undefined },
+            version:      { value: undefined } 
+        },
+        credentials: {
+            token:        { type: "text" }
+        },
+        label: function() {
+            return this.name || "Chatbase config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="chatbase-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="icon-tag"></i> Token</label>
+        <input type="text" id="node-config-input-token" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-platform"><i class="icon-tag"></i> Platform</label>
+        <input type="text" id="node-config-input-platform" placeholder="google/skype/facebook">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-version"><i class="icon-tag"></i> Version</label>
+        <input type="text" id="node-config-input-version" placeholder="0.0.1">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="chatbase-config">
+     <p>Configuration for chatbase logging.</p>
+</script>

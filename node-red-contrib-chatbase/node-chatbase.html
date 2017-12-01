@@ -1,0 +1,196 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-chatbase',{
+        category: 'VISEO_LOG',
+        color: '#3FADB5',
+        defaults: {
+            name:               { value: undefined },
+            config:             { value: undefined, type: 'chatbase-config'}, 
+            user:               { value: undefined },
+            chatbaseType:       { value: undefined },
+            chatbaseIntent:     { value: undefined, validate: RED.validators.typedInput("chatbaseIntentType") },
+            chatbaseIntentType: { value: 'str' },
+            chatbaseSender:     { value: 'user' },
+            properties:         { value: [{ n: "", v:"", vt:"str"}] },
+            message:            { value: undefined, validate: RED.validators.typedInput("messageType") },
+            messageType:        { value: 'msg' },
+            notHandled:         { value: false } 
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "chart.svg",
+        align: "right",
+        paletteLabel: 'to Chatbase',
+        label: function() {
+            return this.name || "to Chatbase";
+        },
+        oneditprepare: function() {
+
+
+            $('#node-input-chatbaseType, #node-input-chatbaseSender, #node-input-notHandled').change(function() {
+                if($("#node-input-chatbaseType").val() === 'generic') {
+                    if($('#node-input-chatbaseSender').val() === 'user' && $('#node-input-notHandled:checked').length === 0){
+                        $('#chatbaseIntent-row').show()
+                    } else {
+                        $('#chatbaseIntent-row').hide()
+                    }
+
+                    if($('#node-input-chatbaseSender').val() === 'agent') {
+                        $('#notHandled-row').hide()
+                    } else {
+                        $('#notHandled-row').show()
+                    }
+                } else {
+                    $('#chatbaseIntent-row').show()
+                }
+
+                
+            });
+
+            $("#node-input-properties-container").css('min-height','200px').editableList({
+                addItem: function ( row, index, data ) {
+                    var property = data.p,
+                        name = '',
+                        value = '',
+                        valueType = 'str';
+
+                    if(property) {
+
+                        if(property.hasOwnProperty('n')) {
+                            name = property.n;
+                        }
+                        if(property.hasOwnProperty('v')) {
+                            value = property.v;
+                        }
+                        if(property.hasOwnProperty('vt')) {
+                            valueType = property.vt;
+                        }
+                    }
+
+                    $('<span>Name</span>').appendTo(row)
+                    var nameField = $('<input/>', { class:"node-input-property-name", type:"text",style:"margin-left: 5px;width:100px;margin-right:20px", value: name}).appendTo(row);
+
+                    $('<span>Value</span>').appendTo(row)
+                    var typeField = $('<input/>', { type: "hidden", value: valueType, id: 'propertyType-'+index }).appendTo(row)
+                    
+                    var valueField = $('<input/>', { class:"node-input-property-value", type:"text", style:"margin-left: 5px;width:200px", value: value }).appendTo(row).typedInput({default: valueType || 'str' ,types:['str', 'num', 'bool', 'msg'], typeField: $('#propertyType-'+index) });
+                    
+                },
+
+                removable: true
+            });
+
+            $('#node-input-user').typedInput({default: "msg", types: ['msg']}).val(this.user || 'user');
+            $('#node-input-chatbaseIntent').typedInput({default: 'str', typeField: $("#node-input-chatbaseIntentType"), types: ['msg', 'str']});
+            $('#node-input-message').typedInput({default: 'msg', typeField: $("#node-input-messageType"), types: ['msg', 'str']});
+            
+            $('#node-input-chatbaseType').change(function() {
+                $('.section').hide()
+                $('.section.chatbase-'+$(this).val()).show()
+            });
+
+            $('#node-input-chatbaseType').val(this.chatbaseType || 'generic');
+
+            for (var i = 0; i < this.properties.length; i++) {
+                var property = this.properties[i];
+
+                $("#node-input-properties-container").editableList('addItem', {p: property, i: i} );
+            }
+
+        },
+
+        oneditsave: function() {
+
+            var properties = $("#node-input-properties-container").editableList('items');
+            var node = this;
+            node.properties = [];
+            properties.each(function(i) {
+
+                var property = $(this);
+                var nameValue = property.find(".node-input-property-name").val();
+                var valueType = property.find(".node-input-property-value").typedInput('type');
+                var valueValue = property.find(".node-input-property-value").typedInput('value');
+
+                if (nameValue !== '') {
+                    node.properties.push({
+                        n: nameValue,
+                        v: valueValue,
+                        vt: valueType
+                    });
+                }
+            });
+
+
+        },
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="node-chatbase">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-config"><i class="icon-tag"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+   
+    <div class="form-row">
+        <label for="node-input-user"><i class="icon-tag"></i> User</label>
+        <input type="text" id="node-input-user" placeholder="user">
+    </div>
+
+     <div class="form-row">
+        <label for="node-input-chatbaseType"><i class="icon-tag"></i> Type</label>
+        <select id="node-input-chatbaseType">
+            <option value="generic">Generic</option>
+            <option value="custom">Custom</option>
+        </select>
+    </div>
+
+    <div class="section chatbase-custom">
+        <label for="node-input-properties-container"><i class="icon-tag"></i> Properties</label>
+        <ol id="node-input-properties-container"></ol>
+    </div>
+
+    <div class="section chatbase-generic">
+        <div class="form-row">
+            <label for="node-input-chatbaseSender"><i class="icon-tag"></i> Sender</label>
+            <select id="node-input-chatbaseSender">
+                <option value="user">User</option>
+                <option value="agent">Self</option>
+            </select>
+        </div>
+
+        <div class="form-row"  id="notHandled-row">
+            <label for="node-input-notHandled"><i class="icon-tag"></i> Not handled</label>
+            <input type="checkbox" id="node-input-notHandled">
+        </div>
+
+        
+        <div class="form-row">
+            <label for="node-input-message"><i class="icon-tag"></i> Message</label>
+            <input type="text" id="node-input-message">
+            <input type="hidden" id="node-input-messageType">
+        </div>
+    </div>
+    
+    <div class="form-row" id="chatbaseIntent-row">
+        <label for="node-input-chatbaseIntent"><i class="icon-tag"></i> Intent</label>
+        <input type="text" id="node-input-chatbaseIntent">
+        <input type="hidden" id="node-input-chatbaseIntentType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="profile">
+    <p>Sends events to Chatbase. Uses different types of events :</p>
+    <ul>
+        <li><a href="https://chatbase.com/documentation/generic">Chatbase generic events</a></li>
+        <li><a href="https://chatbase.com/documentation/events">Custom events</a></li>  
+    </ul>
+    <p></p>
+</script>
+
+   

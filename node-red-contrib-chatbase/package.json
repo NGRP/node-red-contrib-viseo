@@ -1,0 +1,26 @@
+{
+  "name": "node-red-contrib-viseo-chatbase",
+  "version": "0.0.1",
+  "description": "API wrapper for Chatbase",
+  "dependencies": {
+    "request-promise": "^4.1.1",
+    "moment"    : "^2.15.2",
+    "node-red-viseo-helper": "~0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-chatbase"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red"
+  ],
+  "node-red": {
+    "nodes": {
+      "node-chatbase": "node-chatbase.js",
+      "chatbase-config": "chatbase-config.js"
+    }
+  }
+}
