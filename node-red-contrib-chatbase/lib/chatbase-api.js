@@ -40,7 +40,7 @@ class ChatbaseApi {
 
     }
 
-    static get url() {
+    get url() {
     	throw new TypeError('Url must be defined.'); 
     }
 

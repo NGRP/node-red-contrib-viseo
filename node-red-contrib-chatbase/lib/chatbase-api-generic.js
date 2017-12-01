@@ -22,7 +22,7 @@ class ChatbaseApiGeneric extends ChatbaseApi {
 
     }
 
-    static get url() {
+    get url() {
     	return 'https://chatbase.com/api/message'
     }
 

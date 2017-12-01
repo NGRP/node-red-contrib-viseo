@@ -62,7 +62,7 @@ class ChatbaseApiCustom extends ChatbaseApi {
         return value
     }
 
-    static get url() {
+    get url() {
     	return 'https://api.chatbase.com/apis/v1/events/insert'
     }
 
