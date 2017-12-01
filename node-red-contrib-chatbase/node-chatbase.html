@@ -6,6 +6,8 @@
             name:               { value: undefined },
             config:             { value: undefined, type: 'chatbase-config'}, 
             user:               { value: undefined },
+            platform:           { value: undefined },
+            platformType:       { value: 'str' }, 
             chatbaseType:       { value: undefined },
             chatbaseIntent:     { value: undefined, validate: RED.validators.typedInput("chatbaseIntentType") },
             chatbaseIntentType: { value: 'str' },
@@ -79,6 +81,7 @@
                 removable: true
             });
 
+            $('#node-input-platform').typedInput({default: "str", typeField: $("#node-input-platformType"), types: ['msg', 'str']});
             $('#node-input-user').typedInput({default: "msg", types: ['msg']}).val(this.user || 'user');
             $('#node-input-chatbaseIntent').typedInput({default: 'str', typeField: $("#node-input-chatbaseIntentType"), types: ['msg', 'str']});
             $('#node-input-message').typedInput({default: 'msg', typeField: $("#node-input-messageType"), types: ['msg', 'str']});
@@ -135,7 +138,11 @@
         <label for="node-input-config"><i class="icon-tag"></i> Config</label>
         <input type="text" id="node-input-config">
     </div>
-   
+    <div class="form-row">
+        <label for="node-input-platform"><i class="icon-tag"></i> Platform</label>
+        <input type="text" id="node-input-platform" placeholder="google">
+        <input type="hidden" id="node-input-platformType">
+    </div>
     <div class="form-row">
         <label for="node-input-user"><i class="icon-tag"></i> User</label>
         <input type="text" id="node-input-user" placeholder="user">

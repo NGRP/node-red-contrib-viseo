@@ -34,7 +34,7 @@ class ChatbaseApiGeneric extends ChatbaseApi {
             "message": this.message,
 
             'version' : this.config.version,
-            'platform' : this.config.platform,
+            'platform' : this.platform,
             'api_key': this.config.credentials.token,
             'user_id': this.userId
         }

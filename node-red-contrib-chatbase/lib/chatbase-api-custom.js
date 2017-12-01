@@ -73,7 +73,7 @@ class ChatbaseApiCustom extends ChatbaseApi {
             'properties': this.properties,
 
             'version' : this.config.version,
-            'platform' : this.config.platform,
+            'platform' : this.platform,
             'user_id': this.userId,
             'api_key': this.config.credentials.token
         }

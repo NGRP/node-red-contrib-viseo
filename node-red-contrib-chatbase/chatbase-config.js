@@ -3,7 +3,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         this.name = config.name;
         this.version = config.version
-        this.platform = config.platform
     }
     RED.nodes.registerType("chatbase-config", register, {
     	credentials: {

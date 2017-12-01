@@ -18,6 +18,13 @@ class ChatbaseApi {
         //configuration
         this.config = node.config
 
+        //version
+        if(config.platformType === 'str') {
+            this.platform = config.platform;
+        } else {
+            this.platform = helper.getByString(data, config.platform, config.platform)
+        }
+
         //user
         let user = config.user || 'user';
         	user = helper.getByString(data, user, user);
