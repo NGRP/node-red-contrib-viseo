@@ -49,7 +49,7 @@ class ChatbaseApi {
     		url = this.url;
 
     	try {
-    		let result = await request({ uri : url, method: 'POST', body: data });
+    		let result = await request({ uri : url, method: 'POST', body: JSON.stringify(data) });
     		done(null, result);
     	} catch(err) {
     		done(err, null);
