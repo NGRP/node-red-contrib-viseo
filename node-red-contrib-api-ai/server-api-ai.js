@@ -46,6 +46,32 @@ const stop = (node, config, done) => {
 }
 
 // ------------------------------------------
+//  LRU REQUESTS
+// ------------------------------------------
+
+const LRUMap = require('./lru.js').LRUMap;
+const uuidv4 = require('uuid/v4');
+
+// Should it be init in start() ?
+let _CONTEXTS    = new LRUMap(CONFIG.server.contextLRU || 10000);
+let _CONTEXT_KEY = 'contextId';
+
+const getMessageContext = (message) => {
+    if (message === undefined) return;
+
+    let uuid    = helper.getByString(message, _CONTEXT_KEY);
+    let context = _CONTEXTS.get(uuid);
+    if (!context) {
+        context = {};
+        let convId = helper.getByString(message, 'address.conversation.id');
+              uuid = convId + '-' + uuidv4();
+              helper.setByString(data, _CONTEXT_KEY, uuid);
+        _CONTEXTS.set(uuid, context);
+    }
+    return context;
+}
+
+// ------------------------------------------
 //  RECEIVE
 // ------------------------------------------
 
@@ -74,7 +100,7 @@ const receive = (node, config, req, res) => {
 
 
 
-    let context = botmgr.getContext(data)
+    let context = getMessageContext(data.message)
     context.req = req
     context.res = res
 
@@ -137,9 +163,9 @@ const reply = (node, data, config) => {
     node.warn('>>> REPLY <<<')
     try {
         // The address is not used because we reply to HTTP Response
-        let context = botmgr.getContext(data)
+        let context = data.prompt ? getMessageContext(data.prompt)
+                                  : getMessageContext(data.message)
         let res = context.res
-
 
         // Assume we send the message to the current user address
         let address = botmgr.getUserAddress(data)
