@@ -65,7 +65,7 @@ const getMessageContext = (message) => {
         context = {};
         let convId = helper.getByString(message, 'address.conversation.id');
               uuid = convId + '-' + uuidv4();
-              helper.setByString(data, _CONTEXT_KEY, uuid);
+              helper.setByString(message, _CONTEXT_KEY, uuid);
         _CONTEXTS.set(uuid, context);
     }
     return context;
