@@ -1,0 +1,47 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-lines',{
+        category: 'VISEO_IO',
+        color: '#3FADB5',
+        defaults: { 
+            name:    { value: undefined },
+            file:    { value: undefined },
+            lines:   { value: 50 },
+            output:  { value: "payload" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "download.svg",
+        align: "right",
+        paletteLabel: 'Get lines',
+        label: function() { return this.name || "Get lines"; },
+        oneditprepare: function() {
+            $("#node-input-lines").typedInput({  default: 'num', types: ['num'] });
+            $("#node-input-file").typedInput({   default: 'str', types: ['str'] });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'] });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="get-lines">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-file"><i class="icon-tag"></i> File</label>
+        <input type="text" id="node-input-file" style="width: 70%" placeholder="{cwd}/path/to/file">
+    </div>
+    <div class="form-row">
+        <label for="node-input-lines"><i class="icon-tag"></i> Lines</label>
+        <input type="text" id="node-input-lines" style="width: 70%">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="get-lines">
+    Open a file and returns an array with all the lines.
+</script>
