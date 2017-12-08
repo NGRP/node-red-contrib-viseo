@@ -126,6 +126,10 @@ const receive = (node, config, req, res) => {
 
 const prompt = (node, data, config) => {
 
+    // Assume we send the message to the current user address
+    let address = botmgr.getUserAddress(data)
+    if (!address || address.carrier !== CARRIER) return false;
+
     //GEO LOCATION
     if(
         data.prompt.originalRequest.data.device && 
@@ -162,14 +166,14 @@ const prompt = (node, data, config) => {
 const reply = (node, data, config) => { 
     node.warn('>>> REPLY <<<')
     try {
+        // Assume we send the message to the current user address
+        let address = botmgr.getUserAddress(data)
+        if (!address || address.carrier !== CARRIER) return false;
+
         // The address is not used because we reply to HTTP Response
         let context = data.prompt ? getMessageContext(data.prompt)
                                   : getMessageContext(data.message)
         let res = context.res
-
-        // Assume we send the message to the current user address
-        let address = botmgr.getUserAddress(data)
-        if (!address || address.carrier !== CARRIER) return false;
 
         // Building the message
         node.warn(data.reply);
