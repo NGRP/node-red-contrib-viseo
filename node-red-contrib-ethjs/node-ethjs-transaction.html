@@ -8,6 +8,7 @@
             'wallet'    : { value: undefined, required: true, type: 'ethjs-wallet'},
             'output'    : { value: "payload", required: false },
             'outputType': { value: "msg" },
+            'wait'      : { value: false },
             
             'address'    : { value: "payload",required: false },
             'addressType': { value: "msg" },
@@ -66,7 +67,10 @@
         <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
         <input type="hidden" id="node-input-outputType">
     </div>
-
+    <div class="form-row">
+        <label for="node-input-wait"><i class="icon-tag"></i> Wait</label>
+        <input type="checkbox" style="width: auto;" id="node-input-wait"> <span class="checkbox-info">(wait a valid transaction)</span>
+    </div>
     <h4 class="section">Transaction</h4>
 
     <div class="form-row">

@@ -48,9 +48,17 @@ const input = (node, data, config) => {
             if (config.param3){ aArgs.push(helper.resolve(config.param3, data, config.param3)) }
             
             func.apply(this, aArgs).then((result) => {
-                let value = config.unit ? Eth.fromWei(data.result, config.unit) : result[0]
-                helper.setByString(data, config.output || 'payload', value)
-                node.send(data);
+                
+                let cb = (err, t) => { 
+                    if (err) return node.warn(err);
+                    let value = config.unit ? Eth.fromWei(result, config.unit) : result
+                    helper.setByString(data, config.output || 'payload', value)
+                    node.send(data);
+                }
+    
+                if (!config.wait){ return cb() }
+                waitTransaction(eth, result, cb)
+
             }).catch((error) => { node.warn(error); });
         })
         return;
@@ -69,23 +77,33 @@ const input = (node, data, config) => {
     
     // Balance or Transaction ?
     if (!wei){
+        let isAccount = address.length <= 42
+        let promise = isAccount ? eth.getBalance(address)
+                                : eth.getTransactionByHash(address)
 
-        eth.getBalance(address)
-           .then((balance) => { 
-               helper.setByString(data, config.output || 'payload', Eth.fromWei(balance, 'wei'))
-               node.send(data);
-            })
-           .catch((err) => { node.warn(err) })
-
+        promise.then((result) => { 
+            result = isAccount ? Eth.fromWei(result, 'wei') : result
+            helper.setByString(data, config.output || 'payload', result)
+            node.send(data);
+        }).catch((err) => { node.warn(err) })
+        
     } else { 
 
         eth.sendTransaction({
             from: node.wallet.keyPublic,
             to:   address,
             value: wei, gas: MAX_GAS, data: '0x',
-        }).then((result) => { 
-            helper.setByString(data, config.output || 'payload', result)
-            node.send(data);
+        }).then((transAddr) => { 
+
+            let cb = (err, result) => {
+                if (err) return node.warn(err);
+                helper.setByString(data, config.output || 'payload', result)
+                node.send(data);
+            }
+
+            if (!config.wait){ return cb() }
+            waitTransaction(eth, transAddr, cb)
+
         }).catch((err) => { node.warn(err) })
 
     }
@@ -128,4 +146,15 @@ const findContract = (eth, contract, txObject, callback) => {
     
         }).catch((error) => { callback(error); });
     }
+}
+
+const waitTransaction = (eth, address, callback, _max) => {
+    if (_max === 0){ return callback('Timeout waiting transaction') }
+    if (_max === undefined) { max = 10; }
+    eth.getTransactionByHash(address)
+       .then((t) => {
+           if (t.blockNumber){ return callback(undefined, t); }
+           setTimeout(() => { waitTransaction(eth, address, callback, _max-1) }, 1000)
+       })
+       .catch((err) => { return callback(err) })
 }
