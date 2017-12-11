@@ -76,7 +76,6 @@ const getMessageContext = (message) => {
 // ------------------------------------------
 
 const receive = (node, config, req, res) => { 
-    console.log("receive");
     let json = req.body
     node.warn(json);
     // try { json = JSON.parse(json); } catch (ex) { console.log('Parsing Error', ex, json) }
@@ -109,7 +108,7 @@ const receive = (node, config, req, res) => {
     }
 
     // Handle Prompt
-    let convId  = helper.getByString(data, 'user.address.conversation.id', undefined)
+    let convId  = botmgr.getConvId(data)
     if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
     // Trigger received message
