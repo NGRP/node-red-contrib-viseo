@@ -91,7 +91,7 @@ const input = (node, data, config) => {
     // Emit reply message
     data.reply = replies;
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
-        helper.emitAsyncEvent('replied', node, newData, config)
+        helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
             return; 
         }
