@@ -1,0 +1,20 @@
+{
+    "name"          : "node-red-contrib-viseo-amazon",
+    "version"       : "0.0.0",
+    "description"   : "An Amazon Alexa Bot Implementation",
+    "dependencies"  : {
+        "node-red-viseo-helper"      : "~0.1",
+        "node-red-viseo-bot-manager" : "~0.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-alexa"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "viseo", "sarah", "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "amazon-alexa":  "server-alexa.js"
+        }
+    }
+}
