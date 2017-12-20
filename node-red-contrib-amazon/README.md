@@ -1,6 +1,6 @@
 # Node-RED
 
-A node to connect to [WeChat](http://wechat.com/) messaging app.
+A node to connect to Amazon Alexa.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
@@ -9,12 +9,12 @@ Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-wechat
+npm install node-red-contrib-viseo-amazon
 ```
 
 ### Requirement
 
-- An access to [WeChat](http://admin.wechat.com/wiki/index.php?title=Main_Page)
+- An access to [Amazon Alexa](https://developer.amazon.com/)
 - An SSL certificate (like Let's Encrypt) declared in node-red-config.js (or a proxy)
 
 ## Getting Help
