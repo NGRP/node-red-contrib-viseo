@@ -214,7 +214,27 @@ const sendMessage = exports.sendMessage = (replies, id, callback) => {
     if (!replies) return;
     let msg = {};
 
-    if (replies.length !== 1) callback("can't process several messages")
+    if (replies.length > 1) {     // Carousel
+        let myArray = [];
+
+        for (let rep of replies) {
+            let oneCard = {
+                title : rep.title,
+                description: rep.subtitle,
+                url: undefined,
+                picurl: rep.attach ? rep.attach : undefined
+            };
+            if (rep.buttons !== undefined && rep.buttons.length > 0) {
+                let key = rep.buttons[0].value;
+                if (key.match(/^http/ig)) oneCard.url = key;
+                else oneCard.key = key;
+            }
+            myArray.push(oneCard);
+        }
+
+        api.sendNews(id, myArray, callback);
+        return;
+    }
     
     let reply = replies[0];
     let buttons = (reply.buttons !== undefined && reply.buttons.length > 0) ? true : false ;
@@ -234,6 +254,7 @@ const sendMessage = exports.sendMessage = (replies, id, callback) => {
         return; 
     }
     if (reply.type === "card") {              // Card
+
         let json = {
             title : reply.title,
             description: reply.subtitle,
