@@ -27,28 +27,30 @@ const bindDialogs = exports.bindDialogs = (bot, callback) => {
     });
 
     // Root Dialog
-    bot.dialog('/', [(session) => { 
-
-        // Build data
-        let message = session.message;
-        let data = botmgr.buildMessageFlow({ message, 'payload': message.text }, { agent: 'botbuilder' })
-
-        // Add context object to store the lifetime of the stream
-        let context = botmgr.getContext(data);
-        context.bot     = bot;
-        context.session = session;
-
-        // Clear timeouts
-        let convId  = botmgr.getConvId(data)
-        clearHandles(convId);
-    
-        // Handle Prompt
-        if (botmgr.hasDelayedCallback(convId, data.message)) return;
-
-        callback(undefined, data, 'received');
-    }]);
+    bot.on('incoming', (msg) => { handleIncomingMessage(bot, msg, callback); })
+    bot.dialog('/', [(session) => {  }]);
 }
 
+const handleIncomingMessage = (bot, message, callback) => {
+    // Fix
+    if (!message.address || !message.address.serviceUrl){ return; }
+    
+    // Build data
+    let data = botmgr.buildMessageFlow({ message, 'payload': message.text }, { agent: 'botbuilder' })
+
+    // Add context object to store the lifetime of the stream
+    let context     = botmgr.getContext(data);
+    context.bot     = bot;
+    // context.session = session;
+
+    // Clear timeouts
+    let convId  = botmgr.getConvId(data)
+    clearHandles(convId);
+
+    // Handle Prompt
+    if (botmgr.hasDelayedCallback(convId, data.message)) return;
+    callback(undefined, data, 'received');
+}
 
 // ------------------------------------------
 //   TYPING

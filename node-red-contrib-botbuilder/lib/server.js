@@ -53,7 +53,7 @@ const bindConnector = exports.bindConnector = (connector, options) => {
     // Logging Middleware
     bot.on('incoming', (msg) => { info("Message incoming:" + JSON.stringify(msg) ); })
     bot.on('send',     (msg) => { info("Message outgoing:" + JSON.stringify(msg)); })
-    bot.on('error',    (err) => { info("Message error:"    + JSON.stringify(err)); }) 
+    bot.on('error',    (err) => { console.log("Message error:", err); }) 
 
     return bot;
 }

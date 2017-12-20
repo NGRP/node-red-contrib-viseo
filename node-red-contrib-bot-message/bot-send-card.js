@@ -90,12 +90,12 @@ const input = (node, data, config) => {
     
     // Emit reply message
     data.reply = replies;
-    helper.emitAsyncEvent('reply', node, data, config, (data) => {
-        helper.emitEvent('replied', node, data, config)
+    helper.emitAsyncEvent('reply', node, data, config, (newData) => {
+        helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
             return; 
         }
-        sendData(node, data, config);
+        sendData(node, newData, config);
     });
 }
 
@@ -212,7 +212,6 @@ const sendData = (node, data, config) => {
 
         // 4. DEFAULT: the first output
         out[0] = data;
-
         return node.send(out);
     }
 
@@ -262,9 +261,12 @@ const sendData = (node, data, config) => {
                 }
 
                 if (config.btnOutput || config.quickOutput){ 
-                    out[i+1] = data; 
-
-                    return node.send(out);
+                    out[i+1] = data;
+                    // Even if the button match, emit a prompt event for logs, etc ...
+                    helper.emitAsyncEvent('prompt', node, data, config, (data) => { 
+                        node.send(out);
+                    });
+                    return 
                 } 
             }
         } else {

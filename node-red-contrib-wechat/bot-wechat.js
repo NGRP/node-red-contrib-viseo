@@ -170,7 +170,7 @@ function middleware (node, config) {
         }
 
         // Handle Prompt
-        let convId  = helper.getByString(data, 'user.address.conversation.id', undefined);
+        let convId  = botmgr.getConvId(data)
         if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
         api.getUser({openid: convId, lang:'en'}, 

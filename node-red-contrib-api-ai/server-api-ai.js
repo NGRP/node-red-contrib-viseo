@@ -76,7 +76,6 @@ const getMessageContext = (message) => {
 // ------------------------------------------
 
 const receive = (node, config, req, res) => { 
-    console.log("receive");
     let json = req.body
     node.warn(json);
     // try { json = JSON.parse(json); } catch (ex) { console.log('Parsing Error', ex, json) }
@@ -109,7 +108,7 @@ const receive = (node, config, req, res) => {
     }
 
     // Handle Prompt
-    let convId  = helper.getByString(data, 'user.address.conversation.id', undefined)
+    let convId  = botmgr.getConvId(data)
     if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
     // Trigger received message
@@ -125,6 +124,10 @@ const receive = (node, config, req, res) => {
 // ------------------------------------------
 
 const prompt = (node, data, config) => {
+
+    // Assume we send the message to the current user address
+    let address = botmgr.getUserAddress(data)
+    if (!address || address.carrier !== CARRIER) return false;
 
     //GEO LOCATION
     if(
@@ -162,14 +165,14 @@ const prompt = (node, data, config) => {
 const reply = (node, data, config) => { 
     node.warn('>>> REPLY <<<')
     try {
+        // Assume we send the message to the current user address
+        let address = botmgr.getUserAddress(data)
+        if (!address || address.carrier !== CARRIER) return false;
+
         // The address is not used because we reply to HTTP Response
         let context = data.prompt ? getMessageContext(data.prompt)
                                   : getMessageContext(data.message)
         let res = context.res
-
-        // Assume we send the message to the current user address
-        let address = botmgr.getUserAddress(data)
-        if (!address || address.carrier !== CARRIER) return false;
 
         // Building the message
         node.warn(data.reply);
