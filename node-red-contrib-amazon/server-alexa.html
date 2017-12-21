@@ -11,9 +11,12 @@
         icon: "amazon.png",  align: "left",
         paletteLabel: "Alexa",
         label: function() { return this.name || "Alexa"; },
-        oneditprepare: function() {},
+        oneditprepare: function() {
+            $("#node-input-title").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        },
         oneditsave: function(){}
     });
+
 </script>
 
 <style>
@@ -51,7 +54,7 @@
         margin-left:30px;
         padding: 0 10px 0 10px; 
         background-color: white;
-}
+    }
 </style>
 
 <script type="text/x-red" data-template-name="amazon-alexa">
@@ -64,10 +67,75 @@
     <div class="form-row">
         <br>
         <label for="node-input-title"><i class="icon-tag"></i> Bot name</label>
-        <input type="text" id="node-input-title" placeholder="">
+        <input type="text" id="node-input-title" placeholder="" style="width:70%;">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="amazon-alexa">
+
+    <h1>Amazon Alexa</h1>
+    <p>Connect your flow to Alexa with this node. </p>
+
+    <h3>Main properties</h3>
+    <ul>
+        <li> <b>Bot name</b>: Will be displayed in the card title if a text message is sent. </li>
+    </ul>
+
+    <h3>Endpoint</h3>
+    <ul>
+        This node uses the <b>/amazon-alexa</b> route to connect with Alexa.
+    </ul>
+
+    <h3>Specifications</h3>
+    <ul>
+        The node will forward the received message to next node with the given properties: </p>
+        <li> payload: the message's text (see last section), event (START/END CONVERSATION) or object. </li>
+        <li> message: the message object. </li>
+        <li> user: an empty object with an id to be filled by further nodes. </li>
+        <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
+    </ul>
+    
+    <h3>Getting help</h3>
+    <ul>
+        <li> <a href="https://developer.amazon.com/alexa">Amazon Alexa console</a></li>
+        <li> <a href=https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-amazon">VISEO GitHub (details for this node)</a> </li>
+        <li> <a href=https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a></li>
+    </ul>
+
+    <h3>Get user sentence</h3>
+    <ul>
+        To get the user sentence, copy/paste the following code in <b>Interaction Model/Code<b>:<br>
+    </ul>
+<pre type="javascript" style="width:400px; margin-left:20px;"> {
+    "languageModel": {
+        "intents": [
+            {
+                "name": "AMAZON.CancelIntent",
+                "samples": []
+            },
+            {
+                "name": "AMAZON.HelpIntent",
+                "samples": []
+            },
+            {
+                "name": "AMAZON.StopIntent",
+                "samples": []
+            },
+            {
+                "name": "RawText",
+                "samples": [ 
+                    "{a sentence|Text}"
+                ],
+                "slots": [
+                    {
+                        "name": "Text",
+                        "type": "AMAZON.LITERAL"
+                    }
+                ]
+            }
+        ],
+        "invocationName": APP_INVOCATION_NAME
+    }
+}   </pre>
 
 </script>

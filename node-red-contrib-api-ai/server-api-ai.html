@@ -10,7 +10,8 @@
         icon: "google.svg",
         align: "left",
         paletteLabel: 'API.ai',
-        label: function() { return this.name || "API.ai"; }
+        label: function() { return this.name || "API.ai"; },
+        oneditprepare: function() {}
     });
 </script>
 
@@ -22,7 +23,28 @@
 </script>
 
 <script type="text/x-red" data-help-name="api-ai-server">
-        Receives messages from Api AI.
-        <h3>Outputs</h3>
-        Message sent to the bot
+
+    <h1>Google Api AI</h1>
+    <p>Connect your flow to Api AI with this node. </p>
+
+    <h3>Endpoint</h3>
+    <ul>
+        This node uses the <b>/api-ai-server</b> route to connect with Api AI.
+    </ul>
+
+    <h3>Specifications</h3>
+    <ul>
+        The node will forward the received message to next node with the given properties: </p>
+        <li> payload: the message's text. </li>
+        <li> message: the message object. </li>
+        <li> user: an empty object with an id to be filled by further nodes. </li>
+        <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
+    </ul>
+
+    <h3>Getting help</h3>
+    <ul>
+        <li> <a href="https://dialogflow.com/">Api AI interface</a> </li>
+        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-api-ai">VISEO GitHub (details for this node):</a> </li>
+        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a> </li>
+    </ul>
 </script>
