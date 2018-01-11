@@ -170,6 +170,9 @@ function middleware (node, config) {
         }
 
         // Handle Prompt
+        let address = botmgr.getUserAddress(data)
+        if (!address || address.carrier !== 'wechat') return false;
+
         let convId  = botmgr.getConvId(data)
         if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
