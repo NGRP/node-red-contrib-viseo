@@ -23,8 +23,6 @@ const start = (RED, node, config) => {
 
     // Start HTTP Route
     let uri = '/api-ai-server/';
-
-    node.warn('Add GET/POST route to: '+ uri);
     RED.httpNode.post (uri, (req, res, next) => { receive(node, config, req, res); });
 
     // Add listener to reply
@@ -77,7 +75,6 @@ const getMessageContext = (message) => {
 
 const receive = (node, config, req, res) => { 
     let json = req.body
-    node.warn(json);
     // try { json = JSON.parse(json); } catch (ex) { console.log('Parsing Error', ex, json) }
 
     if(json.originalRequest == undefined) {
@@ -113,8 +110,6 @@ const receive = (node, config, req, res) => {
 
     // Trigger received message
     helper.emitEvent('received', node, data, config);
-    node.warn('>>> RECEIVE <<<')
-    node.warn(data);
     node.send([data, data]);
 
 }
@@ -125,9 +120,15 @@ const receive = (node, config, req, res) => {
 
 const prompt = (node, data, config) => {
 
+    const next = function() {
+        if (helper.countListeners('prompt') === 1) {
+            helper.fireAsyncCallback(data);
+        }
+    }
+
     // Assume we send the message to the current user address
     let address = botmgr.getUserAddress(data)
-    if (!address || address.carrier !== CARRIER) return false;
+    if (!address || address.carrier !== CARRIER) return next();
 
     //GEO LOCATION
     if(
@@ -152,9 +153,7 @@ const prompt = (node, data, config) => {
         }
     }
 
-    if(helper.countListeners('prompt') === 1) {
-        helper.fireAsyncCallback(data);
-    }
+    next();
 }
 
 
@@ -163,7 +162,7 @@ const prompt = (node, data, config) => {
 // ------------------------------------------
 
 const reply = (node, data, config) => { 
-    node.warn('>>> REPLY <<<')
+
     try {
         // Assume we send the message to the current user address
         let address = botmgr.getUserAddress(data)
@@ -175,7 +174,6 @@ const reply = (node, data, config) => {
         let res = context.res
 
         // Building the message
-        node.warn(data.reply);
         let message = getMessage(data.reply, context);
 
         if (!message) return false;
@@ -188,7 +186,6 @@ const reply = (node, data, config) => {
 
         // Write the message to the response
         res.end(JSON.stringify(message));
-        node.warn(message);
 
         // Trap the event in order to continue
         helper.fireAsyncCallback(data);
