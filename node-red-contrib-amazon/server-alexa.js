@@ -83,7 +83,6 @@ const receive = (node, config, req, res) => {
     let json = req.body;
 
     if (json.request === undefined) {
-        console.log(json);
         node.warn('Empty request received');
         return;
     }
@@ -122,7 +121,6 @@ const receive = (node, config, req, res) => {
 
     // Trigger received message
     helper.emitEvent('received', node, data, config);
-    node.warn({"event" : '>>> RECEIVE <<<', "content": json})
     node.send([data, data]);
 
 }
@@ -134,7 +132,14 @@ const receive = (node, config, req, res) => {
 
 const prompt = (node, data, config) => {
 
-    node.warn({"event" : '>>> DATA <<<', "content": data})
+    const next = function() {
+        if (helper.countListeners('prompt') === 1) {
+            helper.fireAsyncCallback(data);
+        }
+    }
+
+    let address = botmgr.getUserAddress(data)
+    if (!address || address.carrier !== CARRIER) return next();
 
     if (data.prompt.request.intent && data.prompt.request.intent.name === "RawText") {
         data.prompt.message.text = json.request.intent.slots.Text.value;
@@ -142,9 +147,7 @@ const prompt = (node, data, config) => {
     if (data.prompt.request.type === "LaunchRequest")       data.prompt.message.text = "START CONVERSATION";
     if (data.prompt.request.type === "SessionEndedRequest")data.prompt.message.text = "END CONVERSATION";
 
-    if (helper.countListeners('prompt') === 1) {
-        helper.fireAsyncCallback(data);
-    }
+    next();
 }
     
 
@@ -153,6 +156,11 @@ const prompt = (node, data, config) => {
 // ------------------------------------------
 
 const reply = (node, data, config) => {
+
+    // Assume we send the message to the current user address
+    let address = botmgr.getUserAddress(data)
+    if (!address || address.carrier !== CARRIER) return false;
+
     try {
         // The address is not used because we reply to HTTP Response
         let context = data.prompt ? getMessageContext(data.prompt)
@@ -173,7 +181,6 @@ const reply = (node, data, config) => {
         res.end(JSON.stringify(message));
 
         // Trap the event in order to continue
-        node.warn({"event" : '>>> REPLIED <<<', "content": message})
         helper.fireAsyncCallback(data);
 
     } catch(ex){ console.log(ex) }
