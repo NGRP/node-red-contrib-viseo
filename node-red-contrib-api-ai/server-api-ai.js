@@ -330,7 +330,7 @@ const getGoogleMessage = exports.getGoogleMessage = (replies, context) => {
         app.askForSignIn();
 
         return;*/
-            
+        delete google.richResponse;
         google.systemIntent = {
             intent : "actions.intent.SIGN_IN",
             data : {}
