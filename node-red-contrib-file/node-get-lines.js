@@ -24,7 +24,9 @@ const stop  = (done) => { done();       }
 const start = (RED, node, config)  => { }
 
 const input = (node, data, config) => {
-    let lines = Number(config.lines) || 100;
+
+    let lines = (config.linesType === "num") ? (Number(config.lines) || 100) : "ALL";
+    let split = (config.splitType === "str") ? (config.split || undefined) : undefined;
 
     let filepath = helper.resolve(config.file);
     if (!filepath) {
@@ -39,12 +41,19 @@ const input = (node, data, config) => {
         input: fs.createReadStream(filepath) 
     })
     .each(function(line) {
+        if (split) line = line.split(split);
         myarray.push(line);
     })
     .then(function(count) {
-        let result = (myarray.length <= lines) ? myarray : myarray.slice(Math.max(myarray.length - lines, 1));
-        helper.setByString(data, config.output || "payload", result);
-        return node.send(data);
+        if (lines === "ALL") {
+            helper.setByString(data, config.output || "payload", myarray);
+            return node.send(data);
+        }
+        else {
+            let result = (myarray.length <= lines) ? myarray : myarray.slice(Math.max(myarray.length - lines, 1));
+            helper.setByString(data, config.output || "payload", result);
+            return node.send(data);
+        }
     })
     .caught(function(err) {
         node.err("Error reading file");

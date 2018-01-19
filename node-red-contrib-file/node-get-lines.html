@@ -5,7 +5,10 @@
         defaults: { 
             name:    { value: undefined },
             file:    { value: undefined },
-            lines:   { value: 50 },
+            lines:      { value:  undefined },
+            linesType:  { value: 'all_lines'},
+            split:      { value:  undefined },
+            splitType:  { value: 'no_split'},
             output:  { value: "payload" }
         },
         inputs:  1,
@@ -15,7 +18,10 @@
         paletteLabel: 'Get lines',
         label: function() { return this.name || "Get lines"; },
         oneditprepare: function() {
-            $("#node-input-lines").typedInput({  default: 'num', types: ['num'] });
+            var alllines = {value:"all_lines", label:"All lines", hasValue:false};
+            var nosplit =  {value:"no_split",  label:"Disabled", hasValue:false};
+            $("#node-input-lines").typedInput({  default: 'num', types: ['num', alllines], typeField: "#node-input-linesType" });
+            $("#node-input-split").typedInput({  default: 'str', types: ['str', nosplit],  typeField: "#node-input-splitType" });
             $("#node-input-file").typedInput({   default: 'str', types: ['str'] });
             $("#node-input-output").typedInput({ default: 'msg', types: ['msg'] });
         }
@@ -28,15 +34,26 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-file"><i class="icon-tag"></i> File</label>
+        <label for="node-input-file"><i class="fa fa-file"></i> File</label>
         <input type="text" id="node-input-file" style="width: 70%" placeholder="{cwd}/path/to/file">
     </div>
+
+    <br>
+    <b>Result</b>
+
     <div class="form-row">
-        <label for="node-input-lines"><i class="icon-tag"></i> Lines</label>
+        <br>
+        <label for="node-input-lines"><i class="fa fa-align-justify"></i> Lines</label>
         <input type="text" id="node-input-lines" style="width: 70%">
+        <input type="hidden" id="node-input-linesType">
     </div>
     <div class="form-row">
-        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <label for="node-input-split"><i class="fa fa-cut"></i> Split</label>
+        <input type="text" id="node-input-split" style="width: 70%">
+        <input type="hidden" id="node-input-splitType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-output" style="width: 70%">
     </div>
 
