@@ -24,6 +24,7 @@ const stop  = (done) => { done();       }
 const start = (RED, node, config)  => { }
 
 const input = (node, data, config) => {
+    let lines = Number(config.lines) || 100;
 
     let filepath = helper.resolve(config.file);
     if (!filepath) {
@@ -41,7 +42,8 @@ const input = (node, data, config) => {
         myarray.push(line);
     })
     .then(function(count) {
-        helper.setByString(data, config.output || "payload", myarray);
+        let result = (myarray.length <= lines) ? myarray : myarray.slice(Math.max(myarray.length - lines, 1));
+        helper.setByString(data, config.output || "payload", result);
         return node.send(data);
     })
     .caught(function(err) {

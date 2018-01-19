@@ -1,0 +1,109 @@
+<script type="text/javascript">
+    RED.nodes.registerType('log-line',{
+        category: 'VISEO_IO',
+        color: '#3FADB5',
+        defaults: { 
+            name:    { value: undefined },
+            config:  { value: undefined,  type: 'log-line-config', required: false },
+            content: { value: [] },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "download.svg",
+        align: "right",
+        paletteLabel: 'Log line',
+        label: function() { return this.name || "Log line"; },
+        oneditprepare: function() {
+
+            $('#refresh-config').on("click", displayFields);
+            $('#node-input-config').change( displayFields);
+            let content = this.content;
+
+            function displayFields() {
+                config = $('#node-input-config').val();
+                fields = (config) ? RED.nodes.node(config) : undefined;
+
+                $('#content-config').empty();
+                if (!fields || !fields.fields || (fields.fields.length === 1 && fields.fields[0].typed === 'str' && !fields.fields[0].field)) {
+                    $('#content-config').append("<p style='margin-left:105px;'>Please create or select a configuration.</p>");
+                    return;
+                }
+
+                let id = 0, nb = 0,
+                    infos = fields.fields;
+
+                for (let info of infos) {
+                    if (info.typed === 'str' && info.field) {
+                        var typed = 'msg';
+
+                        var fieldLabel = document.createElement("label");
+                            fieldLabel.setAttribute('for', "infos" + String(id));
+                            fieldLabel.innerHTML = "<i class='fa fa-bars'></i> " + info.field;
+                        
+                        var fieldInput = document.createElement("input");
+                            fieldInput.setAttribute("type","text");
+                            fieldInput.setAttribute("class","infos");
+                            fieldInput.setAttribute("id","infos" + String(id));
+                            fieldInput.setAttribute("style","width:70%;");
+
+                        if (content && content[nb]) {
+                            fieldInput.setAttribute("value", content[nb].value);
+                            typed = content[nb].typed;
+                        }
+                        
+                        var x = document.createElement("div"); 
+                            x.className = "form-row";
+                            x.appendChild(fieldLabel);
+                            x.appendChild(fieldInput);
+
+                        $('#content-config')[0].appendChild(x);
+                        $("#infos" + String(id)).typedInput({ default: typed, types: ['msg','str'], type:typed});
+                        nb++;
+                    }
+                    id++;
+                }
+
+                if (nb === 0) {
+                    $('#content-config').append("<p style='margin-left:105px;'>No fields to complete.</p>");
+                }
+            }
+        },
+        oneditsave: function() {
+            let infos =   $(".infos");
+            let results = new Array();
+
+            infos.each(function(i) {
+                results.push({
+                    value: $(this).val(),
+                    typed: $(this).typedInput('type')
+                });
+            })
+            this.content = results;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="log-line">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-lock"></i> Config</label>
+        <input type="text" id="node-input-config" style="width:62%;">
+        <a id="refresh-config" class="editor-button" style="display:inline-block; vertical-align:middle;"><i class="fa fa-refresh"></i></a>
+        <br>
+    </div>
+
+    <br>
+    <b>Logs fields</b>
+    <br><br>
+
+    <div class="form-row" id="content-config">
+        <p style='margin-left:105px;'>Please create or select a configuration.</p>
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="log-line">
+</script>

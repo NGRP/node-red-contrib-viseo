@@ -1,0 +1,100 @@
+<script type="text/javascript">
+    RED.nodes.registerType('log-line-config',{ 
+        category: 'config',
+        defaults: {
+            name:      { value: undefined },
+            fields:    { value: [{  field: '', typed: 'str'}]},
+            separator: { value: ' '},
+            separatyp: { value: 'separator_def'}
+        },
+        credentials: {
+            path:      { type:"text" }
+        },
+        label: function() {
+            return this.name || "Log lines config";
+        },
+        oneditprepare: function() {
+
+            var optionDate   = {value:"option_date",   label:"date",    hasValue:false};
+            var optionCarr   = {value:"option_carr",   label:"msg.user.address.carrier", hasValue:false};
+            var optionConv   = {value:"option_conv",   label:"msg.user.address.conversation.id", hasValue:false};
+            var optionUserId = {value:"option_userid", label:"msg.user.id",   hasValue:false};
+            var optionUserNa = {value:"option_userna", label:"msg.user.name", hasValue:false};
+            var optionSepara = {value:"separator_def", label:"space",         hasValue:false};
+
+            $("#node-config-input-separator").typedInput({  default: 'str', types: ['str', optionSepara],  typeField: "#node-config-input-separatyp"});
+            $("#node-config-input-name").typedInput({  default: 'str', types: ['str'],  type: 'str'});
+            $("#node-config-input-path").typedInput({  default: 'str', types: ['str'],  type: 'str'});
+
+            $("#node-config-input-fieldscontainer").css('min-height','300px').editableList({
+                addItem: function ( row, index, data ) {
+
+                    var item = data.item,
+                        field = '', 
+                        typed = 'str',
+                        disabled = (index === 0) ? true : false;
+
+                    if (item) {
+                        if (item.hasOwnProperty('field'))       field =      item.field;
+                        if (item.hasOwnProperty('typed'))       typed =      item.typed;
+                    }
+
+                    var hiddenField = $('<input/>', { type: 'hidden', id: "type_"+index, class: "property-typed", value: typed})
+                    .appendTo(row);
+                     $('<span style="margin-right: 10px; margin-left: 10px;">Label :</span>', {})
+                    .appendTo(row);
+                    var fieldInput =  $('<input/>', { class:"property-field", type:"text", style:"width:80%; margin-right:2px;", value: field, placeholder:"Dynamically configurable field"})
+                    .appendTo(row)
+                    .typedInput({ default: 'str', types: ['str', 'date', optionDate, optionCarr, optionConv, optionUserId, optionUserNa], typeField:'#type_'+index});
+                },
+                sortable: true,
+                removable: true
+            });
+
+            for (var i=0; i<this.fields.length; i++) {      
+                var infos = this.fields[i];
+                $("#node-config-input-fieldscontainer").editableList('addItem', { item: infos, i:i });
+            }
+        },
+        oneditsave: function() {
+            let newFields = $("#node-config-input-fieldscontainer").editableList('items');
+            let results = new Array();
+
+            newFields.each(function(i) {
+                var fie = {
+                    typed :     $(this).find('.property-typed').val()
+                }
+                fie.field = (fie.typed === 'str') ? $(this).find('.property-field').val() : '';
+                if (fie.field || fie.typed !== 'str') results.push(fie);
+            });
+
+            this.fields = (results.length === 0) ? [{ field: '', typed: 'str'}] : results;
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="log-line-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" style="width:70%;" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-path"><i class="fa fa-lock"></i> Path</label>
+        <input type="text" id="node-config-input-path" style="width:70%;">
+    </div>
+
+    <br>
+    <b>Logs template</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-separator"><i class="fa fa-arrows-h"></i> Separator</label>
+        <input type="text" id="node-config-input-separator" style="width:70%;">
+        <input type="hidden" id="node-config-input-separatyp">
+    </div>
+
+    <div class="form-row" style="width:97%;">
+        <ol id="node-config-input-fieldscontainer"></ol>
+    </div>
+
+</script>
