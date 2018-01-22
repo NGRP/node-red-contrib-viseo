@@ -1,0 +1,178 @@
+<script type="text/javascript">
+    $.ajax({
+        url: window.location.pathname + 'nosql/handover/',
+        success: function(result) {
+            var defaults = {
+                name:               { value: undefined },
+                labels:             { value: ["Default output"] },
+                outputs:            { value: 1 },
+                server:             { value: undefined }, 
+                "server-type":      { value: undefined },
+                collection:         { value: undefined },
+                collectionType:     { value: 'str' },
+                key:                { value: undefined },
+                keyType:            { value: 'msg' },
+                value:              { value: 'allow' },
+                operation:          { value: 'set' }
+            };
+
+            var $html = $('<div>'),
+                $script = $("script[data-template-name=handover]");
+
+            $html.append($script.html());
+            var $select = $html.find('#node-input-server-type'),
+                $selectSection = $html.find('#server-type-section');
+
+            for(var index in result) {
+                var qName = result[index].qName;
+
+                defaults['server-'+qName] = { value: undefined, type: qName, required: false };
+
+                $select.append('<option value="'+qName+'">'+ result[index].name +'</option>');
+
+                $choice = $('<div class="form-row server-type" id="section-server-'+qName+'"></div>');
+                $choice.append('<label for="node-input-server-'+qName+'" style="padding-right:4px;"><i class="fa fa-lock"></i> '+result[index].name+'</label>');
+                $choice.append('<input type="text" id="node-input-server-'+qName+'" style="width:70%;">');
+                $choice.insertAfter($selectSection);
+            }
+
+            if(result.length === 0) {
+                $select.replaceWith($('<span>No SQL Manager installed.</span>'));
+            }
+                
+            $script.html($html.html());
+
+            RED.nodes.registerType('handover', {
+                category: 'VISEO_DB',
+                color: '#3FADB5',
+                defaults: defaults,
+                inputs:  1,
+                outputs: 1,
+                icon: "db.svg",
+                align: "left",
+                paletteLabel: "Handover",
+                label: function() { return this.name || this.collection || "Handover" },
+                outputLabels: function(index) { 
+                    return this.labels[index];
+                },
+                oneditprepare: function() {
+                    $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str'});
+                    $("#node-input-collection").typedInput({ default: 'str', types: ['str', 'msg'], typeField: $("#node-input-collectionType")});
+                    $("#node-input-key").typedInput({ default: 'msg', types: ['str', 'msg'], typeField: $("#node-input-keyType")});
+
+                    $('.server-type').hide();
+                    if (this['server-type']) {
+                        $('#node-input-server-type option[value="'+this['server-type']+'"]').prop('selected', true);
+                    }
+
+                    let actionvalue = this.value;
+                    $('#node-input-operation').on('change', function() {        
+                        $("#node-input-value").empty();
+                        if ($(this).val() === 'set') {
+                            var option1 = $('<option></option>').attr("value", "allow").text("Allow bot answers");
+                            var option2 = $('<option></option>').attr("value", "disable").text("Disable bot answers");
+
+                            if (actionvalue === "disable") $("#node-input-value").append(option1).append(option2.prop('selected', true));
+                            else $("#node-input-value").append(option1.prop('selected', true)).append(option2);
+                        }
+                        else {
+                            var option1 = $('<option></option>').attr("value", "two").text("Use two outputs");
+                            var option2 = $('<option></option>').attr("value", "one").text("Use an unique output");
+
+                            if (actionvalue === "one") $("#node-input-value").append(option1).append(option2.prop('selected', true));
+                            else $("#node-input-value").append(option1.prop('selected', true)).append(option2);
+                        }
+                    });
+
+                    $('#node-input-server-type').on('change', function() {
+                        $('.server-type').hide();
+                        $('#section-server-'+this.value).show();
+                    })
+                   
+                },
+                oneditsave: function(){
+                    this.labels = ["Default output"];
+                    this.outputs = 1;
+
+                    if ($('#node-input-value').val() === 'two') {
+                        this.labels = ['Allowed to talk','Not allowed to talk'];
+                        this.outputs = 2;
+                        $("#node-input-outputs").val(2);
+                    }
+                }
+            });
+
+        }
+    });
+    
+</script>
+
+<script type="text/x-red" data-template-name="handover">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:70%;">
+    </div>
+
+    <br>
+    <b>Base configuration</b>
+
+    <div class="form-row" id="server-type-section">
+        <br>
+        <label for="node-input-server-type"><i class="fa fa-globe"></i> Source</label>
+        <select id="node-input-server-type" style="width:70%">
+        </select>
+    </div>
+
+    <br>
+    <b>Handover</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-operation"><i class="fa fa-navicon"></i> Operation</label>
+        <select id="node-input-operation" style="width:70%">
+            <option value="get">Get</option>
+            <option value="set">Set</option>
+        </select>
+    </div>
+     <div class="form-row">
+        <label for="node-input-collection"><i class="icon-tag"></i> Collection</label>
+        <input type="text" id="node-input-collection" style="width:70%">
+        <input type="hidden" id="node-input-collectionType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-key"><i class="icon-tag"></i> Key</label>
+        <input type="text" id="node-input-key" placeholder="user.id" style="width:70%">
+        <input type="hidden" id="node-input-keyType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-value"><i class="fa fa-toggle-on"></i> Value</label>
+        <select type="text" id="node-input-value" style="width:70%">
+        </select>
+    </div>
+    <div class="form-row">
+        <input type="hidden" id="node-input-outputs"/>
+    </div>
+    
+</script>
+
+<style>
+    .help-section > ol > h4,
+    .help-section > h3 { font-weight: bold; }
+</style>
+
+<script type="text/x-red" data-help-name="handover">
+    Retrieve or save a "_handover" boolean in an object of the data flow according to an id.
+   
+    <h3>Fields</h3>
+    <ol> 
+        <h4>Key (and collection)</h4>
+        <p>
+            Filled with the property used as the key (mandatory). Ex : msg.user.id
+        </p>
+        <h4>Value</h4>
+        <p>
+            GET: Get the result in the msg.payload field, or get the result in OUT[0] if true, OUT[1] if false. <br>
+            SET: Change the value of the handover to true or false.
+        </p>
+    </ol> 
+</script>
