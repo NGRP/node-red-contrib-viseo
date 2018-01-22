@@ -70,13 +70,15 @@
                         $("#node-input-value").empty();
                         if ($(this).val() === 'set') {
                             var option1 = $('<option></option>').attr("value", "allow").text("Allow bot answers");
-                            var option2 = $('<option></option>').attr("value", "disable").text("Disable bot answers");
+                            var option2 = $('<option></option>').attr("value", "delete").text("Delete the line");
+                            var option3 = $('<option></option>').attr("value", "disable").text("Disable bot answers");
 
-                            if (actionvalue === "disable") $("#node-input-value").append(option1).append(option2.prop('selected', true));
-                            else $("#node-input-value").append(option1.prop('selected', true)).append(option2);
+                            if      (actionvalue === "disable") $("#node-input-value").append(option3.prop('selected', true)).append(option1).append(option2);
+                            else if (actionvalue === "delete")  $("#node-input-value").append(option3).append(option1).append(option2.prop('selected', true));
+                            else    $("#node-input-value").append(option3).append(option1.prop('selected', true)).append(option2);
                         }
                         else {
-                            var option1 = $('<option></option>').attr("value", "two").text("Use two outputs");
+                            var option1 = $('<option></option>').attr("value", "three").text("Use 3 outputs");
                             var option2 = $('<option></option>').attr("value", "one").text("Use an unique output");
 
                             if (actionvalue === "one") $("#node-input-value").append(option1).append(option2.prop('selected', true));
@@ -91,13 +93,16 @@
                    
                 },
                 oneditsave: function(){
-                    this.labels = ["Default output"];
-                    this.outputs = 1;
 
-                    if ($('#node-input-value').val() === 'two') {
-                        this.labels = ['Allowed to talk','Not allowed to talk'];
-                        this.outputs = 2;
-                        $("#node-input-outputs").val(2);
+                    if ($('#node-input-value').val() === 'three') {
+                        this.labels = ['Allowed to talk','Not allowed to talk','Not found'];
+                        this.outputs = 3;
+                        $("#node-input-outputs").val(3);
+                    }
+                    else {
+                        this.labels = ["Default output"];
+                        this.outputs = 1;
+                        $("#node-input-outputs").val(1);
                     }
                 }
             });
@@ -171,7 +176,7 @@
         </p>
         <h4>Value</h4>
         <p>
-            GET: Get the result in the msg.payload field, or get the result in OUT[0] if true, OUT[1] if false. <br>
+            GET: Get the result in the msg.payload field, or get the result in OUT[0] if true, OUT[1] if false, OUT[2] if not found. <br>
             SET: Change the value of the handover to true or false.
         </p>
     </ol> 
