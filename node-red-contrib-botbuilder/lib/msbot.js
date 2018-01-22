@@ -36,7 +36,7 @@ const handleIncomingMessage = (bot, message, callback) => {
     if (!message.address || !message.address.serviceUrl){ return; }
     
     // Build data
-    let data = botmgr.buildMessageFlow({ message, 'payload': message.text }, { agent: 'botbuilder' })
+    let data = botmgr.buildMessageFlow({ 'message': JSON.parse(JSON.stringify(message)), 'payload': message.text }, { agent: 'botbuilder' })
 
     // Add context object to store the lifetime of the stream
     let context     = botmgr.getContext(data);
