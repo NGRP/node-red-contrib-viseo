@@ -7,18 +7,86 @@
             auth:    { value: undefined, type: 'google-service-account', required: true },
             sheet:   { value: undefined },
             range:   { value: undefined },
-            method:  { value: undefined },
-            clear:   { value: undefined },
-            fields:  { value: undefined },
+            method:  { value: 'append' },
+            direction: {value: 'line' },
+            action:   { value: 'set' },
+            clear:    {value: false},
+            line:    { value: false},
+            column:  { value: false},
+            fields:  { value: 'all' },
+            selfields: {value: [""]},
+            cell_l: { value: undefined},
+            cell_c: { value: undefined},
             input:   { value: undefined, required: false },
             output:  { value: undefined, required: false },
+            inputType:  {value: 'msg'},
+            outputType: {value: 'msg'},
+            sheetType:  {value: 'str'},
+            rangeType:  {value: 'str'},
+            cell_lType: {value: 'str'},
+            cell_cType: {value: 'str'}
         },
         inputs:  1,
         outputs: 1,
         icon: "google.svg",
         align: "left",
         paletteLabel: 'Spreadsheet',
-        label: function() { return this.name || "Google Spreadsheet"; }
+        label: function() { return this.name || "Google Spreadsheet"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+            $("#node-input-sheet").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-sheetType") });
+            $("#node-input-range").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-rangeType") });
+            $("#node-input-cell_l").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-cell_lType") });
+            $("#node-input-cell_c").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-cell_cType") });
+            $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-inputType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+
+            $("#node-input-action").change(function() {
+                $(".set, .get, .ctn, .cell").hide();
+                if ($(this).val() === "set") {
+                    $(".set").show();
+                    if ($("#node-input-fields").val() === "select") $(".ctn").show();
+                    $("#node-input-input").typedInput('show');
+                }
+                else if ($(this).val() === "get") $(".get").show();
+                else if ($(this).val() === "cell") {
+                    $(".cell").show();
+                    $("#node-input-cell_c").typedInput('show');
+                    $("#node-input-cell_l").typedInput('show');
+                }
+            });
+
+            $("#node-input-fields").change(function() {
+                $(".ctn").hide();
+                if ($(this).val() === "select") $(".ctn").show();
+            });
+
+            $("#node-input-selfields-ctn").css('min-height','100px').editableList({
+                addItem: function ( row, index, data ) {
+                    var content = data.field || '';
+                    var hiddenField = $('<span/>', {}).appendTo(row);
+                    var titleField =  $('<input/>',  { class:"node-input-property-ctn",  type:"text", style:"width:90%", value: content,  placeholder:"Key"}).appendTo(row);
+                },
+                sortable: true,
+                removable: true
+            });
+
+            for (var i=0; i<this.selfields.length; i++) {      
+                var field = this.selfields[i];
+                $("#node-input-selfields-ctn").editableList('addItem', { field: field, i:i });
+            }
+        },
+        oneditsave: function(){
+            let fields = $("#node-input-selfields-ctn").editableList('items'),
+                results = new Array();
+
+            fields.each(function(i) {
+                var content = $(this).find('.node-input-property-ctn').val();
+                if (content) results.push(content);
+            });
+            this.selfields = (results.length === 0) ? [""] : results;
+            
+        }
     });
 </script>
 
@@ -27,46 +95,174 @@
 </style>
 
 <script type="text/x-red" data-template-name="google-spreadsheet">
-    <div class="form-row">
+    <div class="form-row" style="min-width:600px;">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
     </div>
+
+    <br>
+    <b>Google Spreadsheet settings</b>
+
     <div class="form-row">
+        <br>
         <label for="node-input-auth"><i class="fa fa-lock"></i> Credentials</label>
-        <input type="text" id="node-input-auth" placeholder="">
+        <input type="text" id="node-input-auth" style="width: 70%" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-input-sheet"><i class="icon-tag"></i> Sheet</label>
-        <input type="text" id="node-input-sheet" placeholder="">
+        <label for="node-input-sheet"><i class="fa fa-table"></i> ID</label>
+        <input type="text" id="node-input-sheet" style="width: 70%" placeholder="ID">
+        <input type="hidden" id="node-input-sheetType">
     </div>
     <div class="form-row">
-        <label for="node-input-range"><i class="icon-tag"></i> Range</label>
-        <input type="text" id="node-input-range" style="width: 50%" placeholder="">
-        <select id="node-input-clear" style="width: auto">
-            <option value=""></option>
-            <option value="clear">Clear</option>
+        <label for="node-input-range"><i class="fa fa-table"></i> Range</label>
+        <input type="text" id="node-input-range" style="width: 70%" placeholder="Tab label at least">
+        <input type="hidden" id="node-input-rangeType">
+    </div>
+
+    <br>
+    <b>Request settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action" style="width: 34%">
+            <option value="set">Set data</option>
+            <option value="get">Get data</option>
+            <option value="cell">Get cell</option>
+            <option value="clear">Clear data</option>
         </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
-        <input type="text" id="node-input-input" style="width: 50%" placeholder=""/>  
-        <select id="node-input-method" style="width: auto">
+        <select class="set" id="node-input-method" style="width: 35%">
             <option value="append">Append</option>
             <option value="update">Update</option>
         </select>
+        <select class="get" id="node-input-direction" style="width: 35%">
+            <option value="line">By line</option>
+            <option value="column">By column</option>
+        </select>
     </div>
-    <div class="form-row">
-        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
-        <input type="text" id="node-input-output" style="width: 70%" placeholder=""/>
-        <div class="input-info">Output rows of the given range OR Input action results</div>
+
+    <div class="form-row set">
+        <label for="node-input-clear"><i class="fa fa-eraser"></i> Clear</label>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-clear"> <span>Clear range before set values</span>
+   </div>
+
+    <div class="form-row set get">
+        <label for="node-input-column"><i class="fa fa-tags"></i> Labels</label>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-line"> <span>First line for labels</span>
+        <input type="checkbox" style="width: auto; vertical-align:top;  margin-left:25px;" id="node-input-column"> <span>First column for labels</span>
     </div>
+
+    <div class="form-row set">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/> 
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row set">
+        <label for="node-input-fields"><i class="fa fa-tags"></i> Fields</label>
+        <select id="node-input-fields" style="width: 70%">
+            <option value="all">All</option>
+            <option value="select">Select</option>
+        </select>
+    </div>
+
+    <div class="form-row cell">
+        <label for="node-input-cell_c"><i class="fa fa-table"></i> Cell</label>
+        <input type="text" id="node-input-cell_c" style="width: 35%" placeholder="Column"/>
+        <input type="text" id="node-input-cell_l" style="width: 34%" placeholder="Line"/> 
+        <input type="hidden" id="node-input-cell_lType">
+        <input type="hidden" id="node-input-cell_cType">
+    </div>
+
+    <div class="form-row ctn" style="width:70%; margin-left: 105px;">
+        <ol id="node-input-selfields-ctn"></ol>
+        <!-- <textarea id="node-input-selfields" rows="5" style="width:70%; margin-left: 105px;" placeholder="path.to.field"></textarea> -->
+    </div>
+
     <div class="form-row">
-        <label for="node-input-fields"><i class="icon-tag"></i> Fields</label>
-        <textarea id="node-input-fields" rows="5" style="width:300px" placeholder="path.to.field"></textarea>
-        <div class="input-info">Works instead with array of objects</div>
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
+        <!-- <div class="input-info">Output rows of the given range OR Input action results</div>-->
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="google-spreadsheet">
+
+    <section class="help-section">
+            <h3>Google Spreadsheet Settings</h3>
+            <ol> 
+                <h4>ID</h4>
+                <p>
+                    Spreadsheet ID<br> <blockquote cite="https://developers.google.com/sheets/api/guides/concepts">
+                    https://docs.google.com/spreadsheets/d/<b>{ID}</b>/edit#gid=0</blockquote>
+                </p>
+                <h4>Range</h4>
+                <p>
+                    Should at least be set as the name of the targeted spreadhseet's tab. <br>
+                    <blockquote cite="https://developers.google.com/sheets/api/guides/concepts">
+                    <b>Sheet1!A1:B2</b> refers to the first two cells in the top two rows of Sheet1.<br>
+                    <b>Sheet1!A:A</b> refers to all the cells in the first column of Sheet1.<br>
+                    <b>Sheet1!1:2</b> refers to the all the cells in the first two rows of Sheet1.<br>
+                    <b>Sheet1!A5:A</b> refers to all the cells of the first column of Sheet 1, from row 5 onward.<br>
+                    <b>A1:B2</b> refers to the first two cells in the top two rows of the first visible sheet.<br>
+                    <b>Sheet1</b> refers to all the cells in Sheet1.
+                    </blockquote>
+                </p>
+            </ol> 
+    
+            <h3>"Set data" request Settings</h3>
+            <ol> 
+                <h4>Method</h4>
+                <p>
+                    Update current data or append data at the end of the sheet.
+                </p>
+                <h4>Labels</h4>
+                <p>
+                    Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
+                    If you chose the 'append' method, this will not impact the result.<br>
+                    Otherwise, it will write labels (object's keys) in the first line/column.
+                </p>
+                <h4>Input</h4>
+                <p>
+                    Input field in the flow. Input field has to be an <b>array</b> or a <b>JSON object</b>.<br>
+                    Note that it is only possible to set data by lines, and not by columns.
+                </p>
+                <h4>Fields</h4>
+                <p>
+                    Fields of the object items to write in the spreadsheet.
+                </p>
+                <h4>Output</h4>
+                <p>
+                    Where to get the operation results.
+                </p>
+            </ol> 
+
+            <h3>"Get data" request Settings</h3>
+            <ol> 
+                <h4>Method</h4>
+                <p>
+                    Update current data or append data at the end of the sheet.
+                </p>
+                <h4>Labels</h4>
+                <p>
+                    Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
+                    The keys of the resulting objects will be adjusted accordingly.
+                </p>
+                <h4>Output</h4>
+                <p>
+                    Where to get the operation results.
+                </p>
+            </ol>
+
+            <h3>"Clear data" request Settings</h3>
+            <ol> 
+                <h4>Method</h4>
+                <p>
+                    Update current data or append data at the end of the sheet.
+                </p>
+            </ol>
+    
+        </section>
 
 </script>
