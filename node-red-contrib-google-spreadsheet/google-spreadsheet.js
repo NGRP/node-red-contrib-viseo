@@ -66,7 +66,7 @@ function input (node, data, config) {
                 if (config.line && method === "update") values.push(Object.keys(rows[0]));
                 for (obj of rows){
                     let row = [];
-                    for (let ob in obj) row.push(obj[ob]);
+                    for (let ob in obj) row.push(helper.getByString(obj,ob));
                     values.push(row);
                 }
                 parameters.resource.values = values;
@@ -76,7 +76,7 @@ function input (node, data, config) {
                 if (config.line && method === "update") values.push(fields);
                 for (obj of rows){
                     let row = []; 
-                    for (field of fields) row.push(obj[field]);
+                    for (field of fields) row.push(helper.getByString(obj,field));
                     values.push(row);
                 }
                 parameters.resource.values = values;
@@ -111,7 +111,7 @@ function input (node, data, config) {
                 if (config.line && method === "update") values.push(fields);
                 for (let obj in rows){
                     let row = [];
-                    for (let field of fields) row.push(rows[obj][field]);
+                    for (let field of fields) row.push(rows[helper.getByString(obj,field)]);
                     labels.push(obj);
                     values.push(row);
                 }
@@ -125,6 +125,8 @@ function input (node, data, config) {
                 parameters.resource.values = values;
             }
         }
+
+        console.log(parameters.resource.values);
 
         sheets.spreadsheets.values[method](parameters, function(err, response) {
             if (err) { return node.warn(err); }
