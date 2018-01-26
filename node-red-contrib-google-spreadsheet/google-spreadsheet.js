@@ -108,13 +108,13 @@ function input (node, data, config) {
                 }
 
                 if (config.method === "new") {
-                    if (config.line) {
-                        values.unshift(returnValue(rows[labels[0]], '').keys);
-                    }
+                    if (config.line) values.unshift(returnValue(rows[labels[0]], '').keys);
                     if (config.column) {
-                        if (config.line) values[0].unshift("Elements")
-                        for (let i=0; i<labels.length; i++) values[i+1].unshift(labels[i]);
-
+                        if (config.line) {
+                            values[0].unshift("Elements")
+                            for (let i=0; i<labels.length; i++) values[i+1].unshift(labels[i]);
+                        }
+                        else for (let i=0; i<labels.length; i++) values[i].unshift(labels[i]);
                     }
                 }
                 parameters.resource.values = values;
@@ -135,8 +135,11 @@ function input (node, data, config) {
                 if (method === "new") {
                     if (config.line) values.unshift(fields);
                     if (config.column) {
-                        if (config.line) values[0].unshift("Elements");
-                        for (let i=0; i<labels.length; i++) values[i+1].unshift(labels[i]);
+                        if (config.line) {
+                            values[0].unshift("Elements");
+                            for (let i=0; i<labels.length; i++) values[i+1].unshift(labels[i]);
+                        }
+                        else for (let i=0; i<labels.length; i++) values[i].unshift(labels[i]);
                     }
                 }
                 parameters.resource.values = values;
