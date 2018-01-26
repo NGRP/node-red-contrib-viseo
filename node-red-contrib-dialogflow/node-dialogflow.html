@@ -4,7 +4,8 @@
         color: '#3FADB5',
         defaults: {
             name:               { value: undefined },
-            token:              { value: undefined, required: true, type: 'dialogflow-config' },
+            tokenv1:            { value: undefined, type: 'dialogflow-config', required: false },
+            tokenv2:            { value: undefined, type: 'google-service-account', required: false },
             session:            { value: "user.id" },
             sessionType:        { value: "msg" },
             language:           { value: "en" },
@@ -21,7 +22,8 @@
             itemid:             { value: undefined },
             itemidType:         { value: "msg" },
             object:             { value: undefined },
-            objectType:         { value: "msg" }
+            objectType:         { value: "msg" },
+            version:            { value: "v1"}
         },
         inputs: 1,
         outputs: 1,
@@ -37,8 +39,13 @@
             $("#node-input-itemid").typedInput({    default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-itemidType")   });
             $("#node-input-object").typedInput({    default: 'msg', types: ['msg','global','json'], typeField: $("#node-input-objectType")   });
 
-
             // Change
+            $("#node-input-version").change(function() {
+                $("#display_v1").hide();
+                $("#display_v2").hide();
+                if ($(this).val() === "v2") $("#display_v2").show();
+                else $("#display_v1").show();
+            })
             $("#node-input-action").change(showSections);
             $("#node-input-selaction").change(setOptions);
             $("#node-input-actionitemaddupd, #node-input-actionitemget, #node-input-actionitemdel").change(showParameters);
@@ -50,15 +57,20 @@
 
                 $(".id").hide();
                 $(".object").hide();
+                $("#node-input-object").typedInput('show');
+                $("#node-input-itmeid").typedInput('show');
 
                 if      (action.match(/get/i) && $("#node-input-actionitemget").val().match(/single/i)) $(".id").show();
-                else if (action.match(/add/i)) $(".object").show();
+                else if (action.match(/add/i)) {
+                    if ($("#node-input-actionitemaddupd").val().match(/entries/i)) $(".id").show();
+                    $(".object").show();
+                }
                 else if (action.match(/del/i)) {
-                    if ($("#node-input-actionitemget").val().match(/entries/i)) $(".object").show();
+                    if ($("#node-input-actionitemdel").val().match(/entries/i)) $(".object").show();
                     $(".id").show();
                 }
                 else if (action.match(/upd/i)) {
-                     if ($("#node-input-actionitemaddupd").val().match(/single/i)) $(".id").show();
+                     if ($("#node-input-actionitemaddupd").val().match(/single|entries/i)) $(".id").show();
                      $(".object").show();
                 }
             }
@@ -66,9 +78,14 @@
             function showSections() {
                 $(".manage").hide();
                 $(".query").hide();
-                if ($("#node-input-action").val() === "query") $(".query").show();
-                else {  setOptions();
-                        $(".manage.main").show(); 
+                if ($("#node-input-action").val() === "query") {
+                    $(".query").show();
+                    $("#node-input-text").typedInput('show');
+                    $("#node-input-language").typedInput('show');
+                }
+                else {  
+                    setOptions();
+                    $(".manage.main").show(); 
                 }
             }
 
@@ -102,8 +119,19 @@
 
     <div class="form-row">
         <br>
-        <label for="node-input-token"><i class="fa fa-lock"></i> Tokens</label>
-        <input type="text" id="node-input-token" style="width:70%;">
+        <label for="node-input-version"><i class="fa fa-tasks"></i> Version</label>
+        <select id="node-input-version" style="width:70%;">
+            <option value="v1" selected>Dialogflow V1 API</option>
+            <option value="v2">Dialogflow V2 API</option>
+        </select>
+    </div>
+    <div class="form-row" id="display_v1">
+        <label for="node-input-tokenv1"><i class="fa fa-lock"></i> Tokens</label>
+        <input type="text" id="node-input-tokenv1" style="width:70%;">
+    </div>
+    <div class="form-row" id="display_v2">
+        <label for="node-input-tokenv2"><i class="fa fa-lock"></i> Tokens</label>
+        <input type="text" id="node-input-tokenv2" style="width:70%;">
     </div>
     <div class="form-row">
         <label for="node-input-session"><i class="fa fa-user"></i> Session ID</label>
