@@ -27,7 +27,8 @@ function input (node, data, config) {
 
     let action = config.action || 'set',
         spreadsheetId = config.sheet,
-        range = config.range;
+        range = config.range,
+        save = config.save;
 
     if (config.sheetType !== 'str') {
         let loc = (config.sheetType === 'global') ? node.context().global : data;
@@ -38,12 +39,14 @@ function input (node, data, config) {
         range = helper.getByString(loc, range);
     }
 
+    let saveLoc = (config.saveType === 'global') ? node.context().global : data;
     let outloc =  (config.outputType === 'global') ? node.context().global : data;
     let parameters = { spreadsheetId, range };
     let method = config.method || 'append';
 
     function querySet() {
 
+        // Get input fields
         let loc =  (config.inputType === 'global') ? node.context().global : data;
         let rows = helper.getByString(loc, config.input || "payload");
 
@@ -52,82 +55,95 @@ function input (node, data, config) {
             return node.send(data);
         } 
 
+        // Set basic parameters
         parameters.valueInputOption= "USER_ENTERED";
         parameters.resource = {};
-
-        let fields = (config.selfields[0]) ? config.selfields : undefined;
+        let fields = (config.selfields[0]) ? Array.from(config.selfields) : undefined;
             
+        // If the input is an array
         if (Array.isArray(rows) && rows.length > 0){ 
-            if (Array.isArray(rows[0])){ 
-                parameters.resource.values = rows;
-            }
+            if (Array.isArray(rows[0])) parameters.resource.values = rows;
             else if (config.fields === "all") {
                 let values = [];
-                if (config.line && method === "update") values.push(Object.keys(rows[0]));
                 for (obj of rows){
-                    let row = [];
-                    for (let ob in obj) row.push(helper.getByString(obj,ob));
-                    values.push(row);
+                    values.push(returnValue(obj, '').values);
+                }
+                if (method === "new") {
+                    if (config.line) values.unshift(returnValue(rows[0], '').keys);
+                    if (config.column) {
+                        for (let i=0; i<values; i++) elt.unshift(i);
+                    }
                 }
                 parameters.resource.values = values;
             }
             else if (fields) {
                 let values = [];
-                if (config.line && method === "update") values.push(fields);
                 for (obj of rows){
+                    let res = returnValue(obj, '');
                     let row = []; 
-                    for (field of fields) row.push(helper.getByString(obj,field));
+                    for (field of fields) {
+                        let i = res.keys.indexOf(field);
+                        if (i > -1) row.push(res.values[i]);
+                    }
                     values.push(row);
+                }
+                if (method === "new") {
+                    if (config.line) values.unshift(fields);
+                    if (config.column) {
+                        if (config.line) values[0].unshift("Elements")
+                        for (let i=1; i<values; i++) values[i].unshift(i-1);
+                    }
                 }
                 parameters.resource.values = values;
             }
         }
         else if (typeof rows === 'object' && rows.length === undefined) {
             if (config.fields === "all") {
-                let values = [];
-                let labels = [];
-                if (config.line && method === "update") {
-                    let first = rows[Object.keys(rows)[0]];
-                    values.push(Object.keys(first));
-                }
+                let values = [], labels = [];
+
                 for (obj in rows){
-                    let row = [];
-                    for (let ob in rows[obj]) row.push(rows[obj][ob]);
-                    labels.push(obj);
-                    values.push(row);
+                    let res = returnValue(rows[obj], '');
+                    values.push(res.values);
+                    labels.push(obj)
                 }
-                if (config.column && method === "update") {
-                    if (config.line) values[0].unshift("Labels");
-                    for (let i=0; i<labels.length; i++) {
-                        let a = (config.line) ? i+1 : i;
-                        values[a].unshift(labels[i]);
-                    } 
+
+                if (config.method === "new") {
+                    if (config.line) {
+                        values.unshift(returnValue(rows[labels[0]], '').keys);
+                    }
+                    if (config.column) {
+                        if (config.line) values[0].unshift("Elements")
+                        for (let i=0; i<labels.length; i++) values[i+1].unshift(labels[i]);
+
+                    }
                 }
                 parameters.resource.values = values;
             }
             else if (fields) {
-                let values = [];
-                let labels = [];
-                if (config.line && method === "update") values.push(fields);
-                for (let obj in rows){
-                    let row = [];
-                    for (let field of fields) row.push(rows[helper.getByString(obj,field)]);
-                    labels.push(obj);
+                let values = [], labels = [];
+                for (obj in rows){
+                    let res = returnValue(rows[obj], '');
+                    let row = []; 
+                    for (field of fields) {
+                        let i = res.keys.indexOf(field);
+                        if (i > -1) row.push(res.values[i]);
+                    }
                     values.push(row);
+                    labels.push(obj);
                 }
-                if (config.column && method === "update") {
-                    if (config.line) values[0].unshift("Labels");
-                    for (let i=0; i<labels.length; i++) {
-                        let a = (config.line) ? i+1 : i;
-                        values[a].unshift(labels[i]);
+
+                if (method === "new") {
+                    if (config.line) values.unshift(fields);
+                    if (config.column) {
+                        if (config.line) values[0].unshift("Elements");
+                        for (let i=0; i<labels.length; i++) values[i+1].unshift(labels[i]);
                     }
                 }
                 parameters.resource.values = values;
             }
         }
 
-        console.log(parameters.resource.values);
-
+        method = (method === "new") ? "update" : method;
         sheets.spreadsheets.values[method](parameters, function(err, response) {
             if (err) { return node.warn(err); }
 
@@ -158,6 +174,7 @@ function input (node, data, config) {
             if (err) { return node.warn(err); }
             if (action === "clear") {
                 helper.setByString(outloc, config.output || "payload", response);
+                helper.setByString(saveLoc, config.save || '_sheet', undefined);
                 return node.send(data);
             }
             else return querySet();
@@ -166,14 +183,74 @@ function input (node, data, config) {
 
     function queryGet() {
 
-        parameters.majorDimension = (config.direction === "column") ? "COLUMNS" : "ROWS";
-        sheets.spreadsheets.values.get(parameters, function(err, response) {
-            if (err) { return node.warn(err); }
+        let saveArray = helper.getByString(saveLoc, config.save || '_sheet');
+        if (saveArray && saveArray.length > 0) {
+            let response = [];
+            for (let ob of saveArray) response.push(Array.from(ob));
+
             if (!config.line && !config.column) {
                 helper.setByString(outloc, config.output || "payload", response);
                 return node.send(data);
             }
             if (config.line && config.column) {
+
+                let objet = {};
+                let line_labels = response.shift();
+                    line_labels.shift();
+                let column_labels = [];
+                
+                for (let obj of response) {
+                    let newl = {}; 
+                    let item = obj.shift();
+                    for (let i=0; i<obj.length;i++) {
+                        newl[line_labels[i]] = obj[i];
+                    }
+                    objet[item] = newl;
+                }
+                helper.setByString(outloc, config.output || "payload", objet);
+                return node.send(data);
+            }
+            if ((config.column && config.direction === "column") || 
+                (config.line && config.direction === "line")) {
+                    let objet = {};
+                    for (let obj of response) {
+                        objet[obj.shift()] = obj;
+                    }
+
+                    helper.setByString(outloc, config.output || "payload", objet);
+                    return node.send(data);
+            }
+            else {
+                let array = [];
+                let line_labels = response.shift();
+
+                for (let obj of response) {
+                    let newl = {}; 
+                    for (let i=0; i<obj.length; i++) {
+                        newl[line_labels[i]] = obj[i];
+                    }
+                    array.push(newl);
+                }
+
+                helper.setByString(outloc, config.output || "payload", array);
+                return node.send(data);
+            }
+        }
+
+        parameters.majorDimension = (config.direction === "column") ? "COLUMNS" : "ROWS";
+        sheets.spreadsheets.values.get(parameters, function(err, response) {
+            if (err) { return node.warn(err); }
+
+            let result = [];
+            for (let ob of response.values) result.push(Array.from(ob));
+            helper.setByString(saveLoc, config.save || '_sheet', result);
+
+            if (!config.line && !config.column) {
+                helper.setByString(outloc, config.output || "payload", response);
+                return node.send(data);
+            }
+            if (config.line && config.column) {
+
                 let objet = {};
                 let line_labels = response.values.shift();
                     line_labels.shift();
@@ -201,7 +278,6 @@ function input (node, data, config) {
                     return node.send(data);
             }
             else {
-                helper.setByString(outloc, "testing", response);
                 let array = [];
                 let line_labels = response.values.shift();
 
@@ -237,10 +313,10 @@ function input (node, data, config) {
             return node.send(data);
         }
 
-        if (data._sheet) {
-
+        let saveArray = helper.getByString(saveLoc, config.save || '_sheet');
+        if (saveArray && saveArray.length > 0) {
             let response = [];
-            for (let ob of data._sheet) response.push(Array.from(ob));
+            for (let ob of saveArray) response.push(Array.from(ob));
             let column_labels = response.shift();
                 column_labels.shift();
             let line_labels = [];
@@ -260,11 +336,12 @@ function input (node, data, config) {
         sheets.spreadsheets.values.get(parameters, function(err, response) {
             if (err) { return node.warn(err); }
 
-            let result = []; data._sheet = [];
+            let result = []; saved = [];
             for (let ob of response.values) {
                 result.push(Array.from(ob));
-                data._sheet.push(Array.from(ob));
+                saved.push(Array.from(ob));
             }
+            helper.setByString(saveLoc, config.save || '_sheet', saved);
 
             let column_labels = result.shift();
                 column_labels.shift();
@@ -284,11 +361,27 @@ function input (node, data, config) {
         });
     }
 
+    function returnValue(obj, chaine) {
+        let keys = [], values = [];
+        for (let i in obj) {
+            if (typeof obj[i] === "object" && obj[i].length === undefined) {
+                let res = returnValue(obj[i], chaine + '.' + i);
+                keys = keys.concat(res.keys);
+                values = values.concat(res.values);
+            }
+            else {
+                keys.push((chaine + '.' + i).substring(1));
+                values.push(obj[i]);
+            }
+        }
+        return { keys: keys, values: values} ;
+    }
+
     try {
         node.auth.authenticate((auth) => {
             parameters.auth = auth;
 
-            if      (action === "clear" || (action === "set" && config.clear)) return queryClear();
+            if      (action === "clear" || (action === "set" && config.method === "new")) return queryClear();
             else if (action === "get") return queryGet();
             else if (action === "set") return querySet(); 
             else if (action === "cell") return queryCell(); 
