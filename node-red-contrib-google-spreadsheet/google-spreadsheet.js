@@ -230,10 +230,17 @@ function input (node, data, config) {
             cell_c = helper.getByString(loc, cell_c);
         }
 
+        if (!cell_l || !cell_c) {
+            node.warn("Cannot find line and column labels")
+            return node.send(data);
+        }
+
         if (data._sheet) {
-            let response = data._sheet;
-            let column_labels = data._sheet.shift();
-            column_labels.shift();
+
+            let response = [];
+            for (let ob of data._sheet) response.push(Array.from(ob));
+            let column_labels = response.shift();
+                column_labels.shift();
             let line_labels = [];
             
             for (let obj of response) {
@@ -243,7 +250,7 @@ function input (node, data, config) {
             let c = column_labels.indexOf(cell_c),
                 l = line_labels.indexOf(cell_l);
 
-            if (c === -1 || l === -1 || !response[c][l]) helper.setByString(outloc, config.output || "payload", "Not found");
+            if (c === -1 || l === -1 || !response[l][c]) helper.setByString(outloc, config.output || "payload", "Not found");
             else helper.setByString(outloc, config.output || "payload", response[l][c]);
             return node.send(data);
         }
@@ -251,20 +258,26 @@ function input (node, data, config) {
         sheets.spreadsheets.values.get(parameters, function(err, response) {
             if (err) { return node.warn(err); }
 
-            data._sheet = response.values;
-            let column_labels = response.values.shift();
+            let result = []; data._sheet = [];
+            for (let ob of response.values) {
+                result.push(Array.from(ob));
+                data._sheet.push(Array.from(ob));
+            }
+
+            let column_labels = result.shift();
                 column_labels.shift();
             let line_labels = [];
             
-            for (let obj of response.values) {
+            for (let obj of result) {
                 line_labels.push(obj.shift());
             }
 
             let c = column_labels.indexOf(cell_c),
                 l = line_labels.indexOf(cell_l);
 
-            if (c === -1 || l === -1 || !response.values[c][l]) helper.setByString(outloc, config.output || "payload", "Not found");
-            else helper.setByString(outloc, config.output || "payload", response.values[l][c]);
+            if (c === -1 || l === -1 || !result[l][c]) helper.setByString(outloc, config.output || "payload", "Not found");
+
+            else helper.setByString(outloc, config.output || "payload", result[l][c]);
             return node.send(data);
         });
     }
