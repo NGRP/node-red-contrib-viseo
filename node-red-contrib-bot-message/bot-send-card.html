@@ -5,6 +5,15 @@
         color: '#3FADB5',
         defaults: {
             name:         { value: undefined },
+            nodeid:       { value: undefined, validate: function(value) {
+                if (!value || value.match(/ /g)) return false;
+                var result = 0;
+                RED.nodes.eachNode(function(node) {
+                    if      (node.type !== 'send-card') return;
+                    else if (node.nodeid === value)     result++;
+                })
+                return (result > 1) ? false : true;
+            }},
             prompt:       { value: undefined },
             promptText:   { value: undefined },
             promptTextType:   { value: "msg" },
@@ -29,13 +38,12 @@
             outputs:      { value: 1 },
             signintext:   { value: undefined },
             signintitle:  { value: undefined },
-            signinurl:    { value: undefined },
+            signinurl:    { value: undefined }
         },
         inputs:  1, 
         outputs: 1,
 
         oneditprepare: function () {
-
             $(document).on('change', '.section-quick select', function() {
 
                 var $parent = $(this).parent('.section-quick');
@@ -74,8 +82,6 @@
                 $query.remove();
             };
 
-
-
             $('#node-input-sendType').change(function (event) { 
                 var type = $(this).val();
                 $('.section-type').addClass('hide')
@@ -89,6 +95,33 @@
             // QuickReplies
             this.quickreplies = this.quickreplies || [];
             setButtons(this.quickreplies, '.quickbt', '#addquick');
+
+            // ID : set a random one
+            if (!this.nodeid) newID();
+            $('#refresh-config').on("click", newID);
+
+            // ID : change id
+            var trueid = this.id;
+            $('#node-input-nodeid').change(function (event) {
+                var id = $(this).val().replace(/ /g, '_');
+
+                if (checkNodeID(id, trueid)) {
+                    $('#node-input-nodeid').val(id);
+                    $(this).removeClass("input-error");
+                }
+                else  $(this).addClass("input-error");
+            });
+
+            function newID() {
+                let result = false;
+                let nodeid = "";
+                while (!result) {
+                    nodeid = "SEND_" + Date.now();
+                    result = (checkNodeID(nodeid));
+                }
+                $('#node-input-nodeid').val(nodeid);
+                $('#node-input-nodeid').removeClass("input-error");
+            }
         },
         oneditsave: function(){
 
@@ -138,8 +171,27 @@
         label: function() { return (this.name || this.text || "Send Card") }
     });
 
+    function checkNodeID(nodeid, id) {
+        var result = true;
+        RED.nodes.eachNode(function(node) {
+            if (node.type !== 'send-card') return;
+            else if (node.id === id) return;
+            else if (node.nodeid === nodeid) result = false;
+        })
+        return result;
+    }
+
     RED.events.on("nodes:add", function(node){
         if (node.type !== 'send-card') return;
+        if (!node.nodeid) {
+            let result = false;
+            let nodeid = "";
+            while (!result) {
+                nodeid = "SEND_" + Date.now();
+                result = (checkNodeID(nodeid));
+            }
+            node.nodeid = nodeid;
+        }
         if (node.outputs) return;
         node.outputs = 1;
     });
@@ -150,9 +202,11 @@
             $('.send-card-panel').addClass('hide');
             $('.send-card-tab').removeClass('active');
 
-            var $this = $(this)
-            var panelId = '#send-card-' + $this.attr('href').substring(1);
+            var $this = $(this);
+            var attri = $this.attr('href').substring(1);
+            var panelId = '#send-card-' + attri;
             $(panelId).removeClass('hide');
+            if (attri === "prompt") $("#node-input-promptText").typedInput('show');
             $this.parent('.send-card-tab').addClass('active');
         })
 
@@ -234,6 +288,13 @@
         <div class="form-row">
             <label for="node-input-name"><i class="icon-tag"></i> Name</label>
             <input type="text" id="node-input-name" placeholder="Name">
+        </div>
+        <div class="form-row">
+            <label for="node-input-nodeid"><i class="icon-tag"></i> Unique ID</label>
+            <input type="text" id="node-input-nodeid" placeholder="Unique send-message node ID" style="width: calc(70% - 36px)">
+            <a id="refresh-config" class="editor-button" style="display:inline-block; vertical-align:middle;">
+                <i class="fa fa-refresh"></i>
+            </a>
         </div>
         <div class="form-row">
             <label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
