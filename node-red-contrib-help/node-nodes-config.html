@@ -1,0 +1,56 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nodes-config',{
+        category: 'config',
+        defaults: {
+            name:     { value: undefined },
+            url:      { value: undefined },
+            passwordType: { value: 'str' },
+            usernameType: { value: 'str' },
+            tokenType:    { value: 'msg' }
+        },
+        credentials: {
+            password:    { type:"password" },
+            username:    { type:"text" },
+            token:       { type:"text" }
+        },
+        label: function() {
+            return this.name || "Node-Red config";
+        },
+        oneditprepare: function() {
+            $("#node-config-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-url").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-username").typedInput({ default: 'str', types: ['str', 'msg'], typeField: $("#node-config-input-usernameType") });
+            $("#node-config-input-password").typedInput({ default: 'str', types: ['str', 'msg'], typeField: $("#node-config-input-passwordType") });
+            $("#node-config-input-token").typedInput({ default: 'msg', types: ['str', 'msg','global'], typeField: $("#node-config-input-tokenType") });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nodes-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-url"><i class="fa fa-globe"></i> URL </label>
+        <input type="text" id="node-config-input-url" placeholder="https://myFlows.com" style="width:70%;">
+    </div>
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-username"><i class="fa fa-lock"></i> Username</label>
+        <input type="text" id="node-config-input-username" placeholder="" style="width:70%;">
+        <input type="hidden" id="node-config-input-usernameType">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
+        <input type="text" id="node-config-input-password" placeholder="" style="width:70%;">
+        <input type="hidden" id="node-config-input-passwordType">
+    </div>
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-config-input-token" placeholder="Stock token" style="width:70%;">
+        <input type="hidden" id="node-config-input-tokenType">
+    </div>
+
+</script>

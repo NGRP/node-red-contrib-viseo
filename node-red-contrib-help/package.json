@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-help",
-    "version"       : "0.1.0",
+    "version"       : "0.1.4",
     "description"   : "Help call between outputs",
     "dependencies"  : { 
         "node-red-viseo-helper" : "~0.1"
@@ -13,7 +13,10 @@
     "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
-            "help": "node-html.js"
+            "help": "node-html.js",
+            "nodes": "node-nodes.js",
+            "node-diff3": "node-diff3.js",
+            "nodes-config": "node-nodes-config.js"
         }
     }
 }

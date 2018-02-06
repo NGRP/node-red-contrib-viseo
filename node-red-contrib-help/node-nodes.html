@@ -1,0 +1,123 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nodes',{
+        category: 'VISEO_HELPER',
+        color: '#3FADB5',
+        defaults: { 
+            name:           { value: undefined },
+            cred:           { value: undefined, type: 'nodes-config', required: false },
+            process:        { value: "get-nodes" },
+            property:       { value: undefined },
+            propertyType:   { value: "str" },
+            value:          { value: undefined },
+            valueType:      { value: "str" },
+            input:          { value: "payload"},
+            inputType:      { value: "msg" },
+            output:         { value: "payload" },
+            outputType:     { value: "msg" },
+            flows:          { value: undefined }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "search.svg", align: "left",
+        paletteLabel: "Nodes",
+        label: function() { return this.name || "Nodes"; },
+        oneditprepare: function() {
+
+            $("#node-input-property").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-propertyType") });
+            $("#node-input-value").typedInput({ default: 'str', types: ['str','num', 'msg','global', 'bool'], typeField: $("#node-input-valueType") });
+            $("#node-input-input").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-inputType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-outputType") });
+            $("#node-input-flows").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+            $("#node-input-process").change( function() {
+                $(".get, .set, .cred").hide();
+
+                if ($(this).val() === "get-nodes") {
+                    $(".get").show();
+                    $("#node-input-property").typedInput('show');
+                    $("#node-input-value").typedInput('show');
+                } 
+                else if ($(this).val() === "update"){
+                    $(".set").show();
+                    $(".cred").show();
+                    $("#node-input-input").typedInput('show');
+                    $("#node-input-flows").typedInput('show');
+                }
+                else if ($(this).val() === "restore"){
+                    $(".cred").show();
+                    $("#node-input-flows").typedInput('show');
+                }
+                else if ($(this).val() === "auth"){
+                    $(".auth").show();
+                }
+            });
+
+        },
+        oneditsave: function() {}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nodes">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-process"><i class="fa fa-tasks"></i> Process </label>
+        <select id="node-input-process" style="width:70%;">
+            <option value="get-nodes">Get nodes</option>
+            <option value="get-flow">Get all nodes</option>
+            <option value="update">Update nodes</option>
+            <option value="restore">Restore nodes</option>
+            <option value="auth">Node-Red authentification</option>
+        </select>
+    </div>
+    <div class="form-row cred auth">
+        <label for="node-input-cred"><i class="fa fa-lock"></i> Credentials </label>
+        <input type="text" id="node-input-cred" style="width:70%;">
+    </div>
+
+    <div class="form-row get">
+        <label for="node-input-property"><i class="fa fa-tasks"></i> Property </label>
+        <input type="text" id="node-input-property" style="width:70%;">
+        <input type="hidden" id="node-input-propertyType">
+    </div>
+
+    <div class="form-row get">
+        <label for="node-input-value"><i class="fa fa-tasks"></i> Value </label>
+        <input type="text" id="node-input-value" style="width:70%;">
+        <input type="hidden" id="node-input-valueType">
+    </div>
+
+    <div class="form-row set">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input </label>
+        <input type="text" id="node-input-input" style="width:70%;">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output </label>
+        <input type="text" id="node-input-output" style="width:70%;">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+    <div class="form-row cred">
+        <label for="node-input-flows"><i class="fa fa-file"></i> Backup</label>
+        <input type="text" id="node-input-flows" placeholder="Path to backup file (ex /data/test.json)" style="width:70%;">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="nodes">
+    <p>This node helps you to find a or several nodes with a given property value.</p>
+
+    <h2>Get nodes</h2>
+    <p>
+        The result (array of obejcts) is sent in the output field.
+    </p>
+    <h2>Set nodes</h2>
+    <p>
+        The data in the input field has to be an array of objects (nodes data).
+    </p>
+</script>

@@ -1,0 +1,54 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-diff3',{
+        category: 'VISEO_HELPER',
+        color: '#3FADB5',
+        defaults: { 
+            name:     { value: undefined },
+            compare:  { value: undefined, required: true },
+            flows:    { value: undefined, required: true },
+            backup:   { value: undefined, required: true }
+        },
+        inputs:  1,
+        outputs: 2,
+        outputLabels: ["Trigger","Output"],
+        icon: "diff.svg",
+        align: "left",
+        paletteLabel: "Diff3",
+        label: function() { return this.name || "Diff3"; },
+        oneditprepare: function() {
+
+            $("#node-input-compare").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-flows").typedInput({   default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-backup").typedInput({  default: 'msg', types: ['msg'], type: 'msg' });
+
+        },
+        oneditsave: function() {}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-diff3">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width:70%;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-flows"><i class="icon-tag"></i> Nodes v1</label>
+        <input type="text" id="node-input-flows" placeholder="Nodes data" style="width:70%;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-compare"><i class="icon-tag"></i> Nodes v2</label>
+        <input type="text" id="node-input-compare" placeholder="Nodes data" style="width:70%;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-backup"><i class="icon-tag"></i> Backup</label>
+        <input type="text" id="node-input-backup" placeholder="Nodes data backup" style="width:70%;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-diff3">
+
+</script>

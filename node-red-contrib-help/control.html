@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  </head>
+  
+  <style>
+    #start {
+        background-color: #EDEDED;
+        padding-top: 10px;
+        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+        border-radius: 15px;
+        border-color:#d2d2d2;
+        border-width: 5px;
+        box-shadow:0 1px 0 #cfcfcf;
+    }
+    
+    span, .checkall, .upd_backup, .upd_sheets, .upd_flows {
+        cursor: pointer;
+    }
+    
+  </style>
+
+  <body>
+        <form style= "width:60%; margin:10px auto; text-align: center;" method="post" role="form" id="start">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <img src="https://poc.viseo.io/assistant/static/viseo_botmaker.png" width="200"><hr>
+                    </div>
+                </div>
+
+                {{#info}}
+                <div class="row">
+                    <div class="col">
+                        <div id="alertInfo" class="alert alert-{{class}}" role="alert" style="margin-bottom:3%">{{text}}</div>
+                    </div>
+                </div>
+                {{/info}}
+
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary" id="send" style="width:28%; vertical-align: top; margin-left: 5px; margin-right: 5px; display:none; ">Refresh</button>
+                        <button type="submit" class="btn btn-primary" id="export" style="width:28%; vertical-align: top; margin-left: 5px; margin-right: 5px; display:none; ">Export</button>
+                        <button type="submit" class="btn btn-primary" id="merge" style="width:28%; vertical-align: top; margin-left: 5px; margin-right: 5px; display:none; ">Merge</button>
+                        <input  type="hidden" class="form-control" name="changed" value= "{{compare.changed}}" id="changed"><br>
+                        <input  type="hidden" class="form-control" name="action" value= "{{action}}" id="action"><br>
+                    </div>
+                </div>
+                
+                {{#compare.compareInfos}}
+                <div class="row compareInfos">
+                    <div class="col"><b>Will be deleted: </b></div>
+                    <div class="col"><b>Will be added: </b></div>
+                </div>
+                
+                <div class="row compareInfos" style="text-align: left;">
+                    <div class="col" style="margin: 1%;" id="deleted">
+                        <ul class='list-group'>
+                        {{#compare.deleted}}
+                            <li class='list-group-item list-group-item-danger'>{{id}}</li>
+                        {{/compare.deleted}}
+                        </ul>
+                    </div>
+                    <div class="col" style="margin: 1%;" id="added">
+                    <ul class='list-group'>
+                        {{#compare.added}}
+                            <li class='list-group-item list-group-item-success'>{{id}}</li>
+                        {{/compare.added}}
+                        </ul>
+                    </div>
+                </div>
+                {{/compare.compareInfos}}
+                
+
+                {{#compare.compareNodes}}
+                <div class="row compareNodes" style="margin-bottom: 10px;">
+                    <div class="col"><hr><b>Conflicts</b></div>
+                </div>
+
+                <div class="row compareNodes" id="compareLines">
+                    <div class="col" >
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col checkall">Node ID</div>
+                            <div class="col checkall">Backup ({{bk}})</div>
+                            <div class="col checkall">V.1 ({{v1}})</div>
+                            <div class="col checkall">V.2 ({{v2}})</div>
+                        </div>
+                        {{#compare.conflict}}
+                        <div class="row list-group-item" id={{id}}>
+                            <div class="col upd_id"><p style='color:grey;'>{{id}}</p></div>
+                            {{#backup}}
+                            <div class="col upd_backup alert alert-info" style="margin: 1%;">{{{diffText}}}</div>
+                            {{/backup}}
+                            {{#sheets}}
+                            <div class="col upd_sheets alert alert-info" style="margin: 1%;">{{{diffText}}}</div>
+                            {{/sheets}}
+                            {{#flows}}
+                            <div class="col upd_flows alert alert-info" style="margin: 1%;">{{{diffText}}}</div>
+                            {{/flows}}
+                        </div>
+                        {{/compare.conflict}}
+                    </div>
+                </div>
+                {{/compare.compareNodes}}
+            
+            </div>
+            
+
+    	</form>
+        <div id="loadingmessage" style="text-align:center; vertical-align: top; display:none">
+	        <img id="loadingimage" src="https://poc.viseo.io/assistant/static/spinner.svg" width="40" height="40" type="image/svg+xml">
+        </div>
+    
+    <!-- jQuery first, then Tether, then Bootstrap JS. -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    
+    <script>
+        $("#loadingmessage, #merge, #send, #export").hide();
+        actionDisplay();
+
+        var conflicts = 0;
+        var lines = new Map();
+        var ids = $("#compareLines").find(".list-group-item");
+        $(ids).each(function( index ) { lines.set(($(this)[0]).id, ""); });
+   
+        function actionDisplay() {
+            var action = $("#action").val();
+
+            if      (action === "export") $("#export").show();
+            else if (action === "diff3") {
+                if (!$("#compareLines").is(":visible") && !$(".compareInfos").is(":visible") && ($("#changed").val() !== '0')) $("#merge").show();
+                if ($(".compareInfos").is(":visible")) $("#merge").show();
+                //else $("#merge").hide();
+                return;
+            }
+            else {
+                $("#alertInfo").addClass("alert alert-danger").text("An error occured during process.").show();
+                $("#send").show();
+                return;
+            }
+            
+        }
+
+        $(document).on('click', ".upd_flows, .upd_sheets, .upd_backup", function (e) {
+            
+            var parent = $($(this)[0].parentNode)[0];
+            var choice = $(this)[0].classList[1];
+            var nodeid = parent.id;
+
+            if (lines.get(nodeid) !== "") {
+                var els = $(parent).find(".upd_" + lines.get(nodeid))[0]
+                $(els).removeClass('alert-success').addClass('alert-info');
+            }
+
+            lines.set(nodeid, choice.substring(4));
+            var elt = $(parent).find(".upd_" + choice.substring(4))[0];
+            ($(elt)).removeClass('alert-info').addClass('alert-success');
+
+            for (var v of lines.values()) { if (v === "") return; }
+            $("#merge").show();
+        });
+        
+        $(document).on('click', ".checkall", function () {
+            var id = $(this)[0].id.substring(1);
+            $(".upd_sheets, .upd_backup, .upd_flows").removeClass('alert-success').addClass('alert-info');
+            $(".upd_" + id).removeClass('alert-info').addClass('alert-success');
+            for (var k of lines.keys()) { lines.set(k, id);}
+            $("#merge").show();
+        });
+    
+        /*
+        function showElements(data) {
+            $("#loadingmessage, .compareInfos, .compareNodes, #merge, #send, #export").hide();
+            $("#send, #export, #merge").prop('disabled', false);
+            $("#added, #deleted, #compareLines, #alertInfo").empty();
+            $("#alertInfo").removeClass().hide();
+
+            console.log(data)
+            
+            if (data.info) {
+                $("#alertInfo").addClass("alert alert-danger").text(data.info).show();
+                return;
+            }
+
+            if (!data.action) {
+                $("#alertInfo").addClass("alert alert-danger").text("An error occured during process.").show();
+                return;
+            }
+            
+            
+            if (conflicts > 0) {
+                var nb = 0;
+                lines = new Array(conflicts);
+                            
+                for (let node of data.compare.conflict) {
+
+                    let col1 = document.createElement("div");
+                        col1.setAttribute("class","col upd_backup alert alert-info");
+                        col1.setAttribute("id","b_" + nb);
+                        col1.setAttribute("style","margin: 1%;");
+                        col1.innerHTML = "<p><b>" + node.backup.Name + "</b><br>" + node.backup.Text + "</p>";
+                    
+                    let col2 = document.createElement("div");
+                        col2.setAttribute("class","col upd_sheet alert alert-info");
+                        col2.setAttribute("id","s_" + nb);
+                        col2.setAttribute("style","margin: 1%;");
+                        col2.innerHTML = "<p><b>" + node.sheets.Name + "</b><br>" + node.sheets.Text + "</p>";
+                    
+                    let col3 = document.createElement("div");
+                        col3.setAttribute("class","col upd_flows alert alert-info");
+                        col3.setAttribute("id","f_" + nb);
+                        col3.setAttribute("style","margin: 1%;");
+                        col3.innerHTML = "<p><b>" + node.flows.Name + "</b><br>" + node.flows.Text + "</p>";
+                        
+                    let row2 = document.createElement("div");
+                        row2.setAttribute("class","row");
+                        row2.appendChild(col1);
+                        row2.appendChild(col2);
+                        row2.appendChild(col3);
+                    
+                    let col0 = document.createElement("div");
+                        col0.setAttribute("class","col list-group-item");
+                        col0.setAttribute("style","margin: 0;");
+                        col0.innerHTML = "<p style='color:grey; margin-bottom:0;'>" + node.id + "</p>";
+                        col0.appendChild(row2);
+                    
+                    let row1 = document.createElement("div");
+                        row1.setAttribute("class","row");
+                        row1.appendChild(col0);
+                        
+                    $("#compareLines")[0].appendChild(row1);
+                    nb++;
+                }
+                $(".compareNodes").show();
+                
+            }
+            else $("#merge").show();
+
+        }
+        */
+        
+        
+
+        
+        function stopLoadingFail() {
+            $("#loadingmessage").hide();
+            $("#send").prop('disabled', false);
+            alert("Une erreur est apparue...");
+        }
+        
+        $("#send").click( function(e){
+            $("#action").val("refresh");
+
+            e.preventDefault();
+            $("#loadingmessage").show();
+            $("#send").prop('disabled', true);
+            
+            var posting = $.post( window.location.href, $( "#start" ).serialize());
+        })
+
+        function strMapToObj(strMap) {
+            let obj = Object.create(null);
+            for (let [k,v] of strMap) {
+                obj[k] = v;
+            }
+            return obj;
+        }
+        
+        $("#merge").click( function(e){
+            $("#action").val("merge");
+            e.preventDefault();
+            $("#loadingmessage").show();
+            $("#merge").prop('disabled', true);
+            
+            var posting = $.post(  window.location.href, {"data": strMapToObj(lines), "action": "merge"})
+            posting.done(function(data) { 
+                console.log(data)
+                $("#loadingmessage, .compareInfos, .compareNodes, #merge").hide();
+                $("#added, #deleted, #compareLines, #alertInfo").empty();
+                $("#alertInfo").removeClass().addClass("alert alert-" + data.info.class).text(data.info.text).show();
+                console.log($("#alertInfo"))
+            })
+            posting.fail(function() { 
+                setTimeout("stopLoadingFail()", 1000);
+            })
+        })
+        
+        
+        $("#export").click( function(e){
+            /*
+                $("#loadingmessage").show();
+                setTimeout(function() {
+                    $("#export").prop('disabled', true);                
+                }, 200);
+            */
+
+            $("#loadingmessage").show();
+            $("#export").prop('disabled', true);
+            e.preventDefault();
+            var posting = $.post(  window.location.href, {"action": "export"})
+            posting.done(function(data) { 
+                console.log(data)
+                
+                $("#loadingmessage, #export").hide();
+                $("#send, #export, #merge").prop('disabled', false);
+                $("#send").show();
+                $("#alertInfo").removeClass().addClass("alert alert-" + data.info.class).text(data.info.text).show();
+                
+            })
+            posting.fail(function() { 
+                setTimeout("stopLoadingFail()", 1000);
+            })
+        })
+
+
+
+        $(document).on("keypress", 'form', function (e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        $(document).ready(function() {
+            var back = $("#compareLines").find(".upd_backup");
+            $(back).each(function( index ) { 
+                if ($(this)[0].innerHTML === "<p></p>") {
+                    $($(this)[0]).removeClass().addClass('col alert alert-warning');
+                }
+            });
+         });
+        
+    </script>
+  </body>
+</html>
