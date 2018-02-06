@@ -243,13 +243,17 @@ function input (node, data, config) {
         parameters.majorDimension = (config.direction === "column") ? "COLUMNS" : "ROWS";
         sheets.spreadsheets.values.get(parameters, function(err, response) {
             if (err) { return node.warn(err); }
+            if (!response.values) {
+                helper.setByString(outloc, config.output || "payload", "");
+                return node.send(data);
+            }
 
             let result = [];
             for (let ob of response.values) result.push(Array.from(ob));
             helper.setByString(saveLoc, config.save || '_sheet', result);
 
             if (!config.line && !config.column) {
-                helper.setByString(outloc, config.output || "payload", response);
+                helper.setByString(outloc, config.output || "payload", response.values);
                 return node.send(data);
             }
             if (config.line && config.column) {
@@ -338,6 +342,11 @@ function input (node, data, config) {
 
         sheets.spreadsheets.values.get(parameters, function(err, response) {
             if (err) { return node.warn(err); }
+
+            if (!response.values) {
+                helper.setByString(outloc, config.output || "payload", "");
+                return node.send(data);
+            }
 
             let result = []; saved = [];
             for (let ob of response.values) {
