@@ -6,7 +6,7 @@
         defaults: {
             name:         { value: undefined },
             nodeid:       { value: undefined, validate: function(value) {
-                if (!value || value.match(/ /g)) return false;
+                if (!value.match(/^[a-zA-Z0-9_.-]*$/ig)) return false;
                 var result = 0;
                 RED.nodes.eachNode(function(node) {
                     if      (node.type !== 'send-card') return;
@@ -104,8 +104,10 @@
             var trueid = this.id;
             $('#node-input-nodeid').change(function (event) {
                 var id = $(this).val().replace(/ /g, '_');
-
-                if (checkNodeID(id, trueid)) {
+                if (!id.match(/^[a-zA-Z0-9_.-]*$/ig)) {
+                    $(this).addClass("input-error");
+                }
+                else if (checkNodeID(id, trueid)) {
                     $('#node-input-nodeid').val(id);
                     $(this).removeClass("input-error");
                 }
@@ -115,7 +117,7 @@
             function newID() {
                 let result = false;
                 let nodeid = "";
-                while (!result) {
+                for (let i=0; i<500 && !result; i++) {
                     nodeid = "SEND_" + Date.now();
                     result = (checkNodeID(nodeid));
                 }
@@ -186,7 +188,9 @@
         if (!node.nodeid) {
             let result = false;
             let nodeid = "";
-            while (!result) {
+
+            // protéger par un for
+            for (let i=0; i<500 && !result; i++) {
                 nodeid = "SEND_" + Date.now();
                 result = (checkNodeID(nodeid));
             }

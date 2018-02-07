@@ -28,6 +28,11 @@ module.exports = function(RED) {
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("send-card", register, {});
+
+    updateFields = function(opts) {
+        if (opts.name) this.name = opts.name;
+        return;
+    }
 }
 
 const buttonsStack = {
@@ -107,14 +112,14 @@ const buildReply = (node, data, config) => {
 
     // Simple text message
     if (config.sendType === 'text'){
-        let text = config.text;
+        let text = marshall(locale, config.text, data, '');
         if (config.random){
             let txt = text.split('\n');
             text = txt[Math.round(Math.random() * (txt.length-1))]
         }
         return [{
             "type"   : config.sendType, 
-            "text"   : marshall(locale, text, data, ''),
+            "text"   : text,
             "speech" : speech,
             "prompt" : config.prompt
         }]
