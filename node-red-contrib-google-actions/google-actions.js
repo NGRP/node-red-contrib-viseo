@@ -70,7 +70,7 @@ function send(auth, content, cb) {
         uri: "https://actions.googleapis.com/v2/conversations:send/",
         method: 'POST',
         body: {
-            customPushMessage: { content }
+            customPushMessage: content
         },
         headers: {  
             'Content-Type': 'application/json',
