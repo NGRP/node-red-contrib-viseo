@@ -1,0 +1,84 @@
+<script type="text/javascript">
+    RED.nodes.registerType('google-actions',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:    { value: undefined },
+            auth:    { value: undefined, type: 'google-service-account', required: true },
+            input:   { value: undefined, required: false },
+            action:  { value: 'send' },
+            output:  { value: undefined, required: false },
+            inputType:  {value: 'msg'},
+            outputType: {value: 'msg'}
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "google.svg",
+        align: "left",
+        paletteLabel: 'Actions',
+        label: function() { return this.name || "Google Actions"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+            $("#node-input-input").typedInput({   default: 'msg',  types: ['msg','global', 'json'], typeField: $("#node-input-inputType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+        },
+        oneditsave: function(){ }
+    });
+</script>
+
+<style>
+    .input-info { font-size: 12px; padding-left: 104px; font-style: italic; }
+    textarea { resize: vertical; }
+</style>
+
+<script type="text/x-red" data-template-name="google-actions">
+    <div class="form-row" style="min-width:600px;">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Google Actions settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-auth"><i class="fa fa-lock"></i> Credentials</label>
+        <input type="text" id="node-input-auth" style="width: 70%" placeholder="">
+    </div>
+
+    <br>
+    <b>Request settings</b>
+
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-table"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="customPushMessage">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action" style="width: 70%">
+            <option value="token">Get token</option>
+            <option value="send">conversations:send</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
+
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="google-actions">
+
+    <section class="help-section">
+            <h3>Google actions Settings</h3>
+            <ol> 
+                
+            </ol> 
+    
+    </section>
+
+</script>
