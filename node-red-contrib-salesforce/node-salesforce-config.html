@@ -2,16 +2,32 @@
     RED.nodes.registerType('salesforce-config',{
         category: 'config',
         defaults: {
-            name:      { value: undefined }
+            name:      { value: undefined },
+            version:   { value: undefined },
+            oauthtype: { value: undefined }
         },
         credentials: {
+            instance: { type:"text" },
+            login:    { type:"text" },
             id:       { type:"text" },
             secret:   { type:"text" },
-            instance: { type:"text" },
-            refresh:  { type:"text" }
+            refresh:  { type:"text" },
+            iss:      { type:"text" },
+            subject:  { type:"text" },
+            privateKey: { type:"text" }
         },
         label: function() {
             return this.name || "Salesforce's token";
+        },
+
+        oneditprepare: function () {
+            $("#node-config-input-oauthtype").change(function() {
+                $('.credential-info').hide();
+                $('.credential-info.'+$(this).val()+'-info').show();
+            })
+            if(this.oauthtype === undefined) {
+                $('#node-config-input-oauthtype').val("refresh-token");
+            }
         }
     });
 </script>
@@ -22,19 +38,49 @@
         <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-config-input-id"><i class="fa fa-lock"></i> Client ID</label>
-        <input type="text" id="node-config-input-id" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-secret"><i class="fa fa-lock"></i> Client secret</label>
-        <input type="text" id="node-config-input-secret" placeholder="">
+        <label for="node-config-input-version"><i class="icon-tag"></i> Version</label>
+        <input type="text" id="node-config-input-version" placeholder="v20.0">
     </div>
     <div class="form-row">
         <label for="node-config-input-instance"><i class="fa fa-lock"></i> Instance</label>
-        <input type="text" id="node-config-input-instance" placeholder="">
+        <input type="text" id="node-config-input-instance" placeholder="Salesforce root url">
     </div>
     <div class="form-row">
-        <label for="node-config-input-refresh"><i class="fa fa-lock"></i> Refresh</label>
+        <label for="node-config-input-login"><i class="fa fa-lock"></i> Login Endpoint</label>
+        <input type="text" id="node-config-input-login" placeholder="Salesforce login url">
+    </div>
+    <b>Credentials for token</b>
+    <div class="form-row">
+        <label for="node-config-input-oauthtype"><i class="fa fa-lock"></i> Type</label>
+        <select id="node-config-input-oauthtype" >
+            <option value="refresh-token" selected="selected">Refresh token</option>
+            <option value="jwt">JWT</option>
+        </select>
+    </div>
+    <!-- refresh token -->
+    <div class="form-row credential-info refresh-token-info">
+        <label for="node-config-input-id"><i class="fa fa-lock"></i> Client ID</label>
+        <input type="text" id="node-config-input-id" placeholder="">
+    </div>
+    <div class="form-row credential-info refresh-token-info">
+        <label for="node-config-input-secret"><i class="fa fa-lock"></i> Client secret</label>
+        <input type="text" id="node-config-input-secret" placeholder="">
+    </div>
+    <div class="form-row credential-info refresh-token-info">
+        <label for="node-config-input-refresh"><i class="fa fa-lock"></i> Refresh Token</label>
         <input type="text" id="node-config-input-refresh" placeholder="">
+    </div>
+    <!-- jwt -->
+    <div class="form-row credential-info jwt-info">
+        <label for="node-config-input-iss"><i class="fa fa-lock"></i> ISS</label>
+        <input type="text" id="node-config-input-iss" placeholder="Consumer key">
+    </div>
+    <div class="form-row credential-info jwt-info">
+        <label for="node-config-input-subject"><i class="fa fa-lock"></i> Subject</label>
+        <input type="text" id="node-config-input-subject" placeholder="Email address of the account">
+    </div>
+     <div class="form-row credential-info jwt-info">
+        <label for="node-config-input-privateKey"><i class="fa fa-lock"></i> Private Key</label>
+        <textarea id="node-config-input-privateKey" placeholder="RSA Private Key"></textarea>
     </div>
 </script>

@@ -5,8 +5,6 @@
         defaults: { 
             name:   	    { value: undefined },
             sfConfig:       { value: undefined, required: true, type: 'salesforce-config' },
-            token: 	        { value: undefined },
-            tokenType:      { value: 'msg'},
             action:         { value: 'get', required: true},
             object:         { value: 'Account', required: true},
             objectLabel:       { value: undefined},
@@ -43,7 +41,6 @@
         },
         oneditprepare: function() {
 
-            if (!this.tokenType) this.tokenType = 'msg';
             if (!this.objectLabelType) this.objectLabelType = 'msg';
             if (!this.objectIdType) this.objectIdType = 'msg';
             if (!this.objectObjectType) this.objectIdType = 'msg';
@@ -51,7 +48,6 @@
             if (!this.queryWhereType) this.queryWhereType = 'msg';
             if (!this.queryEqualsType) this.queryEqualsType = 'msg';
 
-            $("#node-input-token").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-tokenType") });
             $("#node-input-objectLabel").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectLabelType") });
             $("#node-input-objectId").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectIdType") });
             $("#node-input-objectObject").typedInput({ default: 'msg', types: ['msg','json','global'], typeField: $("#node-input-objectObjectType") });
@@ -94,14 +90,9 @@
         <label for="node-input-sfConfig"><i class="fa fa-lock"></i> Config</label>
         <input type="text" id="node-input-sfConfig" style="width:70%;">
     </div>
-    <div class="form-row">
-        <label for="node-input-token"><i class="fa fa-lock"></i> Token</label>
-        <input type="text" id="node-input-token" style="width:70%;">
-        <input type="hidden" id="node-input-tokenType">
-    </div>
 
     <br>
-    <b>Object settings</b>
+    <b>Request settings</b>
 
     <div class="form-row">
         <br>
