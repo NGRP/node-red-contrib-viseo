@@ -1,0 +1,70 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-bot-transaction',{
+        category: 'VISEO BOT',
+        color: '#3FADB5',
+        defaults: { 
+            name:           { value: undefined },
+            intent:         { value: undefined },
+            orderItems:     { value: undefined },
+            merchant:       { value: undefined },
+            orderId:        { value: undefined },
+            carrierId:      { value: undefined },
+            receiptStatus:  { value: undefined },
+            receiptStatusName : { value: undefined }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "store.svg",
+        align: "left",
+        paletteLabel: "Transaction",
+        label: function() { return this.name || this.intent || 'Transaction'; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-bot-transaction">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-intent"><i class="icon-tag"></i> Intent</label>
+        <select id="node-input-intent">
+            <option value="requirement_check">Requirement Check</option>
+            <option value="delivery_address">Delivery Address</option>
+            <option value="confirm">Confirmation</option>
+            <option value= "receipt">Receipt</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-merchant"><i class="fa fa-tag"></i> Merchant</label>
+        <input type="text" id="node-input-merchant" placeholder="Merchant name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-orderId"><i class="fa fa-tag"></i> Order ID</label>
+        <input type="text" id="node-input-orderId" placeholder="msg.id">
+    </div>
+    <div class="form-row">
+        <label for="node-input-orderItems"><i class="fa fa-tag"></i> Order Items</label>
+        <input type="text" id="node-input-orderItems" placeholder="msg.items">
+    </div>
+    <div class="form-row">
+        <label for="node-input-carrierId"><i class="fa fa-tag"></i> Carrier ID</label>
+        <input type="text" id="node-input-carrierId" placeholder="msg.id">
+    </div>
+    <div class="form-row">
+        <label for="node-input-receiptStatus"><i class="icon-tag"></i> Receipt status</label>
+        <select id="node-input-receiptStatus">
+            <option value="CREATED">CREATED</option>
+            <option value="CONFIRMED">CONFIRMED</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-receiptStatusName"><i class="fa fa-tag"></i> Receipt status name</label>
+        <input type="text" id="node-input-receiptStatusName" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-bot-transaction">
+   <p>Transactions for bots.</p>
+   
+</script>

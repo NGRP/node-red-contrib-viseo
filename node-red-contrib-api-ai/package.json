@@ -6,6 +6,7 @@
     "apiai": "^3.0.3",
     "joi": "^10.1.0",
     "md5": "^2.2.1",
+    "actions-on-google": "",
     "node-red-viseo-bot-manager": "~0.0",
     "node-red-viseo-helper": "~0.1"
   },

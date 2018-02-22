@@ -1,8 +1,8 @@
 
 const mustache = require('mustache');
 const i18n     = require('./lib/i18n.js');
-const helper   = require('node-red-viseo-helper');
 const botmgr   = require('node-red-viseo-bot-manager');
+const helper   = require('node-red-viseo-helper');
 
 require('./lib/i18n.js').init();
 
@@ -110,54 +110,51 @@ const buildReply = (node, data, config) => {
     // Prepare speech
     let speech = config.speechText ? marshall(locale, config.speechText, data, '') : config.speech;
 
+    let reply = {
+        "type"      : config.sendType,
+        "speech"    : speech,
+        "prompt"    : config.prompt,
+        "receipt"   : data._receipt
+    };
+
     // Simple text message
     if (config.sendType === 'text'){
+
         let text = marshall(locale, config.text, data, '');
+
         if (config.random){
             let txt = text.split('\n');
             text = txt[Math.round(Math.random() * (txt.length-1))]
         }
-        return [{
-            "type"   : config.sendType, 
-            "text"   : text,
-            "speech" : speech,
-            "prompt" : config.prompt
-        }]
+
+        reply.text = text;
+
+        return [ reply ]
+
     }
 
     // Simple media message
     if (config.sendType === 'media'){
-        return [{
-            "type"   : config.sendType, 
-            "media"  : marshall(locale, config.media, data, ''),
-            "speech" : speech,
-            "prompt" : config.prompt
-        }]
+
+        reply.media = marshall(locale, config.media, data, '');
+        return [ reply ]
+
     }
 
     // Card "signin" message
     if (config.sendType === 'signin'){
-        return [{
-            "type"   : config.sendType, 
-            "text"   : marshall(locale, config.signintext,  data, ''),
-            "title"  : marshall(locale, config.signintitle, data, ''),
-            "url"    : marshall(locale, config.signinurl,   data, ''),
-            "speech" : speech,
-            "prompt" : config.prompt
-        }]
+
+        reply.text  = marshall(locale, config.signintext,  data, '');
+        reply.title = marshall(locale, config.signintitle, data, '');
+        reply.url   = marshall(locale, config.signinurl,   data, '');
+
+         return [ reply ]
     }
 
     // Other card message
     let buttons = getButtons(locale, config, data);
     buttonsStack.push(data, buttons);
-
-
-    let reply = {
-        "type": config.sendType,
-        "buttons"   : buttons,
-        "speech"    : speech,
-        "prompt"    : config.prompt
-    };
+    reply.buttons = buttons;
 
 
     // Quick replies
@@ -189,7 +186,7 @@ const buildReply = (node, data, config) => {
         buttonsStack.popAll(data);
     } //else, buttons popped on prompt
 
-    return carousel.length > 0 ? carousel : [reply];
+    return carousel.length > 0 ? carousel : [ reply ];
 }
 
 const sendData = (node, data, config) => {
@@ -263,6 +260,8 @@ const sendData = (node, data, config) => {
 
                 if (promptText){ 
                     helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) });
+                } else {
+                    helper.setByString(data, "prompt.text", button.value, (ex) => { node.warn(ex) });
                 }
 
                 if (config.btnOutput || config.quickOutput){ 
