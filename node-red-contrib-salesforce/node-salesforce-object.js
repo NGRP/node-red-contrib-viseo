@@ -40,11 +40,12 @@ const input = async (node, data, config) => {
     
     let action = config.action.toUpperCase(),
         object = config.object,
+        objectLabel = config.objectLabel,
         querySelect, queryWhere,
         objectId, objectObject;
 
     if (object === "else") {
-        object = objectLabel[0].toUpperCase() + objectLabel.substr(1).toLowerCase();
+        object = objectLabel;
     }
 
     if(action === "QUERY") {
@@ -65,8 +66,8 @@ const run = async (node, data, action, objectId, objectObject, object, querySele
     }
 
     try { 
-        
-        let json = await processRequest(action, node.config.token, node.config.credentials.instance, objectId, objectObject, object, querySelect, queryWhere);
+
+        let json = await processRequest(action, node.config.token, node.config.credentials.instance, node.config.version, objectId, objectObject, object, querySelect, queryWhere);
         data.payload = JSON.parse(json);
 
         return node.send(data);
@@ -151,9 +152,9 @@ const prepareRequest = (data, config) => {
 }
 
 
-const processRequest = (action, token, instance, objectId, objectObject, object, select, where) => {
+const processRequest = (action, token, instance, version, objectId, objectObject, object, select, where) => {
 
-    var url = instance + "/services/data/v20.0/sobjects/" + object + "/";
+    var url = instance + "/services/data/" + version + "/sobjects/" + object + "/";
     
     let req = {
         headers: {  
@@ -187,7 +188,6 @@ const processRequest = (action, token, instance, objectId, objectObject, object,
         req.method = action;
     }
 
-    console.log(req);
 
     return request(req);
 }

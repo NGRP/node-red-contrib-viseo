@@ -6,6 +6,7 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(this, config);
         this.name = config.name;
+        this.version = config.version;
 
         this.refreshToken = async () => {
             if(config.oauthtype === "refresh-token") {
