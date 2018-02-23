@@ -231,7 +231,7 @@ const getMessage = exports.getMessage = (app, replies) => {
             app.buildOrderUpdate(reply.receipt.carrierId, true)
                 .setOrderState(reply.receipt.orderState, reply.receipt.orderStateName)
                 .setInfo(app.Transactions.OrderStateInfo.RECEIPT, {
-                    actionOrderId: reply.receipt.orderId
+                    userVisibleOrderId: reply.receipt.orderId
                 })
                 .setUpdateTime(Math.floor(Date.now()/1000))
                 
