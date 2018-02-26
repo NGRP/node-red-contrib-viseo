@@ -228,7 +228,7 @@ const getMessage = exports.getMessage = (app, replies) => {
     if(reply.receipt !== undefined) {
 
         msg.data.addOrderUpdate(
-            app.buildOrderUpdate(reply.receipt.carrierId, true)
+            app.buildOrderUpdate(reply.receipt.orderId, false)
                 .setOrderState(reply.receipt.orderState, reply.receipt.orderStateName)
                 .setInfo(app.Transactions.OrderStateInfo.RECEIPT, {
                     userVisibleOrderId: reply.receipt.orderId
@@ -236,7 +236,17 @@ const getMessage = exports.getMessage = (app, replies) => {
                 .setUpdateTime(Math.floor(Date.now()/1000))
                 
         )
-
+/*
+        msg.data.items.push({
+            userVisibleOrderId: reply.receipt.orderId,
+            orderState: { state: reply.receipt.orderState, label: reply.receipt.orderStateName },
+            lineItemUpdates: {},
+            updateTime: (new Date()).toISOString(),
+            orderManagementActions: [],
+            userNotification: undefined,
+            totalPrice: undefined,
+            receipt: { userVisibleOrderId: '069b3a24fcc3142f820d293fa7d99d57' } })
+*/
     }
 
 
