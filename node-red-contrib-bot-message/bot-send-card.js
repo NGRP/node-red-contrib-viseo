@@ -117,6 +117,8 @@ const buildReply = (node, data, config) => {
         "receipt"   : data._receipt
     };
 
+    delete data._receipt;
+
     // Simple text message
     if (config.sendType === 'text'){
 
