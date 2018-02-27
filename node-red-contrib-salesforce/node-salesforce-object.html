@@ -29,13 +29,17 @@
             if (this.name !== undefined && this.name !== "") return this.name;
             else {
                 let name = "Get ";
-                if      (this.action === "post")    name = "New ";
-                else if (this.action === "patch")   name = "Update ";
-                else if (this.action === "delete")  name = "Delete ";
-                else if (this.action === "query")   name = "Query ";
+
+                if      (this.action === "post")        name = "New ";
+                else if (this.action === "patch")       name = "Update ";
+                else if (this.action === "delete")      name = "Delete ";
+                else if (this.action === "query")       name = "Query ";
+                else if (this.action === "describe")    name = "Describe ";
+
                 if      (this.object === "Customer_Survey__c") name += "survey";
                 else if (this.object === "else") name += "object";
                 else    name += (this.object).toLowerCase();
+
                 return  name;
             }
         },
@@ -99,6 +103,7 @@
         <select id="node-input-action" style="width:100px; display:inline-block;">
             <option value="get">Get</option>
             <option value="query">Query</option>
+            <option value="describe">Describe</option>
             <option value="post">New</option>
             <option value="patch">Update</option>
             <option value="delete">Delete</option>

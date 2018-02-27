@@ -50,7 +50,7 @@ const input = async (node, data, config) => {
 
     if(action === "QUERY") {
         [ querySelect, queryWhere ] = prepareQuery(data, config)
-    } else {
+    } else if(["GET", "PATCH", "POST", "DELETE"]) {
         [ objectId, objectObject ] = prepareRequest(data, config)
     }
 
@@ -105,21 +105,25 @@ const prepareQuery = (data, config) => {
 
     if (querySelectType !== 'str') {
         let loc = (querySelectType === 'global') ? node.context().global : data;
-        querySelect = helper.getByString(loc, config.querySelect);
+        querySelect = helper.getByString(loc, querySelect);
     }
-    if (queryWhereType !== 'str') {
-        let loc = (queryWhereType === 'global') ? node.context().global : data;
-        queryWhere = helper.getByString(loc, config.queryWhere);
-    }
-    if (queryEqualsType !== 'str') {
-        let loc = (queryEqualsType === 'global') ? node.context().global : data;
-        queryEquals = helper.getByString(loc, config.queryEquals);
-    }
-
-    // Process fields
     querySelect = querySelect.replace(/ /g,'');
     querySelect = querySelect.replace(/,/g,'+,+');
-    queryWhere += "+=+'" + queryEquals + "'";
+
+
+    if(queryWhere) {
+
+        if (queryWhereType !== 'str') {
+            let loc = (queryWhereType === 'global') ? node.context().global : data;
+            queryWhere = helper.getByString(loc, queryWhere);
+        }
+        if (queryEqualsType !== 'str') {
+            let loc = (queryEqualsType === 'global') ? node.context().global : data;
+            queryEquals = helper.getByString(loc, queryEquals);
+        }
+
+        queryWhere += "+=+'" + queryEquals + "'";
+    }
 
     console.log('2');
 
@@ -166,13 +170,19 @@ const processRequest = (action, token, instance, version, objectId, objectObject
     if(["POST"].includes(action)) {
         req.uri = url
     } else if(["QUERY"].includes(action)) {
-        req.uri = instance + "/services/data/v20.0/query/?q=SELECT+ " + select + "+from+" + object + "+WHERE+" + where;
+        req.uri = instance + "/services/data/v20.0/query/?q=SELECT+ " + select + "+from+" + object;
+        if(where)  {
+            req.uri += "+WHERE+" + where;
+        }
+
+    } else if(["DESCRIBE"].includes(action)) {
+        req.uri = url + "describe";
     } else {
         req.uri = url + objectId;
     }
 
     //set Content Type
-    if(["GET", "PATCH", "POST"].includes(action)) {
+    if(["GET", "PATCH", "POST", "DESCRIBE"].includes(action)) {
         req.headers["Content-Type"] = 'application/json';
     }
 
@@ -182,7 +192,7 @@ const processRequest = (action, token, instance, version, objectId, objectObject
     }
 
     //set method
-    if(["QUERY"].includes(action)) {
+    if(["QUERY", "DESCRIBE"].includes(action)) {
         req.method = "GET";
     } else {
         req.method = action;
