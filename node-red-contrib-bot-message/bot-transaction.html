@@ -3,21 +3,42 @@
         category: 'VISEO BOT',
         color: '#3FADB5',
         defaults: { 
-            name:           { value: undefined },
-            intent:         { value: undefined },
-            orderItems:     { value: undefined },
-            merchant:       { value: undefined },
-            orderId:        { value: undefined },
-            carrierId:      { value: undefined },
-            receiptStatus:  { value: undefined },
-            receiptStatusName : { value: undefined }
+            name:               { value: undefined },
+            intent:             { value: undefined },
+            orderItems:         { value: undefined },
+            merchant:           { value: undefined },
+            orderId:            { value: undefined },
+            carrierId:          { value: undefined },
+            receiptStatus:      { value: undefined },
+            receiptStatusName : { value: undefined },
+            orderActions:       { value: undefined }
         },
         inputs:  1,
         outputs: 1,
-        icon: "store.svg",
+        icon: "payment.svg",
         align: "left",
         paletteLabel: "Transaction",
-        label: function() { return this.name || this.intent || 'Transaction'; }
+        label: function() { return this.name || this.intent || 'Transaction'; },
+
+        oneditprepare: function() {
+
+
+            $('#node-input-intent').change(function() {
+
+                $('.row-for-transaction, .row-after-transaction').hide()
+
+                switch($(this).val()) {
+                    case 'confirm':
+                        $('.row-for-transaction').show();
+                        break;
+
+                    case 'receipt':
+                        $('.row-after-transaction').show();
+                        break;
+                }
+            }).val(this.intent);
+
+        }
     });
 </script>
 
@@ -35,32 +56,36 @@
             <option value= "receipt">Receipt</option>
         </select>
     </div>
-    <div class="form-row">
+    <div class="form-row row-for-transaction">
         <label for="node-input-merchant"><i class="fa fa-tag"></i> Merchant</label>
         <input type="text" id="node-input-merchant" placeholder="Merchant name">
     </div>
-    <div class="form-row">
+    <div class="form-row row-for-transaction row-after-transaction">
         <label for="node-input-orderId"><i class="fa fa-tag"></i> Order ID</label>
         <input type="text" id="node-input-orderId" placeholder="msg.id">
     </div>
-    <div class="form-row">
+    <div class="form-row row-for-transaction">
         <label for="node-input-orderItems"><i class="fa fa-tag"></i> Order Items</label>
         <input type="text" id="node-input-orderItems" placeholder="msg.items">
     </div>
-    <div class="form-row">
+    <div class="form-row row-after-transaction">
         <label for="node-input-carrierId"><i class="fa fa-tag"></i> Carrier ID</label>
         <input type="text" id="node-input-carrierId" placeholder="msg.id">
     </div>
-    <div class="form-row">
+    <div class="form-row row-after-transaction">
         <label for="node-input-receiptStatus"><i class="icon-tag"></i> Receipt status</label>
         <select id="node-input-receiptStatus">
             <option value="CREATED">CREATED</option>
             <option value="CONFIRMED">CONFIRMED</option>
         </select>
     </div>
-    <div class="form-row">
+    <div class="form-row row-after-transaction">
         <label for="node-input-receiptStatusName"><i class="fa fa-tag"></i> Receipt status name</label>
         <input type="text" id="node-input-receiptStatusName" placeholder="">
+    </div>
+     <div class="form-row row-after-transaction">
+        <label for="node-input-orderActions"><i class="fa fa-tag"></i> Order Actions</label>
+        <input type="text" id="node-input-orderActions" placeholder="msg.actions">
     </div>
 </script>
 

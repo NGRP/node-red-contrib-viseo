@@ -82,7 +82,8 @@ const buildReply = (node, data, config) => {
             'carrierId': helper.getByString(data, config.carrierId, config.carrierId),
             'orderState': config.receiptStatus,
             'orderStateName': config.receiptStatusName,
-            'orderId': helper.getByString(data, config.orderId, config.orderId)
+            'orderId': helper.getByString(data, config.orderId, config.orderId),
+            'orderActions': helper.getByString(data, config.orderActions, [])
         }
         if(receipt.carrierId !== undefined) {
             data._receipt = receipt //save to be sent along the next message
