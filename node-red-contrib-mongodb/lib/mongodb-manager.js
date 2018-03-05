@@ -48,7 +48,7 @@ class MongoDBManager extends DatabaseManager {
         this._database = node.database;
         this.user = node.credentials.user;
         this.password = node.credentials.password;
-        this.ssl = node.ssl;
+        this.ssl = node.credentials.ssl;
 
 		if(this.db === null && this.getStatus() === '') {
 
