@@ -6,12 +6,16 @@
             name:               { value: undefined },
             intent:             { value: undefined },
             orderItems:         { value: undefined },
+            orderItemsType:     { value: 'msg' },
             merchant:           { value: undefined },
             orderId:            { value: undefined },
+            orderIdType:        { value: 'msg' },
             carrierId:          { value: undefined },
+            carrierIdType:      { value: 'msg' },
             receiptStatus:      { value: undefined },
             receiptStatusName : { value: undefined },
-            orderActions:       { value: undefined }
+            orderActions:       { value: undefined },
+            orderActionsType:   { value: 'msg' }, 
         },
         inputs:  1,
         outputs: 1,
@@ -38,6 +42,10 @@
                 }
             }).val(this.intent);
 
+            $('#node-input-orderItems').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderItemsType") });
+            $('#node-input-orderActions').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderActionsType") });
+            $('#node-input-orderId').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderIdType") });
+            $('#node-input-carrierId').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-carrierIdType") });
         }
     });
 </script>
@@ -63,14 +71,17 @@
     <div class="form-row row-for-transaction row-after-transaction">
         <label for="node-input-orderId"><i class="fa fa-tag"></i> Order ID</label>
         <input type="text" id="node-input-orderId" placeholder="msg.id">
+        <input type="hidden" id="node-input-orderIdType"/>
     </div>
     <div class="form-row row-for-transaction">
         <label for="node-input-orderItems"><i class="fa fa-tag"></i> Order Items</label>
         <input type="text" id="node-input-orderItems" placeholder="msg.items">
+        <input type="hidden" id="node-input-orderItemsType"/>
     </div>
     <div class="form-row row-after-transaction">
         <label for="node-input-carrierId"><i class="fa fa-tag"></i> Carrier ID</label>
         <input type="text" id="node-input-carrierId" placeholder="msg.id">
+        <input type="hidden" id="node-input-carrierIdType"/>
     </div>
     <div class="form-row row-after-transaction">
         <label for="node-input-receiptStatus"><i class="icon-tag"></i> Receipt status</label>
@@ -86,6 +97,7 @@
      <div class="form-row row-after-transaction">
         <label for="node-input-orderActions"><i class="fa fa-tag"></i> Order Actions</label>
         <input type="text" id="node-input-orderActions" placeholder="msg.actions">
+        <input type="hidden" id="node-input-orderActionsType"/>
     </div>
 </script>
 
