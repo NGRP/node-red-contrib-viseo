@@ -38,12 +38,28 @@
             outputs:      { value: 1 },
             signintext:   { value: undefined },
             signintitle:  { value: undefined },
-            signinurl:    { value: undefined }
+            signinurl:    { value: undefined },
+            shcardtext:   { value: undefined },
+            shcardtitle:  { value: undefined },
+            shcardimage:  { value: undefined },
+            shcardbutton: { value: undefined },
+            shcardurl:    { value: undefined }
         },
         inputs:  1, 
         outputs: 1,
 
         oneditprepare: function () {
+
+            $(document).on('change', '.section-card select', function() {
+                var $parent = $(this).parent('.section-card');
+                $parent.find('input').prop('disabled', false);
+
+                if ($(this).val() === 'share') {
+                    $parent.find('input').prop('disabled', true);
+                    $('.section-share').removeClass('hide')
+                }
+            });
+
             $(document).on('change', '.section-quick select', function() {
 
                 var $parent = $(this).parent('.section-quick');
@@ -84,8 +100,15 @@
 
             $('#node-input-sendType').change(function (event) { 
                 var type = $(this).val();
-                $('.section-type').addClass('hide')
-                $('.section-'+type).removeClass('hide')
+                $('.section-type, .section-share').addClass('hide')
+                $('.section-'+type).removeClass('hide');
+
+                if (type === "card") {
+                    $('.cardbt').each(function(){
+                        if ($(this).find('.node-input-action').val() === "share") $('.section-share').removeClass('hide')
+                    })
+                }
+                
             });
 
             // Buttons
@@ -135,7 +158,7 @@
                         value  : $(this).find('.node-input-value').val(),
                         regexp : $(this).find('.node-input-regexp').val(),
                     }
-                    if ((btn.title && btn.value) || btn.action === 'askLocation' || btn.action === 'askIdentity') { buttons.push(btn); }
+                    if ((btn.title && btn.value) || btn.action.match(/askLocation|askIdentity|share/)) { buttons.push(btn); }
                 })
             };
 
@@ -326,7 +349,7 @@
         </div>
         <div class="form-row">
             <label for="node-input-speechText"></label>
-            <textarea id="node-input-speechText" rows="5" style="width:300px" placeholder="Text for speech"></textarea>
+            <textarea id="node-input-speechText" rows="5" style="width:80%" placeholder="Text for speech"></textarea>
         </div>
     </div>
 
@@ -384,7 +407,7 @@
                     </div>
                     <div class="form-row">
                         <label for="node-input-subtitle">Subtitle</label>
-                        <textarea id="node-input-subtitle" rows="3" style="width:300px"></textarea>
+                        <textarea id="node-input-subtitle" rows="3" style="width:70%"></textarea>
                     </div>
                     <!--
                     <div class="form-row">
@@ -426,6 +449,31 @@
                 </div>
             </section>
         </section>
+        <section class="section-type section-share">
+            <h5 class="subsection"><span>Shared card</span></h5>
+            <section class="subsection">
+                <div class="form-row">
+                    <label for="node-input-shcardtitle">Title</label>
+                    <input type="text" id="node-input-shcardtitle">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-shcardtext">Text</label>
+                    <textarea id="node-input-shcardtext" rows="2" style="width:70%"></textarea>
+                </div>
+                <div class="form-row">
+                    <label for="node-input-shcardimage">Image</label>
+                    <input type="text" id="node-input-shcardimage" placeholder="http://path/to/card/image">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-shcardbutton">Button</label>
+                    <input type="text" id="node-input-shcardbutton">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-shcardurl">URL</label>
+                    <input type="text" id="node-input-shcardurl">
+                </div>
+            </section>
+        </section>
     </div>
 
     <h5 class="subsection"><span>Outputs</span></h5> 
@@ -443,6 +491,7 @@
                     <option value="postBack">Post Back</option>
                     <option value="imBack">IM Back</option>
                     <option value="openUrl">Open URL</option>
+                    <option value="share">Share</option>
                     <option value="showImage">Show Image</option>
                     <option value="playAudio">Play Audio</option>
                     <option value="playVideo">Play Video</option>
@@ -554,6 +603,19 @@
                 <b>Text</b>: text to send to the user.
                 <br><b>Button</b>: text on the button.
                 <br><b>URL</b>: signin URL.
+            </p>
+
+            <h3>Share</h3>
+            <p>Share an URL (Facebook only)</p>
+            <p style="margin-left: 20px;">
+                <b>Title</b>: Card title.
+                <br><b>Text</b>: Card text.
+                <br><b>Image</b>: Card image path.
+                <br><b>Shared card title</b>: Title of the shared card.
+                <br><b>Shared card text</b>:  Text of the shared card.
+                <br><b>Shared card image</b>: Image of the shared card.
+                <br><b>Shared card button</b>: Text on the button of the shared card.
+                <br><b>Shared card url</b>: Redirection URL of the shared card.
             </p>
         </ol>
     </div>

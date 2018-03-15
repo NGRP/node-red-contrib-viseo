@@ -63,7 +63,18 @@ const getButtons = (locale, config, data) => {
         return [];
     }
     for (let button of buttons){
-        if (!button.title || !button.action || !button.value) continue;
+        if (button.action === "share") {
+            button.action = marshall(locale, button.action, data, '');
+            button.sharedCard = {
+                title:  marshall(locale, config.shcardtitle,  data, ''),
+                text:   marshall(locale, config.shcardtext,   data, ''),
+                media:  marshall(locale, config.shcardimage,  data, ''),
+                button: marshall(locale, config.shcardbutton, data, ''),
+                url:    marshall(locale, config.shcardurl,    data, '')
+            }
+            continue;
+        }
+        else if (!button.title || !button.action || !button.value) continue;
 
         button.title  = marshall(locale, button.title,  data, '')
         button.action = marshall(locale, button.action, data, '')
@@ -88,6 +99,7 @@ const input = (node, data, config) => {
 
     // Retrieve replies
     let replies = buildReply(node, data, config);
+
     if (!replies){ 
         sendData(node, data, config); 
         return;
@@ -147,6 +159,7 @@ const buildReply = (node, data, config) => {
         }]
     }
 
+
     // Other card message
     let buttons = getButtons(locale, config, data);
     buttonsStack.push(data, buttons);
@@ -191,6 +204,7 @@ const buildReply = (node, data, config) => {
 
     return carousel.length > 0 ? carousel : [reply];
 }
+
 
 const sendData = (node, data, config) => {
 
