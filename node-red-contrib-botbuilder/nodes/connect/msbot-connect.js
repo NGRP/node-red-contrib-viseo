@@ -160,7 +160,40 @@ const getMessage = (replies) => {
 
     // One or multiple cards
     for (let reply of replies) {
-        let card = getHeroCard(reply)
+
+        var contentShare = false;
+        for (let button of reply.buttons) if (button.action === "share") contentShare = true;
+
+        if (contentShare) {
+            var newButtons = [];
+            for (let button of reply.buttons) newButtons.push(buildButtonObject(button));
+
+            msg.data.address = { channelId: 'facebook' };
+            msg.sourceEvent({
+                facebook: {
+                    attachment:{
+                        "type":"template",
+                        "payload":{
+                            "template_type":"generic",
+                            "elements":[
+                                {
+                                "title":     reply.title,
+                                "subtitle":  reply.subtitle,
+                                "image_url": helper.absURL(reply.attach),
+                                "buttons":   newButtons
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+            if (msg.speak && reply.speech)     msg.speak(reply.speech === true ? (card._speech || '') : reply.speech);
+            if (reply.prompt && msg.inputHint) msg.inputHint('expectingInput'); 
+            return msg;
+            
+        }
+
+        let card = getHeroCard(reply);
         msg.addAttachment(card);
 
         // Only the latest speech is used
@@ -174,20 +207,61 @@ const getMessage = (replies) => {
     return msg;
 };
     
-    const buildQuickReplyObject = (obj) => {
-    
-        return {
-            content_type: obj.action === 'askLocation' ? 'location' : 'text',
-            title: obj.title,
-            payload: obj.value
-        };
+const buildQuickReplyObject = (obj) => {
+
+    return {
+        content_type: obj.action === 'askLocation' ? 'location' : 'text',
+        title: obj.title,
+        payload: obj.value
     };
+};
+
+const buildButtonObject = (obj) => {
+    if (obj.action === "share") return {
+        "type": "element_share",
+        "share_contents": { 
+            "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [
+                    {
+                        "title":     obj.sharedCard.title,
+                        "subtitle":  obj.sharedCard.text,
+                        "image_url": obj.sharedCard.media,
+                        "buttons": [
+                        {
+                            "type": "web_url",
+                            "url":   helper.absURL(obj.sharedCard.url),
+                            "title": obj.sharedCard.button
+                        }]
+                    }]
+                }
+            }
+        }
+    }
+    if (obj.action === "openUrl") return {
+        "type":"web_url",
+        "url": obj.value,
+        "title": obj.title,
+        "messenger_extensions": "false",  
+        "fallback_url": "https://www.facebook.com/"
+    }
+    if (obj.action === "call") return {
+        "type":"phone_number",
+        "title":  obj.title,
+        "payload": obj.value
+    }
+    else return {
+        "type":"postback",
+        "title": obj.title,
+        "payload": obj.value
+    }
+}
     
 const buildRawMessage = (msg, opts) => {
 
-    if (opts.type === 'card') {
-        return false;
-    }
+    if (opts.type === 'card') return false;        
 
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
@@ -227,8 +301,23 @@ const buildRawMessage = (msg, opts) => {
             msg.speak(opts.speech === true ? opts.text : opts.speech);
         }
 
-        const newQuick = [];
-        for (let button of opts.buttons) newQuick.push(builder.CardAction.imBack(undefined, button.value, button.title));
+        let isLocation = false;
+        let newQuick = [];
+        for (let button of opts.buttons) {
+            let card = builder.CardAction.imBack(undefined, button.value, button.title);
+            newQuick.push(card);
+            if (button.action === "askLocation" ) isLocation = true;
+        }
+
+        if (isLocation) {
+            msg.data.address = { channelId: 'facebook' };
+            const quickRepliesObject = {
+                facebook: { quick_replies: [] }
+            };
+            for (let button of opts.buttons) quickRepliesObject.facebook.quick_replies.push(buildQuickReplyObject(button));
+            msg.sourceEvent(quickRepliesObject);
+        }
+
         msg.suggestedActions( builder.SuggestedActions.create( undefined, newQuick ));
         return true;
     }
