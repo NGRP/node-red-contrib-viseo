@@ -25,7 +25,9 @@
 	"node-red": {
 		"nodes": {
 			"salesforce-object": "node-salesforce-object.js",
-			"salesforce-config": "node-salesforce-config.js"
+			"salesforce-config": "node-salesforce-config.js",
+			"salesforce-cc-object": "node-salesforce-cc-object.js",
+			"salesforce-cc-config": "node-salesforce-cc-config.js"
 		}
 	}
 }
