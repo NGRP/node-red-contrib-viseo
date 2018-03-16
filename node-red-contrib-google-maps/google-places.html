@@ -22,6 +22,8 @@
             var parameters = this.parameters,
                 request = this.request;
 
+
+
             $("#node-input-name").typedInput({    default: "str",  types: ["str"],  type:"str" });
             $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
 
@@ -44,9 +46,12 @@
                     $(".request").show();
                 }
 
-                updFields();
+                if (request) {
+                    $("#node-input-request").val(request);
+                    $('#node-input-request option[value=' + request +']').attr("selected", "selected");
+                }
 
-                if (request) $('#node-input-request option[value=' + request +']').attr("selected", "selected");
+                updFields();
 
             }
 
