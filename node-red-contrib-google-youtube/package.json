@@ -1,0 +1,21 @@
+{
+    "name"          : "node-red-contrib-viseo-google-youtube",
+    "version"       : "0.0.1",
+    "description"   : "Node-RED interface to Youtube APIs",
+    "dependencies"  : {
+        "node-red-contrib-viseo-google-authentication" : "~0.1",
+        "node-red-viseo-helper"                        : "~0.1",
+        "googleapis"                                   : "~22.2.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-google-youtube"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "viseo", "sarah", "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "node-youtube": "node-youtube.js"
+        }
+    }
+}

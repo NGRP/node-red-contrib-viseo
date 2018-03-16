@@ -1,10 +1,10 @@
 {
     "name": "node-red-contrib-viseo-google-authentication",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description": "Wrapper of Google Authentication",
     "dependencies": {
-        "google-auth-library": "~0.11.0"
+        "google-auth-library" : "~0.11.0"
     },
     "repository": {
         "type": "git",
@@ -14,7 +14,8 @@
     "keywords": ["viseo", "sarah", "node-red"],
     "node-red": {
         "nodes": {
-            "google-service-account" : "google-service-account.js"
+            "google-service-account" : "google-service-account.js",
+            "google-api-key"         : "google-api-key.js"
         }
     }
 }
