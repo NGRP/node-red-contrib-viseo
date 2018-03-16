@@ -1,0 +1,220 @@
+<script type="text/javascript">
+    RED.nodes.registerType('google-places',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            auth:       { value: undefined, type: 'google-api-key', required: true },
+            action:     { value: 'search' },
+            request:    { value: 'textsearch' },
+            output:     { value: undefined, required: false },
+            outputType: { value: 'msg'},
+            parameters: { value: {} }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "google.svg",
+        align: "left",
+        paletteLabel: 'Places',
+        label: function() { return this.name || "Google Places"; },
+        oneditprepare: function() {
+
+            var parameters = this.parameters,
+                request = this.request;
+
+            $("#node-input-name").typedInput({    default: "str",  types: ["str"],  type:"str" });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+
+            $("#node-input-action").change(updActions);
+            $("#node-input-request").change(updFields);
+
+            function updActions() {
+                var actionVal = $("#node-input-action").val();
+                $("#node-input-request").empty();
+                $(".request").hide();
+
+                if (actionVal === "search") {
+                    addOption("nearbysearch", "Nearby search");
+                    addOption("textsearch", "Text search");
+                    $(".request").show();
+                }
+                if (actionVal === "autocomp") {
+                    addOption("autocomplete", "Place autocomplete");
+                    addOption("queryautocomplete", "Query autocomplete");
+                    $(".request").show();
+                }
+
+                updFields();
+
+                if (request) $('#node-input-request option[value=' + request +']').attr("selected", "selected");
+
+            }
+
+            function updFields() {
+                $("#container").empty();
+
+                var actionVal = $("#node-input-action").val();
+                if (actionVal === "details") {
+                    addParam("placeid", "A textual identifier that uniquely identifies a place, returned from a Place Search", "str", true);
+                    addParam("language", "The language code, indicating in which language the results should be returned, if possible", "str", false);
+                    displayOptions();
+                    return;
+                }
+                if (actionVal === "photos") {
+                    console.log('here')
+                    addParam("photoreference", "A string identifier that uniquely identifies a photo", "str", true);
+                    addParam("maxheight", "Specifies the maximum desired height or width, in pixels, of the image returned by the Place Photos service", "num", false);
+                    addParam("maxwidth", "A Specifies the maximum desired height or width, in pixels, of the image returned by the Place Photos service", "num", false);
+                    displayOptions();
+                    return;
+                }
+
+                var requestVal = $("#node-input-request").val();
+                if (requestVal === "nearbysearch") {
+                    addParam("location", "The latitude/longitude around which to retrieve place information", "str", true);
+                    addParam("radius", "Defines the distance (in meters) within which to return place results", "num", true);
+                    addParam("keyword", "A term to be matched against all content that Google has indexed for this place", "str", false);
+                    addParam("rankby", "Specifies the order in which results are listed ('prominence'/'distance')", "str", false);
+                }
+                if (requestVal === "textsearch") {
+                    addParam("query", "The text string on which to search, for example: 'restaurant' or '123 Main Street'", "str", true);
+                    addParam("location", "The latitude/longitude around which to retrieve place information", "str", false);
+                    addParam("radius", "Defines the distance (in meters) within which to bias place results", "num", false);
+                }
+                if (requestVal.match(/search$/)) {
+                    addParam("language", "The language code, indicating in which language the results should be returned, if possible", "str", false);
+                    addParam("minprice", "Restricts results to only those places within the specified range", "num", false);
+                    addParam("maxprice", "Restricts results to only those places within the specified range", "num", false);
+                    addParam("opennow", "Returns only those places that are open for business at the time the query is sent", "str", false);
+                    addParam("type", "Restricts the results to places matching the specified type", "str", false);
+                    addParam("pagetoken", "Returns the next 20 results from a previously run search", "str", false);
+                }
+                if (requestVal.match(/complete$/)) {
+                    addParam("input", "The text string on which to search", "str", true);
+                    addParam("offset", "The position, in the input term, of the last character that the service uses to match predictions", "num", false);
+                    addParam("location", "The point around which you wish to retrieve place information", "str", false);
+                    addParam("radius", "The distance (in meters) within which to return place results", "num", false);
+                    addParam("language", "The language code, indicating in which language the results should be returned, if possible", "str", false);
+                }
+                if (requestVal === "autocomplete") {
+                    addParam("types", "The types of place results to return", "str", false);
+                    addParam("components", "A grouping of places to which you would like to restrict your results", "json", false);
+                    addParam("strictbounds", "Returns only those places that are strictly within the region defined by location and radius", "str", false);
+                }
+
+                displayOptions();
+
+            }
+
+            function displayOptions() {
+                var keys = Object.keys(parameters);
+                if (keys.length > 0) {
+                    $( "#container .parameter" ).each(function( index ) {
+                        var index = keys.indexOf(this.id);
+                        if (index !== -1) {
+                            $("#" + this.id).val(parameters[keys[index]].value);
+                            $("#" + this.id).typedInput('type', parameters[keys[index]].typedInput);
+                        }
+                    });
+                }
+            }
+
+
+        },
+        oneditsave: function(){
+            var newObj = {};
+
+            $( "#container .parameter" ).each(function( index ) {
+                newObj[this.id] = {"value": $(this).val(), "typedInput":  $("#" + this.id + "Type").val()}
+            });
+
+            this.action =  $("#node-input-action").val();
+            this.request = ($(".request").css('display') === "none") ? "" : $("#node-input-request").val();
+            this.parameters = newObj;
+        }
+    });
+
+    function addOption(value, text) {
+        var option = $('<option></option>').attr("value", value).text(text);
+        $("#node-input-request").append(option);
+    }
+
+    function addParam(title, description, typin, req) {
+        var text = (req) ? title + '*' : title; 
+        var label = $('<label></label>').text(text).css({ "padding-left":"10px", "width":"150px", "margin-bottom":"10px"});
+        var input = $('<input></input>').attr({"type":"text", "class":"parameter", "id":title, "placeholder":description}).css("width","65%");
+        var hiddn = $('<input></input>').attr({"type":"hidden", "id":title + "Type"});
+
+        $("#container").append(label);
+        $("#container").append(input);
+        $("#container").append(hiddn);
+        $("#container").append('<br>');
+
+        $("#" + title).typedInput({ default: typin, types: ['msg',typin], typeField: $("#" + title + "Type") });
+    }
+
+</script>
+
+<style>
+    .input-info { font-size: 12px; padding-left: 104px; font-style: italic; }
+    textarea { resize: vertical; }
+</style>
+
+<script type="text/x-red" data-template-name="google-places">
+    <div class="form-row" style="min-width:600px;">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Google Places settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-auth"><i class="fa fa-lock"></i> API Key</label>
+        <input type="text" id="node-input-auth" style="width: 70%" placeholder="">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-cogs"></i> Action</label>
+        <select id="node-input-action" style="width: 70%">
+            <option value="search">Place search</option>
+            <option value="details">Place details</option>
+            <option value="photos">Place photos</option>
+            <option value="autocomp">Autocomplete</option>
+        </select>
+    </div>
+
+    <div class="form-row request">
+        <label for="node-input-request"><i class="fa fa-tasks"></i> Request</label>
+        <select id="node-input-request" style="width: 70%">
+        </select>
+    </div>
+
+    <div class="form-row request">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style = "width:70%;">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+    <br>
+    <b>Request settings</b>
+
+    <div class="form-row">
+        <br>
+        <div class="form-row" id="container">
+        </div>
+        <i style="margin-left: 20px; color:grey;">* required</i>
+    </div>
+
+
+
+</script>
+
+<script type="text/x-red" data-help-name="google-places">
+
+    <section class="help-section">
+    
+        </section>
+
+</script>
