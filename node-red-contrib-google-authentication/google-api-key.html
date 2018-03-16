@@ -1,0 +1,28 @@
+<script type="text/javascript">
+    RED.nodes.registerType('google-api-key',{
+        category: 'config',
+        defaults: { 
+            name:       { value: undefined },
+        },
+        credentials: {
+            key:        { value: undefined }
+        },
+        label: function() { return this.name || 'Google API key'; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="google-api-key">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-key"><i class="fa fa-tag"></i> API Key</label>
+        <input type="text" id="node-config-input-key" placeholder="Your API key">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="google-api-key">
+   <p>Config for Google API key</p>
+   
+</script>

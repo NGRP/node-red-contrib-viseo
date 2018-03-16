@@ -5,8 +5,6 @@
         defaults: { 
             name:   	    { value: undefined },
             sfConfig:       { value: undefined, required: true, type: 'salesforce-config' },
-            token: 	        { value: undefined },
-            tokenType:      { value: 'msg'},
             action:         { value: 'get', required: true},
             object:         { value: 'Account', required: true},
             objectLabel:       { value: undefined},
@@ -31,19 +29,22 @@
             if (this.name !== undefined && this.name !== "") return this.name;
             else {
                 let name = "Get ";
-                if      (this.action === "post")    name = "New ";
-                else if (this.action === "patch")   name = "Update ";
-                else if (this.action === "delete")  name = "Delete ";
-                else if (this.action === "query")   name = "Query ";
+
+                if      (this.action === "post")        name = "New ";
+                else if (this.action === "patch")       name = "Update ";
+                else if (this.action === "delete")      name = "Delete ";
+                else if (this.action === "query")       name = "Query ";
+                else if (this.action === "describe")    name = "Describe ";
+
                 if      (this.object === "Customer_Survey__c") name += "survey";
                 else if (this.object === "else") name += "object";
                 else    name += (this.object).toLowerCase();
+
                 return  name;
             }
         },
         oneditprepare: function() {
 
-            if (!this.tokenType) this.tokenType = 'msg';
             if (!this.objectLabelType) this.objectLabelType = 'msg';
             if (!this.objectIdType) this.objectIdType = 'msg';
             if (!this.objectObjectType) this.objectIdType = 'msg';
@@ -51,7 +52,6 @@
             if (!this.queryWhereType) this.queryWhereType = 'msg';
             if (!this.queryEqualsType) this.queryEqualsType = 'msg';
 
-            $("#node-input-token").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-tokenType") });
             $("#node-input-objectLabel").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectLabelType") });
             $("#node-input-objectId").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectIdType") });
             $("#node-input-objectObject").typedInput({ default: 'msg', types: ['msg','json','global'], typeField: $("#node-input-objectObjectType") });
@@ -94,20 +94,16 @@
         <label for="node-input-sfConfig"><i class="fa fa-lock"></i> Config</label>
         <input type="text" id="node-input-sfConfig" style="width:70%;">
     </div>
-    <div class="form-row">
-        <label for="node-input-token"><i class="fa fa-lock"></i> Token</label>
-        <input type="text" id="node-input-token" style="width:70%;">
-        <input type="hidden" id="node-input-tokenType">
-    </div>
 
     <br>
-    <b>Object settings</b>
+    <b>Request settings</b>
 
     <div class="form-row">
         <br>
         <select id="node-input-action" style="width:100px; display:inline-block;">
             <option value="get">Get</option>
             <option value="query">Query</option>
+            <option value="describe">Describe</option>
             <option value="post">New</option>
             <option value="patch">Update</option>
             <option value="delete">Delete</option>

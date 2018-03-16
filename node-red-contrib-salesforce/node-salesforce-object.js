@@ -8,171 +8,196 @@ const helper  = require('node-red-viseo-helper');
 
 module.exports = function(RED) {
     const register = function(config) {
+        
         RED.nodes.createNode(this, config);
-        let sfConfig = RED.nodes.getCredentials(config.sfConfig);
+        
         let node = this;
-        this.on('input', (data)  => { input(node, data, config, sfConfig)  });
+        node.config = RED.nodes.getNode(config.sfConfig);
+        
+        this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("salesforce-object", register, {});
 }
 
-async function input (node, data, config, sfConfig) {
+
+const start = (node, config) => {
+
+    if (config.object === "else") {
+        if (config.objectLabel === "" || config.objectLabel === undefined)  {
+            node.status({ fill: "red", shape: "ring", text: "An object label must be specified" });
+            return
+        }
+    }
+
+    node.status({})
+}
+
+
+const input = async (node, data, config) => {
 
     // Get values
-
-    let instance = sfConfig.instance,
-        token = config.token,
-        action = (config.action).toUpperCase(),
-        object = config.object,
-        objectId = config.objectId,
-        objectLabel = config.objectLabel,
-        objectObject = config.objectObject,
-        querySelect = config.querySelect,
-        queryWhere = config.queryWhere,
-        queryEquals = config.queryEquals;
-        
-    if (object === "else") {
-        if (objectLabel === "" || objectLabel === undefined)  return node.error("An object label must be specified");
-        else {
-            object = objectLabel[0].toUpperCase() + objectLabel.substr(1).toLowerCase();
-        }
-    }
-
-    let objectIdType = config.objectIdType,
-        objectObjectType = config.objectObjectType,
-        tokenType = config.tokenType;
-
-    // Get token
-    if (tokenType !== 'str') {
-        let loc = (tokenType === 'global') ? node.context().global : data;
-        token = helper.getByString(loc, config.token);
-    }
-    if (token === undefined ||token === "") {
-        try { let json = await getToken(sfConfig.id, sfConfig.secret, sfConfig.refresh);
-                  token = JSON.parse(json).access_token;
-        } catch (err) { return node.error(err); }
-    }
-
-        
-    if (action === "QUERY") {
-
-        // Get query info
-        let querySelectType = config.querySelectType,
-            queryWhereType = config.queryWhereType,
-            queryEqualsType = config.queryEqualsType;
-
-            console.log(queryEqualsType, querySelectType, queryWhereType);
-
-        if (querySelectType !== 'str') {
-            let loc = (querySelectType === 'global') ? node.context().global : data;
-            querySelect = helper.getByString(loc, config.querySelect);
-        }
-        if (queryWhereType !== 'str') {
-            let loc = (queryWhereType === 'global') ? node.context().global : data;
-            queryWhere = helper.getByString(loc, config.queryWhere);
-        }
-        if (queryEqualsType !== 'str') {
-            let loc = (queryEqualsType === 'global') ? node.context().global : data;
-            queryEquals = helper.getByString(loc, config.queryEquals);
-        }
-
-        // Process fields
-        querySelect = querySelect.replace(/ /g,'');
-        querySelect = querySelect.replace(/,/g,'+,+');
-        queryWhere += "+=+'" + queryEquals + "'";
-
-        console.log('2');
-    }
-    else {
-        // Get other info    
-
-        if (objectIdType !== 'str') {
-            let loc = (objectIdType === 'global') ? node.context().global : data;
-            objectId = helper.getByString(loc, config.objectId);
-        }
-        if (objectObjectType !== 'json') {
-            let loc = (objectObjectType === 'global') ? node.context().global : data;
-            objectObject = helper.getByString(loc, config.objectObject);
-        }
-        else objectObject = JSON.parse(objectObject);
-    }
-
-
     // Process research
+    
+    let action = config.action.toUpperCase(),
+        object = config.object,
+        objectLabel = config.objectLabel,
+        querySelect, queryWhere,
+        objectId, objectObject;
+
+    if (object === "else") {
+        object = objectLabel;
+    }
+
+    if(action === "QUERY") {
+        [ querySelect, queryWhere ] = prepareQuery(data, config)
+    } else if(["GET", "PATCH", "POST", "DELETE"]) {
+        [ objectId, objectObject ] = prepareRequest(data, config)
+    }
+
+
+    run(node, data, action, objectId, objectObject, object, querySelect, queryWhere)
+}
+
+const run = async (node, data, action, objectId, objectObject, object, querySelect, queryWhere) => {
+
+    if(node.config.token === undefined) {
+        node.error("Missing access token");
+        return;
+    }
 
     try { 
-        let json = await processRequest(token, instance, objectId, action, objectObject, object, querySelect, queryWhere);
+
+        let json = await processRequest(action, node.config.token, node.config.credentials.instance, node.config.version, objectId, objectObject, object, querySelect, queryWhere);
         data.payload = JSON.parse(json);
-        data.payload.token = token;
+
         return node.send(data);
     }
     catch (err) {
-        if (err.statusCode === 401) {
-            try { 
-                let json = await getToken(sfConfig.id, sfConfig.secret, sfConfig.refresh);
-                let key = JSON.parse(json).access_token;
 
-                json = await processRequest(key, instance, objectId, action, objectObject, object, querySelect, queryWhere);
-                data.payload = JSON.parse(json);
-                data.payload.token = key;
+        if (err.statusCode === 401 && node.config.refreshToken()) { //access_token expiry
+            
+            run(node, data, action, objectId, objectObject, object, querySelect, queryWhere)
+            
+        } else { 
 
+            if (String(err).match(/Unexpected end of JSON input/)) {
                 return node.send(data);
+            } else {
+                return node.error(err);
             }
-            catch (err) {
-                if (String(err).match(/Unexpected end of JSON input/)) return node.send(data);
-                return node.error(err); }
-        }
-        else {
-            if (String(err).match(/Unexpected end of JSON input/)) return node.send(data);
-            else return node.error(err); 
         }
     }
 }
 
+const prepareQuery = (data, config) => {
 
-async function processRequest (token, instance, objectId, action, objectObject, object, select, where) {
-    var url = instance + "/services/data/v20.0/sobjects/" + object + "/";
+    let querySelect = config.querySelect,
+        queryWhere = config.queryWhere,
+        queryEquals = config.queryEquals;
+
+
+    // Get query info
+    let querySelectType = config.querySelectType,
+        queryWhereType = config.queryWhereType,
+        queryEqualsType = config.queryEqualsType;
+
+    console.log(queryEqualsType, querySelectType, queryWhereType);
+
+    if (querySelectType !== 'str') {
+        let loc = (querySelectType === 'global') ? node.context().global : data;
+        querySelect = helper.getByString(loc, querySelect);
+    }
+    querySelect = querySelect.replace(/ /g,'');
+    querySelect = querySelect.replace(/,/g,'+,+');
+
+
+    if(queryWhere) {
+
+        if (queryWhereType !== 'str') {
+            let loc = (queryWhereType === 'global') ? node.context().global : data;
+            queryWhere = helper.getByString(loc, queryWhere);
+        }
+        if (queryEqualsType !== 'str') {
+            let loc = (queryEqualsType === 'global') ? node.context().global : data;
+            queryEquals = helper.getByString(loc, queryEquals);
+        }
+
+        queryWhere += "+=+'" + queryEquals + "'";
+    }
+
+    console.log('2');
+
+    return [ querySelect, queryWhere ]
+}
+
+const prepareRequest = (data, config) => { 
+
+    
+    let objectId = config.objectId,
+        objectLabel = config.objectLabel,
+        objectObject = config.objectObject;
+
+    let objectIdType = config.objectIdType,
+        objectObjectType = config.objectObjectType;
+
+    // Get other info    
+
+    if (objectIdType !== 'str') {
+        let loc = (objectIdType === 'global') ? node.context().global : data;
+        objectId = helper.getByString(loc, config.objectId);
+    }
+    if (objectObjectType !== 'json') {
+        let loc = (objectObjectType === 'global') ? node.context().global : data;
+        objectObject = helper.getByString(loc, config.objectObject);
+    }
+    else objectObject = JSON.parse(objectObject);
+
+    return [ objectId, objectObject ]
+}
+
+
+const processRequest = (action, token, instance, version, objectId, objectObject, object, select, where) => {
+
+    var url = instance + "/services/data/" + version + "/sobjects/" + object + "/";
     
     let req = {
-        method: action,
-        uri: url,
         headers: {  
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
+            'Authorization': 'Bearer ' + token
         }
     };
 
-    if (action === "POST") req.body = (typeof objectObject === 'object') ? JSON.stringify(objectObject) : objectObject ;
-    else if (action === "PATCH") {
-        req.uri  = url + objectId;
+    //set URI
+    if(["POST"].includes(action)) {
+        req.uri = url
+    } else if(["QUERY"].includes(action)) {
+        req.uri = instance + "/services/data/v20.0/query/?q=SELECT+ " + select + "+from+" + object;
+        if(where)  {
+            req.uri += "+WHERE+" + where;
+        }
+
+    } else if(["DESCRIBE"].includes(action)) {
+        req.uri = url + "describe";
+    } else {
+        req.uri = url + objectId;
+    }
+
+    //set Content Type
+    if(["GET", "PATCH", "POST", "DESCRIBE"].includes(action)) {
+        req.headers["Content-Type"] = 'application/json';
+    }
+
+    //set Content
+    if(["POST", "PATCH"].includes(action)) {
         req.body = (typeof objectObject === 'object') ? JSON.stringify(objectObject) : objectObject ;
     }
-    else if (action === "QUERY") {
-        delete req.headers['Content-Type'];
+
+    //set method
+    if(["QUERY", "DESCRIBE"].includes(action)) {
         req.method = "GET";
-        req.uri = instance + "/services/data/v20.0/query/?q=SELECT+ " + select + "+from+" + object + "+WHERE+" + where;
-    }
-    else if (action === "GET") req.uri = url + objectId;
-    else {
-        req.uri = url + objectId;
-        delete req.headers['Content-Type'];
+    } else {
+        req.method = action;
     }
 
-    console.log(req);
 
-    return request(req);
-}
-
-async function getToken (clientid, clientsec, refresh) {
-    let req = {
-        method: 'POST',
-        uri: 'https://login.salesforce.com/services/oauth2/token',
-        formData: {
-            grant_type: 'refresh_token',
-            client_secret: clientsec,
-            client_id: clientid,
-            refresh_token: refresh
-        }
-    };
     return request(req);
 }

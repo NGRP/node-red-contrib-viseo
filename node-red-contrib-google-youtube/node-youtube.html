@@ -1,0 +1,71 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-youtube',{
+        category: 'VISEO REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            account:    { type: 'google-api-key', required: true },
+            channelId:  { value: undefined },
+            region:     { value: undefined },
+            query:      { value: undefined },
+            queryType:  { value: 'str' },
+            maxResults: { value: undefined , validate: RED.validators.number() },
+            order:      { value: "relevance" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "youtube.svg",
+        align: "left",
+        paletteLabel: "Youtube",
+        label: function() { return this.name || 'Youtube'; },
+        oneditprepare: function() {
+            $('#node-input-query').typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-queryType") })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-youtube">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-account"><i class="fa fa-key"></i> API Key</label>
+        <input type="text" id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-channelId"><i class="fa fa-youtube"></i> Channel ID </label>
+        <input type="text" id="node-input-channelId" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-region"><i class="fa fa-globe"></i> Region </label>
+        <select id="node-input-region">
+            <option value="FR" selected>France</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-query"><i class="fa fa-search"></i> Query</label>
+        <input type="text" id="node-input-query" placeholder="">
+        <input type="hidden" id="node-input-queryType"/>
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxResults"><i class="fa fa-bars"></i> Max results</label>
+        <input type="text" id="node-input-maxResults" placeholder="" value="5">
+    </div>
+    <div class="form-row">
+        <label for="node-input-order"><i class="fa fa-sort-down"></i> Order </label>
+        <select id="node-input-order">
+            <option value="relevance" selected>Most relevant</option>
+            <option value="date">Latest</option>
+            <option value="rating">Best rated</option>
+            <option value="title">Alphabetical (title)</option>
+            <option value="viewCount">Most viewed</option>
+        </select>
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="node-youtube">
+   <p>Connector to Youtube Data REST API for [ video search ] (https://developers.google.com/youtube/v3/docs/search/list).</p>
+   
+</script>
