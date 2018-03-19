@@ -22,7 +22,6 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
 
-        this.database = config.database;
         this.databaseManager = new MongoDBManager(this);
 
         //remember to close connections on node-red stop
@@ -34,11 +33,12 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("mongodb", register, {
         credentials: {
-            host:      { type: "text" },
-            port:      { type: "text" },
+            hosts:      { type: "text" },
             user:      { type: "text" },
             password:  { type: "text" },
-            ssl:       { type: "boolean" }
+            database:  { type: "text" },
+            replicaSet:{ type: "text" },
+            ssl:       { type: "text" }
         }
     });
 
