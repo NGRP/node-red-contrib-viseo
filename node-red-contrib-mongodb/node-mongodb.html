@@ -3,22 +3,72 @@
         category: 'config',
         color: '#3FADB5',
         defaults: { 
-            name:      { value: undefined },
-            database:  { value: undefined },
+            name:      { value: undefined }
         },
         credentials: {
-            host:      { type: "text" },
-            port:      { type: "text" },
+            hosts:     { type: "text" },
             user:      { type: "text" },
             password:  { type: "text" },
-            ssl:       { type: "boolean" } 
+            database:  { type: "text" },
+            replicaSet: { type: "text" },
+            ssl:       { type: "text" }
         },
         inputs:  1,
         outputs: 1,
         icon: "db.svg",
         align: "left",
         paletteLabel: "MongoDB",
-        label: function() { return this.name || this.database; }
+        label: function() { return this.name || "Mongo DB"; },
+        oneditprepare: function() {
+
+            if(this.credentials.ssl == "on") {
+                $("#node-config-input-ssl").prop("checked", true);
+            } else {
+                $("#node-config-input-ssl").prop("checked", false);
+            }
+
+            $('#node-hosts').editableList({
+                addItem: function(row, index, data) {
+                    var port = data.port || '';
+                    var host = data.host || '';
+                    $(row).html('<input type="text" name="host['+index+']" placeholder="localhost" value="'+host+'"/>&nbsp;<input type="text" name="port['+index+']" placeholder="27017" value="'+port+'" style="width:20%"/>');
+                },
+                removable: true
+            });
+
+            let hosts = [];
+            let savedHosts = JSON.parse(this.credentials.hosts)
+
+            let regex = /([a-z]+)\[([0-9]+)\]/
+
+            for(let object of savedHosts) {
+                let parseResult = object.name.match(regex)
+                if(parseResult.length === 0) {
+                    continue;
+                }
+
+                if(hosts[parseResult[2]] === undefined) {
+                    hosts[parseResult[2]] = {}
+                }
+                hosts[parseResult[2]][parseResult[1]] = object.value
+
+            }
+
+            for(let host of hosts) {    
+                $('#node-hosts').editableList('addItem', host);
+            }
+            
+        },
+        oneditsave: function() {
+            if($("#node-config-input-ssl").prop("checked")) {
+                $("#node-config-input-ssl").val('on');
+            } else {
+                $("#node-config-input-ssl").val('off');
+            }
+            
+            $('#node-config-input-hosts').val(JSON.stringify($('#node-config-dialog-edit-form').serializeArray()))
+
+        }
     });
 </script>
 
@@ -26,14 +76,6 @@
     <div class="form-row">
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
-        <input type="text" id="node-config-input-host" placeholder="localhost">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-port"><i class="icon-tag"></i> Port</label>
-        <input type="text" id="node-config-input-port" placeholder="27017">
     </div>
     <div class="form-row">
         <label for="node-config-input-database"><i class="icon-tag"></i> DB</label>
@@ -46,6 +88,16 @@
     <div class="form-row">
         <label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
         <input type="text" id="node-config-input-password" placeholder="">
+    </div>
+     <div class="form-row">
+        <label for="node-config-input-hosts"><i class="icon-tag"></i> Hosts</label>
+        <input type="hidden" id="node-config-input-hosts">
+        <ol id="node-hosts"></ol>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-replicaSet"><i class="icon-tag"></i> Replica Set</label>
+        <input type="text" id="node-config-input-replicaSet" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-config-input-ssl"><i class="icon-tag"></i> SSL</label>

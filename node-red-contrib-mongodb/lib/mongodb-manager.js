@@ -24,10 +24,8 @@ class MongoDBManager extends DatabaseManager {
 
     getStatus(config) {
     	let error = '';
-        if(!this.host) {
+        if(!this.hosts) {
             error = 'Missing host for MongoDB server';
-        } else if(!this.port) {
-            error = 'Missing port for Mongo server';
         } else if(!this._database) {
             error = 'Missing database name for Mongo connection';
         } else if(config && !config.collection) {
@@ -43,21 +41,24 @@ class MongoDBManager extends DatabaseManager {
 
     _init(node) {
 
-        this.host = node.credentials.host;
-        this.port = node.credentials.port;
-        this._database = node.database;
+        this._database = node.credentials.database;
         this.user = node.credentials.user;
         this.password = node.credentials.password;
-        this.ssl = node.credentials.ssl;
+        this._initHosts(JSON.parse(node.credentials.hosts));
 
+        if(node.credentials.ssl === "on") {
+            this.ssl = true;
+        } else {
+            this.ssl = false;
+        }
+        this.replicaSet = node.credentials.replicaSet;
+
+       
 		if(this.db === null && this.getStatus() === '') {
 
             this.url =  'mongodb://'+node.credentials.user+':'+encodeURIComponent(node.credentials.password)
-                    +'@'+node.credentials.host+':'+node.credentials.port+'/'+node.database;
+                    +'@'+this._hosts()+'/'+node.credentials.database+this._options();
 
-            if(this.ssl) {
-                this.url += '?ssl=true';
-            }
 
             let manager = this;
 
@@ -72,6 +73,64 @@ class MongoDBManager extends DatabaseManager {
                 }
             });
         }
+    }
+    _initHosts(hosts) {
+
+        let string = '';
+        this.hosts = [];
+
+        let regex = /([a-z]+)\[([0-9]+)\]/
+
+        for(let object of hosts) {
+            let parseResult = object.name.match(regex)
+            if(parseResult.length === 0) {
+                continue;
+            }
+
+            if(this.hosts[parseResult[2]] === undefined) {
+                this.hosts[parseResult[2]] = {}
+            }
+            this.hosts[parseResult[2]][parseResult[1]] = object.value
+        }
+        
+    }
+
+    _options() {
+
+        let options = {}
+        let string = ''
+
+        if(this.ssl) {
+            options.ssl = 'true';
+        }
+
+        if(this.replicaSet) {
+            options.replicaSet = this.replicaSet;
+        }
+
+        if(Object.keys(options).length > 0) {
+            string += '?';
+            for (let option in options) {
+                string += option + '='+options[option] + '&';
+            }
+            string = string.substring(0, string.length -1)
+        }
+
+        return string
+    }
+
+
+    _hosts() {
+        
+        let string = ''
+
+        for(let host of this.hosts) {
+            string += host.host + ':' + host.port + ',';
+        }
+
+        string = string.substring(0, string.length -1);
+
+        return string;
     }
 
     end(callback) {

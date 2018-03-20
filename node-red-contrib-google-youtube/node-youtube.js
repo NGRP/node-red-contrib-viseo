@@ -1,7 +1,7 @@
 'use strict'
 
 const googleapis = require('googleapis');
-const help = require('node-red-viseo-helper');
+const helper = require('node-red-viseo-helper');
 
 module.exports = function(RED) {
 
