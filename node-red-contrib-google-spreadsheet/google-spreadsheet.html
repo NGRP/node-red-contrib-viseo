@@ -220,6 +220,12 @@
                     <b>Sheet1</b> refers to all the cells in Sheet1.
                     </blockquote>
                 </p>
+                <h4>Save</h4>
+                <p>
+                    In order to avoid multiple calls to Sheets API, the node uses this field to stock the Sheet data.<br>
+                    <b>Please delete its content every time the sheet's data has been changed! </b><br>
+                    This can be done with a simple "inject" node followed by a "change" node (delete global._sheet).
+                </p>
             </ol> 
     
             <h3>"Set data" request Settings</h3>

@@ -1,14 +1,17 @@
 # Node-RED
 
-A Node-RED node to add AI to your chatbot, connected to Google Speech API. 
+A Node-RED node to get/set data from/to a Google Spreadsheet. 
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-google-speech
+npm install node-red-contrib-viseo-google-spreadsheet
 ```
+
+Make sure to have "node-red-contrib-viseo-google-authentication" installed.
+In order to use this node, a Google Service Account with an access to Google Sheets API is needed.
 
 ## Getting Help
 
