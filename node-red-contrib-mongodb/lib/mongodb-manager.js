@@ -147,21 +147,25 @@ class MongoDBManager extends DatabaseManager {
 
     count(key, data, config, callback) {
 
-        const collection = this.db.collection(config.collection);
-        collection.count(key, function(err, count) {
-            callback(err, data, count)
-        });
+        try {
+            const collection = this.db.collection(config.collection);
+            collection.count(key, function(err, count) {
+                callback(err, data, count)
+            });
+        } catch(e) {
+            callback(e, data, {})
+        }
 
     }
 
     async find(key, data, config, callback) { 
 
-        const collection = this.db.collection(config.collection);
-
-        let err = null;
+        var err = null;
         let documents = [];
 
         try {
+            const collection = this.db.collection(config.collection);
+
 
             let cursor = collection.find(key);
             if(config.limit) {
@@ -179,28 +183,41 @@ class MongoDBManager extends DatabaseManager {
 
 	update(key, value, data, config, callback) {
 
-		let collection = this.db.collection(config.collection);
-	    collection.updateOne(key, { $set: value }, { upsert: true }, function(err, result) {
-	        callback(err, data, result);
-	    });
+        try {
+    		let collection = this.db.collection(config.collection);
+    	    collection.updateOne(key, { $set: value }, { upsert: true }, function(err, result) {
+    	        callback(err, data, result);
+    	    });
+        } catch(e) {
+            callback(e, data, {})
+        }
 	}
 
 	add(values, data, config, callback) {
 
-	    let collection = this.db.collection(config.collection);
-	    collection.insert(values, function(err, result) {
-	    	callback(err, data, result);
-	    });
+        try { 
+
+    	    let collection = this.db.collection(config.collection);
+    	    collection.insert(values, function(err, result) {
+    	    	callback(err, data, result);
+    	    });
+        } catch(e) {
+            callback(e, data, {})
+        }
 
 	}
 
 	remove(key, data, config, callback) {
 
-	    let collection = this.db.collection(config.collection);
-	    collection.remove(key, function(err, result) {
-	        callback(err, data, result);
-	    });    
+        try {
 
+    	    let collection = this.db.collection(config.collection);
+    	    collection.remove(key, function(err, result) {
+    	        callback(err, data, result);
+    	    });    
+        } catch(e) {
+            callback(e, data, {})
+        }
 	}
 };
 
