@@ -170,7 +170,7 @@ const processRequest = (action, token, instance, version, objectId, objectObject
     if(["POST"].includes(action)) {
         req.uri = url
     } else if(["QUERY"].includes(action)) {
-        req.uri = instance + "/services/data/v20.0/query/?q=SELECT+ " + select + "+from+" + object;
+        req.uri = instance + "/services/data/" + version + "/query/?q=SELECT+ " + select + "+from+" + object;
         if(where)  {
             req.uri += "+WHERE+" + where;
         }

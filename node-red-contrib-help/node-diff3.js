@@ -30,7 +30,7 @@ async function start(RED, node, config) {
 
         // Auth
         if (req.body.id && req.body.pass) {
-            var host = req.headers.referer.substring(0, req.headers.referer.length-8);
+            var host = "http://localhost:"+process.env.PORT;
             var auth = getAuth(req.body.id, req.body.pass, host)
                 .then( function(ok) {
                     if (!ok) displayUnauth("Unauthorized", "You are not allowed to access this page", req, res, next);

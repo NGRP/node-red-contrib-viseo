@@ -29,7 +29,6 @@ module.exports = function(RED) {
 
 const start = (RED, node, config) => {
     node.account = RED.nodes.getNode(config.account);
-    console.log(node.account)
 };
 
 const input = (node, data, config) => {
