@@ -68,7 +68,7 @@ async function input(RED, node, data, config) {
             node.warn("Missing credentials");
             helper.setByString(outloc, output, "400");
         }
-        let url = config.creds.url,
+        let url = config.creds.credentials.url,
             username = config.creds.credentials.username,
             password = config.creds.credentials.password;
 
@@ -105,7 +105,7 @@ async function input(RED, node, data, config) {
     else if (process === "restore") {
 
         if (!config.creds || !config.creds.credentials) return node.warn("Missing credentials");
-        let url = config.creds.url,
+        let url = config.creds.credentials.url,
             flows = config.flows,
             token = config.creds.credentials.token;
 
@@ -173,7 +173,7 @@ async function input(RED, node, data, config) {
             return node.send(data);
         }
     
-        let url = config.creds.url,
+        let url = config.creds.credentials.url,
             flows = config.flows,
             token = config.creds.credentials.token;
 

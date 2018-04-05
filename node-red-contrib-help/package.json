@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-help",
-    "version"       : "0.1.5",
+    "version"       : "0.1.6",
     "description"   : "Help call between outputs",
     "dependencies"  : { 
         "node-red-viseo-helper" : "~0.1"

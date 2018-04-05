@@ -3,15 +3,15 @@
         category: 'config',
         defaults: {
             name:     { value: undefined },
-            url:      { value: undefined },
             passwordType: { value: 'str' },
             usernameType: { value: 'str' },
             tokenType:    { value: 'msg' }
         },
         credentials: {
-            password:    { type:"password" },
-            username:    { type:"text" },
-            token:       { type:"text" }
+            password:    { type: "password" },
+            username:    { type: "text" },
+            token:       { type: "text" },
+            url:         { type: "text"}
         },
         label: function() {
             return this.name || "Node-Red config";

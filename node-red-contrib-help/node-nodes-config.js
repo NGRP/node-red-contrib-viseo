@@ -2,7 +2,6 @@ module.exports = function(RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
         this.name = config.name;
-        this.url = config.url;
         this.usernameType = config.usernameType;
         this.passwordType = config.passwordType;
         this.tokenType =    config.tokenType;
@@ -11,7 +10,8 @@ module.exports = function(RED) {
     	credentials: {
             password:    { type:"password" },
             username:    { type:"text" },
-            token:       { type:"text" }
+            token:       { type:"text" },
+            url:         { type: "text"}
         }
     });
 }
