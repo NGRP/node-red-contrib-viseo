@@ -1,6 +1,5 @@
-
+const request =    require('request-promise');
 const helper     = require('node-red-viseo-helper');
-const LUISClient = require("./luis");
 
 // https://github.com/Microsoft/Cognitive-LUIS-Node.js
 // --------------------------------------------------------------------------
@@ -12,61 +11,58 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         
         this.config = RED.nodes.getNode(config.config);
-
         var node = this;
-
-        try { start(node, config); } catch (ex){ node.warn(ex) }
         this.on('input', (data)  => { try { input(node, data, config) } catch (ex){ node.warn(ex) }});
-        this.on('close', (cb)    => { try { stop(node, cb, config) }    catch (ex){ node.warn(ex) }});
     }   
     RED.nodes.registerType("ms-luis", register, {});
 }
 
-let LUISclients = {};
-const stop  = (node, callback, config) => { 
-    LUISclients = {};
-    callback(); 
-}
 
-const start = (node, config) => {
+async function input(node, data, config) {
+    
     if (!config.config){
         return node.status({fill:"red", shape:"ring", text: 'Missing credential'});
     }
 
-    if(LUISclients[node.config.credentials.appId] === undefined) {
-        LUISclients[node.config.credentials.appId] = LUISClient({
-            appId:  node.config.credentials.appId,
-            appKey: node.config.credentials.subKey,
-            host: node.config.host,
-            verbose: true
-        });
+    // Get parameters
+    let way = node.config.way || "key";
+    let cred = node.config.credentials;  
+    let text = config.text || "payload";
+    let output = config.intent || "payload";
+
+    // Credentials
+    if (way === "key" && (!cred.appId || !cred.subKey)) {
+        return node.status({fill:"red", shape:"ring", text: 'Missing credential'});
+    }
+    else if (way === "endpoint" && !cred.endpoint) {
+        return node.status({fill:"red", shape:"ring", text: 'Missing credential'});
     }
 
-    
-    node.status({});
-}
+    let host = node.config.host.replace(/^https?:\/\//ig, '') || "";
+        host = "https://" + host.replace(/^www/ig, '');
+        host = host.replace(/\/$/ig, '');
 
-const input = (node, data, config) => {
-    let client = LUISclients[node.config.credentials.appId];
-    if (client === undefined) return node.send(data);
 
-    let text = config.text || "payload",
-        intent = config.intent || "payload";
-
+    // Input
     if (config.textType !== 'str') {
         let loc = (config.textType === 'global') ? node.context().global : data;
-        text = helper.getByString(loc, text); }
+        text = helper.getByString(loc, text);
+    }
 
-    let intentLoc = (config.intentType === 'global') ? node.context().global : data;
+    // Process
+    let url = (way === "key") ? host + "/luis/v2.0/apps/" + cred.appId + "?subscription-key=" + cred.subKey + "&q="  : cred.endpoint;
 
-    client.predict(text, {
-        // On success of prediction
-        onSuccess: function (response) {
-            helper.setByString(intentLoc, intent, response);
-            node.send(data);
-        },
+    try {
+        let response = await request({
+            uri: url + encodeURIComponent(text),
+            method: 'GET'
+        });
 
-        // On failure of prediction
-        onFailure: function (err) { node.warn(err); }
-    });
+        let outLoc = (config.intentType === 'global') ? node.context().global : data;
+        helper.setByString(outLoc, output, JSON.parse(response));
+        return node.send(data);
+    }
+    catch(err) { 
+        return node.error(err);
+    }
 }

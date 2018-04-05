@@ -3,11 +3,34 @@
         category: 'config',
         defaults: {
             name:   { value: undefined },
-            host:   { value: undefined, required: true }
+            way:    { value: "key" },
+            host:   { value: undefined }
         },
         credentials: {
             appId:        { type: "text" },
             subKey:       { type: "text" },
+            endpoint:     { type: "text" }
+        },
+        oneditprepare: function() {
+            if (!this.way) this.way = "key";
+            $("#node-config-input-host").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-appId").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-subKey").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-endpoint").typedInput({ default: 'str', types: ['str'], type: 'str'});
+
+            $("#node-config-input-way").change(function() {
+                $(".key, .endpoint").hide();
+                if ($(this).val() === "key" ) {
+                    $(".key").show();
+                    $("#node-config-input-host").typedInput('show');
+                    $("#node-config-input-appId").typedInput('show');
+                    $("#node-config-input-subKey").typedInput('show');
+                }
+                else {
+                    $(".endpoint").show();
+                    $("#node-config-input-endpoint").typedInput('show');
+                }
+            })
         },
         label: function() {
             return this.name || "LUIS config";
@@ -20,18 +43,34 @@
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
+
+    <br>
     <div class="form-row">
-        <label for="node-config-input-host"><i class="icon-tag"></i> Host</label>
-        <input type="text" id="node-config-input-host" placeholder="">
+        <label for="node-config-input-way"><i class="fa fa-tasks"></i> Config</label>
+        <select id="node-config-input-way" style="width:70%;">
+            <option value="key">With keys</option>
+            <option value="endpoint">With endpoint</option>
+        </select>
     </div>
-    <div class="form-row">
-        <label for="node-config-input-appId"><i class="icon-tag"></i> App ID</label>
-        <input type="text" id="node-config-input-appId" placeholder="">
+
+    <br>
+    <div class="form-row key">
+        <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-config-input-host" style="width:70%;" placeholder="https://westus.api.cognitive.microsoft.com">
     </div>
-    <div class="form-row">
-        <label for="node-config-input-subKey"><i class="icon-tag"></i> Sub Key</label>
-        <input type="text" id="node-config-input-subKey" placeholder="">
+    <div class="form-row key">
+        <label for="node-config-input-appId"><i class="fa fa-lock"></i> App ID</label>
+        <input type="text" id="node-config-input-appId" style="width:70%;" placeholder="">
     </div>
+    <div class="form-row key">
+        <label for="node-config-input-subKey"><i class="fa fa-lock"></i> Sub Key</label>
+        <input type="text" id="node-config-input-subKey" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row endpoint">
+        <label for="node-config-input-endpoint"><i class="fa fa-globe"></i> Endpoint</label>
+        <input type="text" id="node-config-input-endpoint" style="width:70%;" placeholder="https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/{app}?subscription-key={key}&verbose=true&timezoneOffset=0&q=">
+    </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="ms-luis-config"></script>
