@@ -101,7 +101,6 @@ const prepareQuery = (data, config) => {
         queryWhereType = config.queryWhereType,
         queryEqualsType = config.queryEqualsType;
 
-    console.log(queryEqualsType, querySelectType, queryWhereType);
 
     if (querySelectType !== 'str') {
         let loc = (querySelectType === 'global') ? node.context().global : data;
@@ -124,8 +123,6 @@ const prepareQuery = (data, config) => {
 
         queryWhere += "+=+'" + queryEquals + "'";
     }
-
-    console.log('2');
 
     return [ querySelect, queryWhere ]
 }

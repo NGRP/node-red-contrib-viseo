@@ -1,0 +1,52 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-takeover',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: { 
+            name:         { value: undefined },
+            config:       { value: undefined, type: 'facebook-config'}, 
+            userId:       { value: undefined },
+            appDestination: { value: undefined },
+            metadata:       { value: undefined } 
+        },
+        inputs:  1,
+        outputs: 2,
+        outputLabels: ["success","failure"],
+        icon: "facebook.svg",
+        align: "right",
+        paletteLabel: 'FB takeover',
+        label: function() { return this.name || "FB Takeover"; }
+    });
+
+   
+</script>
+
+<script type="text/x-red" data-template-name="facebook-takeover">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-config"><i class="icon-tag"></i> Credentials</label>
+        <input type="text" id="node-input-config" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-userId"><i class="icon-tag"></i> User ID</label>
+        <input type="text" id="node-input-userId" placeholder="user.id">
+    </div>
+   <div class="form-row">
+        <label for="node-input-metadata"><i class="icon-tag"></i> Metadata (optionnal)</label>
+        <input type="text" id="node-input-metadata" placeholder="Data for secondary app">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="facebook-takeover">
+
+    Take thread from secondary app
+
+    <h3>Output</h3>
+    <ul>
+        <li>0: Success</li>
+        <li>1: Failure</li>
+    </ul>
+</script>

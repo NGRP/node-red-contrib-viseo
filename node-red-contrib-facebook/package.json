@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-facebook",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "description"   : "A set of facebook utilies for Node-RED",
     "dependencies"  : {
         "node-red-viseo-helper"      : "~0.1",
@@ -15,7 +15,8 @@
     "node-red" : {
         "nodes": {
             "facebook-config":   "facebook-config.js",
-            "facebook-handover": "facebook-handover.js"
+            "facebook-handover": "facebook-handover.js",
+            "facebook-takeover": "facebook-takeover.js"
         }
     }
 }
