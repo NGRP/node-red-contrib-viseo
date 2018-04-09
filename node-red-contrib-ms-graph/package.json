@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-ms-graph",
-    "version"       : "0.2.0",
+    "version"       : "0.2.4",
     "author"        : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Wrapper of Microsoft Graph",
     "dependencies"  : {  
@@ -17,7 +17,8 @@
     "node-red" : {
         "nodes": {
             "node-ms-graph":   "node-ms-graph.js",
-            "node-ms-graph-config": "node-ms-graph-config.js"
+            "node-ms-graph-config": "node-ms-graph-config.js",
+            "node-ms-graph-excel": "node-ms-graph-excel.js"
         }
     }
 }

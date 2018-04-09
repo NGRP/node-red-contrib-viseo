@@ -10,19 +10,29 @@ const uuidv4 = require('uuid/v4');
 module.exports = function (RED) {
   const register = function (config) {
     RED.nodes.createNode(this, config);
+    config.redirect = this.credentials.redirect;
+    config.username = this.credentials.username;
+    config.password = this.credentials.password;
     config.config = RED.nodes.getCredentials(config.config);
     let node = this;
     this.on('input', (data) => { input(node, data, config) });
   }
-  RED.nodes.registerType("ms-graph", register, {});
+  RED.nodes.registerType("ms-graph", register, {
+      credentials : {
+        redirect:     { type: "text" },
+        username:     { type: "text" },
+        password:     { type: "text" }
+      }
+  });
 }
 
 async function input(node, data, config) {
-
+  
   let action = config.action,
       redirect = config.redirect,
       scope = config.scope,
       state = config.state,
+      authority = config.authority,
       output = config.output || "payload",
       outLoc = (config.outputType === 'global') ? node.context().global : data;
 
@@ -40,11 +50,19 @@ async function input(node, data, config) {
     let loc = (config.scopeType === 'global') ? node.context().global : data;
     scope = helper.getByString(loc, scope);
   }
+
+  if (config.authorityType !== 'str') {
+    let loc = (config.authorityType === 'global') ? node.context().global : data;
+    authority = helper.getByString(loc, authority);
+  }
+
+
+
   scope = scope || 'User.Read';
   scope = scope.toLowerCase().replace(/,/g,' ');
 
   let credentials = {
-    'authority': 'https://login.microsoftonline.com/viseo.com',
+    'authority': authority || 'https://login.microsoftonline.com/viseo.com',
     'authorize_endpoint': '/oauth2/v2.0/authorize',
     'token_endpoint': '/oauth2/v2.0/token',
     'client_id': config.config.clientid,
@@ -67,7 +85,7 @@ async function input(node, data, config) {
       let loc = (config.codeType === 'global') ? node.context().global : data;
       code = helper.getByString(loc, code);
     }
-    if (!code) node.error("Code missing");
+    if (!code) return node.error("Code missing");
 
     try { 
       let json = await getTokenFromCode(credentials, code);
@@ -75,11 +93,40 @@ async function input(node, data, config) {
       return node.send(data);
     }
     catch (err) {
-      node.error(err); 
+      node.error(err);
+      helper.setByString(outLoc, output, "ERROR");
+      return node.send(data);
     }
   }
 
-  if (action === "token-refresh") {
+  if (action === "token-password") {
+    let username = config.username;
+    let password = config.password;
+
+    if (config.usernameType !== 'str') {
+      let loc = (config.usernameType === 'global') ? node.context().global : data;
+      username = helper.getByString(loc, username);
+    }
+  
+    if (config.passwordType !== 'str') {
+      let loc = (config.passwordType === 'global') ? node.context().global : data;
+      password = helper.getByString(loc, password);
+    }
+    if (!username || !password) return node.error("Credentials missing");
+
+    try { 
+      let json = await getTokenFromPass(credentials, username, password);
+      helper.setByString(outLoc, output, JSON.parse(json));
+      return node.send(data);
+    }
+    catch (err) {
+      node.error(err);
+      helper.setByString(outLoc, output, "ERROR");
+      return node.send(data);
+    }
+  }
+
+  if (action === "token-code-refresh") {
     let refresh = config.refresh;
     if (config.refreshType !== 'str') {
       let loc = (config.refreshType === 'global') ? node.context().global : data;
@@ -103,7 +150,7 @@ async function input(node, data, config) {
       let loc = (config.tokenType === 'global') ? node.context().global : data;
       token = helper.getByString(loc, token);
     }
-    if (!token) node.error("Token missing");
+    if (!token) return node.error("Token missing");
 
     try { 
       let json = await getUser(token);
@@ -111,7 +158,29 @@ async function input(node, data, config) {
       return node.send(data);
     }
     catch (err) {
-      node.error(err); 
+      node.error(err);
+      helper.setByString(outLoc, output, "ERROR");
+      return node.send(data);
+    }
+  }
+
+  if (action === "rooms") {
+    let token = config.token;
+    if (config.tokenType !== 'str') {
+      let loc = (config.tokenType === 'global') ? node.context().global : data;
+      token = helper.getByString(loc, token);
+    }
+    if (!token) return node.error("Token missing");
+
+    try { 
+      let json = await getRooms(token);
+      helper.setByString(outLoc, output, JSON.parse(json));
+      return node.send(data);
+    }
+    catch (err) {
+      node.error(err);
+      helper.setByString(outLoc, output, "ERROR");
+      return node.send(data);
     }
   }
 
@@ -166,6 +235,22 @@ async function getTokenFromCode(CREDENTIALS, code) {
   return request(req);
 }
 
+async function getTokenFromPass(CREDENTIALS, username, password) {
+  let req = {
+    method: "POST",
+    uri:  CREDENTIALS.authority +  CREDENTIALS.token_endpoint,
+    formData: {
+        grant_type: 'password',
+        client_id: CREDENTIALS.client_id,
+        client_secret: CREDENTIALS.client_secret,
+        scope: CREDENTIALS.scope,
+        username: username,
+        password: password
+      }
+  };
+  return request(req)
+}
+
 async function getTokenFromRefresh(CREDENTIALS, refresh) {
   
     let req = {
@@ -200,3 +285,17 @@ async function getUser(access) {
     return request(req);
   }
 
+  async function getRooms(access) {
+    
+      let req = {
+        method: "GET",
+        uri:  "https://graph.microsoft.com/beta/me/findRooms",
+        headers: {
+          "Authorization": "Bearer " + access,
+          "Content-Type": "application/json"
+        }
+      };
+    
+      console.log(req);
+      return request(req);
+    }

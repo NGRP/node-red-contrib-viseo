@@ -8,8 +8,9 @@
             action:       { value: "auth"},
             output:       { value: undefined },
             outputType:   { value: "msg"},
-            redirect:     { value: undefined },
             redirectType: { value: "msg"},
+            usernameType: { value: "msg"},
+            passwordType: { value: "msg"},
             scope:        { value: undefined },
             scopeType:    { value: "msg"},
             state:        { value: undefined },
@@ -19,7 +20,14 @@
             refresh:      { value: undefined },
             refreshType:  { value: "msg"},
             token:        { value: undefined },
-            tokenType:    { value: "msg"}
+            tokenType:    { value: "msg"},
+            authority:        { value: undefined },
+            authorityType:    { value: "msg"},
+        },
+        credentials : {
+            redirect:     { type: "text" },
+            username:     { type: "text" },
+            password:     { type: "text" }
         },
         inputs:  1,
         outputs: 1,
@@ -38,16 +46,24 @@
             $("#node-input-code").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-codeType") });
             $("#node-input-refresh").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-refreshType") });
             $("#node-input-token").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-tokenType") });
+            $("#node-input-username").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-usernameType") });
+            $("#node-input-password").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-passwordType") });
+            $("#node-input-authority").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-authorityType") });
 
             $("#node-input-action").change( function() {
-                $(".auth, .token, .code, .refresh, .api").hide();
+                $(".auth, .code-token, .code, .code-refresh, .password, .api").hide();
 
                 let value = $(this).val();
                 if (value === "auth")  $(".auth").show();
-                if (value.match(/user/))   $(".api").show();
-                if (value.match(/token/))  $(".token").show();
-                if (value.match(/code/))   $(".code").show();
-                if (value.match(/refresh/)) $(".refresh").show();
+                if (value.match(/user|rooms/))   $(".api").show();
+                if (value.match(/password/))  {
+                    $(".password").show();
+                }
+                if (value.match(/code/)) {
+                    $(".code").show();
+                    if (value.match(/refresh/)) $(".code-refresh").show();
+                    else $(".code-token").show();
+                }
             });
         },
         oneditsave: function() {}
@@ -77,8 +93,10 @@
         <select id="node-input-action" style="width:70%;">
             <option value="auth">Get auth URL</option>
             <option value="token-code">Get token with code</option>
-            <option value="token-refresh">Get token with refresh</option>
+            <option value="token-password">Get token with username/password</option>
+            <option value="token-code-refresh">Get token with code refresh</option>
             <option value="user">Get user information</option>
+            <option value="rooms">Get rooms</option>
         </select>
     </div>
 
@@ -86,34 +104,52 @@
     --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
     <br><br>
 
-    <div class="form-row auth token">
+    <div class="form-row password">
+        <label for="node-input-username" style="margin-left:15px; width: 85px; color:#848484"> Username</label>
+        <input type="text" id="node-input-username" style="width:70%;">
+        <input type="hidden" id="node-input-usernameType">
+    </div>
+
+    <div class="form-row password">
+        <label for="node-input-password" style="margin-left:15px; width: 85px; color:#848484"> Password</label>
+        <input type="text" id="node-input-password" style="width:70%;">
+        <input type="hidden" id="node-input-passwordType">
+    </div>
+
+    <div class="form-row auth code">
         <label for="node-input-redirect" style="margin-left:15px; width: 85px; color:#848484"> Redirect</label>
         <input type="text" id="node-input-redirect" style="width:70%;">
         <input type="hidden" id="node-input-redirectType">
     </div>
 
-    <div class="form-row auth">
-        <label for="node-input-scope" style="margin-left:15px; width: 85px; color:#848484"> Scope</label>
-        <input type="text" id="node-input-scope" style="width:70%;">
-        <input type="hidden" id="node-input-scopeType">
-    </div>
-
-    <div class="form-row auth token">
+    <div class="form-row auth code">
         <label for="node-input-state" style="margin-left:15px; width: 85px; color:#848484"> State</label>
         <input type="text" id="node-input-state" style="width:70%;">
         <input type="hidden" id="node-input-stateType">
     </div>
 
-    <div class="form-row code">
+    <div class="form-row code-token">
         <label for="node-input-code" style="margin-left:15px; width: 85px; color:#848484"> Code</label>
         <input type="text" id="node-input-code" style="width:70%;">
         <input type="hidden" id="node-input-codeType">
     </div>
 
-    <div class="form-row refresh">
+    <div class="form-row code-refresh">
         <label for="node-input-refresh" style="margin-left:15px; width: 85px; color:#848484"> Refresh</label>
         <input type="text" id="node-input-refresh" style="width:70%;">
         <input type="hidden" id="node-input-refreshType">
+    </div>
+
+    <div class="form-row auth password code">
+        <label for="node-input-authority" style="margin-left:15px; width: 85px; color:#848484"> Authority</label>
+        <input type="text" id="node-input-authority" style="width:70%;" placeholder="https://login.microsoftonline.com/foo.com">
+        <input type="hidden" id="node-input-authorityType">
+    </div>
+
+    <div class="form-row auth password code">
+        <label for="node-input-scope" style="margin-left:15px; width: 85px; color:#848484"> Scope</label>
+        <input type="text" id="node-input-scope" style="width:70%;" placeholder="scope1 scope2 scope3">
+        <input type="hidden" id="node-input-scopeType">
     </div>
 
     <div class="form-row api">

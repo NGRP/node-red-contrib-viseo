@@ -1,0 +1,319 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-graph-excel',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            token:      { value: undefined, required: true},
+            tokenType:  { value: "msg"},
+            session:    { value: undefined },
+            sessionType:  { value: "msg"},
+            workbook:   { value: undefined },
+            worksheet:  { value: undefined },
+            range:   { value: undefined },
+            method:  { value: 'append' },
+            action:   { value: 'set' },
+            clear:    {value: false},
+            line:    { value: false},
+            column:  { value: false},
+            fields:  { value: 'all' },
+            save:    { value: true},
+            saveloc:   { value: "_sheet"},
+            selfields: {value: [""]},
+            cell_l: { value: undefined},
+            cell_c: { value: undefined},
+            input:   { value: "payload" },
+            output:  { value: "payload" },
+            savelocType:  {value: 'global'},
+            inputType:  {value: 'msg'},
+            outputType: {value: 'msg'},
+            worksheetType:  {value: 'str'},
+            workbookType:  {value: 'str'},
+            rangeType:  {value: 'str'},
+            cell_lType: {value: 'str'},
+            cell_cType: {value: 'str'}
+            
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: 'Excel',
+        label: function() { 
+            return (this.name) || "Excel";
+        },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+            $("#node-input-token").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-tokenType") });
+            $("#node-input-session").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-sessionType") });
+            $("#node-input-workbook").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-workbookType") });
+            $("#node-input-worksheet").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-worksheetType") });
+            
+            $("#node-input-range").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-rangeType") });
+            $("#node-input-cell_l").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-cell_lType") });
+            $("#node-input-cell_c").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-cell_cType") });
+            $("#node-input-saveloc").typedInput({  default: 'global',  types: ['msg','global'],  typeField: $("#node-input-savelocType") });
+            $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-inputType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+
+            $("#node-input-save").change( function() {
+                $('.save').hide();
+                if ($(this).is(":checked")) {
+                    $(".save").show();
+                    $("#node-input-saveloc").typedInput('show');
+                }
+            }).change();
+
+            $("#node-input-action").change(function() {
+                $(".set, .get, .ctn, .cell").hide();
+                if ($(this).val() === "set") {
+                    $(".set").show();
+                    if ($("#node-input-fields").val() === "select") $(".ctn").show();
+                    if ($("#node-input-method").val() === "new") $(".new").show();
+                    $("#node-input-input").typedInput('show');
+                }
+                else if ($(this).val() === "get") $(".get").show();
+                else if ($(this).val() === "cell") {
+                    $(".cell").show();
+                    $("#node-input-cell_c").typedInput('show');
+                    $("#node-input-cell_l").typedInput('show');
+                }
+            });
+
+            $("#node-input-fields").change(function() {
+                $(".ctn").hide();
+                if ($(this).val() === "select") $(".ctn").show();
+            });
+
+            $("#node-input-method").change(function(){
+                $(".new").hide();
+                if ($(this).val() === "new") $(".new").show();
+            })
+
+            $("#node-input-selfields-ctn").css('min-height','100px').editableList({
+                addItem: function ( row, index, data ) {
+                    var content = data.field || '';
+                    var hiddenField = $('<span/>', {}).appendTo(row);
+                    var titleField =  $('<input/>',  { class:"node-input-property-ctn",  type:"text", style:"width:90%", value: content,  placeholder:"Key"}).appendTo(row);
+                },
+                sortable: true,
+                removable: true
+            });
+
+            for (var i=0; i<this.selfields.length; i++) {      
+                var field = this.selfields[i];
+                $("#node-input-selfields-ctn").editableList('addItem', { field: field, i:i });
+            }
+        },
+        oneditsave: function(){
+            let fields = $("#node-input-selfields-ctn").editableList('items'),
+                results = new Array();
+
+            fields.each(function(i) {
+                var content = $(this).find('.node-input-property-ctn').val();
+                if (content) results.push(content);
+            });
+            this.selfields = (results.length === 0) ? [""] : results;
+            
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-graph-excel">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Excel" style="width:70%;">
+    </div>
+
+    <br>
+    <b>MS Graph Excel settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-token"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-input-token" style="width:70%;">
+        <input type="hidden" id="node-input-tokenType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-session"><i class="fa fa-lock"></i> Session ID</label>
+        <input type="text" id="node-input-session" style="width:70%;" placeholder="Use existing session (empty: new session)>
+        <input type="hidden" id="node-input-sessionType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-workbook"><i class="fa fa-table"></i> Workbook</label>
+        <input type="text" id="node-input-workbook" style="width: 70%" placeholder="Workbook ID/name">
+        <input type="hidden" id="node-input-workbookType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-worksheet"><i class="fa fa-table"></i> Worksheet</label>
+        <input type="text" id="node-input-worksheet" style="width: 70%" placeholder="Worksheet ID/name">
+        <input type="hidden" id="node-input-worksheetType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-range"><i class="fa fa-table"></i> Range</label>
+        <input type="text" id="node-input-range" style="width: 70%" placeholder="Range (empty: auto)">
+        <input type="hidden" id="node-input-rangeType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-save"><i class="fa fa-save"></i> Save</label>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-save"> <span>Save sheet's data in memory</span>
+    </div>
+    <div class="form-row save">
+        <input type="text" id="node-input-saveloc" style="width: 70%; margin-left: 105px;" placeholder="">
+        <input type="hidden" id="node-input-savelocType">
+    </div>
+
+    <br>
+    <b>Request settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action" style="width: 34%">
+            <option value="set">Set data</option>
+            <option value="get">Get data</option>
+            <option value="cell">Get cell</option>
+            <option value="clear">Clear data</option>
+        </select>
+        <select class="set" id="node-input-method" style="width: 35%">
+            <option value="update">Update</option>
+            <option value="new">New</option>
+        </select>
+    </div>
+
+    <div class="form-row new get">
+        <label for="node-input-column"><i class="fa fa-tags"></i> Labels</label>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-line"> <span>First line for labels</span>
+        <input type="checkbox" style="width: auto; vertical-align:top;  margin-left:25px;" id="node-input-column"> <span>First column for labels</span>
+    </div>
+
+    <div class="form-row set">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/> 
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row set">
+        <label for="node-input-fields"><i class="fa fa-tags"></i> Fields</label>
+        <select id="node-input-fields" style="width: 70%">
+            <option value="all">All</option>
+            <option value="select">Select</option>
+        </select>
+    </div>
+
+    <div class="form-row cell">
+        <label for="node-input-cell_c"><i class="fa fa-table"></i> Cell</label>
+        <input type="text" id="node-input-cell_c" style="width: 35%" placeholder="Column"/>
+        <input type="text" id="node-input-cell_l" style="width: 34%" placeholder="Line"/> 
+        <input type="hidden" id="node-input-cell_lType">
+        <input type="hidden" id="node-input-cell_cType">
+    </div>
+
+    <div class="form-row ctn" style="width:70%; margin-left: 105px;">
+        <ol id="node-input-selfields-ctn"></ol>
+        <!-- <textarea id="node-input-selfields" rows="5" style="width:70%; margin-left: 105px;" placeholder="path.to.field"></textarea> -->
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
+    </div>
+</script>
+
+<style>
+    .help-section > ol > h4,
+    .help-section > h3 { font-weight: bold; }
+</style>
+
+<script type="text/x-red" data-help-name="ms-graph-excel">
+    <section class="help-section">
+        <h3>MS Graph Excel Settings</h3>
+        <ol> 
+            <h4>Token</h4>
+            <p>
+                The token should include the following scopes : "Files.Read" and "Files.ReadWrite"
+            </p>
+            <h4>Workbook</h4>
+            <p>
+                The workbook is the name of the file. It is included in the request URL such as: <br>
+                <blockquote>https://graph.microsoft.com/{version}/me/drive/root:/{workbook}:/workbook</blockquote>
+            </p>
+            <h4>Worksheet</h4>
+            <p>
+                The name/ID of the sheet/tab in the document.
+            </p>
+            <h4>Range</h4>
+            <p>
+                The range to get/set/update (ex: "A1:C2"). Please be careful when you want to set data: the range has to be the exact one.
+                Leave empty to use an automatic range.
+            </p>
+            <h4>Save</h4>
+            <p>
+                In order to avoid multiple calls to Sheets API, the node uses this field to stock the Sheet data (if checked).<br>
+                <b>Please delete its content every time the sheet's data has been changed! </b><br>
+                This can be done with a simple "inject" node followed by a "change" node (delete global._sheet).
+            </p>
+        </ol> 
+
+        <h3>"Set data" request Settings</h3>
+        <ol> 
+            <h4>Method</h4>
+            <p>
+                Update current data or delete all data before setting.
+            </p>
+            <h4>Labels</h4>
+            <p>
+                Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
+                It will write labels (object's keys) in the first line/column.
+            </p>
+            <h4>Input</h4>
+            <p>
+                Input field in the flow. Input field has to be an <b>array</b> or a <b>JSON object</b>.<br>
+                Note that it is only possible to set data by lines, and not by columns.
+            </p>
+            <h4>Fields</h4>
+            <p>
+                Fields of the object items to write in the spreadsheet.
+            </p>
+            <h4>Output</h4>
+            <p>
+                Where to get the operation results.
+            </p>
+        </ol> 
+
+        <h3>"Get data" request Settings</h3>
+        <ol> 
+            <h4>Labels</h4>
+            <p>
+                Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
+                The keys of the resulting objects will be adjusted accordingly.
+            </p>
+            <h4>Output</h4>
+            <p>
+                Where to get the operation results.
+            </p>
+        </ol>
+
+        <h3>"Get cell" request Settings</h3>
+        <ol> 
+            <h4>Cell</h4>
+            <p>
+                Precise line and column labels. Both should be precised.
+            </p>
+            <h4>Output</h4>
+            <p>
+                Where to get the operation results : the found data or "Not Found".
+            </p>
+        </ol>
+
+        <h3>"Clear data" request Settings</h3>
+        <ol> 
+            <h4>Output</h4>
+            <p>
+                Where to get the operation results.
+            </p>
+        </ol>
+
+    </section>
+</script>
