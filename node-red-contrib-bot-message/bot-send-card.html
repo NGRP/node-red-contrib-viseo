@@ -1,10 +1,10 @@
 <script type="text/javascript">
-
     RED.nodes.registerType('send-card',{
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults: {
             name:         { value: undefined },
+            labels:       { value: ["Default output"] },
             nodeid:       { value: undefined, validate: function(value) {
                 if (!value.match(/^[a-zA-Z0-9_.-]*$/ig)) return false;
                 var result = 0;
@@ -14,110 +14,207 @@
                 })
                 return (result > 1) ? false : true;
             }},
-            prompt:       { value: undefined },
-            promptText:   { value: undefined },
-            promptTextType:   { value: "msg" },
-            speech:       { value: undefined },
-            speechText:   { value: undefined },
             delay:        { value: 0 },
+            repeat:       { value: 0 },
+            outputs:      { value: 1 },
+            btnOutput:    { value: undefined },
+            quickOutput:  { value: undefined },
+
+            prompt:       { value: undefined },
+            promptText:   { value: "prompt.text" },
+            promptTextType:   { value: "msg" },
+            speech:       { value: true },
+            speechText:   { value: undefined },
+
             sendType:     { value: "text" },
+
             text:         { value: undefined },
             random:       { value: undefined },
+
             media:        { value: undefined },
+            mediaType:    { value: "str" },
+
             title:        { value: undefined },
+            titleType:    { value: "str" },
             subtitle:     { value: undefined },
             subtext:      { value: undefined },
             attach:       { value: undefined },
+            attachType:   { value: "str" },
             carousel:     { value: undefined },
-            buttons:      { value: null },
+            buttons:      { value: [{ title: "", action:"postBack", value:"", regexp:""}]  },
+
             quicktext:    { value: undefined },
-            quickreplies: { value: null },
-            btnOutput:    { value: undefined },
-            quickOutput:  { value: undefined },
-            repeat:       { value: 0 },
-            outputs:      { value: 1 },
+            quickreplies: { value: [{ title: "", action:"postBack", value:"", regexp:""}]  },
+
             signintext:   { value: undefined },
             signintitle:  { value: undefined },
+            signintitleType:  { value: "str" },
             signinurl:    { value: undefined },
-            shcardtext:   { value: undefined },
-            shcardtitle:  { value: undefined },
-            shcardimage:  { value: undefined },
-            shcardbutton: { value: undefined },
-            shcardurl:    { value: undefined }
+            signinurlType:    { value: "str" },
+
+            shcardtext:      { value: undefined },
+            shcardtitle:     { value: undefined },
+            shcardtitleType:     { value: "str" },
+            shcardimage:     { value: undefined },
+            shcardimageType:     { value: "str" },
+            shcardbutton:    { value: undefined },
+            shcardbuttonType:    { value: "str" },
+            shcardurl:       { value: undefined },
+            shcardurlType:       { value: "str" }
         },
         inputs:  1, 
         outputs: 1,
-
+        outputLabels: function(index) { 
+            return this.labels[index];
+        },
         oneditprepare: function () {
 
-            $(document).on('change', '.section-card select', function() {
-                var $parent = $(this).parent('.section-card');
-                $parent.find('input').prop('disabled', false);
+            // Typed Input
+            $("#node-input-name").typedInput({       default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-media").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-mediaType")});
+            $("#node-input-title").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleType")});
+            $("#node-input-attach").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachType")});
+            $("#node-input-signintitle").typedInput({  default: 'str', types: ['msg','global','str'], typeField: $("#node-input-signintitleType")});
+            $("#node-input-signinurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-signinurlType")});
+            $("#node-input-shcardtitle").typedInput({  default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardtitleType")});
+            $("#node-input-shcardimage").typedInput({  default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardimageType")});
+            $("#node-input-shcardbutton").typedInput({ default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardbuttonType")});
+            $("#node-input-shcardurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardurlType")});
 
-                if ($(this).val() === 'share') {
-                    $parent.find('input').prop('disabled', true);
-                    $('.section-share').removeClass('hide')
+            // Prompt and speech : show and hide fields
+            $("#node-input-prompt").change( function() {
+                if ($(this).is(":checked")) {
+                    $("#prompt").show();
+                    $("#node-input-promptText").typedInput('show');
                 }
+                else $("#prompt").hide();
+            }).change();
+
+            $("#node-input-speech").change( function() {
+                if ($(this).is(":checked")) $(".display-speech").hide();
+                else $(".display-speech").show();
             });
 
-            $(document).on('change', '.section-quick select', function() {
-
-                var $parent = $(this).parent('.section-quick');
-                $parent.find('input').prop('disabled', false);
-
-                if ($(this).val() === 'askLocation') $parent.find('input').prop('disabled', true);
-                else if ($(this).val() !== 'postBack' && $(this).val() !== 'imBack') {
-                    $parent.find('.node-input-regexp').prop('disabled', true);
-                }
-            });
-
-            if (!this.promptTextType) this.promptTextType = 'msg';
-            $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-promptTextType") });
-
-            var setButtons = function(buttons, query, add) {
-                var $add = $(add);
-                $add.on('click', function(){
-                    var $tmpl = $(query).last();
-                    $tmpl.before($tmpl.clone());
-                })
-
-                var $query = $(query);
-                var $tmpl  = $query.last().clone();
-                
-                for (var i = 0 ; i < buttons.length; i++){
-                    var $clone = $tmpl.clone();
-                    $query.before($clone);
-
-                    $clone.find('.node-input-title').val(buttons[i].title);
-                    $clone.find('.node-input-value').val(buttons[i].value);
-                    $clone.find('.node-input-regexp').val(buttons[i].regexp);
-                    $clone.find('.node-input-action').val(buttons[i].action).change();
-
-                }
-                $query.before($tmpl);
-                $query.remove();
-            };
-
+            // Type : show and hide sections
             $('#node-input-sendType').change(function (event) { 
                 var type = $(this).val();
                 $('.section-type, .section-share').addClass('hide')
                 $('.section-'+type).removeClass('hide');
-
                 if (type === "card") {
-                    $('.cardbt').each(function(){
-                        if ($(this).find('.node-input-action').val() === "share") $('.section-share').removeClass('hide')
-                    })
+                    displaySharedCard()
+                    $("#node-input-attach, #node-input-title").typedInput('show');
                 }
-                
+                else if (type === "media") {
+                    $("#node-input-media").typedInput('show');
+                }
+                else if (type === "signin") {
+                    $("#node-input-signintitle, #node-input-signinurl").typedInput('show');
+                }
             });
 
-            // Buttons
-            this.buttons = this.buttons || [];
-            setButtons(this.buttons, '.cardbt', '#addcardbt');
+            // Buttons and quick replies : init
+            $("#btn-container").css('min-height','100px').editableList({
+                addItem: function ( row, index, data ) {
 
-            // QuickReplies
-            this.quickreplies = this.quickreplies || [];
-            setButtons(this.quickreplies, '.quickbt', '#addquick');
+                    var button = data.btn,
+                        title = '',
+                        action = 'postBack',
+                        value = '',
+                        regexp = '';
+
+                    if (button) {
+                        if (button.hasOwnProperty('title'))  title =  button.title;
+                        if (button.hasOwnProperty('action')) action = button.action;
+                        if (button.hasOwnProperty('value'))  value =  button.value;
+                        if (button.hasOwnProperty('regexp')) regexp = button.regexp;
+                    }
+
+                    var hiddenField = $('<span/>', {}).appendTo(row);
+                    var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
+                    var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                        actionField.append($("<option></option>").val("postBack").text("Post Back"));
+                        actionField.append($("<option></option>").val("imBack").text("IM Back"));
+                        actionField.append($("<option></option>").val("openUrl").text("Open URL"));
+                        actionField.append($("<option></option>").val("share").text("Share card"));
+                        actionField.append($("<option></option>").val("showImage").text("Show Image"));
+                        actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
+                        actionField.append($("<option></option>").val("playVideo").text("Play Video"));
+                        actionField.append($("<option></option>").val("call").text("Call"));
+                    var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                    var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
+                        actionField.val(action).change();
+                },
+                sortable: true,
+                removable: true
+            });
+
+            $("#qck-container").css('min-height','150px').editableList({
+                addItem: function ( row, index, data ) {
+                    var button = data.btn,
+                        title = '',
+                        action = 'postBack',
+                        value = '',
+                        regexp = '';
+
+                    if (button) {
+                        if (button.hasOwnProperty('title')) title =   button.title;
+                        if (button.hasOwnProperty('action')) action = button.action;
+                        if (button.hasOwnProperty('value')) value =   button.value;
+                        if (button.hasOwnProperty('regexp')) regexp = button.regexp;
+                    }
+
+                    var hiddenField = $('<span/>', {}).appendTo(row);
+                    var titleField =  $('<input/>',  { class:"property-qck-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
+                    var actionField = $('<select/>', { class:"property-qck-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                        actionField.append($("<option></option>").val("postBack").text("Post Back"));
+                        actionField.append($("<option></option>").val("imBack").text("IM Back"));
+                        actionField.append($("<option></option>").val("askLocation").text("Location"));
+                        actionField.append($("<option></option>").val("askIdentity").text("Identity"));
+                    var valueField =  $('<input/>', { class:"property-qck-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                    var regexpField = $('<input/>', { class:"property-qck-regexp",  type:"text", style:"width:20%; margin-right:5px;", value: regexp,  placeholder:"Regex"}).appendTo(row);
+                        actionField.val(action).change()
+                },
+                sortable: true,
+                removable: true
+            });
+
+            // Buttons and quick replies : trigger action changes
+            $(document).on('change', '.property-qck-action', function() {
+
+                var $parent = $(this).parent();
+                var $inputs = $parent.find('input');
+                    $inputs.prop('disabled', false);
+
+                if      ($(this).val() === 'askLocation' || $(this).val() === 'askIdentity')  $inputs.prop('disabled', true);
+                else if ($(this).val() !== 'postBack' && $(this).val() !== 'imBack') {
+                    $parent.find('.property-qck-regexp').prop('disabled', true);
+                }
+            }).change();
+
+            $(document).on('change', '.property-btn-action', function() {
+                var $parent = $(this).parent();
+                var $inputs = $parent.find('input');
+                    $inputs.prop('disabled', false);
+
+                if  ($(this).val().match(/call|share/)) {
+                    $inputs.prop('disabled', true);
+                }
+                else if ($(this).val() !== 'postBack' && $(this).val() !== 'imBack') {
+                    $parent.find('.property-btn-regexp').prop('disabled', true);
+                }
+                displaySharedCard();
+            }).change();
+
+            // Get buttons and quick replies
+            for (var i=0; i<this.buttons.length; i++) {      
+                var infos = this.buttons[i];
+                $("#btn-container").editableList('addItem', { btn: infos, i:i });
+            }
+            for (var i=0; i<this.quickreplies.length; i++) {      
+                var infos = this.quickreplies[i];
+                $("#qck-container").editableList('addItem', { btn: infos, i:i });
+            }
 
             // ID : set a random one
             if (!this.nodeid) newID();
@@ -136,7 +233,7 @@
                 }
                 else  $(this).addClass("input-error");
             });
-
+            
             function newID() {
                 let result = false;
                 let nodeid = "";
@@ -147,53 +244,115 @@
                 $('#node-input-nodeid').val(nodeid);
                 $('#node-input-nodeid').removeClass("input-error");
             }
+
+            function displaySharedCard() {
+                $('.section-share').addClass('hide');
+                if ($('#node-input-sendType').val() !== "card") return;
+                let butt = $("#btn-container").editableList('items');
+                butt.each(function(){
+                    if ($(this).find('.property-btn-action').val() === "share") {
+                        $('.section-share').removeClass('hide');
+                        $("#node-input-shcardtitle, #node-input-shcardimage").typedInput('show');
+                        $("#node-input-shcardbutton, #node-input-shcardurl").typedInput('show');
+                    }
+                })
+            }
+
         },
         oneditsave: function(){
 
-            var saveButtons = function(buttons, query){
-                $(query).each(function(){
-                    var btn = {
-                        title  : $(this).find('.node-input-title').val(),
-                        action : $(this).find('.node-input-action').val(),
-                        value  : $(this).find('.node-input-value').val(),
-                        regexp : $(this).find('.node-input-regexp').val(),
-                    }
-                    if ((btn.title && btn.value) || btn.action.match(/askLocation|askIdentity|share/)) { buttons.push(btn); }
-                })
-            };
+             // Buttons
+            let butt = $("#btn-container").editableList('items');
+            let quic = $("#qck-container").editableList('items');
+            let results = new Array();
 
-            // Buttons
-            this.buttons = [];
-            saveButtons(this.buttons, '.cardbt')
-
-            // QuickReplies
-            this.quickreplies = [];
-            saveButtons(this.quickreplies, '.quickbt')
-
-            // Repeat
-            var repeat = parseInt($('#node-input-repeat').val() || 0);
-            this.outputs = 1 + (repeat > 0 ? 1 : 0)
+            butt.each(function(i) {
+                var btn = {
+                    title  : $(this).find('.property-btn-title').val(),
+                    action : $(this).find('.property-btn-action').val(),
+                    value  : $(this).find('.property-btn-value').val(),
+                    regexp : $(this).find('.property-btn-regexp').val(),
+                }
+                if ((btn.title && btn.value) || btn.action === 'share') { results.push(btn); }
+            });
+            this.buttons = (results.length === 0) ? [{ title: "", action:"postBack", value:"", regexp:""}] : results;
             
-            // Btn Output
-            var type = $('#node-input-sendType').val()
+            results = new Array();
+            quic.each(function(i) {
+                var btn = {
+                    title  : $(this).find('.property-qck-title').val(),
+                    action : $(this).find('.property-qck-action').val(),
+                    value  : $(this).find('.property-qck-value').val(),
+                    regexp : $(this).find('.property-qck-regexp').val(),
+                }
+                if ((btn.title && btn.value) || btn.action.match(/askLocation|askIdentity/)) { results.push(btn); }
+            });
+            this.quickreplies = (results.length === 0) ? [{ title: "", action:"postBack", value:"", regexp:""}] : results;
+
+            // Outputs and labels
+            let labels = new Array();
+            this.delay  = $('#node-input-delay').val()  || 0;
+            this.repeat = $('#node-input-repeat').val() || 0;
+            this.outputs = 1 ;
+
+            var type = $('#node-input-sendType').val();
             if (type === 'card'){
                 var btnOut = $('#node-input-btnOutput').is(':checked')
-                if (btnOut) this.outputs += this.buttons.length
+                if (btnOut) {
+                    labels.push("Unexpected");
+                    let len = this.buttons.length;
+                    this.outputs += len;
+                    for (let i=0; i<len; i++) {
+                        labels.push("Button " + (this.buttons[i].title || this.buttons[i].action));
+                    }
+                }
             } else if (type === 'quick') {
                 var quickOut = $('#node-input-quickOutput').is(':checked')
-                if (quickOut) this.outputs += this.quickreplies.length
+                if (quickOut) {
+                    labels.push("Unexpected");
+                    let len = this.quickreplies.length;
+                    this.outputs += len;
+                    for (let i=0; i<len; i++) {
+                        labels.push("Quickreply " + (this.quickreplies[i].title || this.quickreplies[i].action));
+                    }
+                }
+            }
+            
+            this.labels = (labels.length > 0) ? labels : ["Default output"]; 
+
+            if  (this.repeat > 0) {
+                this.labels.push("Repeat");
+                this.outputs ++;
             }
         },
         icon: function() {
             if (this.sendType === "text")  { return "text.svg"; } 
             if (this.sendType === "media") { return "picture.svg"; } 
             if (this.sendType === "quick") { return "buttons.svg"; }
-            if (this.sendType === "card")  { return "card.svg"; }
+            if (this.sendType === "signin") return "fingerprint.svg";
+            if (this.carousel === true) return "carousel.svg";
+            return "card.svg";
         }, 
         align: "left",
         paletteLabel: "Message",
         labelStyle: "bot-card-name",
-        label: function() { return (this.name || this.text || "Send Card") }
+        label: function() { 
+            if (this.name) return this.name;
+            if (this.sendType === "text" || this.sendType === "quick")  { 
+                if (this.text) {
+                    if (this.text.length <= 20) return "Send: \"" + this.text + "\"";
+                    else return "Send: \"" + this.text.substring(0,17) + '...\"';
+                }
+                else return "Send: \"\"";
+            }
+            if (this.sendType === "card")  {
+                if (this.carousel === true) return "Card";
+                else return "Send card"; 
+            }
+            if (this.sendType === "media")  return "Send media"; 
+            if (this.sendType === "signin") return "Send signin";
+            else return "Send Card";
+        }
     });
 
     function checkNodeID(nodeid, id) {
@@ -211,8 +370,6 @@
         if (!node.nodeid) {
             let result = false;
             let nodeid = "";
-
-            // protéger par un for
             for (let i=0; i<500 && !result; i++) {
                 nodeid = "SEND_" + Date.now();
                 result = (checkNodeID(nodeid));
@@ -228,15 +385,15 @@
         $(document).on('click', '#send-card-tabs .red-ui-tab-label', function(){
             $('.send-card-panel').addClass('hide');
             $('.send-card-tab').removeClass('active');
-
             var $this = $(this);
-            var attri = $this.attr('href').substring(1);
-            var panelId = '#send-card-' + attri;
-            $(panelId).removeClass('hide');
-            if (attri === "prompt") $("#node-input-promptText").typedInput('show');
-            $this.parent('.send-card-tab').addClass('active');
-        })
+            var panelId = '#send-card-' + $this.attr('href').substring(1);
 
+            $(panelId).removeClass('hide');
+            $this.parent('.send-card-tab').addClass('active');
+
+            $("#node-input-promptText").typedInput('show');
+            $("#node-input-name").typedInput('show');
+        })
         // info section
         $(document).on('click', '#send-card-tabs-help .red-ui-tab-label', function(){
             $('.send-card-panel-help').addClass('hide');
@@ -246,287 +403,252 @@
             $('#help-types p').hide();
             $('#help-buttons p').hide();
             $('#help-buttons pre').hide();
-
             var $this = $(this)
             var panelId = $this.attr('href');
             $(panelId).removeClass('hide');
             $this.parent('.send-card-tab-help').addClass('active');
         })
-
     });
-
 </script>
 
 <style>
-    .checkbox-info        { font-size: 12px; }
-    .row-info             { font-size: 12px; margin-left: 4px;    }
-    .input-info           { font-size: 12px; padding-left: 104px; font-style: italic; }
-    H4.section            { border-bottom: 1px solid #BBB; margin: 1em 0em 1em 0em; }
-    .form-list .form-row  { border-bottom: 1px solid #EEE; margin-bottom: 6px; padding-bottom: 6px; }
-    .form-list .red-ui-editableList-item-handle { color: #CCC; margin-right: 4px; }
-
-    h5.subsection         { 
-        color: grey; 
-        position:relative;
-        height:20px;
-        font-weight:normal;
-        margin-top:20px;
+    textarea {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        min-height: 60px;
+        max-width: 100%;
+        width:80%;
+        resize: vertical;
     }
-    h5.subsection span { 
-        margin-left:30px;
-        padding: 0 10px 0 10px; 
-        background-color: white;
-        position: absolute;
-        left:0;
-        top:0;
-    }
-    h5.subsection:before {
-        content: "";
-        position: absolute;
-        margin-top: auto;
-        margin-bottom: auto;
-        height: 1px;
-        background-color: lightgrey;
-        left:0;
-        right:0;
-        top:0;
-        bottom:0;
-    }
-    section.subsection    { 
-        padding-left: 40px; 
+    .red-ui-editableList-border.red-ui-editableList-container {
+        overflow-x: hidden;
+        resize: vertical;
     }
 </style>
 
 <script type="text/x-red" data-template-name="send-card">
-
-    <h4 class="section">General</h4>
-
-    <div class="red-ui-tabs" style="margin-bottom: 10px;">
+   
+    <div class="red-ui-tabs" style="margin-bottom: 10px; min-width:600px;">
         <div>
             <ul id="send-card-tabs">
-                <li class="send-card-tab active"><a href="#msg" class="red-ui-tab-label"><span class="bidiAware" dir="">Config</span></a></li>
-                <li class="send-card-tab"><a href="#prompt" class="red-ui-tab-label"><span class="bidiAware" dir="">Prompt</span></a></li>
-                <li class="send-card-tab"><a href="#speech" class="red-ui-tab-label" title="debug"><span class="bidiAware" dir="">Speech</span></a></li>
+                <li class="send-card-tab active" style="min-width:150px; margin-left:20px;">    <a href="#msg"  class="red-ui-tab-label"><span class="bidiAware" dir="">Content</span></a></li>
+                <li class="send-card-tab"        style="min-width:150px;">                      <a href="#sett" class="red-ui-tab-label"><span class="bidiAware" dir="">Settings</span></a></li>
             </ul>
         </div>
     </div>
 
-    <div id="send-card-msg" class="send-card-panel">
+    <!-- SETTINGS -->
+    <div id="send-card-sett" class="send-card-panel hide">
+
+        <br>
+        <b>Node</b>
         <div class="form-row">
+            <br>
             <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-            <input type="text" id="node-input-name" placeholder="Name">
+            <input type="text" id="node-input-name" placeholder="Name" style="width:80%;">
         </div>
         <div class="form-row">
             <label for="node-input-nodeid"><i class="icon-tag"></i> Unique ID</label>
-            <input type="text" id="node-input-nodeid" placeholder="Unique send-message node ID" style="width: calc(70% - 36px)">
-            <a id="refresh-config" class="editor-button" style="display:inline-block; vertical-align:middle;">
+            <input type="text" id="node-input-nodeid" placeholder="Unique send-message node ID" style="width: calc(80% - 36px)">
+            <a id="refresh-config" class="editor-button" style="display:inline-block; vertical-align:middle; ">
                 <i class="fa fa-refresh"></i>
             </a>
         </div>
-        <div class="form-row">
-            <label for="node-input-delay"><i class="icon-tag"></i> Delay</label>
-            <input type="text" id="node-input-delay" placeholder="0">
-            <div class="input-info">Delay message by x milliseconds</div>
-        </div>
-    </div>
 
-    <div id="send-card-prompt"  class="send-card-panel hide">
-        <div class="form-row">
-            <label for="node-input-prompt"><i class="icon-tag"></i> Prompt</label>
-            <input type="checkbox" style="width: auto;" id="node-input-prompt"> <span class="checkbox-info">(require user inputs)</span>
+
+        <br>
+        <b>Message</b>
+        <div class="form-row promptable">
+            <br>
+            <label for="node-input-prompt"><i class="fa fa-sign-in"></i> Prompt</label>
+            <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-prompt"> <span>Require a user input/answer</span>
         </div>
-        <div class="form-row">
+
+        <div class="form-row" id="prompt">
             <label for="node-input-promptText"></label>
-            <input type="text" id="node-input-promptText" style="width:70%;" placeholder="prompt.text">
-            <input type="hidden" id="node-input-promptTextType">
+            <input type="text" id="node-input-promptText" style="width: 80%;" placeholder="prompt.text">
         </div>
-    </div>
 
-    <div id="send-card-speech" class="send-card-panel hide">
+        <div class="form-row section-type section-card">
+            <label for="node-input-btnOutput"><i class="fa fa-sign-out"></i> Outputs</label>
+            <input type="checkbox" id="node-input-btnOutput" style="width: auto; vertical-align:top;"> <span>Add outputs for each button</span>
+        </div>
+
+        <div class="form-row section-type section-quick">
+            <label for="node-input-quickOutput"><i class="fa fa-sign-out"></i> Outputs</label>
+            <input type="checkbox" id="node-input-quickOutput" style="width: auto; vertical-align:top;"> <span>Add outputs for each quick reply</span>
+        </div>
+
         <div class="form-row">
-            <label for="node-input-speech"><i class="icon-tag"></i> Speech</label>
-            <input type="checkbox" style="width: auto;" id="node-input-speech"> <span class="checkbox-info">(convert text to speech)</span>
+            <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+            <input type="number" min="0" id="node-input-delay" placeholder="0" style="width:100px;">
+            <p style="display: inline-block;"> ms</p>
         </div>
+
+        <div class="form-row" >
+            <label for="node-input-repeat"><i class="fa fa-repeat"></i> Repeat</label>
+            <input type="number" min="0" id="node-input-repeat" placeholder="0" style="width:100px;">
+            <p style="display: inline-block;"> times</p>
+        </div>
+    </div>
+
+
+    <div id="send-card-msg"  class="send-card-panel ">
+
+        <br>
         <div class="form-row">
-            <label for="node-input-speechText"></label>
-            <textarea id="node-input-speechText" rows="5" style="width:80%" placeholder="Text for speech"></textarea>
+            <label for="node-input-sendType"><i class="fa fa-square-o"></i> Type</label>
+            <select id="node-input-sendType" style="width:80%;">
+                <option value="text">Text</option>
+                <option value="quick">Text + Quick replies</option>
+                <option value="media">Image</option>
+                <option value="card">Card</option>
+                <option value="signin">SignIn</option>
+            </select>
         </div>
-    </div>
+        <br>
 
-    <h4 class="section">Send format</h4>
-
-    <div class="form-row">
-        <label for="node-input-sendType"><i class="icon-tag"></i> Type</label>
-        <select id="node-input-sendType">
-            <option value="text">Text</option>
-            <option value="media">Image</option>
-            <option value="card">Card</option>
-            <option value="quick">Quick replies</option>
-            <option value="signin">SignIn</option>
-        </select>
-    </div>
-
-    <div id="send-type">
+        <b>Displayed content</b>
+        <br><br>
+    
         <section class="section-type section-text">
-            <div id="msg-text" class="msg-tabs-panel">
-                <h5 class="subsection"><span>Text Message</span></h5>
-                 <section class="subsection">
-                    <div class="form-row">
-                        <label for="node-input-text">Text</label>
-                        <textarea id="node-input-text" rows="5" style="width:300px"></textarea>
-                    </div>
-                    <div class="form-row">
-                        <label for="node-input-random">Random</label>
-                        <input type="checkbox" style="width: auto;" id="node-input-random"> <span class="checkbox-info">Choose randomly between each lines of text.</span>
-                    </div>
-                </section>
+            <div class="form-row">
+                <label for="node-input-text"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-text" rows="4" placeholder="Text to send"></textarea>
             </div>
         </section>
+
         <section class="section-type section-media">
-            <div id="msg-media" class="msg-tabs-panel">
-                <h5 class="subsection"><span>Media Message</span></h5>
-                <section class="subsection">
-                    <div class="form-row">
-                        <label for="node-input-media">Media</label>
-                        <input type="text" id="node-input-media" placeholder="http://path/to/card/image">
-                    </div>
-                </section>
+            <div class="form-row">
+                <label for="node-input-media"><i class="fa fa-image"></i> Image</label>
+                <input type="text" id="node-input-media" style="width:80%;" placeholder="http://path/to/card/image">
+                <input type="hidden" id="node-input-mediaType">
             </div>
         </section>
+
         <section class="section-type section-card">
-            <div id="msg-card" class="msg-tabs-panel">
-                <h5 class="subsection"><span>Hero Card</span></h5>
-                <section class="subsection">
-                    <div class="form-row">
-                        <label for="node-input-carousel">Carousel</label>
-                        <input type="checkbox" style="width: auto;" id="node-input-carousel"> <span class="checkbox-info">Do not send message, add to the next card</span>
-                    </div>
-                    <div class="form-row">
-                        <label for="node-input-title">Title</label>
-                        <input type="text" id="node-input-title" placeholder="Card title">
-                    </div>
-                    <div class="form-row">
-                        <label for="node-input-subtitle">Subtitle</label>
-                        <textarea id="node-input-subtitle" rows="3" style="width:70%"></textarea>
-                    </div>
-                    <!--
-                    <div class="form-row">
-                        <label for="node-input-subtext"><i class="icon-tag"></i> Text</label>
-                        <textarea id="node-input-subtext" rows="3" style="width:300px"></textarea>
-                        <div style="padding-left: 104px;"><i class="fa fa-exclamation-triangle"></i> <em>Won't work with Facebook Messenger</em></div>
-                    </div>
-                    -->
-                    <div class="form-row">
-                        <label for="node-input-attach">Attachment</label>
-                        <input type="text" id="node-input-attach" placeholder="http://path/to/card/image">
-                    </div>
-                </section>
+            <div class="form-row">
+                <label for="node-input-carousel"><i class="fa fa-th"></i> Carousel</label>
+                <input type="checkbox" id="node-input-carousel" style="width: auto; vertical-align:top; margin-left:20px;"> <span>Do not send message, add to the next card</span>
+            </div>
+            <div class="form-row">
+                <label for="node-input-title"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-title" style="width:80%;">
+                <input type="hidden" id="node-input-titleType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-subtitle"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-subtitle" rows="4" placeholder="Text to send"></textarea>
+            </div>
+            <div class="form-row">
+                <label for="node-input-attach"><i class="fa fa-image"></i> Image</label>
+                <input type="text" id="node-input-attach" style="width:80%;" placeholder="http://path/to/card/image">
+                <input type="hidden" id="node-input-attachType">
             </div>
         </section>
+
         <section class="section-type section-quick">
-            <h5 class="subsection"><span>Facebook's quick replies</span></h5>
-            <section class="subsection">
-                <div class="form-row">
-                    <label for="node-input-quicktext">Text</label>
-                    <textarea id="node-input-quicktext" rows="5" style="width:300px"></textarea>
-                </div> 
-            </section>      
+            <div class="form-row">
+                <label for="node-input-quicktext"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-quicktext" rows="4" placeholder="Text to send"></textarea>
+            </div>    
         </section>
+
         <section class="section-type section-signin">
-            <h5 class="subsection"><span>SignIn</span></h5>
-            <section class="subsection">
-                <div class="form-row">
-                    <label for="node-input-signintext">Text</label>
-                    <textarea id="node-input-signintext" rows="5" style="width:300px"></textarea>
-                </div>
-                <div class="form-row">
-                    <label for="node-input-signintitle">Button</label>
-                    <input type="text" id="node-input-signintitle" placeholder="SignIn">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-signinurl">URL</label>
-                    <input type="text" id="node-input-signinurl" placeholder="https://">
-                </div>
-            </section>
-        </section>
-        <section class="section-type section-share">
-            <h5 class="subsection"><span>Shared card</span></h5>
-            <section class="subsection">
-                <div class="form-row">
-                    <label for="node-input-shcardtitle">Title</label>
-                    <input type="text" id="node-input-shcardtitle">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-shcardtext">Text</label>
-                    <textarea id="node-input-shcardtext" rows="2" style="width:70%"></textarea>
-                </div>
-                <div class="form-row">
-                    <label for="node-input-shcardimage">Image</label>
-                    <input type="text" id="node-input-shcardimage" placeholder="http://path/to/card/image">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-shcardbutton">Button</label>
-                    <input type="text" id="node-input-shcardbutton">
-                </div>
-                <div class="form-row">
-                    <label for="node-input-shcardurl">URL</label>
-                    <input type="text" id="node-input-shcardurl">
-                </div>
-            </section>
-        </section>
-    </div>
-
-    <h5 class="subsection"><span>Outputs</span></h5> 
-    <section class="subsection">  
-        <div class="form-list">
             <div class="form-row">
-                <label><i class="red-ui-editableList-item-handle fa fa-bars"></i> Default</label>
-                <span class="row-info">Default node output. If prompt received, output is the prompted text.</span>
+                <label for="node-input-signintext"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-signintext" rows="4" placeholder="Text to send"></textarea>
             </div>
-
-            <div class="form-row cardbt section-type section-card">
-                <label><i class="red-ui-editableList-item-handle fa fa-bars"></i> Button</label>
-                <input  style="width: 80px" class="node-input-title"  type="text" placeholder="Label">
-                <select style="width: 80px" class="node-input-action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="openUrl">Open URL</option>
-                    <option value="share">Share</option>
-                    <option value="showImage">Show Image</option>
-                    <option value="playAudio">Play Audio</option>
-                    <option value="playVideo">Play Video</option>
-                    <option value="call">Call</option>
-                </select>
-                <input  style="width: 80px" class="node-input-value"  type="text" placeholder="Value">
-                <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
-            </div>
-
-            <div class="form-row quickbt section-type section-quick">
-                <label><i class="red-ui-editableList-item-handle fa fa-bars"></i> QuickReply</label>
-                <input  style="width: 80px" class="node-input-title"  type="text" placeholder="Label">
-                <select style="width: 80px" class="node-input-action">
-                    <option value="postBack">Post Back</option>
-                    <option value="imBack">IM Back</option>
-                    <option value="askLocation">Location</option>
-                    <option value="askIdentity">Identity</option>
-                </select>
-                <input  style="width: 80px" class="node-input-value" type="text" placeholder="Value">
-                <input  style="width: 80px" class="node-input-regexp" type="text" placeholder="Regexp">
-            </div>
-
             <div class="form-row">
-                <label for="node-input-repeat"><i class="red-ui-editableList-item-handle fa fa-bars"></i> Repeat</label>
-                <input type="text" id="node-input-repeat" placeholder="0">
-                <div class="input-info">Output after N loops on the Node. Nodes can't have an output that loops directly to its own input</div>
+                <label for="node-input-signintitle"><i class="fa fa-arrow-circle-o-right"></i> Button</label>
+                <input type="text" id="node-input-signintitle" placeholder="Sign in" style="width:80%;">
+                <input type="hidden" id="node-input-signintitleType">
             </div>
+            <div class="form-row">
+                <label for="node-input-signinurl"><i class="fa fa-globe"></i> URL</label>
+                <input type="text" id="node-input-signinurl" placeholder="https://url.to/auth" style="width:80%;">
+                <input type="hidden" id="node-input-signinurlType">
+            </div>
+        </section>       
 
-            <p class="section-type section-card"><button id="addcardbt">Add Button</button>&nbsp;&nbsp;&nbsp;<input type="checkbox" style="width: auto;" id="node-input-btnOutput"> <span class="checkbox-info">Add outputs for each button</span></p>
-            <p class="section-type section-quick"><button id="addquick">Add QuickReply</button>&nbsp;&nbsp;&nbsp;<input type="checkbox" style="width: auto;" id="node-input-quickOutput"> <span class="checkbox-info">Add outputs for each reply</span></p>
+        <section class="section-type section-text section-quick">
+            <div class="form-row">
+                <label for="node-input-random"><i class="fa fa-random"></i> Random</label>
+                <input type="checkbox" style="width: auto; vertical-align:top;  margin-left:20px;" id="node-input-random"> <span>Choose randomly between each lines of text</span>
+            </div>
+        </section>
 
+
+        <br>
+        <b>Played content</b>
+        <br><br>
+
+        <div class="form-row">
+            <label for="node-input-speech"><i class="fa fa-comment-o"></i> Speech</label>
+            <input type="checkbox" id="node-input-speech" style="width: auto; vertical-align:top; margin-left:20px;" > <span>Convert text to speech</span>
         </div>
-    </section>
+
+        <div class="form-row display-speech">
+            <label for="node-input-speechText"><i class="fa fa-commenting-o"></i> Text</label>
+            <textarea id="node-input-speechText" rows="2" placeholder="Text to say"></textarea>
+        </div>
 
 
+        <section class="section-type section-quick">
+            <br>
+            <b>Quick replies</b>
+            <br><br>
+
+            <div class="form-row" style="width:97%;">
+                <ol id="qck-container"></ol>
+            </div>
+
+        </section>
+
+        <section class="section-type section-card">
+            <br>
+            <b>Buttons</b>
+            <br><br>
+            
+            <div class="form-row" style="width:97%;">
+                <ol id="btn-container"></ol>
+            </div>
+        </section>
+
+        <section class="section-type section-share">
+            <br>
+            <b>Shared card</b>
+            <br><br>
+
+            <div class="form-row">
+                <label for="node-input-shcardtitle"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-shcardtitle" style="width:80%;">
+                <input type="hidden" id="node-input-shcardtitleType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-shcardtext"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-shcardtext" rows="4" placeholder="Text to send"></textarea>
+            </div>
+
+            <div class="form-row">
+                <label for="node-input-shcardimage"><i class="fa fa-image"></i> Image</label>
+                <input type="text" id="node-input-shcardimage" style="width:80%;" placeholder="http://path/to/card/image">
+                <input type="hidden" id="node-input-shcardimageType">
+            </div>
+
+            <div class="form-row">
+                <label for="node-input-shcardbutton"><i class="fa fa-arrow-circle-o-right"></i> Button</label>
+                <input type="text" id="node-input-shcardbutton" placeholder="Sign in" style="width:80%;">
+                <input type="hidden" id="node-input-shcardbuttonType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-shcardurl"><i class="fa fa-globe"></i> URL</label>
+                <input type="text" id="node-input-shcardurl" placeholder="https://url.to/auth" style="width:80%;">
+                <input type="hidden" id="node-input-shcardurlType">
+            </div>
+        </section>
+
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="send-card">
@@ -539,29 +661,38 @@
             </ul>
         </div>
     </div>
-
-
     <div id="help-over" class="send-card-panel-help">
-        <h2>Main properties</h2>
+        <p>This node allows to send messages to users.</p><br>
+        <b>Content</b><br>
         <ol> 
-            <p>This node allows to send messages to users.</p><br>
-
-            <b>Config</b>
-            <p style="margin-left: 20px;"><b>Delay</b>: delay (ms) before sending the message.</p>
-
+            <p>Contains the message content options and fields</p><br>
+            <b>Type</b>
+            <p style="margin-left: 20px;">Type of message to send, such as an image or a simple text.</p>
+            <b>Display content</b>
+            <p style="margin-left: 20px;">The textaul/visual content to send. The fields depends on the message's type.</p>
+            <b>Played content</b>
+            <p style="margin-left: 20px;">The vocalized/sounds content to send. If 'Speech' is unchecked, do not forget the "<speak>" tags.</p>
+            <b>Quick replies / Buttons / Shared card</b>
+            <p style="margin-left: 20px;">Qucik replies, buttons or shared card associated with the sent message.</p>
+        </ol> 
+        <b>Settings</b>
+        <br>
+        <ol> 
+            <p>Contains the node options.</p><br>
+            <b>Name</b>
+            <p style="margin-left: 20px;">Name of the node</p>
+            <b>Unique ID</b>
+            <p style="margin-left: 20px;">Select or generate a unique ID for your send node. This can be used to import/export send-card nodes in your flows.</p>
             <b>Prompt</b>
-            <p style="margin-left: 20px;">If the node is waiting for a user answer (prompt.text by default).
-               <br><b>Prompt</b>: where to check the user answer. When specified and if the Message contains buttons, this property is set only if the user's answer matches one of the buttons' values
-            </p>
-            
-            <b>Speech</b>
-            <p style="margin-left: 20px;">Converts text in audio format.</p>
-
-            <b>Send format</b>
-            <p style="margin-left: 20px;"><b>Type</b>: type of message to send.</p>
+            <p style="margin-left: 20px;">Check if this message should wait for a user answer or input.</p>
+            <b>Outputs</b>
+            <p style="margin-left: 20px;">Add n outputs to the node, depending on the number of buttons or quickreplies.</p>
+            <b>Repeat</b>
+            <p style="margin-left: 20px;">Uses n times the 'default' output (first output), and then uses the 'repeat' output (last output).</p>
+            <b>Delay</b>
+            <p style="margin-left: 20px;">Wait before sending the message.</p>
         </ol> 
     </div>
-
     <div id="help-types" class="send-card-panel-help hide">
         <h2>Types of messages</h2>
         <ol>  
@@ -577,7 +708,6 @@
             <p style="margin-left: 20px;">
                 <b>Media</b>: path to the image (serveur or url).
             </p>
-
             <h3>Card</h3>
             <p>Send a card to the user.
             <br>Learn more about cards: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Messenger generic templates</a></p>
@@ -587,16 +717,16 @@
                 <br><b>Subtitle</b>: subtitle of the card.
                 <br><b>Attachement</b>: image to add to the card.
                 <br><b>Buttons</b>: buttons to add to the card.
+                br><b>Shared card</b>: fields of the shared card (Facebook Messenger only).
             </p>
-
             <h3>Quick replies</h3>
             <p>Send quick replies to the user.
             <br>Learn more about quick replies: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Messenger quick replies</a></p>
             <p style="margin-left: 20px;">
                 <b>Text</b>: text to send to the user.
-                <br><b>Buttons</b>: buttons to add to the card.
+                <br><b>Random</b>: choose a random line between each lines of text.
+                <br><b>Quick replies</b>: buttons to add to the card.
             </p>
-
             <h3>SignIn</h3>
             <p>Signin to an account.</p>
             <p style="margin-left: 20px;">
@@ -604,39 +734,26 @@
                 <br><b>Button</b>: text on the button.
                 <br><b>URL</b>: signin URL.
             </p>
-
-            <h3>Share</h3>
-            <p>Share an URL (Facebook only)</p>
-            <p style="margin-left: 20px;">
-                <b>Title</b>: Card title.
-                <br><b>Text</b>: Card text.
-                <br><b>Image</b>: Card image path.
-                <br><b>Shared card title</b>: Title of the shared card.
-                <br><b>Shared card text</b>:  Text of the shared card.
-                <br><b>Shared card image</b>: Image of the shared card.
-                <br><b>Shared card button</b>: Text on the button of the shared card.
-                <br><b>Shared card url</b>: Redirection URL of the shared card.
-            </p>
         </ol>
     </div>
-
     <div id="help-buttons" class="send-card-panel-help hide">
         <h2>Buttons properties</h2>
         <ol>            
             <h3>Cards</h3>
-
             <p><b>Post-back / IM Back</b></p>
             <p style="margin-left: 20px;">
                 <b>Label</b>: displayed text on the button.
                 <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
                 <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
             </p>
-
             <p><b>Call</b></p>
             <p style="margin-left: 20px;">
                 This option allows to call the user (Skype only for the moment).
             </p>
-
+            <p><b>Share</b></p>
+            <p style="margin-left: 20px;">
+                This option allows the user to share a card with a friend. (Messenger only for the moment).
+            </p>
             <p><b>Other options</b></p>
             <p style="margin-left: 20px;">
                 <b>Label</b>: displayed text on the button.
@@ -646,22 +763,22 @@
                 <br><b>Play audio / Play video</b> path to the audio/video to send.
                 <br><br>
             </p>
-
             <h3>Quick replies</h3>
-
             <p><b>Post-back / IM Back</b></p>
             <p style="margin-left: 20px;">
                 <b>Label</b>: displayed text on the button.
                 <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
                 <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
             </p>
-
             <p><b>Location</b></p>
             <p style="margin-left: 20px;">
                 This quick reply asks the user to send its location, then sends it to Node-Red as an attachment.
             <br>
+            <p><b>Identity</b></p>
+            <p style="margin-left: 20px;">
+                This quick reply asks the user to send information. (Google Home / Assistant only).
+            <br>
             </p>
-
             <h3>Dynamic buttons</h3>
             <p>You can dynamically add buttons in a function node before the send-card node. 
             <br>Don't forget to delete them after using them. 
@@ -673,13 +790,10 @@
         regexp : 'one|first|choice 1'
     });     </pre>
             </p>
-
             <h3>Carousels</h3>
-
             <p>To create a caroussel (several cards side by side), branch several send-card nodes together, and click the 'Carousel' option.
             <br>In the last send-card node, don't click this option.
             </p>
-
         </ol>
     </div>
 </script>

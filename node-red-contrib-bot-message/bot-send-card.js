@@ -1,4 +1,3 @@
-
 const mustache = require('mustache');
 const i18n     = require('./lib/i18n.js');
 const helper   = require('node-red-viseo-helper');
@@ -65,12 +64,38 @@ const getButtons = (locale, config, data) => {
     for (let button of buttons){
         if (button.action === "share") {
             button.action = marshall(locale, button.action, data, '');
+
+            let shcardtitle = config.shcardtitle;
+            if (!config.shcardtitleType) shcardtitle = marshall(locale, shcardtitle,  data, '');
+            else if (config.shcardtitleType !== 'str') {
+                let loc = (config.shcardtitleType === 'global') ? node.context().global : data;
+                shcardtitle = helper.getByString(loc, shcardtitle);
+            }
+            let shcardimage = config.shcardimage;
+            if (!config.shcardimageType) shcardimage = marshall(locale, shcardimage,  data, '');
+            else if (config.shcardimageType !== 'str') {
+                let loc = (config.shcardimageType === 'global') ? node.context().global : data;
+                shcardimage = helper.getByString(loc, shcardimage);
+            }
+            let shcardurl = config.shcardurl;
+            if (!config.shcardurlType) shcardurl = marshall(locale, shcardurl,  data, '');
+            else if (config.shcardurlType !== 'str') {
+                let loc = (config.shcardurlType === 'global') ? node.context().global : data;
+                shcardurl = helper.getByString(loc, shcardurl);
+            }
+            let shcardbutton = config.shcardbutton;
+            if (!config.shcardbuttonType) shcardbutton = marshall(locale, shcardbutton,  data, '');
+            else if (config.shcardbuttonType !== 'str') {
+                let loc = (config.shcardbuttonType === 'global') ? node.context().global : data;
+                shcardbutton = helper.getByString(loc, shcardbutton);
+            }
+
             button.sharedCard = {
-                title:  marshall(locale, config.shcardtitle,  data, ''),
+                title:  shcardtitle,
                 text:   marshall(locale, config.shcardtext,   data, ''),
-                media:  marshall(locale, config.shcardimage,  data, ''),
-                button: marshall(locale, config.shcardbutton, data, ''),
-                url:    marshall(locale, config.shcardurl,    data, '')
+                media:  shcardimage,
+                button: shcardbutton,
+                url:    shcardurl
             }
             continue;
         }
@@ -139,9 +164,17 @@ const buildReply = (node, data, config) => {
 
     // Simple media message
     if (config.sendType === 'media'){
+
+        let media = config.media;
+        if (!config.mediaType) media = marshall(locale, media,  data, '');
+        else if (config.mediaType !== 'str') {
+            let loc = (config.mediaType === 'global') ? node.context().global : data;
+            media = helper.getByString(loc, media);
+        }
+
         return [{
             "type"   : config.sendType, 
-            "media"  : marshall(locale, config.media, data, ''),
+            "media"  : media,
             "speech" : speech,
             "prompt" : config.prompt
         }]
@@ -149,11 +182,28 @@ const buildReply = (node, data, config) => {
 
     // Card "signin" message
     if (config.sendType === 'signin'){
+
+        let signintitle = config.signintitle;
+        let signinurl = config.signinurl;
+
+        if (!config.signintitleType) signintitle = marshall(locale, signintitle,  data, '');
+        else if (config.signintitleType !== 'str') {
+            let loc = (config.signintitleType === 'global') ? node.context().global : data;
+            signintitle = helper.getByString(loc, signintitle);
+        }
+
+        if (!config.signinurlType) signinurl = marshall(locale, signinurl,  data, '');
+        else if (config.signinurlType !== 'str') {
+            let loc = (config.signinurlType === 'global') ? node.context().global : data;
+            signinurl = helper.getByString(loc, signinurl);
+        }
+
+
         return [{
             "type"   : config.sendType, 
             "text"   : marshall(locale, config.signintext,  data, ''),
-            "title"  : marshall(locale, config.signintitle, data, ''),
-            "url"    : marshall(locale, config.signinurl,   data, ''),
+            "title"  : signintitle,
+            "url"    : signinurl,
             "speech" : speech,
             "prompt" : config.prompt
         }]
@@ -174,13 +224,33 @@ const buildReply = (node, data, config) => {
 
 
     // Quick replies
-    if(config.sendType === 'quick') {
+    if (config.sendType === 'quick') {
         reply.quicktext = marshall(locale, config.quicktext, data, '');
-    } else if(config.sendType === 'card') {
-        reply.title = marshall(locale, config.title,     data, '');
+        if (config.random){
+            let txt = reply.quicktext.split('\n');
+            reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+        }
+    } 
+    else if (config.sendType === 'card') {
+
+        let title = config.title;
+        let attach = config.attach;
+
+        if (!config.titleType) title = marshall(locale, title,  data, '');
+        else if (config.titleType !== 'str') {
+            let loc = (config.titleType === 'global') ? node.context().global : data;
+            title = helper.getByString(loc, title);
+        }
+        if (!config.attachType) attach = marshall(locale, attach,  data, '');
+        else if (config.attachType !== 'str') {
+            let loc = (config.attachType === 'global') ? node.context().global : data;
+            attach = helper.getByString(loc, attach);
+        }
+        
+        reply.title =    title;
         reply.subtitle = marshall(locale, config.subtitle,  data, '');
-        reply.subtext = marshall(locale, config.subtext,   data, '');
-        reply.attach = marshall(locale, config.attach,    data, '');
+        reply.subtext =  marshall(locale, config.subtext,   data, '');
+        reply.attach =   attach;
     }
     
     // Forward data without sending anything
