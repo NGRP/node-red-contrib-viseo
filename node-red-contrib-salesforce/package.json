@@ -1,6 +1,6 @@
 {
 	"name": "node-red-contrib-viseo-salesforce",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
 	"description": "API requests to Salesforce",
 	"dependencies": {

@@ -61,8 +61,10 @@ const input = async (node, data, config) => {
 const run = async (node, data, action, objectId, objectObject, object, querySelect, queryWhere) => {
 
     if(node.config.token === undefined) {
-        node.error("Missing access token");
-        return;
+        if(node.config.refreshToken() === false) {
+            node.error("Missing access token");
+            return;
+        }
     }
 
     try { 
