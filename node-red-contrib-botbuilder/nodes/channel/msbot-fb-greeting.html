@@ -5,10 +5,10 @@
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults:  { 
-            name:           { value: undefined },
+            name:      { value: undefined },
             config:    { value: undefined, type: 'facebook-config' },
-            greeting:       { value: undefined },
-            buttons:        { value: undefined }
+            greeting:  { value: undefined },
+            buttons:   { value: [{level: 0, title: "", action: "postback", value: ""}] }
         },
         inputs:  0,
         outputs: 0,
@@ -34,42 +34,58 @@
         }},
         oneditprepare: function () {
 
-            this.buttons = this.buttons || [];
+            // Buttons and quick replies : init
+            $("#menu-container").css('min-height','300px').editableList({
+                addItem: function ( row, index, data ) {
 
-            var $add = $('#addmenubt');
-            var $query = $('#menu-type .menubt');
+                    var button = data.btn,
+                        level = 0, title = '', action = 'postback', value = '';
 
-            $add.on('click', function() {
-                var $tmpl = $('#menu-type .menubt').last();
-                $tmpl.before($tmpl.clone());
+                    if (button) {
+                        if (button.hasOwnProperty('level'))  level =  button.level;
+                        if (button.hasOwnProperty('title'))  title =  button.title;
+                        if (button.hasOwnProperty('action')) action = button.action;
+                        if (button.hasOwnProperty('value'))  value =  button.value;
+                    }
+
+                    var nb = 'margin-left:' + level*15 + 'px;';
+                        nb += (level === 0) ? 'background-color: #eee' : '';
+
+                    var levelField =  $('<input/>',  { class:"property-btn-level",  type:"number", style:"width:11%; margin: auto 5px;", value: level, min: 0, placeholder: "Level"}).appendTo(row);
+                    var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text",   style:"width:27%; margin-right:5px;", value: title, placeholder:"Label"}).appendTo(row);
+                    var actionField = $('<select/>', { class:"property-btn-action", type:"text",   style:"width:27%; margin-right:5px;"}).appendTo(row);
+                        actionField.append($("<option></option>").val("postback").text("Post Back"));
+                        actionField.append($("<option></option>").val("web_url").text("Web URL"));
+                        actionField.append($("<option></option>").val("web_url_compact").text("Compact URL"));
+                        actionField.append($("<option></option>").val("nested").text("Sous-menu"));
+                    var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:27%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                        actionField.val(action).change();
+                },
+                sortable: true,
+                removable: true
             });
 
-            var $tmpl = $query.last().clone();
-            $query.remove();
-
-            for (var i = 0 ; i < this.buttons.length; i++) {
-                var $clone = $tmpl.clone();
-                $add.before($clone);
-                $clone.find('.node-input-title').val(this.buttons[i].title);
-                $clone.find('.node-input-action').val(this.buttons[i].action);
-                $clone.find('.node-input-value').val(this.buttons[i].value);
+            // Get buttons and quick replies
+            for (var i=0; i<this.buttons.length; i++) {      
+                var infos = this.buttons[i];
+                $("#menu-container").editableList('addItem', { btn: infos, i:i });
             }
-            
-            $add.before($tmpl);
             
         },
         oneditsave: function(){
-            this.buttons = [];
-            let self = this;
+            let butt = $("#menu-container").editableList('items');
+            let results = new Array();
 
-            $('#menu-type .menubt').each(function(){
+            butt.each(function(i) {
                 var btn = {
-                    title :  $(this).find('.node-input-title').val(),
-                    action : $(this).find('.node-input-action').val(),
-                    value :  $(this).find('.node-input-value').val(),
+                    title  : $(this).find('.property-btn-title').val(),
+                    action : $(this).find('.property-btn-action').val(),
+                    value  : $(this).find('.property-btn-value').val(),
+                    level :  Number($(this).find('.property-btn-level').val()),
                 }
-                if (btn.title && btn.value){ self.buttons.push(btn); }
+                if (btn.title && btn.value) results.push(btn);
             });
+            this.buttons = (results.length === 0) ? [{ title: "", action:"postback", value:"", level:0}] : results;
         },
 
         paletteLabel: "Greeting FB",
@@ -77,35 +93,44 @@
     });
 </script>
 
+<style>
+    textarea {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        min-height: 60px;
+        max-width: 100%;
+        width:70%;
+        resize: vertical;
+    }
+</style>
+
 <script type="text/x-red" data-template-name="fb-greeting">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+
+    <br>
+    <b>Facebook settings</b>
+
     <div class="form-row">
-        <label for="node-input-config"><i class="icon-tag"></i> Credentials</label>
+        <br>
+        <label for="node-input-config"><i class="fa fa-lock"></i> Credentials</label>
         <input type="text" id="node-input-config" placeholder="">
     </div>
+
     <div class="form-row">
-        <label for="node-input-greeting"><i class="icon-tag"></i> Greeting</label>
-        <textarea id="node-input-greeting" rows="5" style="width:300px"></textarea>
+        <label for="node-input-greeting"><i class="fa fa-info"></i> Greetings</label>
+        <textarea id="node-input-greeting" rows="5"></textarea>
     </div>
 
-    <section id="menu-type">
-        <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Facebook's Menu</h4>
+    <br>
+    <b>Facebook's menu</b>
 
-        <div class="form-row menubt">
-            <label><i class="icon-tag"></i> Menu Item</label>
-            <input  style="width: 20%" class="node-input-title"  type="text" placeholder="Label">
-            <select style="width: 20%" class="node-input-action">
-                <option value="postback">Post Back</option>
-                <option value="web_url">Web URL</option>
-                <option value="web_url_compact">Compact URL</option>
-            </select>
-            <input  style="width: 20%" class="node-input-value" type="text" placeholder="Value">
-        </div>
-        <p><button id="addmenubt">Add Menu</button></p>
-    </section>
+    <div class="form-row" style="width:95%; margin-left: 10px;">
+        <br>
+        <ol id="menu-container"></ol>
+    </div>
 
 </script>
 

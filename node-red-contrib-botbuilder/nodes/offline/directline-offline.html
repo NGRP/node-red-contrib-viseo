@@ -1,0 +1,118 @@
+
+
+<script type="text/javascript">
+
+    RED.nodes.registerType('msbot-offline',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:   { value: undefined },
+            webchat:  { value: "/offchat", validate: function(v) {
+                return (v.match(/^\/.+/ig)) }
+            },
+            endpoint:   { value: "/api/v1/messages", validate: function(v) {
+                return (v.match(/^\/.+/ig)) }
+            },
+            express:    { value: "http://127.0.0.1:3000" },
+            host:       { value: "http://127.0.0.1:1880" },
+            start:  { value: "geststarted" },
+            title:  { value: undefined },
+            icon:   { value: undefined },
+            css:    { value: undefined }
+        },
+        inputs:0,
+        outputs:0,
+        icon: "microsoft.svg",  align: "left",
+        paletteLabel: "Offline",
+        oneditprepare: function(){ 
+            $("#node-input-host").typedInput({     default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-webchat").typedInput({  default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-express").typedInput({  default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-endpoint").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+            $("#node-input-bot").typedInput({    default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-secret").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+            $("#node-input-start").typedInput({  default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-title").typedInput({  default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-icon").typedInput({   default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-css").typedInput({    default: 'str', types: ['str'], type: 'str' });
+        },
+        label: function() { return this.name || "DirectLine offline"; }
+
+    });
+
+</script>
+
+<script type="text/x-red" data-template-name="msbot-offline">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>URL</b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-input-host" placeholder="http://127.0.0.1:1880" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-express"><i class="fa fa-globe"></i> Express</label>
+        <input type="text" id="node-input-express" placeholder="http://127.0.0.1:3000" style="width:70%;">
+    </div>
+
+    <br>
+    <b>DirectLine routes and settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-webchat"><i class="fa fa-globe"></i> Webchat</label>
+        <input type="text" id="node-input-webchat" placeholder="/webchat" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-endpoint"><i class="fa fa-globe"></i> Endpoint</label>
+        <input type="text" id="node-input-endpoint" placeholder="/api/v1/messages" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-start"><i class="fa fa-sign-in"></i> Start</label>
+        <input type="text" id="node-input-start" placeholder="getstarted" style="width:70%;">
+    </div>
+
+    <br>
+    <b>Page settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-title"><i class="fa fa-tag"></i> Title</label>
+        <input type="text" id="node-input-title" placeholder="My bot" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-css"><i class="fa fa-font"></i> CSS</label>
+        <input type="text" id="node-input-css" placeholder="" style="width:70%;">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="msbot-offline">
+    <h1>DirectLine offline</h1>
+    <p>Connect to your offline flow with this node. This can only be used to test your chatbot without any Internet connexion or locally. Please do not create multiple conversations.</p>
+
+    <h3>URL</h3>
+        <li> <b>Host</b>: The host URL (Node-RED) for callbacks.</li>
+        <li> <b>Express</b>: The endpoint/port to host the offline connector</li>
+    </ul>
+    <br>
+
+    <h3>DirectLine routes and setting</h3>
+        <li> <b>Webchat</b>: The route to access the webchat. Note that /yourRoute/lib will also be used.</li>
+        <li> <b>Endpoint</b>: The bot messaging endpoint (generally ends in api/v1/messages)</li>
+        <li> <b>Start</b>: Message to send in the flow when a conversation window is open</li>
+    </ul>
+    <br>
+    
+    <h3>Page settings</h3>
+    <ul>
+        <li> <b>Title</b>: Window title</li>
+        <li> <b>CSS</b>: CSS sheet to replace the actual style</li>
+    </ul>
+
+</script>
