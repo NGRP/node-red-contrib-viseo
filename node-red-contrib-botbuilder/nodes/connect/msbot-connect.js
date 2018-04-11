@@ -91,6 +91,20 @@ const reply = (bot, node, data, config) => {
 
     message.address(address);
 
+    let customTyping = (callback) => {
+        try {
+
+            let typing = new builder.Message();
+            typing.data.type = "typing";
+            typing.address(address);
+            bot.send(typing, (err) => {
+                if (err){ return node.warn(err); }
+                // <continue> and consume the event
+                callback();
+            })
+        } catch (ex) { node.warn(ex); }
+    }
+
     // Send the message
     let doReply = () => {
         try {
@@ -104,12 +118,11 @@ const reply = (bot, node, data, config) => {
 
     // Handle the delay
     let delay  = config.delay !== undefined ? parseInt(config.delay) : 0 
-    delayReply(delay, data, doReply)
+    delayReply(delay, data, doReply, customTyping)
 }
 
 const TYPING_DELAY_CONSTANT = 2000;
-const DEFAULT_DELAY_CONSTANT = 800;
-const delayReply = (delay, data, callback) => {
+const delayReply = (delay, data, callback, customTyping) => {
     let convId  = botmgr.getConvId(data)
     let session = getSession(data)
     if (session){
@@ -118,8 +131,11 @@ const delayReply = (delay, data, callback) => {
             msbot.saveTimeout(convId, handle);
         });
     } else {
-        let handle = setTimeout(callback, delay + DEFAULT_DELAY_CONSTANT) 
-        msbot.saveTimeout(convId, handle);
+        customTyping(function() {
+            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT) 
+            msbot.saveTimeout(convId, handle);
+        })
+        
     }
 }
 
