@@ -108,6 +108,7 @@ const reply = (bot, node, data, config) => {
 }
 
 const TYPING_DELAY_CONSTANT = 2000;
+const DEFAULT_DELAY_CONSTANT = 800;
 const delayReply = (delay, data, callback) => {
     let convId  = botmgr.getConvId(data)
     let session = getSession(data)
@@ -117,7 +118,7 @@ const delayReply = (delay, data, callback) => {
             msbot.saveTimeout(convId, handle);
         });
     } else {
-        let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT) 
+        let handle = setTimeout(callback, delay + DEFAULT_DELAY_CONSTANT) 
         msbot.saveTimeout(convId, handle);
     }
 }
