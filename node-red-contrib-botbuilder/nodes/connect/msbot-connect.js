@@ -116,11 +116,9 @@ const delayReply = (delay, data, callback) => {
             let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
             msbot.saveTimeout(convId, handle);
         });
-    } else if (delay > 0) { 
-        let handle = setTimeout(callback, delay) 
-        msbot.saveTimeout(convId, handle);
     } else {
-        callback();
+        let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT) 
+        msbot.saveTimeout(convId, handle);
     }
 }
 
