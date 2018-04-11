@@ -15,6 +15,8 @@ module.exports = function(RED) {
         config.template = conf.fields;
         config.separate = conf.separator;
         config.sepatype = conf.separatyp;
+        config.endFileName = conf.add;
+        config.keepFiles = conf.keep;
         let node = this;
         this.on('input', (data)  => { input(node, data, config)  })
     }
@@ -59,11 +61,61 @@ const input = (node, data, config) => {
         }
     }
 
+    var fPath = logpath;
+    if (config.endFileName) {
+        var index = logpath.lastIndexOf('.');
+        var date = (new Date()).toISOString();
+        fPath = logpath.slice(0, index) + '-' + date.substring(0,10) + logpath.slice(index);
+    }
+
     // Write to logfile
     logstr = logstr.substring(0, logstr.length - separate.length) + '\n';
-    var stream = fs.createWriteStream(logpath, {flags:'a'});
+    var stream = fs.createWriteStream(fPath, {flags:'a'});
     stream.write(logstr);
     stream.end();
 
-    return node.send(data);
+    // Delete old files if needed
+    if (config.endFileName && config.keepFiles) {
+        var folder = path.dirname(logpath);
+        var files = [];
+
+        fs.readdir(folder, function(err, items) {
+            if (err) {
+                node.warn("Can not delete old files.");
+                return node.send(data);
+            }
+            logpath = path.basename(logpath);
+            var index = logpath.lastIndexOf('.');
+            var files = [];
+            var regex = new RegExp( logpath.slice(0, index) + '-[0-9]{4}-[0-9]{2}-[0-9]{2}' + logpath.slice(index));
+            for (let i=0; i<items.length; i++) {
+                if (!items[i].match(regex)) continue;
+                files.push({
+                    match: items[i].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)[0],
+                    file: items[i]
+                });
+            }
+            
+            var keep = Number(config.keepFiles);
+            if (files.length <= keep) return node.send(data);
+            files = files.sort( function(a,b) {
+                if (Number(a.match.substring(0,4)) > Number(b.match.substring(0,4))) return 1;
+                if (Number(a.match.substring(0,4)) < Number(b.match.substring(0,4))) return -1;
+                if (Number(a.match.substring(5,7)) > Number(b.match.substring(5,7))) return 1;
+                if (Number(a.match.substring(5,7)) < Number(b.match.substring(5,7))) return -1;
+                if (Number(a.match.substring(8)) > Number(b.match.substring(8))) return 1;
+                if (Number(a.match.substring(8)) < Number(b.match.substring(8))) return -1;
+                return 0;
+            })
+
+            files = files.slice(0, keep+1);
+            for (let f of files) {
+                console.log("[Log lines] Deleted file " + f.file)
+                fs.unlinkSync(path.join(folder, f.file));    
+            }
+            return node.send(data);
+        });
+    }
+
+    else return node.send(data);
 }

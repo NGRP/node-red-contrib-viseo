@@ -5,7 +5,9 @@
             name:      { value: undefined },
             fields:    { value: [{  field: '', typed: 'str'}]},
             separator: { value: ' '},
-            separatyp: { value: 'separator_def'}
+            separatyp: { value: 'separator_def'},
+            add:       { value: ""},
+            keep:      { value: ""}
         },
         credentials: {
             path:      { type:"text" }
@@ -51,10 +53,17 @@
                 removable: true
             });
 
+            $("#node-config-input-add").change(function() {
+                $("#keep").hide();
+                if ($(this).val() !== "") $("#keep").show();
+            })
+
             for (var i=0; i<this.fields.length; i++) {      
                 var infos = this.fields[i];
                 $("#node-config-input-fieldscontainer").editableList('addItem', { item: infos, i:i });
             }
+
+
         },
         oneditsave: function() {
             let newFields = $("#node-config-input-fieldscontainer").editableList('items');
@@ -80,7 +89,17 @@
     </div>
     <div class="form-row">
         <label for="node-config-input-path"><i class="fa fa-lock"></i> Path</label>
-        <input type="text" id="node-config-input-path" style="width:70%;">
+        <input type="text" id="node-config-input-path" style="width:49%;">
+        <select id="node-config-input-add" style="display:inline-block; width:20%;">
+            <option value="" selected></option>
+            <option value="date">Add date</option>
+        </select>
+    </div>
+
+    <div class="form-row" id="keep">
+        <p style=" margin-left: 105px; margin-right: 10px; display:inline-block;">Keep </p>
+        <input type="number" min="0" id="node-config-input-keep" style="width:10%; display:inline-block;">
+        <p style="display:inline-block; margin-left: 5px;">old log file(s) (leave empty to keep all of them).</p>
     </div>
 
     <br>

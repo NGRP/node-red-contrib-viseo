@@ -40,3 +40,21 @@ const input = (node, data, config) => {
     data.payload = output;
     return node.send(data);
 }
+
+    // Function that is syncing up the asynchronous nature of the stream
+    // so that the full file can be sent to the API. Copied and edited from speech_to_text.
+    var stream_url = function(file, url, cb) {
+    var wstream = fs.createWriteStream(file);
+    node.status({fill:'blue', shape:'dot',
+        text:'downloading file'});
+
+    wstream
+        .on('error', function(err) {
+        cb(err);
+        })
+        .on('finish', function () {
+        cb();
+        });
+
+    request(url).pipe(wstream);
+    };

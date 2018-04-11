@@ -5,6 +5,8 @@ module.exports = function(RED) {
         this.fields = config.fields;
         this.separator = config.separator;
         this.separatyp = config.separatyp;
+        this.add = config.add;
+        this.keep = config.keep;
     }
     RED.nodes.registerType("log-line-config", register, {
     	credentials: {
