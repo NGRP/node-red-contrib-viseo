@@ -56,9 +56,11 @@ async function input(node, data, config) {
     if (config.save) {
       saveLoc = (config.savelocType === 'global') ? node.context().global : data;
       let saved = helper.getByString(saveLoc, config.saveloc || '_sheet');
-      parameters.data = saved.data;
-      parameters.cells = saved.cells;
-      parameters.usedRange = saved.u
+      if (saved) {
+        parameters.data = saved.data;
+        parameters.cells = saved.cells;
+        parameters.usedRange = saved.usedRange;
+      }
     }
     if (!parameters.cells || typeof parameters.cells !== "object" || parameters.cells.length <= 0) {
       
@@ -133,7 +135,10 @@ async function input(node, data, config) {
 
 
 
-function getCell(node, data, cells, config) {
+function getCell(node, data, ol_cells, config) {
+  let cells = new Array();
+  for (let e of ol_cells) cells.push(e);
+
     let cell_l = config.cell_l,
         cell_c = config.cell_c;
 
@@ -150,9 +155,10 @@ function getCell(node, data, cells, config) {
     return {"error": "Cannot find line and column labels"};
   }
 
-  node.warn({ cells: cell_c + ' ' + cell_l, rows: cells})
   let indexCol = cells[0].indexOf(cell_c);
+  if (indexCol === -1) return {"error": "Not found"}
   cells.shift();
+
   for (let l of cells) {
     if (l[0] === cell_l) {
       return l[indexCol];
