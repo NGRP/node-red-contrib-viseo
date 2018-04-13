@@ -1,0 +1,191 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ffmpeg',{
+        category: 'VISEO_MEDIA',
+        color: '#3FADB5',
+        defaults: { 
+            name:         { value: undefined },
+            ffmpeg:       { value: undefined },
+            ffmpegType:   { value: 'str'},
+            action:       { value: "cut"},
+            input:        { value: undefined },
+            inputType:    { value: "str"},
+            output:       { value: undefined },
+            outputType:   { value: "str"},
+            width:        { value: undefined },
+            widthType:    { value: "num"},
+            cmd:          { value: undefined },
+            cmdType:      { value: "str"},
+            tstart:       { value: undefined },
+            tstartType:   { value: "num"},
+            duration:     { value: undefined },
+            durationType: { value: "num"}
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "ffmpeg.svg",
+        align: "right",
+        paletteLabel: 'FFMPEG',
+        oneditprepare: function() {
+            $("#node-input-ffmpeg").typedInput({   default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-ffmpegType") });
+            $("#node-input-input").typedInput({    default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-inputType")  });
+            $("#node-input-output").typedInput({   default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-outputType") });
+            $("#node-input-cmd").typedInput({      default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-cmdType")    });
+            $("#node-input-width").typedInput({    default: 'num',  types: ['num','msg','global'],  typeField: $("#node-input-widthType")  });
+            $("#node-input-tstart").typedInput({   default: 'num',  types: ['num','str','msg','global'],  typeField: $("#node-input-tstartType")   });
+            $("#node-input-duration").typedInput({ default: 'num',  types: ['num','str','msg','global'],  typeField: $("#node-input-durationType") });
+        
+            $("#node-input-action").on('change', function() {
+                $("#parameters, #cmdline, #width, #tstart, #duration").hide();
+                var value = $(this).val();
+
+                if (value === "cmd") {
+                    $("#cmdline").show();
+                    $("#node-input-cmd").typedInput('show');
+                }
+                else if (value === "gif" || value === "thumb"){
+                    $("#parameters, #width").show();
+                    $("#node-input-width").typedInput('show');
+                }
+                else {
+                    $("#parameters, #tstart, #duration").show();
+                    $("#node-input-tstart").typedInput('show');
+                    $("#node-input-duration").typedInput('show');
+                }
+            })
+        },
+        label: function() { 
+            if (this.name && this.name !== "") return this.name;
+            else if (this.action === "cmd")    return "FFMPEG - Cmd line";
+            else if (this.action === "cut")    return "FFMPEG - Cut";
+            else if (this.action === "gif")    return "FFMPEG - Gif";
+            else if (this.action === "thumb")  return "FFMPEG - Thumbnail";
+            else return "FFMPEG";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ffmpeg">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <p><b>FFMPEG</b></p>
+
+    <div class="form-row">
+        <label for="node-input-ffmpeg"><i class="fa fa-globe"></i> Path</label>
+        <input type="text" id="node-input-ffmpeg" placeholder="/path/to/ffmpeg"  style="width:70%;">
+        <input type="hidden" id="node-input-ffmpegType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" placeholder="/path/to/source/file"  style="width:70%;">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" placeholder="/path/to/new/file"  style="width:70%;">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+        <select id="node-input-action" style="width:70%;">
+            <option value="cmd">Use command line</option>
+            <option disabled>──────</option>
+            <option value="cut">Cut video</option>
+            <option value="gif">To GIF</option>
+            <option value="thumb">Get thumbnail</option>
+        </select>
+    </div>
+
+    <div id="parameters">
+        <br>
+        <p><b>Parameters</b></p>
+
+        <div class="form-row" id="width">
+            <label for="node-input-width"><i class="fa fa-image"></i> Width</label>
+            <input type="text" id="node-input-width" placeholder="360" style="width:70%;">
+            <input type="hidden" id="node-input-widthType">
+        </div>
+
+        <div class="form-row" id="tstart">
+            <label for="node-input-tstart"><i class=""fa fa-clock"></i> Start time</label>
+            <input type="text" id="node-input-tstart" placeholder="0" style="width:70%;">
+            <input type="hidden" id="node-input-tstartType">
+        </div>
+
+        <div class="form-row" id="duration">
+            <label for="node-input-duration"><i class=""fa fa-clock"></i> Duration</label>
+            <input type="text" id="node-input-duration" placeholder="2" style="width:70%;">
+            <input type="hidden" id="node-input-durationType">
+        </div>
+    </div>
+
+    <div id="cmdline">
+        <br>
+        <p><b>Command line</b></p>
+
+        <div class="form-row">
+            <label for="node-input-cmd"><i class=""fa fa-terminal"></i> Line</label>
+            <input type="text" id="node-input-cmd"  style="width:70%;">
+            <input type="hidden" id="node-input-cmdType">
+        </div>
+    </div>
+</script>
+
+<style>
+    h4, h3 { font-weight: bold; }
+</style>
+
+<script type="text/x-red" data-help-name="ffmpeg">
+
+    <h3>FFMPEG</h3>
+    <ol> 
+        <h4>Path</h4>
+        <p>
+            Path to the ffmpeg exe application.
+        </p>
+        <h4>Input</h4>
+        <p>
+            Path to the input media file.
+        </p>
+        <h4>Output</h4>
+        <p>
+            Path to the created media file.
+        </p>
+        <h4>Action</h4>
+        <p>
+            Chose an action, or chose to write your own command line.
+        </p>
+    </ol> 
+
+    <h3>Parameters</h3>
+    <ol> 
+        <p>
+            Using <i>-y</i> : Overwrite output files without asking.
+        </p>
+        <h4>Start time</h4>
+        <p>
+            Time : in seconds with optional ms ([-]S+[.m...]) or duration ([-][HH:]MM:SS[.m...]).
+        </p>
+        <h4>Duration</h4>
+        <p>
+            Time : in seconds with optional ms ([-]S+[.m...]) or duration ([-][HH:]MM:SS[.m...]).
+        </p>
+        <h4>Width</h4>
+        <p>
+            Size of the frame.
+        </p>
+    </ol> 
+
+    <h3>Commande line</h3>
+    <ol> 
+        <p>Use <i>{input}</i> and <i>{output}</i> to access input and output fields in your command. </p>
+        <p>You can use Moustache to access <i>msg</i> fields (eg: -y -ss {time} -i ...) </p>
+        <p>Arguments will be split with spaces.</p>
+    </ol>
+</script>
