@@ -54,7 +54,7 @@ async function input (node, data, config) {
     }
     if (config.useridType !== 'str') {
         let loc = (config.useridType === 'global') ? node.context().global : data;
-        parameters.userid = helper.getByString(loc, parameters.userid);
+        parameters.userId = helper.getByString(loc, parameters.userId);
     }
     if (requestA) {
         if (config.requestAType.match(/msg|global/)) {

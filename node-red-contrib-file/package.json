@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-viseo-file",
-    "version": "0.1.10",
+    "version": "0.1.11",
     "author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description": "Utility nodes for SARAH",
     "dependencies": {
@@ -16,6 +16,7 @@
     "node-red": {
         "nodes": {
             "file-out":  "node-file-out.js",
+            "file-xlsx":  "node-file-xlsx.js",
             "get-lines": "node-get-lines.js",
             "log-line" : "node-log-line.js",
             "log-line-config" : "node-log-line-config.js"

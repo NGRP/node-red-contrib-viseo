@@ -102,18 +102,19 @@ async function input(node, data, config) {
       res = (action === "cell") ? getCell(node, parameters.cells, config) : getData(node, parameters.cells, config);
       if (res.error) throw (res.error);
     }
+    else {
 
+      let wb = parameters.data;
+      wb.Sheets[parameters.worksheet] = {};
+      res = 200;
 
-    let wb = parameters.data;
-    wb.Sheets[parameters.worksheet] = {};
-    res = 200;
-
-    if (action === "set") {
-      let sheet = getInput(node, data, config, parameters);
-      
-      if (sheet.error) throw (res.error);
-      wb.Sheets[parameters.worksheet] = sheet
-      XLSX.writeFile(wb, workbook);        
+      if (action === "set") {
+        let sheet = getInput(node, data, config, parameters);
+        
+        if (sheet.error) throw (res.error);
+        wb.Sheets[parameters.worksheet] = sheet
+        XLSX.writeFile(wb, workbook);        
+      }
     }
 
   }
