@@ -99,7 +99,7 @@ async function input(node, data, config) {
 
     if (action === "get" || action === "cell") {
 
-      res = (action === "cell") ? getCell(node, parameters.cells, config) : getData(node, parameters.cells, config);
+      res = (action === "cell") ? getCell(node, data, parameters.cells, config) : getData(node, parameters.cells, config);
       if (res.error) throw (res.error);
     }
     else {
@@ -133,7 +133,7 @@ async function input(node, data, config) {
 
 
 
-function getCell(node, cells, config) {
+function getCell(node, data, cells, config) {
     let cell_l = config.cell_l,
         cell_c = config.cell_c;
 
