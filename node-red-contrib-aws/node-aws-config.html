@@ -1,0 +1,43 @@
+<script type="text/javascript">
+    RED.nodes.registerType('aws-config',{
+        category: 'config',
+        defaults: {
+            name:      { value: undefined }
+        },
+        credentials: {
+            accessKeyId:     { type:"text" },
+            secretAccessKey: { type:"text" },
+            region:          { type:"text" }
+        },
+        label: function() {
+            return this.name || "AWS Config";
+        },
+        oneditprepare: function() {
+            $("#node-config-input-name").typedInput({ default: 'str', types: ['str'],  type:'str' });
+            $("#node-config-input-accessKeyId").typedInput({ default: 'str', types: ['str'],  type:'str' });
+            $("#node-config-input-secretAccessKey").typedInput({ default: 'str', types: ['str'],  type:'str' });
+            $("#node-config-input-region").typedInput({ default: 'str', types: ['str'],  type:'str' });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="aws-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" style="width:70%;" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-accessKeyId"><i class="fa fa-lock"></i> Key</label>
+        <input type="text" id="node-config-input-accessKeyId" style="width:70%;" placeholder="Access key ID">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-secretAccessKey"><i class="fa fa-lock"></i> Secret</label>
+        <input type="text" id="node-config-input-secretAccessKey" style="width:70%;" placeholder="Secret access key">
+    </div>
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-region"><i class="fa fa-globe"></i> Region</label>
+        <input type="text" id="node-config-input-region" style="width:70%;" placeholder="us-east-1">
+    </div>
+</script>

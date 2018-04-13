@@ -1,0 +1,21 @@
+{
+    "name"          : "node-red-contrib-viseo-aws",
+    "version"       : "0.0.0",
+    "description"   : "A connexion to AWS",
+    "dependencies"  : {
+        "node-red-viseo-helper"      : "~0.1",
+        "node-red-viseo-bot-manager" : "~0.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-aws"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "viseo", "sarah", "node-red" ],
+    "node-red" : {
+        "nodes": {
+            "aws-lex":  "node-aws-lex.js",
+            "aws-config":  "node-aws-config.js"
+        }
+    }
+}

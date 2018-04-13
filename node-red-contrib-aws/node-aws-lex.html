@@ -1,0 +1,221 @@
+<script type="text/javascript">
+    RED.nodes.registerType('aws-lex', {
+        category: 'VISEO_NLP',
+        color: '#3FADB5',
+        defaults: {
+            name:         { value: undefined },
+            token:        { value: undefined, type: 'aws-config', required: false },
+            botname:      { value: undefined },
+            botalias:     { value: undefined },
+            action:       { value: "postText" },
+            input:        { value: "payload" },
+            inputType:    { value: "msg" },
+            output:       { value: "payload" },
+            content:      { value: undefined },
+            contentType:  { value: "text/plain; charset=utf-8"},
+            userid:       { value: "user.id" },
+            useridType:   { value: "msg" },
+            sessionA:     { value: undefined },
+            sessionAType: { value: "str" },
+            requestA:     { value: undefined },
+            requestAType: { value: "str" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'aws.svg',
+        align: 'left',
+        paletteLabel: 'AWS Lex',
+        label: function () { return this.name || 'AWS Lex' },
+        oneditprepare: function() {
+
+            // TypedInput for Content-Types
+            var ct_PCM1 = {
+                value:"audio/l16; rate=16000; channels=1",
+                label:"Audio/PCM-L16",
+                hasValue:false
+            };
+            var ct_PCM2 = {
+                value:"audio/x-l16; sample-rate=16000; channel-count=1",
+                label:"Audio/PCM-XL16",
+                hasValue:false
+            };
+            var ct_PCM3 = {
+                value:"audio/lpcm; sample-rate=8000; sample-size-bits=16; channel-count=1; is-big-endian=false",
+                label:"Audio/PCM-LPCM",
+                hasValue:false
+            };
+            var ct_OPUS = {
+                value:"audio/x-cbr-opus-with-preamble; preamble-size=0; bit-rate=256000; frame-size-milliseconds=4",
+                label:"Audio/Opus",
+                hasValue:false
+            };
+            var ct_TEXT = {
+                value:"text/plain; charset=utf-8",
+                label:"Text",
+                hasValue:false
+            };
+
+            // TypedInput
+            if (!this.contentType) this.contentType = ct_TEXT;
+
+            $("#node-input-name").typedInput({     default: 'str', types: ['str'],  type: 'str' });
+            $("#node-input-botname").typedInput({  default: 'str', types: ['str'],  type: 'str' });
+            $("#node-input-botalias").typedInput({ default: 'str', types: ['str'],  type: 'str' });
+            $("#node-input-output").typedInput({   default: 'msg', types: ['msg'],  type: 'msg' });
+
+            $("#node-input-input").typedInput({  default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-inputType")  });
+            $("#node-input-userid").typedInput({ default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-useridType") });
+
+            $("#node-input-sessionA").typedInput({ default: 'msg', types: ['msg','str','global','json'],  typeField: $("#node-input-sessionAType") });
+            $("#node-input-requestA").typedInput({ default: 'msg', types: ['msg','str','global','json'],  typeField: $("#node-input-requestAType") });
+            $("#node-input-content").typedInput({ types: [ct_TEXT, ct_PCM1, ct_PCM2, ct_PCM3, ct_OPUS,'str','msg'], typeField: $("#node-input-contentType") });
+
+            $("#node-input-action").change(function() {
+                $(".post-content").hide();
+                if ($(this).val() === "postContent") {
+                    $(".post-content").show();
+                    $("#node-input-content").typedInput('show');
+                }
+            })
+
+        },
+        oneditsave: function() {
+
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="aws-lex">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="AWS Lex">
+    </div>
+
+    <br>
+    <b>AWS settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-token"><i class="fa fa-lock"></i> Credentials</label>
+        <input type="text" id="node-input-token" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-botname"><i class="fa fa-user"></i> Bot name</label>
+        <input type="text" id="node-input-botname" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-botalias"><i class="fa fa-user"></i> Bot alias</label>
+        <input type="text" id="node-input-botalias" style="width:70%;">
+    </div>
+
+    <br>
+    <b>Requests settings</b>
+    
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-action"><i class="fa fa-navicon"></i> Action</label>
+        <select id="node-input-action" style="width:70%;">
+            <option value="postText">Text</option>
+            <option value="postContent">Content</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-userid" style="margin-left:15px; width: 85px; color:#848484"> User ID</label>
+        <input type="text" id="node-input-userid" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-useridType">
+    </div>
+
+    <div class="form-row post-content">
+        <label for="node-input-content" style="margin-left:15px; width: 85px; color:#848484"> Content</label>
+        <input type="text" id="node-input-content" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-contentType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-sessionA" style="margin-left:15px; width: 85px; color:#848484"> Session attr.</label>
+        <input type="text" id="node-input-sessionA" style="width:70%;" placeholder="Not required">
+        <input type="hidden" id="node-input-sessionAType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-requestA" style="margin-left:15px; width: 85px; color:#848484"> Request attr.</label>
+        <input type="text" id="node-input-requestA" style="width:70%;" placeholder="Not required">
+        <input type="hidden" id="node-input-requestAType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+    </div>
+</script>
+
+<style>
+    .help-section > ol > h4,
+    .help-section > h3 { font-weight: bold; }
+</style>
+
+<script type="text/x-red" data-help-name="aws-lex">
+    <section class="help-section">
+        <h3>AWS settings</h3>
+        <ol> 
+            <h4>Credentials</h4>
+            <p>
+                IAM user's key and secret for AWS Lex.
+            </p>
+            <h4>Bot name</h4>
+            <p>
+                AWS Lex bot's name.
+            </p>
+            <h4>Bot alias</h4>
+            <p>
+                AWS Lex bot's alias (publication version).
+            </p>
+        </ol> 
+
+        <h3>Requests settings</h3>
+        <ol> 
+            <h4>Action</h4>
+            <p>
+                Request method to use: postText or postContent (see details <a href="https://docs.aws.amazon.com/lex/latest/dg/API_Operations_Amazon_Lex_Runtime_Service.html">here</a>).
+            </p>
+            <h4>Input</h4>
+            <p>
+                Text or content to send to AWS Lex.
+            </p>
+            <h4>Content</h4>
+            <p>
+                Input's content type (this will be added in the headers).
+            </p>
+            <h4>Session/request attributes</h4>
+            <p>
+                Application-specific or request-specific information passed between Amazon Lex and a client application. The value must be a JSON serialized and base64 encoded map with string keys and values.
+            </p>
+            <h4>Output</h4>
+            <p>
+                Request response or error.
+            </p>
+        </ol> 
+
+
+    </section>
+
+
+</script>
