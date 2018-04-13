@@ -17,8 +17,6 @@ module.exports = function(RED) {
 
 async function input (node, data, config) {
 
-    console.log(config)
-
     // Get values
     let ibConfig = config.ibConfig,
         action = config.action,
