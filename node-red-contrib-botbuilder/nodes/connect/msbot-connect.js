@@ -80,6 +80,15 @@ const stop = (node, config, done) => {
 // --------------------------------------------------------------------------
 
 const reply = (bot, node, data, config) => { 
+
+    //check it's the last message
+    let timestamp = data.message.timestamp
+
+    let context = botmgr.getContext(data);
+    
+    if(context.lastMessageDate !== timestamp) {
+        return false;
+    }
     
     // Assume we send the message to the current user address
     let address = botmgr.getUserAddress(data)

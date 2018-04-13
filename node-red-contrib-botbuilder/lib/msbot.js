@@ -22,6 +22,7 @@ const bindDialogs = exports.bindDialogs = (bot, callback) => {
         // Add context object to store the lifetime of the stream
         let context = botmgr.getContext(data);
         context.bot = bot;
+        context.lastMessageDate = message.timestamp;
 
         callback(undefined, data, 'greeting');
     });
@@ -41,6 +42,7 @@ const handleIncomingMessage = (bot, message, callback) => {
     // Add context object to store the lifetime of the stream
     let context     = botmgr.getContext(data);
     context.bot     = bot;
+    
     // context.session = session;
 
     // Clear timeouts
@@ -49,6 +51,7 @@ const handleIncomingMessage = (bot, message, callback) => {
 
     // Handle Prompt
     if (botmgr.hasDelayedCallback(convId, data.message)) return;
+    context.lastMessageDate = message.timestamp;
     callback(undefined, data, 'received');
 }
 
@@ -65,6 +68,7 @@ const saveTimeout = exports.saveTimeout = (convId, handle) => {
 
 const clearHandles = exports.clearTimeout = (convId) => { 
     if (!TIMEOUT_HANDLES[convId]) return;
+    
     for (let handle of TIMEOUT_HANDLES[convId]){
         clearTimeout(handle);
     }
