@@ -95,7 +95,7 @@ const reply = (bot, node, data, config) => {
     if (!address || address.carrier !== 'botbuilder') return false;
 
     // Building the message
-    let message = getMessage(data.reply);
+    let message = getMessage(node, address, data.reply);
     if (!message) return false;
 
     message.address(address);
@@ -167,7 +167,7 @@ const getSession  = (data) => {
 //  MESSAGES
 // ------------------------------------------
 
-const getMessage = (replies) => {
+const getMessage = (node, address, replies) => {
     let msg = new builder.Message();
 
     // The message will be a carousel
@@ -176,7 +176,7 @@ const getMessage = (replies) => {
     }
 
     // Is RAW message
-    else if (buildRawMessage(msg, replies[0])) {
+    else if (buildRawMessage(msg, replies[0], address)) {
         // Botbuilder Message (Cortana) should set that for prompt
         if (replies[0].prompt && msg.inputHint){ msg.inputHint('expectingInput'); }
         return msg;
@@ -189,10 +189,17 @@ const getMessage = (replies) => {
         for (let button of reply.buttons) if (button.action === "share") contentShare = true;
 
         if (contentShare) {
+
+            if(address.channelId !== 'facebook') {
+                node.error("Share option only available on Facebook");
+                continue;
+            }
+
             var newButtons = [];
             for (let button of reply.buttons) newButtons.push(buildButtonObject(button));
 
             msg.data.address = { channelId: 'facebook' };
+
             msg.sourceEvent({
                 facebook: {
                     attachment:{
@@ -269,7 +276,7 @@ const buildButtonObject = (obj) => {
         "url": obj.value,
         "title": obj.title,
         "messenger_extensions": "false",  
-        "fallback_url": "https://www.facebook.com/"
+        //"fallback_url": "https://www.facebook.com/"
     }
     if (obj.action === "call") return {
         "type":"phone_number",
@@ -283,9 +290,39 @@ const buildButtonObject = (obj) => {
     }
 }
     
-const buildRawMessage = (msg, opts) => {
+const buildRawMessage = (msg, opts, address) => {
 
-    if (opts.type === 'card') return false;        
+    if (opts.type === 'card') {
+        if(!opts.title && !opts.attach && opts.buttons && opts.subtitle && address.channelId === 'facebook') {
+
+            let buttons = [];
+            for(let button of opts.buttons) {
+                buttons.push(buildButtonObject(button));
+            }
+
+            if (msg.speak && opts.speech) {
+                msg.speak(opts.speech === true ? opts.subtitle : opts.speech);
+            }
+
+            msg.data.address = { channelId: 'facebook' };
+
+            msg.sourceEvent({
+                facebook: {
+                    attachment:{
+                        "type":"template",
+                        "payload":{
+                            "template_type":"button",
+                            "text": opts.subtitle,
+                            "buttons": buttons
+                        }
+                    }
+                }
+            });
+
+            return true;
+        }
+        return false;
+    }
 
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
