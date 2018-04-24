@@ -11,15 +11,9 @@ module.exports = function(RED) {
         let node = this;
 
         start(RED, node, config);
-        this.on('input', (data)  => { input(node, data, config)  });
         this.on('close', (done) => { stop(done) });
     }
     RED.nodes.registerType("socketio-in", register, {});
-}
-
-const input = (node, data, config) => {
-    socket.emit(config.path, data.payload);
-    node.send(data);
 }
 
 // --------------------------------------------------------------------------
@@ -30,7 +24,7 @@ let ws = undefined;
 let SOCKETS = {};
 
 const stop = (done) => {
-    if (undefined === ws){ done(); }
+    if (ws === undefined) done(); 
     ws = undefined;
     done();
 }
@@ -38,8 +32,7 @@ const stop = (done) => {
 const start = (RED, node, config) => {
     
     // Create the server once
-    if (undefined === ws){
-        
+    if (ws === undefined){
         SOCKETS = {};
         node.context().global.set("sockets", SOCKETS);
 
@@ -54,12 +47,14 @@ const start = (RED, node, config) => {
 
         let path = config.path;
         if (config.pathType !== 'str') {
-            let loc = (config.pathType === 'global') ? node.context().global : data;
-            path = helper.getByString(loc, path);
+            path = helper.getByString(node.context().global, path);
         }
         
         socket.on(path, function (data) {
-            node.send({ "payload" : data, "socket" : socket.id });
+            let result = { "socket" : socket.id };
+            let output = config.output || "payload";
+            result[output] = data;
+            node.send(result);
         });
     });
 }

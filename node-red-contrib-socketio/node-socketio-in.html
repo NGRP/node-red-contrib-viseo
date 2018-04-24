@@ -5,6 +5,7 @@
         defaults: { 
             name:       { value: undefined },
             path:       { value: undefined },
+            output:     { value: undefined },
             pathType:   { value: "str" }
         },
         inputs:0,
@@ -19,7 +20,8 @@
         },
         oneditprepare: function() {
             if (!this.pathType) this.pathType = 'str';
-            $("#node-input-path").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-pathType") });
+            $("#node-input-path").typedInput({ default: 'str', types: ['str','global'], typeField: $("#node-input-pathType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
         }
     });
 </script>
@@ -29,16 +31,35 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    
     <div class="form-row">
+        <br>
         <label for="node-input-path"><i class="fa fa-globe"></i> Path</label>
-        <input type="text" id="node-input-path" placeholder="/ws/path">
+        <input type="text" id="node-input-path" placeholder="ws/path" style="width: 70%">
         <input type="hidden" id="node-input-pathType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" placeholder="payload" style="width: 70%">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="socketio-in">
     <p>
         Listen to incomming SocketIO message on the given path.
-        Output in the payload incomming data and set the current socket in <code>message.socket</code>. 
     </p>
+
+    <section class="help-section">
+        <ol> 
+            <h4>Path</h4>
+            <p>
+                Name of the path that is captured on the server side (ex: socket.io)
+            </p>
+            <h4>Output</h4>
+            <p>
+                Field where to put the received data.<br>
+                The current socket is stocked in <code>msg.socket</code>. 
+            </p>
+        </ol> 
+    </section>
 </script>
