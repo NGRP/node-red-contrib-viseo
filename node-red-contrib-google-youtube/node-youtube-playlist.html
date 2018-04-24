@@ -1,0 +1,47 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-youtube-playlist',{
+        category: 'VISEO REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            account:    { type: 'google-api-key', required: true },
+            playlistId:  { value: undefined },
+            playlistIdType:  { value: 'str' },
+            maxResults: { value: undefined , validate: RED.validators.number() }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "youtube.svg",
+        align: "left",
+        paletteLabel: "Youtube Playlist",
+        label: function() { return this.name || 'Youtube Playlist'; },
+        oneditprepare: function() {
+            $('#node-input-playlistId').typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-playlistIdType") })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-youtube-playlist">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-account"><i class="fa fa-key"></i> API Key</label>
+        <input type="text" id="node-input-account">
+    </div>
+    <div class="form-row">
+        <label for="node-input-playlistId"><i class="fa fa-youtube"></i> Playlist ID </label>
+        <input type="text" id="node-input-playlistId" placeholder="">
+        <input type="hidden" id="node-input-playlistIdType" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxResults"><i class="fa fa-bars"></i> Max results</label>
+        <input type="text" id="node-input-maxResults" placeholder="" value="5">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-youtube-playlist">
+   <p>Connector to Youtube Data REST API for [ playlist listing ] (https://developers.google.com/youtube/v3/docs/playlistItems/list).</p>
+   
+</script>
