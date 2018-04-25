@@ -56,7 +56,7 @@ const input = (node, data, config) => {
     let userId       = config.userId || 'user.id';
         userId       = helper.getByString(data, userId, userId);
 
-    let metadata     = helper.getByString(data, config.metadata, config.metadata);
+    let metadata     = config.metadata;
 
     let secondaryApp = config.appDestination;
 
