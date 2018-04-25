@@ -218,10 +218,20 @@ const getMessage = (node, address, replies) => {
                     }
                 }
             });
-            if (msg.speak && reply.speech)     msg.speak(reply.speech === true ? (card._speech || '') : reply.speech);
+
+                    // Only the latest speech is used
+        if (msg.speak && reply.speech) {
+            let _speech = "";
+            if (!reply.speech) _speech =  reply.speech;
+            else {
+                if (reply.title) _speech += reply.title + ' ';
+                if (reply.subtext) _speech += reply.subtext ;
+                if (reply.subtitle) _speech += opts.subtitle;
+            }
+            
+            if (msg.speak && reply.speech)     msg.speak(_speech || '');
             if (reply.prompt && msg.inputHint) msg.inputHint('expectingInput'); 
             return msg;
-            
         }
 
         let card = getHeroCard(reply);
@@ -338,9 +348,14 @@ const buildRawMessage = (msg, opts, address) => {
     }
 
     if (opts.type === 'text') {
-        msg.text(opts.text);
+        let fText = opts.text;
+        if (address.channelId === 'facebook') {
+            fText = fText.replace(/\n\n/g,'\n');
+            fText = fText.replace(/\n/g,'\n\n');
+        }
+        msg.text(fText);
         if (msg.speak && opts.speech) { // Set speech value
-            msg.speak(opts.speech === true ? opts.text : opts.speech);
+            msg.speak(opts.speech === true ? fText : opts.speech);
         }
         return true;
     }
@@ -357,9 +372,15 @@ const buildRawMessage = (msg, opts, address) => {
 
     // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
     if (opts.type === 'quick') {
-        msg.text(opts.quicktext);
+        let fText = opts.quicktext;
+        if (address.channelId === 'facebook') {
+            fText = fText.replace(/\n\n/g,'\n');
+            fText = fText.replace(/\n/g,'\n\n');
+        }
+        msg.text(fText);
+        
         if (msg.speak && opts.speech) { // Set speech value
-            msg.speak(opts.speech === true ? opts.text : opts.speech);
+            msg.speak(opts.speech === true ? fText : opts.speech);
         }
 
         let isLocation = false;
