@@ -1,5 +1,6 @@
 
 var io = require('socket.io');
+const helper = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
