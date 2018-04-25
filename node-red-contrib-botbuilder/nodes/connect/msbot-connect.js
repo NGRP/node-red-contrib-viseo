@@ -219,8 +219,7 @@ const getMessage = (node, address, replies) => {
                 }
             });
 
-                    // Only the latest speech is used
-        if (msg.speak && reply.speech) {
+            // Only the latest speech is used
             let _speech = "";
             if (!reply.speech) _speech =  reply.speech;
             else {
