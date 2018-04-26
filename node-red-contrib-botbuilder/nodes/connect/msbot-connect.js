@@ -86,7 +86,7 @@ const reply = (bot, node, data, config) => {
 
     let context = botmgr.getContext(data);
     
-    if(context.lastMessageDate !== timestamp) {
+    if(timestamp && context.lastMessageDate !== timestamp) {
         return false;
     }
     
