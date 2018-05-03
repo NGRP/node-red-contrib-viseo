@@ -58,8 +58,22 @@
                 icon: "db.svg",
                 align: "left",
                 paletteLabel: "NoSQL",
-                label: function() { return this.name || this.collection || "no SQL" },
+                label: function() { 
+                    if(this.name) {
+                        return this.name;
+                    }
+                    if(this.operation) {
+                        let label = this.operation[0].toUpperCase() + this.operation.substring(1);
+                        if(this.collection) {
+                            label += " "+this.collection;
+                        }
+                        return label;
+                    }
+                    return "no SQL" 
+                },
                 oneditprepare: function() {
+
+                    let node = this;
 
                     const initLimits = function() {
                         $("#node-input-offset").typedInput({ 
@@ -79,8 +93,8 @@
                     initLimits();
 
                     $('.server-type').hide();
-                    if(this['server-type']) {
-                        $('#node-input-server-type option[value="'+this['server-type']+'"]').prop('selected', true);
+                    if(node['server-type']) {
+                        $('#node-input-server-type option[value="'+node['server-type']+'"]').prop('selected', true);
                     }
 
                     $('#node-input-server-type').on('change', function() {
@@ -90,11 +104,16 @@
 
                     $('#node-input-operation').on('change', function() {
                         if($(this).val() === 'find') {
-                            $('#row-limit').show()
+                            $('#row-limit').show();
+                            node.outputs = 1;
                             initLimits();
+                        } else if($(this).val() === 'test') {
+                            node.outputs = 2;
                         } else {
-                            $('#row-limit').hide()
+                            $('#row-limit').hide();
+                            node.outputs = 1;
                         }
+
                     })
 
 
@@ -146,6 +165,9 @@
                 <option value="add">add</option>
                 <option value="delete">delete</option>
             </optgroup>
+            <optgroup label="------------">
+                <option value="test">test</option>
+            </optgroup>
         </select>
     </div>
     <div class="form-row" id="row-limit" style="display:none">
@@ -174,7 +196,7 @@
         <li><b>Key:</b> filled with the property used as the key (mandatory). </li>
         <li><b>Value:</b> filled with the property used as the value (mandatory).</li>
         <li><b>Operation:</b> <i>set</i> is used to store the value. <i>get</i> is used to 
-        fetch the value according to a given id. <i>find</i> query database with JSON key</li>
+        fetch the value according to a given id. <i>find</i> query database with JSON key.<i>test</i> test if collection is available</li>
         <li><b>Offset/Limit: For find operations</b></li>
     </ul>
 </script>

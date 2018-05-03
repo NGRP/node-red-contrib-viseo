@@ -88,6 +88,9 @@ const input = (node, data, config) => {
             case 'count':
                 count(node, data, config);
                 break;
+            case 'test':
+                test(node, data, config);
+                break;
         }
 
     } catch (ex) { 
@@ -196,6 +199,18 @@ const count = function(node, data, config) {
         }
         helper.setByString(data, config.value || 'payload', results);
         node.send(data);
+    });
+};
+
+const test = function(node, data, config) {
+
+    node.server.databaseManager.count({}, data, config, function(err, data, results) { 
+        if (err) {
+            node.error(err);
+            node.send([undefined, data]);
+        } else {
+            node.send([data, undefined]);
+        }
     });
 };
 
