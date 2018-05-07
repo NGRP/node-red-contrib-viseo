@@ -7,6 +7,7 @@
                 server:             { value: undefined }, 
                 "server-type":      { value: undefined },
                 collection:         { value: undefined },
+                collectionType:     { value: "str" },
                 key:                { value: undefined },
                 offset:             { value: undefined, validate: RED.validators.typedInput("offsetType") },
                 offsetType:         { value: undefined }, 
@@ -92,6 +93,12 @@
 
                     initLimits();
 
+                    $("#node-input-collection").typedInput({ 
+                        default: 'str', 
+                        types: ['str', 'msg'], 
+                        typeField: $("#node-input-collectionType")
+                    });
+
                     $('.server-type').hide();
                     if(node['server-type']) {
                         $('#node-input-server-type option[value="'+node['server-type']+'"]').prop('selected', true);
@@ -142,6 +149,7 @@
      <div class="form-row">
         <label for="node-input-collection"><i class="icon-tag"></i> Collection</label>
         <input type="text" id="node-input-collection" placeholder="collection">
+        <input type="hidden" id="node-input-collectionType">
     </div>
     <div class="form-row">
         <label for="node-input-key"><i class="icon-tag"></i> Key</label>

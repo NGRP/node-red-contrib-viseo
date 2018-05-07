@@ -65,7 +65,9 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
 
-    config.collection = helper.getByString(data, config.collection, config.collection);
+    if (config.collectionType === "msg") {
+        config.collection = helper.getByString(data, config.collection);
+    }
 
     try {
 
