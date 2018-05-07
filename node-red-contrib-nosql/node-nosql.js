@@ -64,6 +64,9 @@ module.exports = function(RED) {
 }
 
 const input = (node, data, config) => {
+
+    config.collection = helper.getByString(data, config.collection, config.collection);
+
     try {
 
         switch(config.operation) {
