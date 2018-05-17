@@ -50,7 +50,8 @@ const input = (node, data, config) => {
         part: "snippet",
         regionCode: config.region,
         auth: node.account.credentials.key,
-        order: config.order
+        order: config.order,
+        type: "video"
 
     }, function(err, response) {
         if (err) {
