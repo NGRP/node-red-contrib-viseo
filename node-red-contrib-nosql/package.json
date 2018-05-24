@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-viseo-nosql",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Get/Set content in a NoSQL database",
   "dependencies": {
     "node-red-viseo-helper": "~0.1",

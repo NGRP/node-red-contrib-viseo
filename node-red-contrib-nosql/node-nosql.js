@@ -65,36 +65,38 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
 
-    if (config.collectionType === "msg") {
-        config.collection = helper.getByString(data, config.collection);
+    let configuration = JSON.parse(JSON.stringify(config));
+
+    if (configuration.collectionType === "msg") {
+        configuration.collection = helper.getByString(data, configuration.collection);
     }
 
     try {
 
         switch(config.operation) {
             case 'set':
-                set(node, data, config);
+                set(node, data, configuration);
                 break;
             case 'get':
-                get(node, data, config);
+                get(node, data, configuration);
                 break;
             case 'find':
-                find(node, data, config);
+                find(node, data, configuration);
                 break;
             case 'update':
-                update(node, data, config);
+                update(node, data, configuration);
                 break;
             case 'add':
-                add(node, data, config);
+                add(node, data, configuration);
                 break;
             case 'delete':
-                remove(node, data, config);
+                remove(node, data, configuration);
                 break;
             case 'count':
-                count(node, data, config);
+                count(node, data, configuration);
                 break;
             case 'test':
-                test(node, data, config);
+                test(node, data, configuration);
                 break;
         }
 
