@@ -5,7 +5,8 @@
         defaults: { 
             name :       { value: undefined },
             salt :       { value: undefined },
-            source :       { value: undefined }
+            source :       { value: undefined },
+            destination :  { value: undefined } 
         },
         inputs:  1,
         outputs: 1,
@@ -28,6 +29,10 @@
     <div class="form-row">
         <label for="node-input-source"><i class="icon-tag"></i> Source</label>
         <input type="text" id="node-input-source" placeholder="payload">
+    </div>
+    <div class="form-row">
+        <label for="node-input-destination"><i class="icon-tag"></i> Destination</label>
+        <input type="text" id="node-input-destination" placeholder="payload">
     </div>
 </script>
 

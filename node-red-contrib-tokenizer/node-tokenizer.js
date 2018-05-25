@@ -19,6 +19,8 @@ const input = (node, data, config) => {
 	let source = config.source || 'payload';
         source = helper.getByString(data, source);
 
+    let destination = config.destination || 'payload';
+
     let stringToTokenize = '';
 
     if(typeof source === "object" || typeof source === "array") {
@@ -31,7 +33,7 @@ const input = (node, data, config) => {
 
     stringToTokenize += (config.salt || '');
 
-    data.payload = CryptoJS.MD5(stringToTokenize).toString();
+    helper.getByString(data, destination, CryptoJS.MD5(stringToTokenize).toString());
 
     node.send(data);
 }
