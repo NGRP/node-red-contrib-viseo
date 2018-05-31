@@ -51,8 +51,8 @@ function input (node, data, config) {
         let rows = helper.getByString(loc, config.input || "payload");
 
         if (!rows || rows.length < 1) {
-            node.warn("Input object is empty");
-            return node.send(data);
+            node.error("Input object is empty");
+            return node.send([ undefined, data ]);
         } 
 
         // Set basic parameters
@@ -148,9 +148,12 @@ function input (node, data, config) {
 
         method = (method === "new") ? "update" : method;
         sheets.spreadsheets.values[method](parameters, function(err, response) {
-            if (err) { return node.warn(err); }
+            if (err) { 
+                node.error(err); 
+                return node.send([ undefined, data ]);
+            }
 
-            if (!config.output){ return node.send(data); }
+            if (!config.output){ return node.send([ data, undefined ]); }
 
             if (response.updates){ helper.setByString(outloc, config.output || "payload", response) } 
             else if (response.values){  
@@ -167,18 +170,21 @@ function input (node, data, config) {
                     helper.setByString(outloc, config.output || "payload", values);
                 }
             }
-            node.send(data);
+            node.send([ data, undefined ]);
         });
     }
 
     function queryClear() {
 
         sheets.spreadsheets.values.clear(parameters, function(err, response) {
-            if (err) { return node.warn(err); }
+            if (err) { 
+                node.error(err); 
+                return node.send([ undefined, data ]);
+            }
             if (action === "clear") {
                 helper.setByString(outloc, config.output || "payload", response);
                 helper.setByString(saveLoc, config.save || '_sheet', undefined);
-                return node.send(data);
+                return node.send([ data, undefined );
             }
             else return querySet();
         });
@@ -193,7 +199,7 @@ function input (node, data, config) {
 
             if (!config.line && !config.column) {
                 helper.setByString(outloc, config.output || "payload", response);
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
             if (config.line && config.column) {
 
@@ -211,7 +217,7 @@ function input (node, data, config) {
                     objet[item] = newl;
                 }
                 helper.setByString(outloc, config.output || "payload", objet);
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
             if ((config.column && config.direction === "column") || 
                 (config.line && config.direction === "line")) {
@@ -221,7 +227,7 @@ function input (node, data, config) {
                     }
 
                     helper.setByString(outloc, config.output || "payload", objet);
-                    return node.send(data);
+                    return node.send([ data, undefined ]);
             }
             else {
                 let array = [];
@@ -236,16 +242,19 @@ function input (node, data, config) {
                 }
 
                 helper.setByString(outloc, config.output || "payload", array);
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
         }
 
         parameters.majorDimension = (config.direction === "column") ? "COLUMNS" : "ROWS";
         sheets.spreadsheets.values.get(parameters, function(err, response) {
-            if (err) { return node.warn(err); }
+            if (err) { 
+                node.error(err);
+                return node.send([ undefined, data ]);
+            }
             if (!response.values) {
                 helper.setByString(outloc, config.output || "payload", "");
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
 
             let result = [];
@@ -254,7 +263,7 @@ function input (node, data, config) {
 
             if (!config.line && !config.column) {
                 helper.setByString(outloc, config.output || "payload", response.values);
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
             if (config.line && config.column) {
 
@@ -272,7 +281,7 @@ function input (node, data, config) {
                     objet[item] = newl;
                 }
                 helper.setByString(outloc, config.output || "payload", objet);
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
             if ((config.column && response.majorDimension === "COLUMNS") || 
                 (config.line && response.majorDimension === "ROWS")) {
@@ -282,7 +291,7 @@ function input (node, data, config) {
                     }
 
                     helper.setByString(outloc, config.output || "payload", objet);
-                    return node.send(data);
+                    return node.send([ data, undefined ]);
             }
             else {
                 let array = [];
@@ -297,7 +306,7 @@ function input (node, data, config) {
                 }
 
                 helper.setByString(outloc, config.output || "payload", array);
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
         });
     }
@@ -316,8 +325,8 @@ function input (node, data, config) {
         }
 
         if (!cell_l || !cell_c) {
-            node.warn("Cannot find line and column labels")
-            return node.send(data);
+            node.error("Cannot find line and column labels")
+            return node.send([ undefined, data ]);
         }
 
         let saveArray = helper.getByString(saveLoc, config.save || '_sheet');
@@ -337,15 +346,18 @@ function input (node, data, config) {
 
             if (c === -1 || l === -1 || !response[l][c]) helper.setByString(outloc, config.output || "payload", "Not found");
             else helper.setByString(outloc, config.output || "payload", response[l][c]);
-            return node.send(data);
+            return node.send([ data, undefined ]);
         }
 
         sheets.spreadsheets.values.get(parameters, function(err, response) {
-            if (err) { return node.warn(err); }
+            if (err) { 
+                node.error(err);
+                return node.send([ undefined, data ]);
+            }
 
             if (!response.values) {
                 helper.setByString(outloc, config.output || "payload", "");
-                return node.send(data);
+                return node.send([ data, undefined ]);
             }
 
             let result = []; saved = [];
@@ -369,7 +381,7 @@ function input (node, data, config) {
             if (c === -1 || l === -1 || !result[l][c]) helper.setByString(outloc, config.output || "payload", "Not found");
 
             else helper.setByString(outloc, config.output || "payload", result[l][c]);
-            return node.send(data);
+            return node.send([ data, undefined ]);
         });
     }
 
@@ -398,5 +410,8 @@ function input (node, data, config) {
             else if (action === "set") return querySet(); 
             else if (action === "cell") return queryCell(); 
         })
-    } catch (ex){ console.log(ex); }
+    } catch (ex){ 
+        console.log(ex); 
+        node.send([ undefined, data ]);
+    }
 }

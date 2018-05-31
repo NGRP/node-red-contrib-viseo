@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-google-youtube",
-    "version"       : "0.0.7",
+    "version"       : "0.0.8",
     "description"   : "Node-RED interface to Youtube APIs",
     "dependencies"  : {
         "node-red-contrib-viseo-google-authentication" : "~0.0",

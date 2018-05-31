@@ -52,11 +52,11 @@ const input = (node, data, config) => {
     }, function(err, response) {
         if (err) {
           node.error('The API returned an error: ' + err);
-          return;
+          return node.send([ undefined, data ]);
         }
 
         data.payload = response;
-        node.send(data);
+        node.send([ data, undefined ]);
     })
 
 };
