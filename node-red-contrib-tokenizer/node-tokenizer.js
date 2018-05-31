@@ -33,7 +33,7 @@ const input = (node, data, config) => {
 
     stringToTokenize += (config.salt || '');
 
-    helper.getByString(data, destination, CryptoJS.MD5(stringToTokenize).toString());
+    helper.setByString(data, destination, CryptoJS.MD5(stringToTokenize).toString());
 
     node.send(data);
 }
