@@ -184,7 +184,7 @@ function input (node, data, config) {
             if (action === "clear") {
                 helper.setByString(outloc, config.output || "payload", response);
                 helper.setByString(saveLoc, config.save || '_sheet', undefined);
-                return node.send([ data, undefined );
+                return node.send([ data, undefined ]);
             }
             else return querySet();
         });
@@ -384,7 +384,6 @@ function input (node, data, config) {
             return node.send([ data, undefined ]);
         });
     }
-
     function returnValue(obj, chaine) {
         let keys = [], values = [];
         for (let i in obj) {
