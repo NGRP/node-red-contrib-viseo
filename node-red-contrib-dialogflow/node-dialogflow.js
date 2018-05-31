@@ -25,7 +25,8 @@ module.exports = function (RED) {
 };
 
 async function input (node, data, config) {
-    console.log("INPUT \n")
+
+
     let version = config.version || "v1",
         action = config.action || "query",
         output = config.intent || "payload",
@@ -104,25 +105,28 @@ async function input (node, data, config) {
                     request(req)
                     .then( function (result) {
                         helper.setByString(outLoc, output, JSON.parse(result));
-                        return node.send(data);
+                        return node.send([data, undefined]);
                     })
                     .catch( function (err) {
-                        return node.error(err);
+                        node.error(err);
+                        return node.send([undefined, data]);
                     })
                 })
             }
             catch (err) { 
-                return node.error(err); 
+                node.error(err); 
+                return node.send([undefined, data]);
             }
         }
         else {                  // VERSION 1
             try {
                 let result = await manageRequest(config.tokenv1.devtoken, actionitem, selaction, itemid, object);
                 helper.setByString(outLoc, output, JSON.parse(result));
-                return node.send(data);
+                return node.send([data, undefined]);
             }
             catch(err) {
-                return node.error(err); 
+                node.error(err);
+                return node.send([undefined, data]);
             }
         }
     }
@@ -172,17 +176,19 @@ async function input (node, data, config) {
                     request(req)
                     .then( function (result) {
                         helper.setByString(outLoc, output, JSON.parse(result));
-                        return node.send(data);
+                        return node.send([data, undefined]);
                     })
                     .catch( function (err) {
-                        return node.error(err);
+                        node.error(err);
+                        return node.send([undefined, data]);
                     })
                     
                 })
 
             }
             catch (err) { 
-                return node.error(err); 
+                node.error(err);
+                return node.send([undefined, data]);
             }
         }
         else {                   // VERSION 1 
@@ -191,12 +197,13 @@ async function input (node, data, config) {
             token = config.tokenv1.devtoken;
 
             try {
-            let result = await queryRequest(key, session, text, language);
-            helper.setByString(outLoc, output, JSON.parse(result));
-            return node.send(data);
+                let result = await queryRequest(key, session, text, language);
+                helper.setByString(outLoc, output, JSON.parse(result));
+                return node.send([data, undefined]);
             } 
             catch (err) { 
-            return node.error(err); 
+                node.error(err);
+                return node.send([undefined, data]);
             }
         }
     }
