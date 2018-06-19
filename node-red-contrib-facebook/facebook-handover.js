@@ -75,16 +75,18 @@ const input = (node, data, config) => {
 
 
             if(err) {
-                console.log(err)
+                node.error(err)
                 node.send([undefined, data]);
             }
 
             try {
                 if(body.success) {
                     return node.send([data, undefined]);
+                } else {
+                    node.error(body.error);
                 }
             } catch(ex) {
-                console.log(ex)
+                node.error(ex)
             }
 
             node.send([undefined, data]);
