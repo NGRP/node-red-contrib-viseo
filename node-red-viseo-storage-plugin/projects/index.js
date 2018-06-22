@@ -79,11 +79,18 @@ function init(_settings, _runtime) {
         flowsFile = 'flows_'+require('os').hostname()+'.json';
         flowsFullPath = fspath.join(settings.userDir,flowsFile);
     }
+
+    if(settings.credentialsFile) {
+        cfName = settings.credentialsFile;
+    } else {
+        cfName = ffBase+"_cred"+ffExt;
+    }
+
     var ffExt = fspath.extname(flowsFullPath);
     var ffBase = fspath.basename(flowsFullPath,ffExt);
 
     flowsFileBackup = getBackupFilename(flowsFullPath);
-    credentialsFile = fspath.join(settings.userDir,ffBase+"_cred"+ffExt);
+    credentialsFile = fspath.join(settings.userDir, cfName);
     credentialsFileBackup = getBackupFilename(credentialsFile)
 
     var setupProjectsPromise;
@@ -374,6 +381,7 @@ function createProject(user, metadata) {
         metadata.files.credentialSecret = currentEncryptionKey;
     }
     metadata.path = fspath.join(projectsDir,metadata.name);
+
     return Projects.create(user, metadata).then(function(p) {
         return setActiveProject(user, p.name);
     }).then(function() {

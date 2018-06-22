@@ -27,7 +27,9 @@ var gitVersion;
 var log;
 
 function runGitCommand(args,cwd,env) {
+
     log.trace(gitCommand + JSON.stringify(args));
+    
     return when.promise(function(resolve,reject) {
         args.unshift("credential.helper=")
         args.unshift("-c");

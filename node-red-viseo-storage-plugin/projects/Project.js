@@ -20,6 +20,9 @@ var when = require('when');
 var fspath = require("path");
 var os = require('os');
 
+var request = require('request-promise');
+var extract = require('extract-zip');
+
 var gitTools = require("./git");
 var util = require("../util");
 var defaultFileSet = require("./defaultFileSet");
@@ -54,6 +57,9 @@ function getGitUser(user) {
     return null;
 }
 function Project(path) {
+
+    this.flowPath = fspath.join(path, settings.flowDir || '');
+    this.flowDir = settings.flowDir || '';
     this.path = path;
     this.name = fspath.basename(path);
     this.paths = {};
@@ -65,7 +71,7 @@ function Project(path) {
 Project.prototype.load = function () {
     var project = this;
     var globalProjectSettings = settings.get("projects");
-// console.log(globalProjectSettings)
+
     var projectSettings = {};
     if (globalProjectSettings) {
         if (globalProjectSettings.projects.hasOwnProperty(this.name)) {
@@ -82,15 +88,18 @@ Project.prototype.load = function () {
     var promises = [];
     return checkProjectFiles(project).then(function(missingFiles) {
         project.missingFiles = missingFiles;
+
         if (missingFiles.indexOf('package.json') === -1) {
-            project.paths['package.json'] = fspath.join(project.path,"package.json");
+            project.paths['package.json'] = fspath.join(project.flowPath,"package.json");
             promises.push(fs.readFile(project.paths['package.json'],"utf8").then(function(content) {
                 try {
                     project.package = util.parseJSON(content);
                     if (project.package.hasOwnProperty('node-red')) {
                         if (project.package['node-red'].hasOwnProperty('settings')) {
                             project.paths.flowFile = project.package['node-red'].settings.flowFile;
-                            project.paths.credentialsFile = project.package['node-red'].settings.credentialsFile;
+                            if(!project.package['node-red'].settings.credentialsFile) {
+                                project.paths.credentialsFile = getCredentialsFilename(project.paths.flowFile);
+                            }
                         }
                     } else {
                         // TODO: package.json doesn't have a node-red section
@@ -115,12 +124,12 @@ Project.prototype.load = function () {
         // if (missingFiles.indexOf('flow.json') !== -1) {
         //     console.log("MISSING FLOW FILE");
         // } else {
-        //     project.paths.flowFile = fspath.join(project.path,"flow.json");
+        //     project.paths.flowFile = fspath.join(project.flowPath,"flow.json");
         // }
         // if (missingFiles.indexOf('flow_cred.json') !== -1) {
         //     console.log("MISSING CREDS FILE");
         // } else {
-        //     project.paths.credentialsFile = fspath.join(project.path,"flow_cred.json");
+        //     project.paths.credentialsFile = fspath.join(project.flowPath,"flow_cred.json");
         // }
 
         promises.push(project.loadRemotes());
@@ -148,8 +157,8 @@ Project.prototype.initialise = function(user,data) {
 
     if (data.hasOwnProperty('files')) {
         if (data.files.hasOwnProperty('flow') && data.files.hasOwnProperty('credentials')) {
-            project.files.flow = data.files.flow;
-            project.files.credentials = data.files.credentials;
+            project.files.flow = fspath.join(project.flowDir, data.files.flow);
+            project.files.credentials = fspath.join(project.flowDir, data.files.credentials);
             var flowFilePath = fspath.join(project.path,project.files.flow);
             var credsFilePath = getCredentialsFilename(flowFilePath);
             promises.push(util.writeFile(flowFilePath,"[]"));
@@ -447,11 +456,13 @@ Project.prototype.status = function(user, includeRemote) {
     }
 
     var completeStatus = function(fetchError) {
+
         var promises = [
             gitTools.getStatus(self.path),
             fs.exists(fspath.join(self.path,".git","MERGE_HEAD"))
         ];
         return when.all(promises).then(function(results) {
+
             var result = results[0];
             if (results[1]) {
                 result.merging = true;
@@ -721,7 +732,7 @@ Project.prototype.removeRemote = function(user, remote) {
 Project.prototype.getFlowFile = function() {
     // console.log("Project.getFlowFile = ",this.paths.flowFile);
     if (this.paths.flowFile) {
-        return fspath.join(this.path,this.paths.flowFile);
+        return fspath.join(this.flowPath,this.paths.flowFile);
     } else {
         return null;
     }
@@ -737,7 +748,7 @@ Project.prototype.getFlowFileBackup = function() {
 Project.prototype.getCredentialsFile = function() {
     // console.log("Project.getCredentialsFile = ",this.paths.credentialsFile);
     if (this.paths.credentialsFile) {
-        return fspath.join(this.path,this.paths.credentialsFile);
+        return fspath.join(this.flowPath,this.paths.credentialsFile);
     } else {
         return this.paths.credentialsFile;
     }
@@ -776,7 +787,13 @@ function getCredentialsFilename(filename) {
     var ffDir = fspath.dirname(filename);
     var ffExt = fspath.extname(filename);
     var ffBase = fspath.basename(filename,ffExt);
-    return fspath.join(ffDir,ffBase+"_cred"+ffExt);
+
+    var cfname = ffBase+"_cred"+ffExt;
+
+    if(settings.credentialsFile) {
+        cfname = settings.credentialsFile;
+    }
+    return fspath.join(ffDir,cfname);
 }
 function getBackupFilename(filename) {
     // TODO: DRY - ./index.js
@@ -787,6 +804,7 @@ function getBackupFilename(filename) {
 }
 
 function checkProjectExists(projectPath) {
+
     return fs.pathExists(projectPath).then(function(exists) {
         if (!exists) {
             var e = new Error("Project not found");
@@ -798,56 +816,72 @@ function checkProjectExists(projectPath) {
     });
 }
 
+function createDefaultFromZip(user, project, url) {
+
+    var projectPath = fspath.join(projectsDir, project.name);
+    // Create a basic skeleton of a project
+    return gitTools.initRepo(projectPath).then(function() {
+
+        var promises = [];
+        var files = Object.keys(defaultFileSet);
+
+        
+        var zipfile = projectPath+'_tmp.zip';
+        
+        promises.push(new Promise(function(resolve, reject) {
+
+            request(url, {
+                gzip: true,
+                encoding: null
+            }).then(function(response) {
+                            
+                fs.writeFile(zipfile, response, "binary")
+                    .then(() => {
+
+                        let tmpDir = fspath.join(projectsDir, '/.tmp');
+                        extract(zipfile, { dir : tmpDir }, function(err) {
+                            if(err) {
+                                reject(err);
+                            } else {
+
+                                return fs.readdir(tmpDir)
+                                    .then((items) => {
+                                        let master = items[0];
+                                        return fs.copy(fspath.join(tmpDir, "/", master), projectPath)
+                                    })
+                                    .then(() => { 
+                                        fs.remove(zipfile);
+                                        fs.remove(tmpDir);
+                                        resolve();
+                                    })
+                                    .catch(reject);
+                            }
+                        })
+                    })
+                    .catch(reject)
+                })
+            })
+        );
+
+        createProjectFiles(project, projectPath, promises, files)
+
+        return when.all(promises).then(function() {
+            return gitTools.stageFile(projectPath,files);
+        }).then(function() {
+            return gitTools.commit(projectPath,"Create project",getGitUser(user));
+        })
+    });
+}
+
 function createDefaultProject(user, project) {
     var projectPath = fspath.join(projectsDir,project.name);
     // Create a basic skeleton of a project
     return gitTools.initRepo(projectPath).then(function() {
         var promises = [];
         var files = Object.keys(defaultFileSet);
-        if (project.files) {
-            if (project.files.flow && !/\.\./.test(project.files.flow)) {
-                var flowFilePath;
-                var credsFilePath;
 
-                if (project.migrateFiles) {
-                    var baseFlowFileName = project.files.flow || fspath.basename(project.files.oldFlow);
-                    var baseCredentialFileName = project.files.credentials || fspath.basename(project.files.oldCredentials);
-                    files.push(baseFlowFileName);
-                    files.push(baseCredentialFileName);
-                    flowFilePath = fspath.join(projectPath,baseFlowFileName);
-                    credsFilePath = fspath.join(projectPath,baseCredentialFileName);
-                    if (fs.existsSync(project.files.oldFlow)) {
-                        log.trace("Migrating "+project.files.oldFlow+" to "+flowFilePath);
-                        promises.push(fs.copy(project.files.oldFlow,flowFilePath));
-                    } else {
-                        log.trace(project.files.oldFlow+" does not exist - creating blank file");
-                        promises.push(util.writeFile(flowFilePath,"[]"));
-                    }
-                    log.trace("Migrating "+project.files.oldCredentials+" to "+credsFilePath);
-                    runtime.nodes.setCredentialSecret(project.credentialSecret);
-                    promises.push(runtime.nodes.exportCredentials().then(function(creds) {
-                        var credentialData;
-                        if (settings.flowFilePretty) {
-                            credentialData = JSON.stringify(creds,null,4);
-                        } else {
-                            credentialData = JSON.stringify(creds);
-                        }
-                        return util.writeFile(credsFilePath,credentialData);
-                    }));
-                    delete project.migrateFiles;
-                    project.files.flow = baseFlowFileName;
-                    project.files.credentials = baseCredentialFileName;
-                } else {
-                    project.files.credentials = project.files.credentials || getCredentialsFilename(project.files.flow);
-                    files.push(project.files.flow);
-                    files.push(project.files.credentials);
-                    flowFilePath = fspath.join(projectPath,project.files.flow);
-                    credsFilePath = getCredentialsFilename(flowFilePath);
-                    promises.push(util.writeFile(flowFilePath,"[]"));
-                    promises.push(util.writeFile(credsFilePath,"{}"));
-                }
-            }
-        }
+        createProjectFiles(project, projectPath, promises, files);
+                
         for (var file in defaultFileSet) {
             if (defaultFileSet.hasOwnProperty(file)) {
                 promises.push(util.writeFile(fspath.join(projectPath,file),defaultFileSet[file](project)));
@@ -860,6 +894,58 @@ function createDefaultProject(user, project) {
             return gitTools.commit(projectPath,"Create project",getGitUser(user));
         })
     });
+}
+
+
+function createProjectFiles(project, projectPath, promises, files) {
+
+    if (project.files) {
+        if (project.files.flow && !/\.\./.test(project.files.flow)) {
+            var flowFilePath;
+            var credsFilePath;
+
+            if (project.migrateFiles) {
+                var baseFlowFileName = project.files.flow || fspath.basename(project.files.oldFlow);
+                var baseCredentialFileName = project.files.credentials || fspath.basename(project.files.oldCredentials);
+                files.push(baseFlowFileName);
+                files.push(baseCredentialFileName);
+                flowFilePath = fspath.join(projectPath,baseFlowFileName);
+                credsFilePath = fspath.join(projectPath,baseCredentialFileName);
+                if (fs.existsSync(project.files.oldFlow)) {
+                    log.trace("Migrating "+project.files.oldFlow+" to "+flowFilePath);
+                    promises.push(fs.copy(project.files.oldFlow,flowFilePath));
+                } else {
+                    log.trace(project.files.oldFlow+" does not exist - creating blank file");
+                    promises.push(util.writeFile(flowFilePath,"[]"));
+                }
+                log.trace("Migrating "+project.files.oldCredentials+" to "+credsFilePath);
+                runtime.nodes.setCredentialSecret(project.credentialSecret);
+                promises.push(runtime.nodes.exportCredentials().then(function(creds) {
+                    var credentialData;
+                    if (settings.flowFilePretty) {
+                        credentialData = JSON.stringify(creds,null,4);
+                    } else {
+                        credentialData = JSON.stringify(creds);
+                    }
+                    return util.writeFile(credsFilePath,credentialData);
+                }));
+                delete project.migrateFiles;
+                project.files.flow = baseFlowFileName;
+                project.files.credentials = baseCredentialFileName;
+            } else {
+                project.files.credentials = project.files.credentials || getCredentialsFilename(project.files.flow);
+                files.push(project.files.flow);
+                files.push(project.files.credentials);
+
+                
+                flowFilePath = fspath.join(projectPath, settings.flowDir || '', project.files.flow);
+                credsFilePath = getCredentialsFilename(flowFilePath);
+
+                promises.push(util.writeFile(flowFilePath,"[]"));
+                promises.push(util.writeFile(credsFilePath,"{}"));
+            }
+        }
+    }
 }
 
 function checkProjectFiles(project) {
@@ -950,7 +1036,12 @@ function createProject(user, metadata) {
                     }
                     return gitTools.clone(originRemote,auth,projectPath);
                 } else {
-                    return createDefaultProject(user, metadata);
+
+                    if(settings.editorTheme.projects.createDefaultFromZip) {
+                        return createDefaultFromZip(user, metadata, settings.editorTheme.projects.createDefaultFromZip);
+                    } else {
+                        return createDefaultProject(user, metadata);
+                    }
                 }
             }).then(function() {
                 resolve(loadProject(projectPath))

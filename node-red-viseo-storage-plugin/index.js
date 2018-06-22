@@ -18,7 +18,7 @@ var fs = require('fs-extra');
 var when = require('when');
 var fspath = require("path");
 
-var log = require("../../log");
+var log = require("node-red/red/runtime/log");
 var util = require("./util");
 var library = require("./library");
 var sessions = require("./sessions");
