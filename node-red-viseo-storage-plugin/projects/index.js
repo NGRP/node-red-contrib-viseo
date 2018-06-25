@@ -200,11 +200,13 @@ function loadProject(name) {
         projectPath = fspath.join(projectsDir,name);
     }
     return Projects.load(projectPath).then(function(project) {
+
         activeProject = project;
         flowsFullPath = project.getFlowFile();
         flowsFileBackup = project.getFlowFileBackup();
         credentialsFile = project.getCredentialsFile();
         credentialsFileBackup = project.getCredentialsFileBackup();
+
         return project;
     })
 }
@@ -520,6 +522,7 @@ function getFlows() {
             error.code = "missing_package_file";
             return when.reject(error);
         }
+
         if (!activeProject.getFlowFile()) {
             log.warn("Project has no flow file");
             error = new Error("Project has no flow file");
@@ -567,6 +570,7 @@ function saveFlows(flows) {
 }
 
 function getCredentials() {
+
     return util.readFile(credentialsFile,credentialsFileBackup,{},'credentials');
 }
 

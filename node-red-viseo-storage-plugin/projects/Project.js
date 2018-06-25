@@ -99,6 +99,8 @@ Project.prototype.load = function () {
                             project.paths.flowFile = project.package['node-red'].settings.flowFile;
                             if(!project.package['node-red'].settings.credentialsFile) {
                                 project.paths.credentialsFile = getCredentialsFilename(project.paths.flowFile);
+                            } else {
+                                project.paths.credentialsFile = project.package['node-red'].settings.credentialsFile;
                             }
 
                         }
@@ -907,13 +909,21 @@ function createDefaultProject(user, project) {
     // Create a basic skeleton of a project
     return gitTools.initRepo(projectPath).then(function() {
         var promises = [];
-        var files = Object.keys(defaultFileSet);
+        var files = [];
 
         createProjectFiles(project, projectPath, promises, files);
                 
         for (var file in defaultFileSet) {
             if (defaultFileSet.hasOwnProperty(file)) {
-                promises.push(util.writeFile(fspath.join(projectPath, file),defaultFileSet[file](project)));
+                var dir = projectPath
+                if(file === "package.json") {
+                    dir = fspath.join(dir , settings.packageDir || '')
+                    files.push(fspath.join(settings.packageDir || '', "package.json"))
+                } else {
+                    files.push(file);
+                }
+
+                promises.push(fs.ensureDir(dir).then(util.writeFile(fspath.join(dir, file), defaultFileSet[file](project))));
             }
         }
 
