@@ -15,7 +15,7 @@
  **/
 
 module.exports = {
-    "data/package.json": function(project) {
+    "package.json": function(project) {
         var package = {
             "name": project.name,
             "description": project.summary||"A Node-RED Project",

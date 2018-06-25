@@ -58,8 +58,8 @@ function getGitUser(user) {
 }
 function Project(path) {
 
-    this.flowPath = fspath.join(path, settings.flowDir || '');
-    this.flowDir = settings.flowDir || '';
+    this.flowPath = path;
+    this.packageDir = settings.packageDir || '';
     this.path = path;
     this.name = fspath.basename(path);
     this.paths = {};
@@ -90,7 +90,7 @@ Project.prototype.load = function () {
         project.missingFiles = missingFiles;
 
         if (missingFiles.indexOf('package.json') === -1) {
-            project.paths['package.json'] = fspath.join(project.flowPath,"package.json");
+            project.paths['package.json'] = fspath.join(project.flowPath, project.getDefaultFile("package.json"));
             promises.push(fs.readFile(project.paths['package.json'],"utf8").then(function(content) {
                 try {
                     project.package = util.parseJSON(content);
@@ -100,6 +100,7 @@ Project.prototype.load = function () {
                             if(!project.package['node-red'].settings.credentialsFile) {
                                 project.paths.credentialsFile = getCredentialsFilename(project.paths.flowFile);
                             }
+
                         }
                     } else {
                         // TODO: package.json doesn't have a node-red section
@@ -157,8 +158,8 @@ Project.prototype.initialise = function(user,data) {
 
     if (data.hasOwnProperty('files')) {
         if (data.files.hasOwnProperty('flow') && data.files.hasOwnProperty('credentials')) {
-            project.files.flow = fspath.join(project.flowDir, data.files.flow);
-            project.files.credentials = fspath.join(project.flowDir, data.files.credentials);
+            project.files.flow = data.files.flow;
+            project.files.credentials = data.files.credentials;
             var flowFilePath = fspath.join(project.path,project.files.flow);
             var credsFilePath = getCredentialsFilename(flowFilePath);
             promises.push(util.writeFile(flowFilePath,"[]"));
@@ -169,7 +170,7 @@ Project.prototype.initialise = function(user,data) {
     }
     for (var file in defaultFileSet) {
         if (defaultFileSet.hasOwnProperty(file)) {
-            var path = fspath.join(project.path,file);
+            var path = fspath.join(project.path, project.getDefaultFile(file));
             if (!fs.existsSync(path)) {
                 promises.push(util.writeFile(path,defaultFileSet[file](project)));
             }
@@ -738,6 +739,13 @@ Project.prototype.getFlowFile = function() {
     }
 }
 
+Project.prototype.getDefaultFile = function(file) {
+    if(file === "package.json") {
+        return  (this.packageDir || '') + file;
+    }
+    return file;
+}
+
 Project.prototype.getFlowFileBackup = function() {
     var flowFile = this.getFlowFile();
     if (flowFile) {
@@ -823,7 +831,7 @@ function createDefaultFromZip(user, project, url) {
     return gitTools.initRepo(projectPath).then(function() {
 
         var promises = [];
-        var files = Object.keys(defaultFileSet);
+        var files = [];
 
         
         var zipfile = projectPath+'_tmp.zip';
@@ -863,10 +871,31 @@ function createDefaultFromZip(user, project, url) {
             })
         );
 
-        createProjectFiles(project, projectPath, promises, files)
-
         return when.all(promises).then(function() {
-            return gitTools.stageFile(projectPath,files);
+
+
+            return fs.readFile(fspath.join(projectPath, settings.packageDir, 'package.json'),"utf8").then(function(content) {
+                try {
+                    project.package = util.parseJSON(content);
+                    if (project.package.hasOwnProperty('node-red')) {
+                        if (project.package['node-red'].hasOwnProperty('settings')) {
+                            project.files.flow = project.package['node-red'].settings.flowFile;
+                        }
+                    }
+                } catch(err) {}
+
+
+            }).then(function() {
+
+                promises = [];
+                createProjectFiles(project, projectPath, promises, files);
+
+                return when.all(promises).then(function() {
+                    return gitTools.stageFile(projectPath,files);
+                })
+            });
+
+            
         }).then(function() {
             return gitTools.commit(projectPath,"Create project",getGitUser(user));
         })
@@ -884,7 +913,7 @@ function createDefaultProject(user, project) {
                 
         for (var file in defaultFileSet) {
             if (defaultFileSet.hasOwnProperty(file)) {
-                promises.push(util.writeFile(fspath.join(projectPath,file),defaultFileSet[file](project)));
+                promises.push(util.writeFile(fspath.join(projectPath, file),defaultFileSet[file](project)));
             }
         }
 
@@ -900,9 +929,11 @@ function createDefaultProject(user, project) {
 function createProjectFiles(project, projectPath, promises, files) {
 
     if (project.files) {
+
         if (project.files.flow && !/\.\./.test(project.files.flow)) {
             var flowFilePath;
             var credsFilePath;
+
 
             if (project.migrateFiles) {
                 var baseFlowFileName = project.files.flow || fspath.basename(project.files.oldFlow);
@@ -937,8 +968,7 @@ function createProjectFiles(project, projectPath, promises, files) {
                 files.push(project.files.flow);
                 files.push(project.files.credentials);
 
-                
-                flowFilePath = fspath.join(projectPath, settings.flowDir || '', project.files.flow);
+                flowFilePath = fspath.join(projectPath, project.files.flow);
                 credsFilePath = getCredentialsFilename(flowFilePath);
 
                 promises.push(util.writeFile(flowFilePath,"[]"));
@@ -952,12 +982,15 @@ function checkProjectFiles(project) {
     var projectPath = project.path;
     var promises = [];
     var paths = [];
+
     for (var file in defaultFileSet) {
         if (defaultFileSet.hasOwnProperty(file)) {
+            file = project.getDefaultFile(file);
             paths.push(file);
             promises.push(fs.stat(fspath.join(projectPath,file)));
         }
     }
+
     return when.settle(promises).then(function(results) {
         var missing = [];
         results.forEach(function(result,i) {
