@@ -10,7 +10,11 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        config.key = RED.nodes.getNode(config.key);
+
+        node.status({fill:"red", shape:"ring", text: 'Missing credential'});
+        config.key = RED.nodes.getCredentials(config.key);
+        if (config.key) node.status({});
+
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("ms-video-indexer", register, {});

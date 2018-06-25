@@ -1,0 +1,241 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-content-moderator',{
+        category: 'VISEO_LANGUAGE',
+        color: '#3FADB5',
+        defaults: { 
+            name: { value: undefined },
+            input: { value: undefined, required: false },
+            output: { value: undefined, required: false },
+            enpoint: { value: undefined, required: false },
+            key: { value: undefined, required: true, type: 'ms-config'},
+            api: { value: "DetectLanguage" },
+            processType: { value: "ProcessText"},
+            inputType: { value: "msg" },
+            outputType: { value: "msg" },
+            endpointType: { value: "str" },
+            content: {value: "application/json"},
+
+            listId: { value: "" },
+            listIdType: { value: "str" },
+            language: { value: "eng" },
+            languageType: { value: "str" },
+            autocorrect: { value: false},
+            autocorrectType: { value: "bool" },
+            PII: { value: false},
+            PIIType: { value: "bool" },
+            classify: { value: false},
+            classifyType: { value: "bool" },
+
+            enhanced: { value: false},
+            enhancedType: { value: "bool" },
+            CacheImage: { value: false},
+            CacheImageType:  { value: "bool" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: 'MS Content Moderator',
+        label: function() { return this.name || "Microsoft Content Moderator"; },
+        oneditprepare: function() {
+            let selectedAPI = this.api;
+            let selectedProcess = this.process;
+
+            $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global', 'str'], typeField: $("#node-input-inputType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+            $("#node-input-endpoint").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-endpointType")  });
+            $("#node-input-listId").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-listIdType")  });
+            $("#node-input-language").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-languageType")  });
+            $("#node-input-autocorrect").typedInput({ default: 'msg',  types: ['bool','msg','global'], typeField: $("#node-input-autocorrectType")  });
+            $("#node-input-PII").typedInput({ default: 'msg',  types: ['bool','msg','global'], typeField: $("#node-input-PIIType")  });
+            $("#node-input-classify").typedInput({ default: 'msg',  types: ['bool','msg','global'], typeField: $("#node-input-classifyType")  });
+            $("#node-input-enhanced").typedInput({ default: 'msg',  types: ['bool','msg','global'], typeField: $("#node-input-enhancedType")  });
+            $("#node-input-CacheImage").typedInput({ default: 'msg',  types: ['bool','msg','global'], typeField: $("#node-input-CacheImageType")  });
+
+            $("#node-input-processType").change(updateSelects);
+            $("#node-input-api").change(updateFiels);
+
+            function updateSelects() {
+                let api = $("#node-input-api").val() || selectedAPI;
+                let process = $("#node-input-processType").val() || selectedProcess;
+                $("#node-input-api").empty(); 
+                
+                if (process === "ProcessImage") {
+                    let option = $('<option></option>').attr("value", "Evaluate").text("Evaluate");
+                    $("#node-input-api").append(option);
+                    option = $('<option></option>').attr("value", "FindFaces").text("Find faces");
+                    $("#node-input-api").append(option);
+                    option = $('<option></option>').attr("value", "Match").text("Match");
+                    $("#node-input-api").append(option);
+                    option = $('<option></option>').attr("value", "OCR").text("OCR");
+                    $("#node-input-api").append(option);
+
+                    if (api !== "Evaluate" && api !== "FindFaces" && api !== "Match" && api !== "OCR") api =  "Evaluate";
+                }
+                else {
+                    let option = $('<option></option>').attr("value","DetectLanguage").text("Detect language");
+                    $("#node-input-api").append(option);
+                    option = $('<option></option>').attr("value", "Screen").text("Screen");
+                    $("#node-input-api").append(option);
+
+                    if (api !== "DetectLanguage" && api !== "Screen") api =  "DetectLanguage";
+                }
+
+                $("#node-input-api").val(api)
+                updateFiels();
+            }
+
+            function updateFiels() {
+                let field = $("#node-input-api").val() || selectedAPI;
+
+                $(".screen, .ocr, .match, .findfaces, .evaluate").hide();
+                switch(field) {
+                    case "DetectLanguage": 
+                        break;
+                    case "Screen":
+                        $(".screen").show();
+                        $("#node-input-listId, #node-input-language, #node-input-autocorrect, #node-input-PII, #node-input-classify").typedInput('show')
+                        break;
+                    case "Evaluate":
+                        $(".evaluate").show();
+                        $("#node-input-CacheImage").typedInput('show')
+                        break;
+                    case "OCR":
+                        $(".ocr").show();
+                        $("#node-input-enhanced, #node-input-language, #node-input-CacheImage").typedInput('show')
+                        break;
+                    case "Match":
+                        $(".match").show();
+                        $("#node-input-listId, #node-input-CacheImage").typedInput('show')
+                        break;
+                    case "FindFaces":
+                        $(".findfaces").show();
+                        $("#node-input-CacheImage").typedInput('show')
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+        },
+        oneditsave: function() {
+            this.api =  $("#node-input-api").val();
+            this.process =  $("#node-input-process").val();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-content-moderator">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>API settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-key"><i class="fa fa-lock"></i> Key</label>
+        <input type="text" id="node-input-key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-endpoint"><i class="fa fa-lock"></i> Endpoint</label>
+        <input type="text" id="node-input-endpoint" style="width: 70%" placeholder="https://westeurope.api.cognitive.microsoft.com/contentmoderator"/>
+        <input type="hidden" id="node-input-endpointType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>  
+        <input type="hidden" id="node-input-inputType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+    <br>
+    <b>API parameters </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-processType"><i class="fa fa-tasks"></i> API</label>
+        <div style="width:70%; display:inline-block">
+            <select id="node-input-processType" style="width:38%;">
+                <option value="ProcessImage">Process image</option>
+                <option value="ProcessText">Process text</option>
+            </select>
+            <select id="node-input-api" style="width:60%;">
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row ocr match findfaces evaluate">
+        <label for="node-input-content" style="padding-left:10px; width:150px; margin-bottom:10px;">ContentType</label>
+        <select id="node-input-content" style="width:60%;">
+            <option value="application/json">URL</option>
+            <option value="image/gif">GIF</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/bmp">BMP</option>
+        </select>
+    </div>
+
+    <div class="form-row screen match">
+        <label for="node-input-listId" style="padding-left:10px; width:150px; margin-bottom:10px;">listId</label>
+        <input type="text" id="node-input-listId" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-listIdType">
+    </div>
+    <div class="form-row screen ocr">
+        <label for="node-input-language" style="padding-left:10px; width:150px; margin-bottom:10px;">language</label>
+        <input type="text" id="node-input-language" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-languageType">
+    </div>
+    <div class="form-row screen">
+        <label for="node-input-autocorrect" style="padding-left:10px; width:150px; margin-bottom:10px;">autocorrect</label>
+        <input type="text" id="node-input-autocorrect" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-autocorrectType">
+    </div>
+    <div class="form-row screen">
+        <label for="node-input-PII" style="padding-left:10px; width:150px; margin-bottom:10px;">PII</label>
+        <input type="text" id="node-input-PII" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-PIIType">
+    </div>
+    <div class="form-row screen">
+        <label for="node-input-classify" style="padding-left:10px; width:150px; margin-bottom:10px;">classify</label>
+        <input type="text" id="node-input-classify" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-classifyType">
+    </div>
+
+    <div class="form-row ocr match findfaces evaluate">
+        <label for="node-input-CacheImage" style="padding-left:10px; width:150px; margin-bottom:10px;">CacheImage</label>
+        <input type="text" id="node-input-CacheImage" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-CacheImageType">
+    </div>
+
+    <div class="form-row ocr">
+        <label for="node-input-enhanced" style="padding-left:10px; width:150px; margin-bottom:10px;">enhanced</label>
+        <input type="text" id="node-input-enhanced" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-enhancedType">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ms-content-moderator">
+    <p>This node uses the Microsoft Cognitive Services Language API to get informations on a text. </p>
+    
+        <h2>Main parameters</h2>
+        <p>
+            <li><b>Key</b>: A key for the Content Moderator API is required for the process.</li>
+            <li><b>Endpoint</b>: Endpoint specified with the key in Azure Portal.</li>
+            <li><b>Input</b>: Where to get the input text.</li>
+            <li><b>Output</b>: Where to set the result.</li>
+            <li><b>Api</b>: Process.</li>
+        </p>
+    
+        <h2>Getting help</h2>
+        <p>
+            <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a></li>
+            <li><b>API reference and examples:</b> <a>https://westus.dev.cognitive.microsoft.com/docs/services/57cf753a3f9b070c105bd2c1/</a></li>
+            <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a></li>
+            <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
+        </p>
+</script>

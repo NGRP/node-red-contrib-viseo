@@ -12,9 +12,14 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
+
+        node.status({fill:"red", shape:"ring", text: 'Missing credential'});
+        config.key = RED.nodes.getCredentials(config.key);
+        if (config.key && config.key.key) node.status({});
+
         this.on('input', (data)  => { input(node, data, config)  });
     }
-    RED.nodes.registerType("ms-speech-text", register, { credentials: { key: {type:"text"}}});
+    RED.nodes.registerType("ms-speech-text", register, {});
 }
 
 const input = (node, data, config) => {
@@ -23,7 +28,7 @@ const input = (node, data, config) => {
     let auth = {
         url: 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken',
         method: 'POST',
-        headers: {'Ocp-Apim-Subscription-Key': node.credentials.key }
+        headers: {'Ocp-Apim-Subscription-Key': config.key.key }
     }
 
     // 2. Send request

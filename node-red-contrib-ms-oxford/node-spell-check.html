@@ -1,0 +1,134 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-spell-check',{
+        category: 'VISEO_LANGUAGE',
+        color: '#3FADB5',
+        defaults: { 
+            name: { value: undefined },
+            input: { value: undefined, required: false },
+            output: { value: undefined, required: false },
+            enpoint: { value: undefined, required: false },
+            key: { value: undefined, required: true, type: 'ms-config'},
+            preContextText: { value: undefined },
+            postContextText: { value: undefined },
+            api: { value: "get" },
+            mkt: { value: "en-us" },
+            mode: {value: "proof"},
+            inputType: { value: "msg" },
+            outputType: { value: "msg" },
+            endpointType: { value: "str" },
+            preContextTextType: { value: "str" },
+            postContextTextType: { value: "str" },
+            mktType: { value: "str" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: 'MS Spell Check',
+        label: function() { return this.name || "Microsoft Spell Check"; },
+        oneditprepare: function() {
+            $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global', 'str'], typeField: $("#node-input-inputType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+            $("#node-input-endpoint").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-endpointType")  });
+            $("#node-input-preContextText").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-preContextTextType")  });
+            $("#node-input-postContextText").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-postContextTextType")  });
+            $("#node-input-mkt").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-mktType")  });
+
+            $("#node-input-api").change(function () {
+                $(".get-method").hide();
+                if ($(this).val() === "get") {
+                    $(".get-method").show();
+                    $("#node-input-preContextText").typedInput('show')
+                    $("#node-input-postContextText").typedInput('show')
+                }
+            }).change();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-spell-check">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>API settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-key"><i class="fa fa-lock"></i> Key</label>
+        <input type="text" id="node-input-key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-endpoint"><i class="fa fa-lock"></i> Endpoint</label>
+        <input type="text" id="node-input-endpoint" style="width: 70%" placeholder="https://api.cognitive.microsoft.com/bing/v7.0/spellcheck"/>
+        <input type="hidden" id="node-input-endpointType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>  
+        <input type="hidden" id="node-input-inputType">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+    <br>
+    <b>API parameters </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-api"><i class="fa fa-tasks"></i> API</label>
+        <select id="node-input-api" style="width:70%;">
+            <option value="get">Get method - Default</option>
+            <option value="post">Post method</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-mode" style="padding-left:10px; width:150px; margin-bottom:10px;"> Mode</label>
+        <select id="node-input-mode" style="width:60%;">
+            <option value="proof">Proof (Office Word like) - Default</option>
+            <option value="spell">Spell (Search engine like)</option>
+        </select>
+    </div>
+    <div class="form-row get-method">
+        <label for="node-input-preContextText" style="padding-left:10px; width:150px; margin-bottom:10px;">preContextText</label>
+        <input type="text" id="node-input-preContextText" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-preContextTextType">
+    </div>
+    <div class="form-row get-method">
+        <label for="node-input-postContextText" style="padding-left:10px; width:150px; margin-bottom:10px;">postContextText</label>
+        <input type="text" id="node-input-postContextText" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-postContextTextType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mkt" style="padding-left:10px; width:150px; margin-bottom:10px;">mkt</label>
+        <input type="text" id="node-input-mkt" style="width: 60%" placeholder="en-us"/>  
+        <input type="hidden" id="node-input-mktType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="ms-spell-check">
+    <p>This node uses the Microsoft Cognitive Services Language API to get informations on a text. </p>
+    
+        <h2>Main parameters</h2>
+        <p>
+            <li><b>Key</b>: A key for the Spell Check API is required for the process.</li>
+            <li><b>Endpoint</b>: Endpoint specified with the key in Azure Portal.</li>
+            <li><b>Input</b>: Where to get the input text.</li>
+            <li><b>Output</b>: Where to set the result.</li>
+            <li><b>Api</b>: Process.</li>
+        </p>
+    
+        <h2>Getting help</h2>
+        <p>
+            <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a></li>
+            <li><b>API reference and examples:</b> <a>https://dev.cognitive.microsoft.com/docs/services/5f7d486e04d2430193e1ca8f760cd7ed//</a></li>
+            <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a></li>
+            <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
+        </p>
+</script>

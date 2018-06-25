@@ -10,8 +10,13 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.facekey = RED.nodes.getNode(config.facekey);
-        this.visionkey = RED.nodes.getNode(config.visionkey);
+
+        node.status({fill:"red", shape:"ring", text: 'Missing credential'});
+        this.facekey = RED.nodes.getCredentials(config.facekey);
+        this.visionkey = RED.nodes.getCredentials(config.visionkey);
+
+        if (this.facekey && this.facekey) node.status({});
+        
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("vision-image-faces", register, {});

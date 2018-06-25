@@ -2,8 +2,10 @@
     RED.nodes.registerType('ms-config',{
         category: 'config',
         defaults: {
-            name:           { value: undefined },
-            key:            { value: undefined },
+            name:           { value: undefined }
+        },
+        credentials: {
+            key:            { type: "text" }
         },
         label: function() {
             return this.name || "Microsoft API config";
