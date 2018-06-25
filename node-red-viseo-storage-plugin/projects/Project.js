@@ -59,7 +59,7 @@ function getGitUser(user) {
 function Project(path) {
 
     this.flowPath = path;
-    this.packageDir = settings.packageDir || '';
+    this.packageDir = settings.editorTheme.projects.packageDir || '';
     this.path = path;
     this.name = fspath.basename(path);
     this.paths = {};
@@ -101,6 +101,7 @@ Project.prototype.load = function () {
                                 project.paths.credentialsFile = getCredentialsFilename(project.paths.flowFile);
                             } else {
                                 project.paths.credentialsFile = project.package['node-red'].settings.credentialsFile;
+                                project.paths.credentialsFile = project.paths.credentialsFile.replace("<env>", process.env.NODE_ENV);
                             }
 
                         }
@@ -355,7 +356,7 @@ Project.prototype.update = function (user, data) {
         }
         if (data.files.hasOwnProperty('credentials') && this.package['node-red'].settings.credentialsFile !== data.files.credentials) {
             this.paths.credentialsFile = data.files.credentials;
-            this.package['node-red'].settings.credentialsFile = data.files.credentials;
+            this.package['node-red'].settings.credentialsFile = data.files.credentials.replace(process.env.NODE_ENV, "<env>");
             // Don't know if the credSecret is invalid or not so clear the flag
             delete this.credentialSecretInvalid;
 
@@ -876,7 +877,7 @@ function createDefaultFromZip(user, project, url) {
         return when.all(promises).then(function() {
 
 
-            return fs.readFile(fspath.join(projectPath, settings.packageDir, 'package.json'),"utf8").then(function(content) {
+            return fs.readFile(fspath.join(projectPath, settings.editorTheme.projects.packageDir, 'package.json'),"utf8").then(function(content) {
                 try {
                     project.package = util.parseJSON(content);
                     if (project.package.hasOwnProperty('node-red')) {
@@ -917,8 +918,8 @@ function createDefaultProject(user, project) {
             if (defaultFileSet.hasOwnProperty(file)) {
                 var dir = projectPath
                 if(file === "package.json") {
-                    dir = fspath.join(dir , settings.packageDir || '')
-                    files.push(fspath.join(settings.packageDir || '', "package.json"))
+                    dir = fspath.join(dir , settings.editorTheme.projects.packageDir || '')
+                    files.push(fspath.join(settings.editorTheme.projects.packageDir || '', "package.json"))
                 } else {
                     files.push(file);
                 }
