@@ -975,6 +975,7 @@ function createProjectFiles(project, projectPath, promises, files) {
                 project.files.flow = baseFlowFileName;
                 project.files.credentials = baseCredentialFileName;
             } else {
+
                 project.files.credentials = project.files.credentials || getCredentialsFilename(project.files.flow);
                 files.push(project.files.flow);
                 files.push(project.files.credentials);

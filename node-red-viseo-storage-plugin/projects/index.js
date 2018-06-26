@@ -131,7 +131,7 @@ function init(_settings, _runtime) {
                                 }
                                 saveSettings = true;
                             } else {
-                                activeProject = globalSettings.projects.activeProject;
+                                activeProject = settings.editorTheme.projects.activeProject;
                             }
                             if (settings.flowFile) {
                                 // if flowFile is a known project name - use it
@@ -362,25 +362,27 @@ function createProject(user, metadata) {
     if (metadata.files && metadata.migrateFiles) {
         // We expect there to be no active project in this scenario
         if (activeProject) {
-            throw new Error("Cannot migrate as there is an active project");
-        }
-        var currentEncryptionKey = settings.get('credentialSecret');
-        if (currentEncryptionKey === undefined) {
-            currentEncryptionKey = settings.get('_credentialSecret');
-        }
-        if (!metadata.hasOwnProperty('credentialSecret')) {
-            metadata.credentialSecret = currentEncryptionKey;
-        }
-        if (!metadata.files.flow) {
-            metadata.files.flow = fspath.basename(flowsFullPath);
-        }
-        if (!metadata.files.credentials) {
-            metadata.files.credentials = fspath.basename(credentialsFile);
-        }
+            metadata.migrateFiles = false;
+            //throw new Error("Cannot migrate as there is an active project");
+        } else {
+            var currentEncryptionKey = settings.get('credentialSecret');
+            if (currentEncryptionKey === undefined) {
+                currentEncryptionKey = settings.get('_credentialSecret');
+            }
+            if (!metadata.hasOwnProperty('credentialSecret')) {
+                metadata.credentialSecret = currentEncryptionKey;
+            }
+            if (!metadata.files.flow) {
+                metadata.files.flow = fspath.basename(flowsFullPath);
+            }
+            if (!metadata.files.credentials) {
+                metadata.files.credentials = fspath.basename(credentialsFile);
+            }
 
-        metadata.files.oldFlow = flowsFullPath;
-        metadata.files.oldCredentials = credentialsFile;
-        metadata.files.credentialSecret = currentEncryptionKey;
+            metadata.files.oldFlow = flowsFullPath;
+            metadata.files.oldCredentials = credentialsFile;
+            metadata.files.credentialSecret = currentEncryptionKey;
+        }
     }
     metadata.path = fspath.join(projectsDir,metadata.name);
 
@@ -391,8 +393,34 @@ function createProject(user, metadata) {
     })
 }
 function setActiveProject(user, projectName) {
+
+    if(projectName !== settings.editorTheme.projects.activeProject) {
+       runtime.events.emit("runtime-event",{
+            id:"viseo-error",
+            payload:{
+                type:"warning",
+                error:"project-unchanged",
+                text:"Cannot load project other than "+settings.editorTheme.projects.activeProject 
+            },
+                retain:true
+        });
+
+       projectName = settings.editorTheme.projects.activeProject;
+       
+    } else {
+        runtime.events.emit("runtime-event",{
+            id:"viseo-error",
+            payload:{
+                type:"warning",
+                error:"project-unchanged",
+                text:""
+            },
+            retain:true
+        });
+    }
+
     return loadProject(projectName).then(function(project) {
-        var globalProjectSettings = settings.get("projects");
+        /*var globalProjectSettings = settings.get("projects");
         globalProjectSettings.activeProject = project.name;
         return settings.set("projects",globalProjectSettings).then(function() {
             log.info(log._("storage.localfilesystem.projects.changing-project",{project:(activeProject&&activeProject.name)||"none"}));
@@ -401,7 +429,9 @@ function setActiveProject(user, projectName) {
             // console.log(flowsFullPath)
             // console.log(credentialsFile)
             return reloadActiveProject("loaded");
-        })
+        })*/
+
+         return reloadActiveProject("loaded");
     });
 }
 
