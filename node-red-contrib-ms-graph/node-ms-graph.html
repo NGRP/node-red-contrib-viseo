@@ -55,6 +55,7 @@
 
                 let value = $(this).val();
                 if (value === "auth")  $(".auth").show();
+                if (value === "unauth")  $(".unauth").show();
                 if (value.match(/user|rooms/))   $(".api").show();
                 if (value.match(/password/))  {
                     $(".password").show();
@@ -92,6 +93,7 @@
         <label for="node-input-action"><i class="fa fa-navicon"></i> Action</label>
         <select id="node-input-action" style="width:70%;">
             <option value="auth">Get auth URL</option>
+            <option value="unauth">Get end session URL</option>
             <option value="token-code">Get token with code</option>
             <option value="token-password">Get token with username/password</option>
             <option value="token-code-refresh">Get token with code refresh</option>
@@ -116,13 +118,13 @@
         <input type="hidden" id="node-input-passwordType">
     </div>
 
-    <div class="form-row auth code">
+    <div class="form-row auth unauth code">
         <label for="node-input-redirect" style="margin-left:15px; width: 85px; color:#848484"> Redirect</label>
         <input type="text" id="node-input-redirect" style="width:70%;">
         <input type="hidden" id="node-input-redirectType">
     </div>
 
-    <div class="form-row auth code">
+    <div class="form-row auth unauth code">
         <label for="node-input-state" style="margin-left:15px; width: 85px; color:#848484"> State</label>
         <input type="text" id="node-input-state" style="width:70%;">
         <input type="hidden" id="node-input-stateType">
@@ -140,7 +142,7 @@
         <input type="hidden" id="node-input-refreshType">
     </div>
 
-    <div class="form-row auth password code">
+    <div class="form-row auth unauth password code">
         <label for="node-input-authority" style="margin-left:15px; width: 85px; color:#848484"> Authority</label>
         <input type="text" id="node-input-authority" style="width:70%;" placeholder="https://login.microsoftonline.com/foo.com">
         <input type="hidden" id="node-input-authorityType">

@@ -64,6 +64,7 @@ async function input(node, data, config) {
   let credentials = {
     'authority': authority || 'https://login.microsoftonline.com/viseo.com',
     'authorize_endpoint': '/oauth2/v2.0/authorize',
+    'end_session': '/oauth2/v2.0/logout',
     'token_endpoint': '/oauth2/v2.0/token',
     'client_id': config.config.clientid,
     'client_secret': config.config.clientsecret,
@@ -74,6 +75,13 @@ async function input(node, data, config) {
 
   if (action === "auth") {
     let url = getAuthUrl(credentials);
+    if (!url) node.error("Information missing");
+    helper.setByString(outLoc, output, url);
+    return node.send(data);
+  }
+
+  if (action === "unauth") {
+    let url = getUnauthUrl(credentials);
     if (!url) node.error("Information missing");
     helper.setByString(outLoc, output, url);
     return node.send(data);
@@ -214,6 +222,12 @@ const getAuthUrl = (CREDENTIALS) => {
   let url = CREDENTIALS.authority + CREDENTIALS.authorize_endpoint + '?client_id=' + CREDENTIALS.client_id + '&response_type=code';
   url += '&redirect_uri=' + CREDENTIALS.redirect_uri + '&scope=' + CREDENTIALS.scope + '&response_mode=query&state=' + CREDENTIALS.state;
   url += '&nonce=' + uuidv4();
+  return url;
+}
+
+const getUnauthUrl = (CREDENTIALS) => {
+  let url = CREDENTIALS.authority + CREDENTIALS.end_session + '?state=' + CREDENTIALS.state;
+  url += '&post_logout_redirect_uri=' + CREDENTIALS.redirect_uri;
   return url;
 }
 
