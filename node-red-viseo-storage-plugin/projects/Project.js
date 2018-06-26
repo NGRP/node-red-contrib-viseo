@@ -883,6 +883,7 @@ function createDefaultFromZip(user, project, url) {
                     if (project.package.hasOwnProperty('node-red')) {
                         if (project.package['node-red'].hasOwnProperty('settings')) {
                             project.files.flow = project.package['node-red'].settings.flowFile;
+                            project.files.credentials = project.package['node-red'].settings.credentialsFile.replace('<env>', process.env.NODE_ENV);
                         }
                     }
                 } catch(err) {}
@@ -981,7 +982,7 @@ function createProjectFiles(project, projectPath, promises, files) {
                 files.push(project.files.credentials);
 
                 flowFilePath = fspath.join(projectPath, project.files.flow);
-                credsFilePath = getCredentialsFilename(flowFilePath);
+                credsFilePath = fspath.join(projectPath, project.files.credentials);
 
                 promises.push(util.writeFile(flowFilePath,"[]"));
                 promises.push(util.writeFile(credsFilePath,"{}"));
