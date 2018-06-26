@@ -392,6 +392,7 @@ function createProject(user, metadata) {
         return getProject(user, metadata.name);
     })
 }
+
 function setActiveProject(user, projectName) {
 
     if(projectName !== settings.editorTheme.projects.activeProject) {
@@ -400,23 +401,14 @@ function setActiveProject(user, projectName) {
             payload:{
                 type:"warning",
                 error:"project-unchanged",
-                text:"Cannot load project other than "+settings.editorTheme.projects.activeProject 
-            },
-                retain:true
-        });
-
-       projectName = settings.editorTheme.projects.activeProject;
-       
-    } else {
-        runtime.events.emit("runtime-event",{
-            id:"viseo-error",
-            payload:{
-                type:"warning",
-                error:"project-unchanged",
-                text:""
+                text:"Cannot load project other than "+settings.editorTheme.projects.activeProject,
+                timeout:3600
             },
             retain:true
         });
+
+       projectName = settings.editorTheme.projects.activeProject;
+
     }
 
     return loadProject(projectName).then(function(project) {
