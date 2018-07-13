@@ -238,7 +238,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
             }
         }
 
-    } else if($contentShare) {
+    } else if(contentShare) {
         node.error("Share option only available on Facebook");
         return true;
     }
