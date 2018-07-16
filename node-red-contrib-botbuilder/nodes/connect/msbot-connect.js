@@ -95,7 +95,7 @@ const reply = (bot, node, data, config) => {
     if (!address || address.carrier !== 'botbuilder') return false;
 
     // Building the message
-    let message = getMessage(node, address, data.reply);
+    let message = getMessage(node, address, data.reply, timestamp == undefined);
     if (!message) return false;
 
     message.address(address);
@@ -167,7 +167,7 @@ const getSession  = (data) => {
 //  MESSAGES
 // ------------------------------------------
 
-const getMessage = (node, address, replies) => {
+const getMessage = (node, address, replies, isPush) => {
     let msg = new builder.Message();
 
     // The message will be a carousel
@@ -176,7 +176,7 @@ const getMessage = (node, address, replies) => {
     }
 
     // Is RAW message
-    else if (buildRawMessage(msg, replies[0], address)) {
+    else if (buildRawMessage(node, msg, replies[0], address, isPush)) {
         // Botbuilder Message (Cortana) should set that for prompt
         if (replies[0].prompt && msg.inputHint){ msg.inputHint('expectingInput'); }
         return msg;
@@ -184,55 +184,7 @@ const getMessage = (node, address, replies) => {
 
     // One or multiple cards
     for (let reply of replies) {
-
-        var contentShare = false;
-        for (let button of reply.buttons) if (button.action === "share") contentShare = true;
-
-        if (contentShare) {
-
-            if(address.channelId !== 'facebook') {
-                node.error("Share option only available on Facebook");
-                continue;
-            }
-
-            var newButtons = [];
-            for (let button of reply.buttons) newButtons.push(buildButtonObject(button));
-
-            msg.data.address = { channelId: 'facebook' };
-
-            msg.sourceEvent({
-                facebook: {
-                    attachment:{
-                        "type":"template",
-                        "payload":{
-                            "template_type":"generic",
-                            "elements":[
-                                {
-                                "title":     reply.title,
-                                "subtitle":  reply.subtitle,
-                                "image_url": helper.absURL(reply.attach),
-                                "buttons":   newButtons
-                                }
-                            ]
-                        }
-                    }
-                }
-            });
-
-            // Only the latest speech is used
-            let _speech = "";
-            if (!reply.speech) _speech =  reply.speech;
-            else {
-                if (reply.title) _speech += reply.title + ' ';
-                if (reply.subtext) _speech += reply.subtext ;
-                if (reply.subtitle) _speech += opts.subtitle;
-            }
-            
-            if (msg.speak && reply.speech)     msg.speak(_speech || '');
-            if (reply.prompt && msg.inputHint) msg.inputHint('expectingInput'); 
-            return msg;
-        }
-
+        
         let card = getHeroCard(reply);
         msg.addAttachment(card);
 
@@ -256,82 +208,50 @@ const buildQuickReplyObject = (obj) => {
     };
 };
 
-const buildButtonObject = (obj) => {
-    if (obj.action === "share") return {
-        "type": "element_share",
-        "share_contents": { 
-            "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "generic",
-                "elements": [
-                    {
-                        "title":     obj.sharedCard.title,
-                        "subtitle":  obj.sharedCard.text,
-                        "image_url": obj.sharedCard.media,
-                        "buttons": [
-                        {
-                            "type": "web_url",
-                            "url":   helper.absURL(obj.sharedCard.url),
-                            "title": obj.sharedCard.button
-                        }]
-                    }]
-                }
-            }
-        }
-    }
-    if (obj.action === "openUrl") return {
-        "type":"web_url",
-        "url": obj.value,
-        "title": obj.title,
-        "messenger_extensions": "false",  
-        //"fallback_url": "https://www.facebook.com/"
-    }
-    if (obj.action === "call") return {
-        "type":"phone_number",
-        "title":  obj.title,
-        "payload": obj.value
-    }
-    else return {
-        "type":"postback",
-        "title": obj.title,
-        "payload": obj.value
-    }
+const buildButtonMessage = (msg, address, reply, isPush) => {
+
 }
+
     
-const buildRawMessage = (msg, opts, address) => {
+const buildRawMessage = (node, msg, opts, address, isPush) => {
 
-    if (opts.type === 'card') {
-        if(!opts.title && !opts.attach && opts.buttons && opts.subtitle && address.channelId === 'facebook') {
+    var contentShare = false;
+    for (let button of opts.buttons || []) if (button.action === "share") contentShare = true;
 
-            let buttons = [];
-            for(let button of opts.buttons) {
-                buttons.push(buildButtonObject(button));
-            }
 
-            if (msg.speak && opts.speech) {
-                msg.speak(opts.speech === true ? opts.subtitle : opts.speech);
-            }
+    if(address.channelId === 'facebook') {
 
-            msg.data.address = { channelId: 'facebook' };
 
-            msg.sourceEvent({
-                facebook: {
-                    attachment:{
-                        "type":"template",
-                        "payload":{
-                            "template_type":"button",
-                            "text": opts.subtitle,
-                            "buttons": buttons
-                        }
-                    }
-                }
-            });
+        if (contentShare) {
 
+            buildFacebookSpecificMessage(msg, "generic", opts, isPush);
             return true;
+
         }
-        return false;
+
+        
+        if (opts.type === 'card') {
+            if(!opts.title && !opts.attach && opts.buttons && opts.subtitle) {
+
+                buildFacebookSpecificMessage(msg, "button", opts, isPush);            
+                return true;
+            }
+        }
+
+    } else if(contentShare) {
+        node.error("Share option only available on Facebook");
+        return true;
     }
+
+
+    if(isPush) {
+        msg.sourceEvent({ facebook : {
+            messaging_type: "MESSAGE_TAG",
+            tag: "NON_PROMOTIONAL_SUBSCRIPTION"
+
+        }});
+    }
+
 
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
@@ -417,6 +337,108 @@ const buildRawMessage = (msg, opts, address) => {
     return false;
 }
 
+const buildFacebookSpecificMessage = (msg, template, reply, isPush) => {
+
+
+    let buttons = [];
+    for(let button of reply.buttons || []) {
+        buttons.push(buildFacebookButtonObject(button));
+    }
+
+    msg.data.address = { channelId: 'facebook' };
+
+    let attachment = {
+        "type":"template",
+        "payload":{
+            "template_type": template
+
+        }
+    };
+
+    let messaging_type = isPush ? "MESSAGE_TAG" : "RESPONSE";
+    let tag = isPush ? "NON_PROMOTIONAL_SUBSCRIPTION" : undefined;
+
+    switch(template) {
+
+        case 'button':
+            attachment.payload.text = reply.subtitle;
+            attachment.payload.buttons = buttons;
+            break;
+
+        case 'generic':
+            attachment.payload.elements = [
+                {
+                    "title":     reply.title,
+                    "subtitle":  reply.subtitle,
+                    "image_url": reply.attach ? helper.absURL(reply.attach) : '',
+                    "buttons":   buttons
+                }
+            ];
+            break;
+    }
+
+    // Only the latest speech is used
+    let _speech = "";
+    if (!reply.speech) {
+        _speech =  reply.speech;
+    } else {
+        if (reply.title) _speech += reply.title + ' ';
+        if (reply.subtext) _speech += reply.subtext ;
+        if (reply.subtitle) _speech += reply.subtitle;
+    }
+    
+    if (msg.speak && reply.speech) {
+        msg.speak(_speech || '');
+    }
+    if (reply.prompt && msg.inputHint) {
+        msg.inputHint('expectingInput');
+    }
+
+    msg.sourceEvent({ facebook: { attachment, messaging_type, tag }});
+}
+
+const buildFacebookButtonObject = (obj) => {
+    if (obj.action === "share") return {
+        "type": "element_share",
+        "share_contents": { 
+            "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [
+                    {
+                        "title":     obj.sharedCard.title,
+                        "subtitle":  obj.sharedCard.text,
+                        "image_url": obj.sharedCard.media,
+                        "buttons": [
+                        {
+                            "type": "web_url",
+                            "url":   helper.absURL(obj.sharedCard.url),
+                            "title": obj.sharedCard.button
+                        }]
+                    }]
+                }
+            }
+        }
+    }
+    if (obj.action === "openUrl") return {
+        "type":"web_url",
+        "url": obj.value,
+        "title": obj.title,
+        "messenger_extensions": "false",  
+        //"fallback_url": "https://www.facebook.com/"
+    }
+    if (obj.action === "call") return {
+        "type":"phone_number",
+        "title":  obj.title,
+        "payload": obj.value
+    }
+    else return {
+        "type":"postback",
+        "title": obj.title,
+        "payload": obj.value
+    }
+}
 const getHeroCard = (opts) => {
     let card     = new builder.HeroCard();
     opts._speech = '';
