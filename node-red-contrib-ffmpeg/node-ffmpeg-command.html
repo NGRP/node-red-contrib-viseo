@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ffmpeg-command',{
+        category: 'VISEO_MEDIA',
+        color: '#3FADB5',
+        defaults: { 
+            name:         { value: undefined },
+            output:       { value: undefined },
+            outputType:   { value: "msg"},
+            cmd:          { value: undefined },
+            cmdType:      { value: "str"},
+            spawn:        { value: "false"}
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "ffmpeg.svg",
+        align: "left",
+        paletteLabel: 'ffmpeg command',
+        label: function() { return this.name || "ffmpeg"; },
+        oneditprepare: function() {
+            $("#node-input-output").typedInput({   default: 'msg',  types: ['msg'],  typeField: $("#node-input-outputType") });
+            $("#node-input-cmd").typedInput({      default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-cmdType")    });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ffmpeg-command">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Command parameters</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-cmd"><i class="fa fa-terminal"></i> Command</label>
+        <input type="text" id="node-input-cmd" placeholder="Command line"  style="width:70%;">
+        <input type="hidden" id="node-input-cmdType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" placeholder="payload"  style="width:70%;">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-spawn"></label>
+        <select id="node-input-spawn" style="width:70%">
+            <option value="false">When the command is complete - exec mode</option>
+            <option value="true">while the command is running - spawn mode</option>
+        </select>
+    </div>
+</script>
+
+<style>
+    h4, h3 { font-weight: bold; }
+</style>
+
+<script type="text/x-red" data-help-name="ffmpeg-command">
+
+    <p>This node allows to use the command line utility 'ffmpeg' in order to convert or maniupulate audio files.</p>
+    
+    <h2>Main parameters</h2>
+    <p>
+        <li><b>Command</b>: The command line (without 'ffmpeg')</li>
+        <li><b>Output</b>: Where to set the result / Process command line as spawn or exec.</li>
+    </p>
+
+    <h2>Getting help</h2>
+    <p>
+        <li><b>FFMPEG documentation:</b> <a>https://www.ffmpeg.org/ffmpeg.html</a></li>
+        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-sox</a></li>
+        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
+    </p>
+</script>
