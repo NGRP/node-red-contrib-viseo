@@ -36,6 +36,20 @@ function renderRoute (pathObj, routeStr) {
     return routeStr;
 }
 
+function renderQuery (queryObj, credentials) {
+    let query = "?key=" + credentials.key;
+        query += "&token=" + credentials.token;
+
+    if (!queryObj || typeof queryObj !== "object") return query;
+    for (let parameter in queryObj) {
+        if (!queryObj[parameter]) continue;
+        query += '&' + parameter + '=' + queryObj[parameter];
+    }
+
+    return query;
+
+}
+
 async function input (RED, node, data, config) { 
 
     let credentials = node.creds;
@@ -50,26 +64,27 @@ async function input (RED, node, data, config) {
         method: sendreq[1].toUpperCase()
     };
 
-    if (path)  path  = (config.pathType  === "json")  ? JSON.parse(path)  : helper.getByString(data, path);
-    if (body)  path  = (config.bodyType  === "json")  ? JSON.parse(body)  : helper.getByString(data, body);
+    if (path)  path  = (config.pathType   === "json") ? JSON.parse(path)  : helper.getByString(data, path);
+    if (body)  body  = (config.bodyType   === "json") ? JSON.parse(body)  : helper.getByString(data, body);
     if (query) query = (config.queryType  === "json") ? JSON.parse(query) : helper.getByString(data, query);
 
-    //query = renderQuery(query, credentials);
     route = renderRoute(path, route);
     if (!route) return node.error("Invalid path parameters");
     req.uri += route;
 
-    if (query) {
+    if (query && (req.method === "POST" || req.method === "PUT")) {
         req.form = query;
         req.form.key = credentials.key;
         req.form.token = credentials.token;
     }
     else {
-        req.uri += "?key=" + credentials.key;
-        query += "&token=" + credentials.token;
+        req.uri += renderQuery(query, credentials);
     }
 
-    if (body) req.body = body;
+    if (body) {
+        req.body = body;
+        req.json = true;
+    }
 
     try {
         let result = await request(req);
