@@ -721,6 +721,13 @@
             $("#node-input-body").typedInput({  default: 'json', types: ['msg', 'json'], typeField: $("#node-input-bodyType") });
             $("#node-input-path").typedInput({  default: 'json', types: ['msg', 'json'], typeField: $("#node-input-pathType") });
 
+            let savereq = this.sendreq;
+            let saveparam = {
+                "query" : this.query,
+                "body" : this.body,
+                "path" : this.path
+            }
+
             $("#node-input-action").change(changeAction);
             $("#node-input-request").change(changeOptions);
             $("#node-input-sendreq").change(changeParameters);
@@ -730,14 +737,6 @@
                let param = this.id.substring(8); 
                loadDefaultParameters(sendreq, param);
             })
-
-            let saveparam = {
-                "query" : this.query,
-                "body" : this.body,
-                "path" : this.path
-            }
-
-            let savereq = this.sendreq;
 
             function changeAction() {
                 if ($("#node-input-action").val() === "lists") {
@@ -776,7 +775,9 @@
                 if (!sendreq) return;
 
                 $(".parameters").hide();
+
                 if (savereq === sendreq) {
+
                     if (saveparam.query) {
                         $(".parameters-query").show();
                         $("#node-input-query").val(saveparam.query).typedInput('show');
@@ -815,15 +816,22 @@
             }
         },
         oneditsave: function() {
-            if ($("#node-input-query").is(":hidden")) this.query = undefined;
-            if ($("#node-input-path").is(":hidden"))  this.path = undefined;
-            if ($("#node-input-body").is(":hidden"))  this.body = undefined;
+            if ($("#node-input-query").is(":hidden")) {
+                this.query = "";
+                $("#node-input-query").val("");
+            }
+            if ($("#node-input-path").is(":hidden")) {
+                this.path = "";
+                $("#node-input-path").val("");
+            }
+            if ($("#node-input-body").is(":hidden")) {
+                this.body = "";
+                $("#node-input-body").val("");
+            }
 
             if (this.sendreq) {
                 let options = this.sendreq.split('-');
                 let parameters = defaultParameters[options[0]][options[1]][options[2]];
-
-                console.log(parameters)
                 this.route = parameters.route;
             }
         }

@@ -209,7 +209,7 @@ const getMessage = exports.getMessage = (replies, context) => {
     
         msg.response.outputSpeech = {
             "type":     "SSML",
-            "ssml":     (reply.speech === false) ? reply.speech : '<speak>' + reply.text + '</speak>'
+            "ssml":     (reply.speech) ? reply.speech : '<speak>' + reply.text + '</speak>'
         };
         msg.response.card = {
             "type":     "Simple",
