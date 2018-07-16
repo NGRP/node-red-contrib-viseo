@@ -12,7 +12,7 @@ npm install node-red-contrib-viseo-trello
 
 ### Build the Node-RED Flow
 
-The `trello-in` will trigger an event of each action on the target ModelId (board, card, user, ...)
+The `trello-in` will trigger an event of each action on the target ModelId (board, card, user, ...).
 
 ![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-trello/doc/flow.jpg)
 
@@ -20,10 +20,7 @@ On a Trello URL, add `.json` to get the board description and retrieve all model
 
 Credential require a [Trello Application Key and a Token](https://trello.com/app-key).
 
-The `trello-card` will retrieve, create or update a card. 
-- A POST (create) is performed if there is no Card Id
-- A PUT (update) is performed if there is a Card Id and a List Id
-- A GET (read) is performed if there is a Card Id but no List Id
+The `trello-card` will retrieve, create, update or delete a board, a list, a card, a label or a custom field. 
 
 ![Flow 2](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-trello/doc/flow2.jpg)
 

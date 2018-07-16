@@ -1,163 +1,946 @@
 <script type="text/javascript">
+
+    let defaultParameters = {
+        "boards": {
+            "get": {
+                "board" : {
+                    "query": {
+                        "actions": "all",
+                        "boardStars": "none",
+                        "cards": "all",
+                        "card_pluginData": false,
+                        "checklists": "all",
+                        "fields": "all",
+                        "labels": "all",
+                        "lists": "open",
+                        "members":  "all",
+                        "memberships": "none",
+                        "membersInvited": "none",
+                        "membersInvited_fields": "none",
+                        "pluginData": false,
+                        "organization": false,
+                        "organization_pluginData": false,
+                        "myPrefs": false,
+                        "tags": false
+                    },
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "boardsboardid-1",
+                    "name": "List a board's fields",
+                    "route": "/boards/{id}"
+                },
+                "customFields" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "boardsidcustomfields",
+                    "name": "List board custom fields",
+                    "route": "/boards/{id}/customFields"
+                }
+            },
+            "put" : {
+                "board" : {
+                    "query": {
+                        "name" : "",
+                        "desc": "",
+                        "closed": false,
+                        "subscribed": false,
+                        "idOrganization": "",
+                        "prefs/permissionLevel": false,
+                        "prefs/selfJoin": false,
+                        "prefs/cardCovers": "",
+                        "prefs/invitations": "",
+                        "prefs/voting": "",
+                        "prefs/comments":  "",
+                        "prefs/background": "",
+                        "prefs/cardAging": "",
+                        "prefs/calendarFeedEnabled": false,
+                        "labelNames/green": "",
+                        "labelNames/yellow": "",
+                        "labelNames/orange": "",
+                        "labelNames/red": "",
+                        "labelNames/purple": "",
+                        "labelNames/blue": ""
+                    },
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "boardsboardidcardsfilter",
+                    "name": "Update a board",
+                    "route": "/boards/{id}"
+                },
+                "member" : {
+                    "query": {
+                        "type" : "normal"
+                    },
+                    "path": {
+                        "id" : "",
+                        "idMember" : ""
+                    },
+                    "reference": "boardsidlabelnamesmembersidmember",
+                    "name": "Add a member",
+                    "route": "/boards/{id}/members/{idMember}"
+                },
+                "membership" : {
+                    "query": {
+                        "idMembership" : "",
+                        "type" : "normal",
+                        "member_fields": "all"
+                    },
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "boardsidlabelnamesmembershipsidmembership",
+                    "name": "Add a membership",
+                    "route": "/boards/{id}/memberships/{idMembership}"
+                }
+            },
+            "post" : {
+                "board" : {
+                    "query": {
+                        "name" : "",
+                        "defaultLabels" : true,
+                        "defaultLists" : true,
+                        "desc": "",
+                        "idOrganization": "",
+                        "idBoardSource": "",
+                        "keepFromSource": "none",
+                        "powerUps": "",
+                        "prefs_permissionLevel": "private",
+                        "prefs_voting": "disabled",
+                        "prefs_comments": "members",
+                        "prefs_invitations": "members",
+                        "prefs_selfJoin": false,
+                        "prefs_cardCovers": false,
+                        "prefs_background": "blue",
+                        "prefs_cardAging": "regular"
+                    },
+                    "reference": "boardsid",
+                    "name": "Create a board",
+                    "route": "/boards"
+                },
+                "powerup" : {
+                    "query": {
+                        "value" : ""
+                    },
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "boardsidpowerups",
+                    "name": "Enable a Power-Up",
+                    "route": "/boards/{id}/powerUps"
+                }
+            },
+            "delete": {
+                "member" : {
+                    "path": {
+                        "id" : "",
+                        "idMember" : ""
+                    },
+                    "reference": "boardsidmembersidmember",
+                    "name": "Delete a member",
+                    "route": "/boards/{id}/members/{idMember}"
+                },
+                "board" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "boardsid-1",
+                    "name": "Delete a board",
+                    "route": "/boards/{id}"
+                },
+                "powerUp" : {
+                    "path": {
+                        "id" : "",
+                        "powerUp" : ""
+                    },
+                    "reference": "boardsidpowerupspowerup",
+                    "name": "Delete a Power-Up",
+                    "route": "/boards/{id}/powerUps/{powerUp}"
+                }
+            }
+        },
+        "lists": {
+            "get": {
+                "list" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "query": {
+                        "fields": "all"
+                    },
+                    "reference": "listsid",
+                    "name": "List list's fields",
+                    "route": "/lists/{id}"
+                },
+                "actions" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "listsidactions",
+                    "name": "List list's actions",
+                    "route": "/lists/{id}/actions"
+                },
+                "cards" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "listsidcards",
+                    "name": "List list's cards",
+                    "route": "/lists/{id}/cards"
+                }
+            },
+            "put": {
+                "list" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "query": {
+                        "name": "",
+                        "closed": false,
+                        "idBoard": "",
+                        "pos": "",
+                        "subscribed": false
+                    },
+                    "reference": "listsid-1",
+                    "name": "Update a list",
+                    "route": "/lists/{id}"
+                }
+            },
+            "post": {
+                "list" : {
+                    "query": {
+                        "name": "",
+                        "idBoard": "",
+                        "idListSource": "",
+                        "pos": ""
+                    },
+                    "reference": "lists-1",
+                    "name": "Create a list",
+                    "route": "/lists"
+                },
+                "archive": {
+                    "path": {
+                        "id": ""
+                    },
+                    "reference": "listsidarchiveallcards",
+                    "name": "Archive all cards",
+                    "route": "/lists/{id}/archiveAllCards"
+                },
+                "move" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "query": {
+                        "idBoard": "",
+                        "idList": ""
+                    },
+                    "reference": "listsidmoveallcards",
+                    "name": "Move all cards",
+                    "route": "/lists/{id}/moveAllCards"
+                }
+            }
+        },
+        "cards": {
+            "get": {
+                "card" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "query": {
+                        "fields": "all",
+                        "actions": "all",
+                        "attachments": false,
+                        "attachments_fields": "all",
+                        "members":  true,
+                        "member_fields": "all",
+                        "membersVoted": true,
+                        "membersVoted_fields": "all",
+                        "checkItemStates": true,
+                        "checklists": "all",
+                        "board": true,
+                        "board_fields": "all",
+                        "list": false,
+                        "pluginData" : false,
+                        "stickers": false,
+                        "sticker_fields": "all"
+                    },
+                    "reference": "cardsid",
+                    "name": "List card's fields",
+                    "route": "/cards/{id}"
+                },
+                "checkitems" : {
+                    "path": {
+                        "id" : "",
+                        "idCheckItem" : ""
+                    },
+                    "query": {
+                        "fields": "all"
+                    },
+                    "reference": "cardsidcheckitemidcheckitem",
+                    "name": "Get a specific checkitem on a card",
+                    "route": "/cards/{id}/checkItem/{idCheckItem}"
+                },
+                "customFieldItems" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "cardsidcustomfielditems",
+                    "name": "List the custom field items for a card",
+                    "route": "/cards/{id}/customFieldItems"
+                }
+            },
+            "put": {
+                "card" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "query": {
+                        "name": "",
+                        "desc": "",
+                        "closed": false,
+                        "idMembers": "",
+                        "idAttachmentCover":  "",
+                        "idList": "",
+                        "idLabels": "",
+                        "idBoard": "",
+                        "pos": "bottom",
+                        "due": "null",
+                        "dueComplete": false,
+                        "subscribed": false
+                    },
+                    "reference": "cardsid-1",
+                    "name": "Update a card",
+                    "route": "/cards/{id}"
+                },
+                "sticker" : {
+                    "path": {
+                        "id" : "",
+                        "idSticker": ""
+                    },
+                    "query": {
+                        "top": "",
+                        "left": "",
+                        "zindex": false,
+                        "rotate": ""
+                    },
+                    "reference": "cardsidstickersidsticker-2",
+                    "name": "Update a sticker on a card",
+                    "route": "/cards/{id}/stickers/{idSticker}"
+                },
+                "checklist" : {
+                    "path": {
+                        "id" : "",
+                        "idCheckItem": ""
+                    },
+                    "query": {
+                        "name": "",
+                        "state": "complete",
+                        "idChecklist": "",
+                        "pos": "bottom"
+                    },
+                    "reference": "cardsidcheckitemidcheckitem-1",
+                    "name": "Update a checklist item on a card",
+                    "route": "/cards/{id}/checkItem/{idCheckItem}"
+                },
+                "comment" : {
+                    "path": {
+                        "id" : "",
+                        "idAction": ""
+                    },
+                    "query": {
+                        "text": ""
+                    },
+                    "reference": "cardsidactionsidactioncomments",
+                    "name": "Update an existing comment",
+                    "route": "/cards/{id}/actions/{idAction}/comments"
+                },
+                "customfield" : {
+                    "path": {
+                        "idCard" : "",
+                        "idCustomField": ""
+                    },
+                    "query": {
+                        "value": ""
+                    },
+                    "reference": "customfielditemsid",
+                    "name": "Update a custom field's value",
+                    "route": "/card/{idCard}/customField/{idCustomField}/item"
+                
+                }
+            },
+            "post": {
+                "card" : {
+                    "query": {
+                        "name": "",
+                        "desc": "",
+                        "pos": "bottom",
+                        "due": "null",
+                        "dueComplete": false,
+                        "idList": "",
+                        "idMembers": "",
+                        "idLabels": "",
+                        "urlSource": "",
+                        "fileSource": "",
+                        "idCardSource":  "",
+                        "keepFromSource": "all"
+                    },
+                    "reference": "cards-2",
+                    "name": "Create a card",
+                    "route": "/cards"
+                },
+                "comment" : {
+                    "path": {
+                        "id": ""
+                    },
+                    "query": {
+                        "text": ""
+                    },
+                    "reference": "cardsidactionscomments",
+                    "name": "Add a comment",
+                    "route": "/cards/{id}/actions/comments"
+                },
+                "attachment" : {
+                    "path": {
+                        "id": ""
+                    },
+                    "query": {
+                        "name": "",
+                        "file": "",
+                        "mimeType": "",
+                        "url": ""
+                    },
+                    "reference": "cardsidattachments-1",
+                    "name": "Add an attachment",
+                    "route": "/cards/{id}/attachments"
+                },
+                "checklist" : {
+                    "path": {
+                        "id": ""
+                    },
+                    "query": {
+                        "name": "",
+                        "idChecklistSource": "",
+                        "pos": "bottom"
+                    },
+                    "reference": "cardsidchecklists-1",
+                    "name": "Add a checklist",
+                    "route": "/cards/{id}/checklists"
+                },
+                "label" : {
+                    "path": {
+                        "id": ""
+                    },
+                    "query": {
+                        "value": ""
+                    },
+                    "reference": "cardsididlabels",
+                    "name": "Add a label",
+                    "route": "/cards/{id}/labels"
+                },
+                "member" : {
+                    "path": {
+                        "id": ""
+                    },
+                    "query": {
+                        "value": ""
+                    },
+                    "reference": "cardsididmembers",
+                    "name": "Add a member",
+                    "route": "/cards/{id}/idMembers"
+                },
+                "vote" : {
+                    "path": {
+                        "id": ""
+                    },
+                    "query": {
+                        "value": ""
+                    },
+                    "reference": "cardsidmembersvoted-1",
+                    "name": "Add a vote",
+                    "route": "/cards/{id}/membersVoted"
+                }
+            },
+            "delete": {
+                "card" : {
+                    "path": {
+                        "id": ""
+                    },
+                    "reference": "delete-card",
+                    "name": "Delete a card",
+                    "route": "/cards/{id}"
+                },
+                "comment" : {
+                    "path": {
+                        "id": "",
+                        "idAction": ""
+                    },
+                    "reference": "cardsidactionsidactioncomments-1",
+                    "name": "Delete a comment",
+                    "route": "/cards/{id}/actions/{idAction}/comments"
+                },
+                "attachment" : {
+                    "path": {
+                        "id": "",
+                        "idAttachment": ""
+                    },
+                    "reference": "cardsidattachmentsidattachment-1",
+                    "name": "Delete an attachment",
+                    "route": "/cards/{id}/attachments/{idAttachment}"
+                },
+                "checklist" : {
+                    "path": {
+                        "id": "",
+                        "idChecklist": ""
+                    },
+                    "reference": "cardsidchecklistsidchecklist",
+                    "name": "Delete a checklist",
+                    "route": "/cards/{id}/checklists/{idChecklist}"
+                },
+                "checkitem" : {
+                    "path": {
+                        "id": "",
+                        "idCheckItem": ""
+                    },
+                    "reference": "cardsidcheckitemidcheckitem-2",
+                    "name": "Delete a checkitem",
+                    "route": "/cards/{id}/checkItem/{idCheckItem}"
+                },
+                "label" : {
+                    "path": {
+                        "id": "",
+                        "idLabel": ""
+                    },
+                    "reference": "cardsididlabelsidlabel",
+                    "name": "Delete a label",
+                    "route": "/cards/{id}/idLabels/{idLabel}"
+                },
+                "member" : {
+                    "path": {
+                        "id": "",
+                        "idMember": ""
+                    },
+                    "reference": "cardsididmembersidmember",
+                    "name": "Delete a member",
+                    "route": "/cards/{id}/idMembers/{idMember}"
+                },
+                "vote" : {
+                    "path": {
+                        "id": "",
+                        "idMember": ""
+                    },
+                    "reference": "cardsidmembersvotedidmember",
+                    "name": "Delete a vote",
+                    "route": "/cards/{id}/membersVoted/{idMember}"
+                },
+                "sticker" : {
+                    "path": {
+                        "id": "",
+                        "idSticker": ""
+                    },
+                    "reference": "cardsidstickersidsticker-1",
+                    "name": "Delete a sticker",
+                    "route": "/cards/{id}/stickers/{idSticker}"
+                }
+            }
+        },
+        "labels" : {
+            "get": {
+                "label": {
+                    "path": {
+                        "id" : ""
+                    },
+                    "query": {
+                        "fields": "all"
+                    },
+                    "reference": "id",
+                    "name": "List label's fields",
+                    "route": "/labels/{id}"
+                }
+            },
+            "put": {
+                "label": {
+                    "path": {
+                        "id" : ""
+                    },
+                    "query": {
+                        "name": "",
+                        "color": ""
+                    },
+                    "reference": "id-1",
+                    "name": "Update a label",
+                    "route": "/labels/{id}"
+                }
+            },
+            "post": {
+                "label": {
+                    "query": {
+                        "name": "",
+                        "color": "",
+                        "idBoard": ""
+                    },
+                    "reference": "page-1",
+                    "name": "Create a label",
+                    "route": "/labels"
+                }
+            },
+            "delete": {
+                "label" : {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "id-2",
+                    "name": "Delete a label",
+                    "route": "/labels/{id}"
+                }
+            }
+        },
+        "fields" : {
+            "get": {
+                "field": {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "customfieldsid-3",
+                    "name": "Get a custom field",
+                    "route": "/customFields/{id}"
+                },
+                "options": {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "customfieldsidoptions-1",
+                    "name": "List a custom field's options",
+                    "route": "/customFields/{id}/options"
+                },
+                "option": {
+                    "path": {
+                        "id" : "",
+                        "idCustomFieldOption": ""
+                    },
+                    "reference": "customfieldsidoptionsidcustomfieldoption-3",
+                    "name":"Get a custom field's option",
+                    "route": "/customFields/{id}/options/{idCustomFieldOption}"
+                }
+            },
+            "put": {
+                "field": {
+                    "path": {
+                        "id" : ""
+                    },
+                    "body": {
+                        "name": "",
+                        "pos": "bottom",
+                        "display/cardFront": false
+                    },
+                    "reference": "customfieldsid",
+                    "name": "Update a custom field",
+                    "route": "/customFields/{id}"
+                }
+            },
+            "post": {
+                "field": {
+                    "body": {
+                        "idModel": "",
+                        "modelType": "",
+                        "name": "",
+                        "type": "",
+                        "options": "",
+                        "pos": "bottom",
+                        "display_cardFront": false
+                    },
+                    "reference": "customfields",
+                    "name": "Create a custom field",
+                    "route": "/customFields"
+                },
+                "option": {
+                    "path": {
+                        "id" : ""
+                    },
+                    "body": {
+                        "value": "",
+                        "color": "",
+                        "pos": "bottom"
+                    },
+                    "reference": "customfieldsidoptions-2",
+                    "name": "Add an option to a custom field",
+                    "route": "/customFields/{id}/options"
+                }
+            },
+            "delete": {
+                "field": {
+                    "path": {
+                        "id" : ""
+                    },
+                    "reference": "customfieldsid-1",
+                    "name": "Delete a custom field",
+                    "route": "/customFields/{id}"
+                },
+                "option": {
+                    "path": {
+                        "id" : "",
+                        "idCustomFieldOption": ""                
+                    },
+                    "reference": "customfieldsidoptionsidcustomfieldoption-1",
+                    "name": "Delete a custom field's option",
+                    "route": "/customFields/{id}/options/{idCustomFieldOption}"
+                }
+            }
+        }
+    };
+
     RED.nodes.registerType('trello-card',{
         category: 'VISEO_REST',
         color: '#3FADB5',
         defaults: { 
             'name'       : { value: undefined },
-            'input'      : { value: undefined },
-            'output'     : { value: undefined },
             'key'        : { value: undefined, type: 'trello-config', required: true },
-            'idCard'     : { value: undefined },
-            'title'      : { value: undefined },
-            'desc'       : { value: undefined },
-            'closed'     : { value: undefined },
-            'idMembers'  : { value: undefined },
-            'idList'     : { value: undefined, type: 'trello-list-id', required: false },
-            'idLabels'   : { value: undefined },
-            'attachURL'  : { value: undefined },
-            'attachMIME' : { value: undefined },
-            'attachName' : { value: undefined },
-            'pos'        : { value: undefined },
-            'due'        : { value: undefined },
-            'dueComplete': { value: undefined },
-            'subscribed' : { value: undefined },
-            pptTypeIn:  { value: "str"  },
-            pptTypeOut: { value: "msg"  },
-            
+            'output'     : { value: undefined },
+            'sendreq'    : { value: undefined },
+            'action'     : { value: "boards" },
+            'request'    : { value: "get" },
+            'query'      : { value: undefined },
+            'queryType'  : { value: "json" },
+            'body'       : { value: undefined },
+            'bodyType'   : { value: "json" },
+            'path'       : { value: undefined },
+            'pathType'   : { value: "json" },
+            'route'      : { value: undefined }
         },
         inputs:  1,
         outputs: 1,
         icon: "trello.svg",
         align: "left",
-        paletteLabel: "Card",
-        label: function() { return this.name || "Trello Card"; },
+        paletteLabel: "Trello",
+        label: function() { return this.name || "Trello"; },
         oneditprepare: function() {
-            $("#node-input-input") .typedInput({ default: this.pptTypeIn  || 'str', types:['str','msg']});
-            $("#node-input-output").typedInput({ default: this.pptTypeout || 'msg', types:['msg']});
+            $("#node-input-name").typedInput({   default: 'str', types: ['str'], type: "str" });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], type: "msg" });
+            $("#node-input-query").typedInput({ default: 'json', types: ['msg', 'json'], typeField: $("#node-input-queryType") });
+            $("#node-input-body").typedInput({  default: 'json', types: ['msg', 'json'], typeField: $("#node-input-bodyType") });
+            $("#node-input-path").typedInput({  default: 'json', types: ['msg', 'json'], typeField: $("#node-input-pathType") });
+
+            $("#node-input-action").change(changeAction);
+            $("#node-input-request").change(changeOptions);
+            $("#node-input-sendreq").change(changeParameters);
+            
+            $(".refresh-action").click(function() {
+               let sendreq = $("#node-input-sendreq").val();
+               let param = this.id.substring(8); 
+               loadDefaultParameters(sendreq, param);
+            })
+
+            let saveparam = {
+                "query" : this.query,
+                "body" : this.body,
+                "path" : this.path
+            }
+
+            let savereq = this.sendreq;
+
+            function changeAction() {
+                if ($("#node-input-action").val() === "lists") {
+                    if ($("#node-input-request").val() === "delete") $("#node-input-request").val("get");
+                    $("#node-input-request option[value='delete']").attr('disabled', true);
+                }
+                else $("#node-input-request option[value='delete']").attr('disabled', false);
+
+                changeOptions();
+            }
+
+            function changeOptions() {
+                $("#node-input-sendreq").empty();
+                let savedOptions = false;
+                let action = $("#node-input-action").val();
+                let request = $("#node-input-request").val();
+                let parameters = defaultParameters[action][request];
+
+                for (let parameter in parameters) {
+                    let value = action + '-' + request + '-' + parameter;
+                    let opt = $('<option></option>')
+                        .attr("value", value)
+                        .text(parameters[parameter].name);
+                    $("#node-input-sendreq").append(opt);
+
+                    if (savereq === value) savedOptions = true;
+                }
+
+                if (savedOptions) $("#node-input-sendreq").val(savereq);
+
+                changeParameters();
+            }
+
+            function changeParameters() {
+                let sendreq = $("#node-input-sendreq").val();
+                if (!sendreq) return;
+
+                $(".parameters").hide();
+                if (savereq === sendreq) {
+                    if (saveparam.query) {
+                        $(".parameters-query").show();
+                        $("#node-input-query").val(saveparam.query).typedInput('show');
+                    }
+                    if (saveparam.path) {
+                        $(".parameters-path").show();
+                        $("#node-input-path").val(saveparam.path).typedInput('show');
+                    }
+                    if (saveparam.body) {
+                        $(".parameters-body").show();
+                        $("#node-input-body").val(saveparam.body).typedInput('show');
+                    }
+                }
+                else {
+                    loadDefaultParameters(sendreq);
+                }
+
+            }
+
+            function loadDefaultParameters(request, param) {
+                let options = request.split('-');
+                let parameters = defaultParameters[options[0]][options[1]][options[2]];
+
+                if ((!param || param === "query") && parameters.query) {
+                    $(".parameters-query").show();
+                    $("#node-input-query").val(JSON.stringify(parameters.query)).typedInput('show');
+                }
+                if ((!param || param === "path") && parameters.path) {
+                    $(".parameters-path").show();
+                    $("#node-input-path").val(JSON.stringify(parameters.path)).typedInput('show');
+                }
+                if ((!param || param === "body") && parameters.body) {
+                    $(".parameters-body").show();
+                    $("#node-input-body").val(JSON.stringify(parameters.body)).typedInput('show');
+                }
+            }
+        },
+        oneditsave: function() {
+            if ($("#node-input-query").is(":hidden")) this.query = undefined;
+            if ($("#node-input-path").is(":hidden"))  this.path = undefined;
+            if ($("#node-input-body").is(":hidden"))  this.body = undefined;
+
+            if (this.sendreq) {
+                let options = this.sendreq.split('-');
+                let parameters = defaultParameters[options[0]][options[1]][options[2]];
+
+                console.log(parameters)
+                this.route = parameters.route;
+            }
         }
     })
-
-
-    $(document).ready(function() {
-        // Toggle TabPane
-        $(document).on('click', '#trello-card-tabs .red-ui-tab-label', function(){
-            $('.trello-card-panel').addClass('hide');
-            $('.trello-card-tab').removeClass('active');
-
-            var $this = $(this)
-            var panelId = '#trello-card-' + $this.attr('href').substring(1);
-            $(panelId).removeClass('hide');
-            $this.parent('.trello-card-tab').addClass('active');
-        })
-    });
-
 </script>
-<style>
-    .input-info    { font-size: 12px; padding-left: 104px; font-style: italic; }
-    .checkbox-info { font-size: 12px; }
-</Style>
+
 <script type="text/x-red" data-template-name="trello-card">
+
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="">
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="">
     </div>
+
+    <br>
+    <b>Trello settings </b>
+
     <div class="form-row">
-        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
-        <input type="text" id="node-input-input" style="width: 70%" placeholder=""/>  
-    </div>
-    <div class="form-row">
-        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
-        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>  
-    </div>
-    <div class="form-row">
+        <br>
         <label for="node-input-key"><i class="fa fa-lock"></i> Trello Key</label>
         <input type="text" id="node-input-key" placeholder="">
     </div>
-    <p class="input-info">
-        A JSON view of a Trello board is available at Board URL .json:<br/> 
-        https://trello.com/b/{board-id}/{board-name}.json
-    </p>
 
-    <div class="red-ui-tabs" style="margin-bottom: 10px;">
-        <div>
-            <ul id="trello-card-tabs">
-                <li class="trello-card-tab active"><a href="#general" class="red-ui-tab-label"><span class="bidiAware" dir="">General</span></a></li>
-                <li class="trello-card-tab"><a href="#meta" class="red-ui-tab-label"><span class="bidiAware" dir="">Metadata</span></a></li>
-                <li class="trello-card-tab"><a href="#attach" class="red-ui-tab-label"><span class="bidiAware" dir="">Attachment</span></a></li>
-                <li class="trello-card-tab"><a href="#advanced" class="red-ui-tab-label" title="debug"><span class="bidiAware" dir="">Advanced</span></a></li>
-            </ul>
-        </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-navicon"></i> Action on</label>
+        <select id="node-input-action" style="width:70%;">
+            <option value="boards">Boards</option>
+            <option value="lists">Lists</option>
+            <option value="cards">Cards</option>
+            <option value="labels">Labels</option>
+            <option value="fields">Custom fields</option>
+        </select>
     </div>
 
-    <div id="trello-card-general" class="trello-card-panel">
-        <div class="form-row">
-            <label for="node-input-idCard"><i class="icon-tag"></i> Card Id</label>
-            <input type="text" id="node-input-idCard" placeholder="">
-            <div class="input-info">Leave empty to create a new card</div>
-        </div>
-        <div class="form-row">
-            <label for="node-input-idList"><i class="icon-tag"></i> List</label>
-            <input type="text" id="node-input-idList" placeholder="">
-            <div class="input-info">The ID of the card's list (required to create/update a card)</div>
-        </div>
-        <div class="form-row">
-            <label for="node-input-title"><i class="icon-tag"></i> Title</label>
-            <input type="text" id="node-input-title" placeholder="">
-        </div>
-        <div class="form-row">
-            <label for="node-input-desc"><i class="icon-tag"></i> Description</label>
-            <textarea id="node-input-desc" rows="5" style="width:300px"></textarea>
-        </div>
+
+    <br>
+    <b>Requests settings</b>
+
+
+    <div class="form-row">
+        <br>
+        <select id="node-input-request" style="width: 100px; display:inline-block;">
+            <option value="get">Get</option>
+            <option value="post">Create</option>
+            <option value="put">Update</option>
+            <option value="delete">Delete</option>
+        </select>
+        <select id="node-input-sendreq" style="width:70%; display:inline-block;">
+        </select>
+
     </div>
 
-    <div id="trello-card-meta" class="trello-card-panel hide">
-        <div class="form-row">
-            <label for="node-input-idLabels"><i class="icon-tag"></i> Labels</label>
-            <input type="text" id="node-input-idLabels" placeholder="">
-            <div class="input-info">Comma-separated list of label IDs to add to the card</div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+    
+    <div class="form-row parameters parameters-path">
+        <label for="node-input-path" style="margin-left:15px; width: 85px; color:#848484"> Path</label>
+        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
+            <div style="position: absolute; left: 0px; right: 40px;">
+                    <input type="text" id="node-input-path" style="width:100%;" placeholder="">
+            </div>
+            <a id="refresh-path" class="refresh-action editor-button" style="position: absolute; right: 0px; top: 0px;">
+                <i class="fa fa-refresh"></i>
+            </a>
         </div>
-        <div class="form-row">
-            <label for="node-input-idMembers"><i class="icon-tag"></i> Members</label>
-            <input type="text" id="node-input-idMembers" placeholder="">
-            <div class="input-info">Comma-separated list of member IDs to add to the card</div>
-        </div>
+        <input type="hidden" id="node-input-pathType">
     </div>
-    <div id="trello-card-attach" class="trello-card-panel hide">
-        <div class="form-row">
-            <label for="node-input-attachURL"><i class="icon-tag"></i> Attachment</label>
-            <input type="text" id="node-input-attachURL" placeholder="">
+
+    <div class="form-row parameters parameters-query">
+        <label for="node-input-query" style="margin-left:15px; width: 85px; color:#848484"> Query</label>
+        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
+            <div style="position: absolute; left: 0px; right: 40px;">
+                    <input type="text" id="node-input-query" style="width:100%;" placeholder="">
+            </div>
+            <a id="refresh-query" class="refresh-action editor-button" style="position: absolute; right: 0px; top: 0px;">
+                <i class="fa fa-refresh"></i>
+            </a>
         </div>
-        <div class="form-row">
-            <label for="node-input-attachMIME"><i class="icon-tag"></i> MIME</label>
-            <input type="text" id="node-input-attachMIME" placeholder="">
-        </div>
-        <div class="form-row">
-            <label for="node-input-attachName"><i class="icon-tag"></i> Name</label>
-            <input type="text" id="node-input-attachName" placeholder="">
-        </div>
+        <input type="hidden" id="node-input-queryType">
     </div>
-    <div id="trello-card-advanced" class="trello-card-panel hide">
-        <div class="form-row">
-            <label for="node-input-pos"><i class="icon-tag"></i> Position</label>
-            <input type="text" id="node-input-pos" placeholder="">
-            <div class="input-info">The position of the new card. top, bottom, or a positive float</div>
+
+    <div class="form-row parameters parameters-body">
+        <label for="node-input-body" style="margin-left:15px; width: 85px; color:#848484"> Body</label>
+        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
+            <div style="position: absolute; left: 0px; right: 40px;">
+                    <input type="text" id="node-input-body" style="width:100%;" placeholder="">
+            </div>
+            <a id="refresh-body" class="refresh-action editor-button" style="position: absolute; right: 0px; top: 0px;">
+                <i class="fa fa-refresh"></i>
+            </a>
         </div>
-        <div class="form-row">
-            <label for="node-input-closed"><i class="icon-tag"></i> Closed</label>
-            <input type="checkbox" style="width: auto;" id="node-input-closed"> <span class="checkbox-info">Mark as closed</span>
-        </div>
-        <div class="form-row">
-            <label for="node-input-due"><i class="icon-tag"></i> Due date</label>
-            <input type="text" id="node-input-due" placeholder="">
-            <div class="input-info">A due date for the card</div>
-        </div>
-        <div class="form-row">
-            <label for="node-input-dueComplete"><i class="icon-tag"></i> Complete</label>
-            <input type="checkbox" style="width: auto;" id="node-input-dueComplete"> <span class="checkbox-info">Due date is complete</span>
-        </div>
+        <input type="hidden" id="node-input-bodyType">
     </div>
+
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+ 
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/> 
+    </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="trello-card">
-    
+    <p>Create, update, list or delete Trello boards, lists, cards, labels or custom fields.</p>
+
+    <h3>Fields</h3>
+
+    <dl class="message-properties">
+        <dt>Path / Query / Body <span class="property-type">object</span></dt>
+        <dd>Objects with fields that are needed to perform the action. You can click on the "refresh" button 
+            to reset the fields with default parameters. Or you can chose a field in the "msg" object.
+        </dd>
+    </dl>
+
 </script>

@@ -2,16 +2,17 @@
     RED.nodes.registerType('trello-in',{
         category: 'VISEO_REST',
         color: '#3FADB5',
-        defaults: { 
-            path:  { value: undefined, required: true },
-            key:   { value: undefined, required: true, type: 'trello-config'},
-            model: { value: undefined, required: true }
+        defaults: {
+            'name'  : { value: undefined },
+            'path'  : { value: "/my-webhook", required: true },
+            'key'   : { value: undefined, required: true, type: 'trello-config'},
+            'model' : { value: undefined, required: true }
         },
         inputs:  0,
         outputs: 1,
         icon: "trello.svg",
         align: "left",
-        paletteLabel: "Trello In",
+        paletteLabel: "Trello webhooks",
         button: {
             onclick: function() {
                 var node = this;
@@ -30,29 +31,56 @@
                 });
             }
         },
-        label: function() { return this.path || "Trello In"; }
+        label: function() { return (this.name || "Trello webhooks"); },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({   default: 'str', types: ['str'], type: "str" });
+            $("#node-input-path").typedInput({   default: 'str', types: ['str'], type: "str" });
+            $("#node-input-model").typedInput({  default: 'str', types: ['str'], type: "str" });
+        }
     })
 </script>
 <style>
     .input-info { font-size: 12px; padding-left: 104px; font-style: italic; }
 </Style>
 <script type="text/x-red" data-template-name="trello-in">
+
     <div class="form-row">
-        <label for="node-input-path"><i class="icon-tag"></i> Path</label>
-        <input type="text" id="node-input-path" placeholder="/myitem">
-        <div class="input-info">Explicit path append to /trello-callback to avoid Trello messy conf.</div>
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="">
     </div>
+
+    <br>
+    <b>Trello settings </b>
+
     <div class="form-row">
+        <br>
         <label for="node-input-key"><i class="fa fa-lock"></i> Trello Key</label>
-        <input type="text" id="node-input-key" placeholder="">
+        <input type="text" id="node-input-key" style="width:70%;" placeholder="">
     </div>
+
     <div class="form-row">
-        <label for="node-input-model"><i class="fa fa-lock"></i> Model ID</label>
-        <input type="text" id="node-input-model" placeholder="00000000">
-        <div class="input-info">A Node-RED restart is required to clean previous routes.</div>
+        <label for="node-input-path"><i class="fa fa-globe"></i> Path</label>
+        <input type="text" id="node-input-path" style="width:70%;" placeholder="/my-webhook">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-model"><i class="icon-tag"></i> Model ID</label>
+        <input type="text" id="node-input-model" style="width:70%;" placeholder="">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="trello-in">
-    
+    <p>Receive updates regarding actions that have occurred in Trello.</p>
+    <p>The node can specify the ID of the object the webhook is watching.</p>
+
+    <h3>Fields</h3>
+
+    <dl class="message-properties">
+        <dt>Path <span class="property-type">string</span></dt>
+        <dd>Explicit path append to /trello-callback to avoid Trello messy conf.</dd>
+        <dt>Model ID <span class="property-type">string</span></dt>
+        <dd>ID of the object the webhook is watching. </dd>
+    </dl>
+
+    <p><b>Notes: </b>A Node-RED restart is required to clean previous routes</p>
 </script>
