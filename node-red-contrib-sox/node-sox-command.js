@@ -17,7 +17,7 @@ module.exports = function(RED) {
         this.on('input', (data)  => { input(node, data, config)  });
         this.on('close', () => { close(node) });
     }
-    RED.nodes.registerType("sox", register, {});
+    RED.nodes.registerType("sox-command", register, {});
 }
 
 function cleanup (node, p) { 

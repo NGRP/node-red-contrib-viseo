@@ -1,11 +1,11 @@
 # Node-RED
 
-A Node-RED node to call some FFMPEG features.
+A Node-RED node to call some SOX features.
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-ffmpeg
+npm install node-red-contrib-viseo-sox
 ```
 
 ## Getting Help

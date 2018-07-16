@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('sox',{
+    RED.nodes.registerType('sox-command',{
         category: 'VISEO_MEDIA',
         color: '#3FADB5',
         defaults: { 
@@ -14,7 +14,7 @@
         outputs: 1,
         icon: "volume.svg",
         align: "left",
-        paletteLabel: 'SoX',
+        paletteLabel: 'SoX command',
         label: function() { return this.name || "SoX"; },
         oneditprepare: function() {
             $("#node-input-output").typedInput({   default: 'msg',  types: ['msg'],  typeField: $("#node-input-outputType") });
@@ -23,7 +23,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="sox">
+<script type="text/x-red" data-template-name="sox-command">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -57,7 +57,7 @@
     h4, h3 { font-weight: bold; }
 </style>
 
-<script type="text/x-red" data-help-name="sox">
+<script type="text/x-red" data-help-name="sox-command">
 
     <p>This node allows to use the command line utility 'Sox of Silence' in order to convert or maniupulate audio files.</p>
     

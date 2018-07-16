@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-sox",
-    "version"       : "0.0.1",
+    "version"       : "0.0.3",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Sound of silence",
     "dependencies"  : {
@@ -13,7 +13,7 @@
     "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
-            "sox":       "node-sox.js"
+            "sox-command":       "node-sox-command.js"
         }
     }
 }
