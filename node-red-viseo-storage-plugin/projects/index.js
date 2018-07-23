@@ -246,13 +246,17 @@ function unstageFile(user, project,file) {
     return activeProject.unstageFile(file);
 }
 function commit(user, project,options) {
+
     checkActiveProject(project);
     var isMerging = activeProject.isMerging();
     return activeProject.commit(user, options).then(function() {
-        // The project was merging, now it isn't. Lets reload.
-        if (isMerging && !activeProject.isMerging()) {
-            return reloadActiveProject("merge-complete");
-        }
+
+       // return push(user, project,remoteBranchName,setRemote).then(function() {
+            // The project was merging, now it isn't. Lets reload.
+            if (isMerging && !activeProject.isMerging()) {
+                return reloadActiveProject("merge-complete");
+            }
+       // })
     })
 }
 function getFileDiff(user, project,file,type) {
