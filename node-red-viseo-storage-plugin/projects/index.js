@@ -250,13 +250,31 @@ function commit(user, project,options) {
     checkActiveProject(project);
     var isMerging = activeProject.isMerging();
     return activeProject.commit(user, options).then(function() {
+        return gitTools.getRemoteBranch(activeProject.path).then(function(remoteBranch) {
 
-       // return push(user, project,remoteBranchName,setRemote).then(function() {
-            // The project was merging, now it isn't. Lets reload.
-            if (isMerging && !activeProject.isMerging()) {
-                return reloadActiveProject("merge-complete");
+            if(remoteBranch) {
+                return push(user, project,null,false).then(function() {
+                    // The project was merging, now it isn't. Lets reload.
+                    if (isMerging && !activeProject.isMerging()) {
+                        return reloadActiveProject("merge-complete");
+                    }
+                })
+            } else {
+                runtime.events.emit("runtime-event",{
+                    id:"viseo-error",
+                    payload:{
+                        type:"warning",
+                        error:"project-not-pushed",
+                        text:"Project not pushed. Please set upstream branch to automate push on commit.",
+                        timeout:7200
+                    },
+                    retain:false
+                });
             }
-       // })
+            
+        });
+
+       
     })
 }
 function getFileDiff(user, project,file,type) {
