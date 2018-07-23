@@ -417,6 +417,13 @@ Project.prototype.getCommits = function(options) {
             }
         }
         throw err;
+    }).then(function (data) {
+        return new Promise(function(resolved, reject) {
+            for (let commit of data.commits) {
+                commit.subject = commit.subject + ' [ '+commit.author+' ]'
+            }
+            resolved(data);
+        });
     })
 }
 Project.prototype.getCommit = function(sha) {
