@@ -1,0 +1,149 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-server',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            name:       { value: undefined },
+            pageToken:  { value: "",  type: 'facebook-token' }
+        },
+        credentials: {
+            verifyToken: { type: "text" }
+        },
+        inputs:  0,
+        outputs: 1,
+        icon: "facebook.svg",  align: "left",
+        paletteLabel: "Messenger",
+        label: function() { return this.name || "Messenger"; },
+        oneditprepare: function() {
+            $("#node-input-verifyToken").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        }
+    });
+
+</script>
+
+
+<style>
+    .button-small {
+        height: 20px;
+        line-height: 18px;
+        font-size: 10px;
+        border-radius: 2px;
+        padding: 0 5px;
+        user-select: none;
+        box-sizing: border-box;
+        display: inline-block;
+        color: #888 !important;
+        background: #fff;
+        border: 1px solid #ccc;
+        text-align: center;
+        margin: 0;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .button-small:enabled:hover {
+        color: #666 !important;
+        background: #ddd;
+    }
+    button:disabled,
+    button.button-small[disabled] {
+        cursor: auto;
+    }
+    h5.subsection { 
+        color: #888; 
+        width: 66%;
+        margin-left: 104px;
+    }
+    h5.subsection span { 
+        margin-left:30px;
+        padding: 0 10px 0 10px; 
+        background-color: white;
+    }
+</style>
+
+<script type="text/x-red" data-template-name="facebook-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <br>
+    <b>Facebook Messenger settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-pageToken"><i class="fa fa-lock"></i> Page token</label>
+        <input type="text" id="node-input-pageToken" placeholder="" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-verifToken"><i class="fa fa-lock"></i> Verify token</label>
+        <input type="text" id="node-input-verifyToken" placeholder="" style="width:70%;">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="facebook-server">
+
+    <h1>Amazon Messenger</h1>
+    <p>Connect your flow to Messenger with this node. </p>
+
+    <h3>Main properties</h3>
+    <ul>
+        <li> <b>Bot name</b>: Will be displayed in the card title if a text message is sent. </li>
+    </ul>
+
+    <h3>Endpoint</h3>
+    <ul>
+        This node uses the <b>/facebook-server</b> route to connect with Messenger.
+    </ul>
+
+    <h3>Specifications</h3>
+    <ul>
+        The node will forward the received message to next node with the given properties: </p>
+        <li> payload: the message's text (see last section), event (START/END CONVERSATION) or object. </li>
+        <li> message: the message object. </li>
+        <li> user: an empty object with an id to be filled by further nodes. </li>
+        <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
+    </ul>
+    
+    <h3>Getting help</h3>
+    <ul>
+        <li> <a href="https://developers.facebook.com/docs/messenger-platform/introduction">Documentation</a></li>
+        <li> <a href=https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-amazon">VISEO GitHub (details for this node)</a> </li>
+        <li> <a href=https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a></li>
+    </ul>
+
+    <h3>Get user sentence</h3>
+    <ul>
+        To get the user sentence, copy/paste the following code in <b>Interaction Model/Code<b>:<br>
+    </ul>
+<pre type="javascript" style="width:400px; margin-left:20px;"> {
+    "languageModel": {
+        "intents": [
+            {
+                "name": "AMAZON.CancelIntent",
+                "samples": []
+            },
+            {
+                "name": "AMAZON.HelpIntent",
+                "samples": []
+            },
+            {
+                "name": "AMAZON.StopIntent",
+                "samples": []
+            },
+            {
+                "name": "RawText",
+                "samples": [ 
+                    "{a sentence|Text}"
+                ],
+                "slots": [
+                    {
+                        "name": "Text",
+                        "type": "AMAZON.LITERAL"
+                    }
+                ]
+            }
+        ],
+        "invocationName": APP_INVOCATION_NAME
+    }
+}   </pre>
+
+</script>

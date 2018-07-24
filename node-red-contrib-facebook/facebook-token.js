@@ -3,11 +3,9 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         this.name = config.name;
     }
-    RED.nodes.registerType("facebook-config", register, {
+    RED.nodes.registerType("facebook-token", register, {
     	credentials: {
-    		token:        { type: "text" },
-            appId:        { type: "text" },
-            pageId:       { type: "text" }
+    		token:        { type: "text" }
     	}
 
     });

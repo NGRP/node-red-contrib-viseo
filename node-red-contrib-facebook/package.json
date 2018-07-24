@@ -1,9 +1,11 @@
 {
     "name"          : "node-red-contrib-viseo-facebook",
-    "version"       : "0.0.4",
+    "version"       : "0.1.0",
     "description"   : "A set of facebook utilies for Node-RED",
     "dependencies"  : {
         "node-red-viseo-helper"      : "~0.1",
+        "node-red-viseo-bot-manager" : "^0.0.10",
+        "request-promise"            : "^4.2.2",
         "request"                    : "^2.76.0"
     },
     "repository" : {
@@ -14,9 +16,13 @@
     "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
-            "facebook-config":   "facebook-config.js",
             "facebook-handover": "facebook-handover.js",
-            "facebook-takeover": "facebook-takeover.js"
+            "facebook-takeover": "facebook-takeover.js",
+            "facebook-server":   "facebook-server.js",
+            "facebook-profile":  "facebook-profile.js",
+            "facebook-token":    "facebook-token.js",
+            "facebook-settings": "facebook-settings.js",
+            "facebook-log-events": "facebook-log-events.js"
         }
     }
 }

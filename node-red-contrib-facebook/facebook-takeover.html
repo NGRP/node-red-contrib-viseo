@@ -4,18 +4,23 @@
         color: '#3FADB5',
         defaults: { 
             name:         { value: undefined },
-            config:       { value: undefined, type: 'facebook-config'}, 
+            pageToken:    { value: undefined, type: 'facebook-token'}, 
             userId:       { value: undefined },
-            appDestination: { value: undefined },
-            metadata:       { value: undefined } 
+            userIdType:   { value: 'msg' },
+            metadata:     { value: undefined },
+            metadataType: { value: 'msg' }
         },
         inputs:  1,
         outputs: 2,
         outputLabels: ["success","failure"],
         icon: "facebook.svg",
-        align: "right",
-        paletteLabel: 'FB takeover',
-        label: function() { return this.name || "FB Takeover"; }
+        align: "left",
+        paletteLabel: 'Takeover',
+        label: function() { return this.name || "Takeover"; },
+        oneditprepare: function () {
+            $("#node-input-userId").typedInput({ default: 'msg', types: ['msg','str'], typeField: $("#node-input-userIdType") });
+            $("#node-input-metadata").typedInput({ default: 'msg', types: ['msg','str','json'], typeField: $("#node-input-metadataType") });
+        }
     });
 
    
@@ -26,17 +31,29 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+
+    <br>
+    <b>Facebook Messenger settings</b>
+
     <div class="form-row">
-        <label for="node-input-config"><i class="icon-tag"></i> Credentials</label>
-        <input type="text" id="node-input-config" placeholder="">
+        <br>
+        <label for="node-input-pageToken"><i class="fa fa-lock"></i> Page token</label>
+        <input type="text" id="node-input-pageToken" placeholder="" style="width:70%;">
     </div>
+
+    <br>
+    <b>Facebook Messenger inputs</b>
+
     <div class="form-row">
-        <label for="node-input-userId"><i class="icon-tag"></i> User ID</label>
-        <input type="text" id="node-input-userId" placeholder="user.id">
+        <br>
+        <label for="node-input-userId"><i class="fa fa-user"></i> User ID</label>
+        <input type="text" id="node-input-userId" placeholder="user.id" style="width:70%;">
+        <input type="hidden" id="node-input-userIdType">
     </div>
    <div class="form-row">
-        <label for="node-input-metadata"><i class="icon-tag"></i> Metadata (optionnal)</label>
-        <input type="text" id="node-input-metadata" placeholder="Data for secondary app">
+        <label for="node-input-metadata"><i class="fa fa-database"></i> Metadata (optionnal)</label>
+        <input type="text" id="node-input-metadata" placeholder="Data for secondary app" style="width:70%;">
+        <input type="hidden" id="node-input-metadataType">
     </div>
 </script>
 
