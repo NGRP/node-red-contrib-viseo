@@ -1,10 +1,10 @@
 {
 	"name": "node-red-viseo-middleware",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Middleware for node-red http in",
     "dependencies": {
        "mustache":"^2.3.0",
-       "uuidv4": "^3.3.2",
+       "uuid": "^3.3.2",
        "request-promise": "^4.1.1"
     },
     "repository": {
