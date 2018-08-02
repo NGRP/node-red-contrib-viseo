@@ -26,5 +26,9 @@ $(function() {
             id => {},
             error => console.log("Error posting activity", error)
         );
+
+        connector.activity$
+                 .filter(activity => activity.type === "event")
+                 .subscribe(activity => { console.log(activity); })
     })
 });

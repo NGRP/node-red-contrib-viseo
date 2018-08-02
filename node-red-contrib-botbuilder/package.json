@@ -13,7 +13,8 @@
         "request-promise-native"     : "^1.0.4",
         "es6-promisify"              : "^5.0.0",
         "node-red-viseo-helper"      : "~0.1",
-        "node-red-viseo-bot-manager" : "~0.0"
+        "node-red-viseo-bot-manager" : "~0.0",
+        "offline-directline"         : "^1.2.*"
     },
     "repository" : {
         "type":"git",
@@ -28,7 +29,7 @@
             "msbot-fb-profile":  "nodes/channel/msbot-fb-profile.js",
             "msbot-fb-greeting": "nodes/channel/msbot-fb-greeting.js",
             "msbot-fb-log":      "nodes/channel/msbot-fb-log.js",
-            "msbot-offline":     "nodes/offline/msbot-offlinet.js"
+            "msbot-offline":     "nodes/offline/directline-offline.js"
         }
     }
 }

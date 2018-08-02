@@ -24,7 +24,13 @@ const route = (callback, options, server) => {
         mscfg.appPassword = CONFIG.microsoft.bot.appPassword
     }
 
-    let connector = new builder.ChatConnector(mscfg);
+    let connector = new builder.ChatConnector(mscfg); 
+    /*
+    connector.getAccessToken((err, accessToken) => {
+        console.log('AccessToken',err, accessToken)
+    })*/
+    
+    
     server.post('/api/v1/messages', connector.listen());
     bot = bindConnector(connector, options);
 

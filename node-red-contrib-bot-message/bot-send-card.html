@@ -34,6 +34,10 @@
             media:        { value: undefined },
             mediaType:    { value: "str" },
 
+            eventName:      { value: undefined },
+            eventValue:     { value: undefined },
+            eventValueType: { value: "str" },
+
             title:        { value: undefined },
             titleType:    { value: "str" },
             subtitle:     { value: undefined },
@@ -70,17 +74,18 @@
         oneditprepare: function () {
 
             // Typed Input
-            $("#node-input-name").typedInput({       default: 'str', types: ['str'], type: 'str' });
-            $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
-            $("#node-input-media").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-mediaType")});
-            $("#node-input-title").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleType")});
-            $("#node-input-attach").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachType")});
+            $("#node-input-name").typedInput({         default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-promptText").typedInput({   default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-media").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-mediaType")});
+            $("#node-input-title").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleType")});
+            $("#node-input-attach").typedInput({       default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachType")});
             $("#node-input-signintitle").typedInput({  default: 'str', types: ['msg','global','str'], typeField: $("#node-input-signintitleType")});
             $("#node-input-signinurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-signinurlType")});
             $("#node-input-shcardtitle").typedInput({  default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardtitleType")});
             $("#node-input-shcardimage").typedInput({  default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardimageType")});
             $("#node-input-shcardbutton").typedInput({ default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardbuttonType")});
             $("#node-input-shcardurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardurlType")});
+            $("#node-input-eventValue").typedInput({   default: 'str', types: ['msg','global','str', 'json'], typeField: $("#node-input-eventValueType")});
 
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
@@ -110,6 +115,9 @@
                 }
                 else if (type === "signin") {
                     $("#node-input-signintitle, #node-input-signinurl").typedInput('show');
+                }
+                else if (type === "event") {
+                    $("#node-input-eventValue").typedInput('show');
                 }
             });
 
@@ -326,11 +334,12 @@
             }
         },
         icon: function() {
-            if (this.sendType === "text")  { return "text.svg"; } 
-            if (this.sendType === "media") { return "picture.svg"; } 
-            if (this.sendType === "quick") { return "buttons.svg"; }
+            if (this.sendType === "text")   return "text.svg"; 
+            if (this.sendType === "media")  return "picture.svg"; 
+            if (this.sendType === "quick")  return "buttons.svg";
             if (this.sendType === "signin") return "fingerprint.svg";
-            if (this.carousel === true) return "carousel.svg";
+            if (this.sendType === "event")  return "tech.svg";
+            if (this.carousel === true)     return "carousel.svg";
             return "card.svg";
         }, 
         align: "left",
@@ -351,6 +360,7 @@
             }
             if (this.sendType === "media")  return "Send media"; 
             if (this.sendType === "signin") return "Send signin";
+            if (this.sendType === "event")  return "Send event";
             else return "Send Card";
         }
     });
@@ -504,6 +514,7 @@
                 <option value="media">Image</option>
                 <option value="card">Card</option>
                 <option value="signin">SignIn</option>
+                <option value="event">Event</option>
             </select>
         </div>
         <br>
@@ -577,7 +588,17 @@
                 <input type="checkbox" style="width: auto; vertical-align:top;  margin-left:20px;" id="node-input-random"> <span>Choose randomly between each lines of text</span>
             </div>
         </section>
-
+        <section class="section-type section-event">
+            <div class="form-row">
+                <label for="node-input-eventName"><i class="fa fa-pencil-square-o"></i> Event</label>
+                <input type="text" id="node-input-eventName" placeholder="event-" style="width:80%;">
+            </div>
+            <div class="form-row">
+                <label for="node-input-eventValue"><i class="fa fa-"></i> Value</label>
+                <input type="text" id="node-input-eventValue" style="width:80%;" placeholder="">
+                <input type="hidden" id="node-input-eventValueType">
+            </div>
+        </section>
 
         <br>
         <b>Played content</b>
