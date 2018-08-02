@@ -4,60 +4,173 @@
         color: '#3FADB5',
         defaults: { 
             name:       { value: undefined },
+            facekey:    { value: undefined, required: true,  type: 'ms-config'},
+            output:     { value: "payload"},
+            request:    { value: "post_detect"},
+            action:     { value: "face"},
             image:      { value: undefined },
             imageType:  { value: 'msg'},
-            faceid:     { value: true },
-            landmarks:  { value: true },
-            attributes: { value: true },
-            gender:     { value: true },
-            age:        { value: true },
-            facialhair: { value: true },
-            glasses:    { value: true },
-            emotions:   { value: true },
-            smile:      { value: true },
-            headPose:   { value: true },
-            hair:       { value: true },
-            makeup:     { value: true },
-            accessories:{ value: true },
-            occlusion:  { value: true },
-            blur:       { value: true },
-            exposure:   { value: true },
-            noise:      { value: true },
-            celeb:      { value: false },
-            facekey:    { value: undefined, required: true,  type: 'ms-config'},
-            visionkey:  { value: undefined, required: false, type: 'ms-config'}
+            returnFaceId:      { value: undefined },
+            returnFaceIdType:  { value: 'msg'},
+            returnFaceLandmarks:      { value: undefined },
+            returnFaceLandmarksType:  { value: 'msg'},
+            returnFaceAttributes:      { value: undefined },
+            returnFaceAttributesType:  { value: 'msg'},
+            faceId:      { value: undefined },
+            faceIdType:  { value: 'str'},
+            faceListId:            { value: undefined },
+            faceListIdType:        { value: 'str'},
+            personId:              { value: undefined },
+            personIdType:          { value: 'str'},
+            persistedFaceId:       { value: undefined },
+            persistedFaceIdType:            { value: 'str'},
+            personGroupId:                  { value: undefined },
+            personGroupIdType:              { value: 'str'},
+            faceIds:                        { value: undefined },
+            faceIdsType:                    { value: 'str'},
+            maxNumOfCandidatesReturned:     { value: undefined },
+            maxNumOfCandidatesReturnedType: { value: 'str'},
+            mode:                           { value: undefined },
+            modeType:                       { value: 'str'},
+            confidenceThreshold:        { value: undefined },
+            confidenceThresholdType:    { value: 'str'},
+            faceId1:                    { value: undefined },
+            faceId1Type:    { value: 'str'},
+            faceId2:        { value: undefined },
+            faceId2Type:    { value: 'str'},
+            userData:       { value: undefined },
+            userDataType:   { value: 'str'},
+            start:          { value: undefined },
+            startType:      { value: 'str'},
+            top:            { value: undefined },
+            topType:        { value: 'str'},
+            Name:           { value: undefined },
+            NameType:       { value: 'str'},
+            targetFace:     { value: undefined },
+            targetFaceType: { value: 'str'},
+            parameters:     { value: [] }
         },
         inputs:  1,
         outputs: 1,
         oneditprepare: function () {
-            $("#node-input-image").typedInput({types:['msg','global','str']});
-            $("#node-input-image").typedInput('type', this.imageType || 'msg');
+            $("#node-input-name").typedInput({   default: 'str', types: ['str'], type: "str" });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], type: "msg" });
 
-            $("#node-input-image").on('change', function(type, value) {
-                if (value === 'str') $("#node-input-image").attr("placeholder","http://link.to/image");
-                else                 $("#node-input-image").attr("placeholder","message.attachments[0].contentUrl");
-            });
+            $("#node-input-image").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-imageType") });
+            $("#node-input-returnFaceId").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-returnFaceIdType") });
+            $("#node-input-returnFaceLandmarks").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-returnFaceLandmarksType") });
+            $("#node-input-returnFaceAttributes").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-returnFaceAttributesType") });
+            $("#node-input-faceId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-faceIdType") });
+            $("#node-input-faceListId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-faceListIdType") });
+            $("#node-input-personId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-personIdType") });
+            $("#node-input-persistedFaceId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-persistedFaceIdType") });
+            $("#node-input-personGroupId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-personGroupIdType") });
+            $("#node-input-faceIds").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-faceIdsType") });
+            $("#node-input-maxNumOfCandidatesReturned").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-maxNumOfCandidatesReturnedType") });
+            $("#node-input-mode").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-modeType") });
+            $("#node-input-confidenceThreshold").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-confidenceThresholdType") });
 
-            $("#node-input-attributes").change( function() {
-                if ($(this).is(":checked")) {
-                    $(".column").prop('checked',true);
-                    $(".column").attr("disabled", true);
+            $("#node-input-faceId1").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-faceId1Type") });
+            $("#node-input-faceId2").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-faceId2Type") });
+            $("#node-input-userData").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-userDataType") });
+            $("#node-input-start").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-startType") });
+            $("#node-input-top").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-topType") });
+            $("#node-input-Name").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-NameType") });
+            $("#node-input-targetFace").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-targetFaceType") });
+
+            let saveAction = this.action;
+            let saveRequest = this.request;
+
+            $("#node-input-action").change(changeAction);
+            $("#node-input-request").change(changeParameters);
+
+            function changeAction() {
+                $("#node-input-request").empty();
+
+                let action = $("#node-input-action").val();
+                switch(action) {
+                    case "face":
+                        $('<option></option>').attr("value", "post_detect").text("Detect faces").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "post_findsimilars").text("Find similar faces").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "post_group").text("Group candidates faces").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "post_identify").text("Identify persons").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "post_verify").text("Verify face").appendTo($("#node-input-request"))
+                        break;
+                    case "facelist": // 
+                        $('<option></option>').attr("value", "post_facelists/{faceListId}/persistedFaces").text("Add face to facelist").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "put_facelists/{faceListId}").text("Create an empty face").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "delete_facelists/{faceListId}").text("Delete a facelist").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "delete_facelists/{faceListId}/persistedFaces/{persistedFaceId}").text("Delete a face").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_facelists/{faceListId}").text("List faces").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_facelists").text("List facelists").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "patch_facelists/{faceListId}").text("Update facelist").appendTo($("#node-input-request"))
+                        break;
+                    case "person": // 
+                        $('<option></option>').attr("value", "post_persongroups/{personGroupId}/persons/{personId}/persistedFaces").text("Add face to person").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "post_persongroups/{personGroupId}/persons").text("Create a person").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "delete_persongroups/{personGroupId}/persons/{personId}").text("Delete a person").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "delete_persongroups/{personGroupId}/persons/{personId}/persistedFaces/{persistedFaceId}").text("Delete a face from a person").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_persongroups/{personGroupId}/persons/{personId}").text("Get a person").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_persongroups/{personGroupId}/persons/{personId}/persistedFaces/{persistedFaceId}").text("Get a person's face").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_persongroups/{personGroupId}/persons").text("List persons").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "patch_persongroups/{personGroupId}/persons/{personId}").text("Update a person").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "patch_persongroups/{personGroupId}/persons/{personId}/persistedFaces/{persistedFaceId}").text("Update a person's face").appendTo($("#node-input-request"))
+                    break;
+                    case "persongroup":
+                        $('<option></option>').attr("value", "put_persongroups/{personGroupId}").text("Create a person group").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "delete_persongroups/{personGroupId}").text("Delete a person group").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_persongroups/{personGroupId}").text("Get a person group").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_persongroups/{personGroupId}/training").text("Get group training status").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "get_persongroups").text("List persons").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "post_persongroups/{personGroupId}/train").text("Train person group").appendTo($("#node-input-request"))
+                        $('<option></option>').attr("value", "patch_persongroups/{personGroupId}").text("Update group").appendTo($("#node-input-request"))
+                    break;
                 }
-                else $(".column").attr("disabled", false);
-            });
 
-            $("#node-input-celeb").change( function() {
-                if ($(this).is(":checked")) {
-                    $("#visionkey").show();
-                } else {
-                    $("#visionkey").hide();
-                    $('#node-input-visionkey').val('');
-                }
-            }).change();
+                if (action === saveAction)  $("#node-input-request").val(saveRequest);
+                else changeParameters();
+            }
 
+            function changeParameters() {
+
+                let action = $("#node-input-action").val();
+                let request = $("#node-input-request").val() || saveRequest || "post_detect";
+                if (!request || request === null) return;   
+
+                $(".parameters").hide(); $("#bars").show();
+
+                if (request.match(/{faceListId}/))      $(".faceListId").show();
+                if (request.match(/{personId}/))        $(".personId").show();
+                if (request.match(/{persistedFaceId}/)) $(".persistedFaceId").show();
+                if (request.match(/{personGroupId}/))   $(".personGroupId").show();
+
+                if (request === "post_detect")  $(".detect, .image").show();
+                else if (request === "post_findsimilars")  $(".findsimilars").show();
+                else if (request === "post_identify") $(".identify").show();
+                else if (request === "post_verify")   $(".verify").show();
+                else if (request === "post_facelists/{faceListId}/persistedFaces" ||
+                         request === "post_persongroups/{personGroupId}/persons/{personId}/persistedFaces") { $(".targetFace, .userData, .image").show(); }
+                else if (request === "put_facelists/{faceListId}" || 
+                         request === "patch_facelists/{faceListId}" ||
+                         request === "post_persongroups/{personGroupId}/persons" ||
+                         request === "patch_persongroups/{personGroupId}/persons/{personId}" ||
+                         request === "put_persongroups/{personGroupId}" || 
+                         request === "patch_persongroups/{personGroupId}") { $(".name, .userData").show(); }
+                else if (request === "patch_persongroups/{personGroupId}/persons/{personId}/persistedFaces/{persistedFaceId}") { $(".userData").show(); }
+                else if (request === "get_persongroups/{personGroupId}/persons" ||
+                         request === "get_persongroups") { $(".start, .top").show(); }
+
+                if  ($(".parameters:visible").find('input').length === 0) $("#bars").hide();
+                else $(".parameters:visible").find('input[type=text]').typedInput('show');
+
+            }
         },
         oneditsave: function () { 
-            this.imageType = $("#node-input-image").typedInput('type');
+            let parameters = [];
+            $(".parameters:visible").find('input[type=text]').each( function(i, elt) {
+                parameters.push(elt.id.split('-').pop());
+            })
+            this.parameters = parameters;
         },
         icon: "microsoft.svg",
         align: "left",
@@ -69,84 +182,165 @@
 <script type="text/x-red" data-template-name="vision-image-faces">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" style="width: 70%" placeholder="Name">
     </div>
 
-    <p><b>Image</b></p>
+    <br>
+    <b>Microsoft Face API settings </b>
     <div class="form-row">
-        <label for="node-input-image"><i class="fa fa-tasks"></i> Location</label>
-        <input type="text" id="node-input-image" style="width:70%;">
+        <br>
+        <label for="node-input-facekey"><i class="fa fa-lock"></i> Face Key</label>
+        <input type="text" id="node-input-facekey">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-globe"></i> API</label>
+        <select id="node-input-action" style="width:70%;">
+            <option value="face">Face</option> 
+            <option value="facelist">Face list</option>
+            <option value="person">Person</option>
+            <option value="persongroup">Person group</option>
+        </select>
     </div>
 
-    <p><b>Options</b></p>
-    <div class="form-row" style="width:500px;">
-        <label for="node-input-faceid"><i class="fa fa-tasks"></i> Face ID</label>
-        <input type="checkbox" id="node-input-faceid" style="display: inline-block; width: auto; vertical-align: top;">
-        <br>
-        <label for="node-input-landmarks"><i class="fa fa-tasks"></i> Landmarks</label>
-        <input type="checkbox" id="node-input-landmarks" style="display: inline-block; width: auto; vertical-align: top;">
-        <br>
-        <label for="node-input-attributes"><i class="fa fa-tasks"></i> Attributes</label>
-        <input type="checkbox" id="node-input-attributes" style="display: inline-block; width: auto; vertical-align: top;"> <i>All</i>
-        <br>
-        <div style="float:left; margin:0; margin-left: 105px; width:120px;">
-            <input type="checkbox" class="column" id="node-input-gender" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Gender</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-age" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Age</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-facialhair" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Facial hair</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-glasses" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Glasses</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-emotions" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Emotions</i>
-        </div>
-        <div style="float:left; margin:0;width:120px;">
-            <input type="checkbox" class="column" id="node-input-smile" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Smile</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-headPose" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Head pose</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-hair" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Hair</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-makeup" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Makeup</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-accessories" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Accessories</i>
-        </div>
-        <div style="float:left; margin:0;width:120px">
-            <input type="checkbox" class="column" id="node-input-occlusion" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Occlusion</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-blur" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Blur</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-exposure" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Exposure</i>
-            <br>
-            <input type="checkbox" class="column" id="node-input-noise" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Noise</i>
-        </div>
-    </div>
-    <div class="form-row">
-        <label for="node-input-celeb"><i class="fa fa-tasks"></i> Celebrities</label>
-        <input type="checkbox" id="node-input-celeb" style="display: inline-block; width: auto; vertical-align: top;">
-    </div>   
+    <br>
+    <b>Microsoft Face API request parameters </b>
 
-    <p><b>Keys</b></p>
     <div class="form-row">
-        <label for="node-input-facekey"><i class="fa fa-lock"></i> Face API</label>
-        <input type="text" id="node-input-facekey" placeholder="">
+        <br>
+        <label for="node-input-request"><i class="fa fa-navicon"></i> Action</label>
+        <select id="node-input-request" style="width:70%">
+        </select>
     </div>
-    <div class="form-row" id="visionkey">
-        <label for="node-input-visionkey"><i class="fa fa-lock"></i> Vision API</label>
-        <input type="text" id="node-input-visionkey" placeholder="">
+
+    <div id="bars">
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 0.9px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 0.9px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row parameters image">
+        <label for="node-input-image" style="margin-left:15px; width: 85px; color:#848484"> image</label>
+        <input type="text" id="node-input-image" style="width:70%;" placeholder="payload" >
+        <input type="hidden" id="node-input-imageType">
+    </div>
+
+    <div class="form-row parameters detect">
+        <label for="node-input-returnFaceId" style="margin-left:15px; width: 85px; color:#848484"> retFaceId</label>
+        <input type="text" id="node-input-returnFaceId" style="width:70%;" placeholder="" >
+        <input type="hidden" id="node-input-returnFaceIdType">
+    </div>
+    <div class="form-row parameters detect">
+        <label for="node-input-returnFaceLandmarks" style="margin-left:15px; width: 85px; color:#848484"> retFaceLand.</label>
+        <input type="text" id="node-input-returnFaceLandmarks" style="width:70%;" placeholder="" >
+        <input type="hidden" id="node-input-returnFaceLandmarksType">
+    </div>
+    <div class="form-row parameters detect">
+        <label for="node-input-returnFaceAttributes" style="margin-left:15px; width: 85px; color:#848484"> retFaceAttr.</label>
+        <input type="text" id="node-input-returnFaceAttributes" style="width:70%;" placeholder="" >
+        <input type="hidden" id="node-input-returnFaceAttributesType">
+    </div>
+
+    <div class="form-row parameters findsimilars">
+        <label for="node-input-faceId" style="margin-left:15px; width: 85px; color:#848484"> faceId</label>
+        <input type="text" id="node-input-faceId" style="width:70%;">
+        <input type="hidden" id="node-input-faceIdType">
+    </div>
+    <div class="form-row parameters findsimilars faceListId">
+        <label for="node-input-faceListId" style="margin-left:15px; width: 85px; color:#848484"> faceListId</label>
+        <input type="text" id="node-input-faceListId" style="width:70%;">
+        <input type="hidden" id="node-input-faceListIdType">
+    </div>
+    <div class="form-row parameters personId">
+        <label for="node-input-personId" style="margin-left:15px; width: 85px; color:#848484"> personId</label>
+        <input type="text" id="node-input-personId" style="width:70%;">
+        <input type="hidden" id="node-input-personIdType">
+    </div>
+    <div class="form-row parameters persistedFaceId">
+        <label for="node-input-persistedFaceId" style="margin-left:15px; width: 85px; color:#848484"> persiFaceId</label>
+        <input type="text" id="node-input-persistedFaceId" style="width:70%;">
+        <input type="hidden" id="node-input-persistedFaceIdType">
+    </div>
+    <div class="form-row parameters findsimilars identify">
+        <label for="node-input-faceIds" style="margin-left:15px; width: 85px; color:#848484"> faceIds</label>
+        <input type="text" id="node-input-faceIds" style="width:70%;">
+        <input type="hidden" id="node-input-faceIdsType">
+    </div>
+    <div class="form-row parameters personGroupId identify">
+        <label for="node-input-personGroupId" style="margin-left:15px; width: 85px; color:#848484"> persnGrpId</label>
+        <input type="text" id="node-input-personGroupId" style="width:70%;">
+        <input type="hidden" id="node-input-personGroupIdType">
+    </div>
+    <div class="form-row parameters findsimilars identify">
+        <label for="node-input-maxNumOfCandidatesReturned" style="margin-left:15px; width: 85px; color:#848484"> maxCandid.</label>
+        <input type="text" id="node-input-maxNumOfCandidatesReturned" style="width:70%;" placeholder="20">
+        <input type="hidden" id="node-input-maxNumOfCandidatesReturnedType">
+    </div>
+    <div class="form-row parameters findsimilars">
+        <label for="node-input-mode" style="margin-left:15px; width: 85px; color:#848484"> mode</label>
+        <input type="text" id="node-input-mode" style="width:70%;">
+        <input type="hidden" id="node-input-modeType">
+    </div>
+    <div class="form-row parameters identify">
+        <label for="node-input-confidenceThreshold" style="margin-left:15px; width: 85px; color:#848484"> confThres.</label>
+        <input type="text" id="node-input-confidenceThreshold" style="width:70%;">
+        <input type="hidden" id="node-input-confidenceThresholdType">
+    </div>
+    <div class="form-row parameters verify">
+        <label for="node-input-faceId1" style="margin-left:15px; width: 85px; color:#848484"> faceId1</label>
+        <input type="text" id="node-input-faceId1" style="width:70%;">
+        <input type="hidden" id="node-input-faceId1Type">
+    </div>
+    <div class="form-row parameters verify">
+        <label for="node-input-faceId2" style="margin-left:15px; width: 85px; color:#848484"> faceId2</label>
+        <input type="text" id="node-input-faceId2" style="width:70%;">
+        <input type="hidden" id="node-input-faceId2Type">
+    </div>
+    <div class="form-row parameters userData">
+        <label for="node-input-userData" style="margin-left:15px; width: 85px; color:#848484"> userData</label>
+        <input type="text" id="node-input-userData" style="width:70%;">
+        <input type="hidden" id="node-input-userDataType">
+    </div>
+    <div class="form-row parameters start">
+        <label for="node-input-start" style="margin-left:15px; width: 85px; color:#848484"> start</label>
+        <input type="text" id="node-input-start" style="width:70%;">
+        <input type="hidden" id="node-input-startType">
+    </div>
+    <div class="form-row parameters top">
+        <label for="node-input-top" style="margin-left:15px; width: 85px; color:#848484"> top</label>
+        <input type="text" id="node-input-top" style="width:70%;">
+        <input type="hidden" id="node-input-topType">
+    </div>
+    <div class="form-row parameters name">
+        <label for="node-input-Name" style="margin-left:15px; width: 85px; color:#848484"> name</label>
+        <input type="text" id="node-input-Name" style="width:70%;">
+        <input type="hidden" id="node-input-NameType">
+    </div>
+    <div class="form-row parameters targetFace">
+        <label for="node-input-targetFace" style="margin-left:15px; width: 85px; color:#848484"> targetFace</label>
+        <input type="text" id="node-input-targetFace" style="width:70%;">
+        <input type="hidden" id="node-input-targetFaceType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
     </div>
 
 
 </script>
 
 <script type="text/x-red" data-help-name="vision-image-faces">
-    <p>This node uses the Microsoft Cognitive Services Face API to detect human faces in an image. </p>
+    <p>This node uses the Microsoft Cognitive Services Face API to detect, analyse or recognize human faces in an image. </p>
 
     <h2>Main properties</h2>
     <p>
+        <li><b>Keys</b> values: A key for the Face API is required for the process.
         <li><b>Image</b> location: Where to get the image. It can be a buffer (in a 'msg' or 'global' field) or an url (directly by chosing 'str' or in a field of 'msg' or 'global'). 
-        <li><b>Options</b> checkboxes: Informations to get from the image. Note that 'Celebrities' required a Microsoft Cognitive Services Vision API key. When none of the checkboxes are checked, it only returns the FaceRectangle.
-        <li><b>Keys</b> values: A key for the Face API is at least required for the process.
     </p>
     <p>
         <li><b>OUT[0]:</b> Returns an array in the msg.payload field with the informations (an item per found person).

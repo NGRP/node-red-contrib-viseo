@@ -5,7 +5,8 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("ms-config", register, {
         credentials: {
-            key:            { type: "text" }
+            key:     { type: "text" },
+            region:  { type: "text" }
         }
     });
 }
