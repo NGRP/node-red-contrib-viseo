@@ -101,8 +101,8 @@ const reply = (bot, node, data, config) => {
     message.address(address);
 
     let customTyping = (callback) => {
+        if (message.data.type === 'event') return callback();
         try {
-
             let typing = new builder.Message();
             typing.data.type = "typing";
             typing.address(address);
@@ -211,7 +211,6 @@ const buildQuickReplyObject = (obj) => {
 const buildButtonMessage = (msg, address, reply, isPush) => {
 
 }
-
     
 const buildRawMessage = (node, msg, opts, address, isPush) => {
 
@@ -252,7 +251,6 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
         }});
     }
 
-
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
         card.text(opts.text);
@@ -286,6 +284,13 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
             "contentType": type || CONTENT_TYPE['png'],
             "contentUrl": url
         }]);
+        return true;
+    }
+
+    if (opts.type === 'event') {
+        msg.data.type  = "event";
+        msg.data.name  = opts.event.name;
+        msg.data.value = opts.event.value;
         return true;
     }
 
