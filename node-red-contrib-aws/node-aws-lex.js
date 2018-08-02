@@ -19,15 +19,25 @@ module.exports = function (RED) {
             node.status({});
         }
     
-        this.on('input', (data)  => { input(node, data, config); });
+        start(node, config, RED);
+        this.on('input', (data)  => { input(node, config, data); });
+        this.on('close', (done) => { stop(node, config, done) });
     }
     RED.nodes.registerType('aws-lex', register, {});
 };
 
-async function input (node, data, config) {
+let _AWS = {};
 
-    if (!config.botname || !config.botalias || !config.creds ||
-        !config.creds.accessKeyId || !config.creds.secretAccessKey ) {
+function start(node, config, RED) {
+    if (!config.token || _AWS[config.token]) return;
+    if (!config.creds || !config.creds.accessKeyId || !config.creds.secretAccessKey) return;
+    _AWS[config.token] = new AWS.LexRuntime(config.creds);
+}
+
+function input (node, config, data) {
+
+    let lexruntime = _AWS[config.token];
+    if (!config.botname || !config.botalias || !lexruntime ) {
         let err = (!config.botname || !config.botalias) ? "Missing bot information" : "Missing credentials";
         helper.setByString(data, config.output || "payload" , { error: err });
         console.log("AWS Lex: Error - " + err);
@@ -79,9 +89,6 @@ async function input (node, data, config) {
         parameters.sessionAttributes = sessionA;
     }
 
-
-    let lexruntime = new AWS.LexRuntime(config.creds);
-
     if (action === "postText") {
         parameters.inputText = input;
         lexruntime.postText(parameters, function (err, res) {
@@ -122,3 +129,8 @@ async function input (node, data, config) {
     }
 
 };
+
+function stop(node, config, done) {
+    if (_AWS[config.token]) delete _AWS[config.token];
+    done();
+}
