@@ -32,9 +32,15 @@ const input = (node, data, config) => {
     if (config.inputType === 'json') input = JSON.parse(input);
 
     if (!node.auth) {
-        console.log(ex);
-        helper.setByString(data, config.output || "payload", { error: "Missing credentials" });
-        return node.send(data);
+        //console.log(ex);
+        if(config.auth) {
+            node.auth = {};
+            node.auth.cred = JSON.parse(config.auth);
+        } else {
+            helper.setByString(data, config.output || "payload", { error: "Missing credentials" });
+            node.status({fill:"red", shape:"ring", text: 'Missing credential'})
+            return node.send(data);
+        }
     }
     
     // Method
@@ -104,15 +110,19 @@ const input = (node, data, config) => {
         }
         const speech = require('@google-cloud/speech');
         let client = new speech.v1.SpeechClient({credentials: node.auth.cred});
-
+        
+        node.status({fill:"green", shape:"ring", text: 'Starting stt'})
+        
         client.recognize(parameters).then((results) => {
             let alternatives = (results[0] && results[0].results && results[0].results[0] && results[0].results[0].alternatives) ? results[0].results[0].alternatives : [];
             helper.setByString(data, config.output || 'payload', { alternatives: alternatives });
             node.send(data);
+            node.status({fill:"green", shape:"ring", text: 'stt finished'})
         }).catch((err) => { 
             console.log(err);
             helper.setByString(data, config.output || 'payload', { error: err });
             node.send(data);
+            node.status({fill:"red", shape:"ring", text: 'stt failed'})
         });
         
     }
