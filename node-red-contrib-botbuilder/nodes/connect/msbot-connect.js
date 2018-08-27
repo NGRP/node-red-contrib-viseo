@@ -101,8 +101,7 @@ const reply = (bot, node, data, config) => {
     message.address(address);
 
     let customTyping = (callback) => {
-        if (message.data.type === 'event') return callback();
-        try {
+       try {
             let typing = new builder.Message();
             typing.data.type = "typing";
             typing.address(address);
@@ -125,9 +124,13 @@ const reply = (bot, node, data, config) => {
         } catch (ex) { node.warn(ex); }
     }
 
-    // Handle the delay
-    let delay  = config.delay !== undefined ? parseInt(config.delay) : 0 
-    delayReply(delay, data, doReply, customTyping)
+    if(message.data.type === 'event') {
+        doReply();
+    } else {
+        // Handle the delay
+        let delay  = config.delay !== undefined ? parseInt(config.delay) : 0 
+        delayReply(delay, data, doReply, customTyping)
+    }
 }
 
 const TYPING_DELAY_CONSTANT = 2000;
