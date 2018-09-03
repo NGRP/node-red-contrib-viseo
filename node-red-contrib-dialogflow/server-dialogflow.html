@@ -1,0 +1,55 @@
+<script type="text/javascript">
+    RED.nodes.registerType('dialogflow-server',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: { 
+            name: { value: undefined }
+        },
+        inputs:  0,
+        outputs: 1,
+        icon: "google.svg",
+        align: "left",
+        paletteLabel: 'Dialogflow',
+        label: function() { return this.name || "Dialogflow"; },
+        oneditprepare: function() {
+            $("#node-input-title").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        },
+        oneditsave: function(){}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="dialogflow-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="dialogflow-server">
+
+    <h1>Google Dialogflow server</h1>
+    <p>Connect your flow to Dialogflow V2 with this node. </p>
+
+    <h3>Endpoint</h3>
+    <ul>
+        This node uses the <b>/dialogflow-server</b> route to connect with Dialoglfow.
+    </ul>
+
+    <h3>Specifications</h3>
+    <ul>
+        The node will forward the received message to next node with the given properties: </p>
+        <li> payload: the message's text. </li>
+        <li> message: the message object. </li>
+        <li> user: an empty object with an id to be filled by further nodes. </li>
+        <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
+    </ul>
+
+    <h3>Getting help</h3>
+    <ul>
+        <li> <a href="https://dialogflow.com/">Dialoglfow interface</a> </li>
+        <li> <a href="https://actions-on-google.github.io/actions-on-google-nodejs/globals.html">Dialoglfow reference</a> </li>
+        <li> <a href="https://developers.google.com/actions/reference/nodejs/lib-v1-migration">Dialoglfow documentation</a> </li>
+        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-dialogflow">VISEO GitHub (details for this node):</a> </li>
+        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a> </li>
+    </ul>
+</script>
