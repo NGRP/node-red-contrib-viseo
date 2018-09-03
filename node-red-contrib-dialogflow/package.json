@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-viseo-dialogflow",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Dialogflow Wrapper",
   "dependencies": {
     "actions-on-google": "^1.4.0",
@@ -29,6 +29,7 @@
   "node-red": {
     "nodes": {
       "dialogflow": "node-dialogflow.js",
+      "dialogflow-server": "server-dialogflow.js",
       "dialogflow-config": "node-dialogflow-config.js"
     }
   }
