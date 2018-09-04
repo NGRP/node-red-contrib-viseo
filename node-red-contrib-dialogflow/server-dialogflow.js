@@ -219,18 +219,19 @@ const getMessage = exports.getMessage = (replies) => {
 
         let items = [];
         for (let i=0; i<replies.length; i++) {
+            if (i==0) {
+                let text = replies[i].subtitle || replies[i].title;
+                let speech = (replies[i].speech) ? replies[i].speech : text ;
+                msg.data.push(new SimpleResponse({speech: speech, text: text }))
+                continue;
+            }
+
             let item = { 
                 title: replies[i].title, 
                 description: replies[i].subtitle || '', 
                 optionInfo: { key: replies[i].title, synonyms: [] }
             };
 
-            if (i==0 && !replies[i].attach && (replies[i].buttons || replies[i].buttons.length === 0) && !replies[i].title) {
-                    let text = replies[i].subtitle;
-                    let speech = (replies[i].speech) ? replies[i].speech: text ;
-                    msg.data.push(new SimpleResponse({speech: speech, text: text }))
-                    continue;
-            }
             if (replies[i].prompt) msg.expectUserResponse = true;
             if (replies[i].attach) {
                 item.image = new Image({ 
