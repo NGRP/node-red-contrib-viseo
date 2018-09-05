@@ -245,37 +245,86 @@ function unstageFile(user, project,file) {
     checkActiveProject(project);
     return activeProject.unstageFile(file);
 }
-function commit(user, project,options) {
+async function commit(user, project,options) {
 
     checkActiveProject(project);
-    var isMerging = activeProject.isMerging();
-    return activeProject.commit(user, options).then(function() {
-        return gitTools.getRemoteBranch(activeProject.path).then(function(remoteBranch) {
+    let changes = await activeProject.getChanges();
 
-            if(remoteBranch) {
-                return push(user, project,null,false).then(function() {
-                    // The project was merging, now it isn't. Lets reload.
-                    if (isMerging && !activeProject.isMerging()) {
-                        return reloadActiveProject("merge-complete");
-                    }
-                })
-            } else {
+
+    var isMerging = activeProject.isMerging();
+
+    if(changes.unstaged) {
+        return activeProject.commit(user, options).then(() => {
+            runtime.events.emit("runtime-event",{
+                id:"viseo-error",
+                payload:{
+                    type:"warning",
+                    error:"project-not-pushed",
+                    text:"Changes committed but not pushed : You have unstaged changes. You need to reset or commit them to be allowed to push.",
+                    timeout:7200
+                },
+                retain:false
+            });
+        })
+    } else {
+        if(changes.tocommit) {
+            return activeProject.commit(user, options).then(() => {
+                return pullPush(user, project, isMerging);
+            })
+        } else {
+            return pullPush(user, project, isMerging);
+        }
+    }
+   
+}
+
+
+function pullPush(user, project, wasMerging) {
+
+    return gitTools.getRemoteBranch(activeProject.path).then(async (remoteBranch) => {
+
+        if(remoteBranch) {
+            try {
+                await pull(user, project,null,false,true)
+
+                await push(user, project,null,false)
+
+                // The project was merging, now it isn't. Lets reload.
+                if (wasMerging && !activeProject.isMerging()) {
+                    return reloadActiveProject("merge-complete");
+                }
+
+            } catch(err) {
+
+                if(err.code === "git_auth_failed") {
+                    throw err;
+                }
                 runtime.events.emit("runtime-event",{
                     id:"viseo-error",
                     payload:{
                         type:"warning",
                         error:"project-not-pushed",
-                        text:"Project not pushed. Please set upstream branch to automate push on commit.",
+                        text:"Changes committed but not pushed : "+err.message,
                         timeout:7200
                     },
                     retain:false
                 });
             }
             
-        });
-
-       
-    })
+        } else {
+            runtime.events.emit("runtime-event",{
+                id:"viseo-error",
+                payload:{
+                    type:"warning",
+                    error:"project-not-sync",
+                    text:"Project not synchronized with remote server. Please set upstream branch to automate push on commit.",
+                    timeout:7200
+                },
+                retain:false
+            });
+        }
+        
+    });
 }
 function getFileDiff(user, project,file,type) {
     checkActiveProject(project);

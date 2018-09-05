@@ -389,6 +389,37 @@ Project.prototype.getFiles = function () {
         throw err;
     });
 };
+
+Project.prototype.getChanges = async function() {
+
+    let hasChanges = false;
+    let hasUnstaged = false;
+
+    try {
+        let files = await this.getFiles();
+
+        for (let file of Object.values(files)) {
+            
+            if(!file.status) {
+                continue;
+            }
+
+            let status = file.status.trim();
+            if(status === "M") {
+                hasChanges = true;
+            } else if(status === 'MM') {
+                hasUnstaged = true;
+            }
+        }
+    } catch(err) {
+        log.warn(err.message);
+    }
+
+    return {
+        unstaged: hasUnstaged,
+        tocommit: hasChanges
+    }
+}
 Project.prototype.stageFile = function(file) {
     return gitTools.stageFile(this.path,file);
 };
