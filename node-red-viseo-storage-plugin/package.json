@@ -1,6 +1,6 @@
 {
     "name": "node-red-viseo-storage-plugin",
-    "version": "0.1.0-alpha.2",
+    "version": "0.1.0-alpha.3",
     "description": "Storage plugin to replace node-red's defaults file system",
     "dependencies": {
         "node-red": "0.18.7",
