@@ -279,52 +279,52 @@ async function commit(user, project,options) {
 }
 
 
-function pullPush(user, project, wasMerging) {
+async function pullPush(user, project, wasMerging) {
 
-    return gitTools.getRemoteBranch(activeProject.path).then(async (remoteBranch) => {
+    await activeProject.loadRemotes()
 
-        if(remoteBranch) {
-            try {
-                await pull(user, project,null,false,true)
+    let remoteBranch = await gitTools.getRemoteBranch(activeProject.path)
 
-                await push(user, project,null,false)
+    if(remoteBranch) {
+        try {
+            await pull(user, project,null,false,true)
 
-                // The project was merging, now it isn't. Lets reload.
-                if (wasMerging && !activeProject.isMerging()) {
-                    return reloadActiveProject("merge-complete");
-                }
+            await push(user, project,null,false)
 
-            } catch(err) {
-
-                if(err.code === "git_auth_failed") {
-                    throw err;
-                }
-                runtime.events.emit("runtime-event",{
-                    id:"viseo-error",
-                    payload:{
-                        type:"warning",
-                        error:"project-not-pushed",
-                        text:"Changes committed but not pushed : "+err.message,
-                        timeout:7200
-                    },
-                    retain:false
-                });
+            // The project was merging, now it isn't. Lets reload.
+            if (wasMerging && !activeProject.isMerging()) {
+                return reloadActiveProject("merge-complete");
             }
-            
-        } else {
+
+        } catch(err) {
+
+            if(err.code === "git_auth_failed") {
+                throw err;
+            }
             runtime.events.emit("runtime-event",{
                 id:"viseo-error",
                 payload:{
                     type:"warning",
-                    error:"project-not-sync",
-                    text:"Project not synchronized with remote server. Please set upstream branch to automate push on commit.",
+                    error:"project-not-pushed",
+                    text:"Changes committed but not pushed : "+err.message,
                     timeout:7200
                 },
                 retain:false
             });
         }
         
-    });
+    } else {
+        runtime.events.emit("runtime-event",{
+            id:"viseo-error",
+            payload:{
+                type:"warning",
+                error:"project-not-sync",
+                text:"Project not synchronized with remote server. Please set upstream branch to automate push on commit.",
+                timeout:7200
+            },
+            retain:false
+        });
+    }
 }
 function getFileDiff(user, project,file,type) {
     checkActiveProject(project);
