@@ -46,11 +46,14 @@ function runGitCommand(args,cwd,env) {
             stderr = err.toString();
         })
         child.on('close', function(code) {
+
             if (code !== 0) {
                 var err = new Error(stderr);
                 err.stdout = stdout;
                 err.stderr = stderr;
-                if(/Connection refused/i.test(stderr)) {
+                if (/Connection refused/i.test(stderr)) {
+                    err.code = "git_connection_failed";
+                } else if (/Connection timed out/i.test(stderr)) {
                     err.code = "git_connection_failed";
                 } else if (/fatal: could not read/i.test(stderr)) {
                     // Username/Password
@@ -431,7 +434,7 @@ module.exports = {
         return runGitCommand(args,cwd);
     },
     pull: function(cwd,remote,branch,allowUnrelatedHistories,auth,gitUser) {
-        var args = ["pull"];
+        var args = ["pull", '--rebase'];
         if (remote && branch) {
             args.push(remote);
             args.push(branch);
