@@ -399,15 +399,14 @@ Project.prototype.getChanges = async function() {
         let files = await this.getFiles();
 
         for (let file of Object.values(files)) {
-            
             if(!file.status) {
                 continue;
             }
 
             let status = file.status.trim();
-            if(status === "M") {
+            if(/^[MA]$/.test(status)) {
                 hasChanges = true;
-            } else if(status === 'MM') {
+            } else if(/^[MA]M$/.test(status)) {
                 hasUnstaged = true;
             }
         }
