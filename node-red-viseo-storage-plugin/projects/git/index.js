@@ -60,6 +60,8 @@ function runGitCommand(args,cwd,env) {
                     err.code = "git_auth_failed";
                 } else if(/HTTP Basic: Access denied/i.test(stderr)) {
                     err.code = "git_auth_failed";
+                } else if(/Authentication failed/i.test(stderr)) {
+                    err.code = "git_auth_failed";
                 } else if(/Permission denied \(publickey\)/i.test(stderr)) {
                     err.code = "git_auth_failed";
                 } else if(/Host key verification failed/i.test(stderr)) {
