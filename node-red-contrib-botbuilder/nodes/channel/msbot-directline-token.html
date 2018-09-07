@@ -1,0 +1,46 @@
+<script type="text/javascript">
+    RED.nodes.registerType('msbot-directline-token',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:      { value: undefined },
+            output:    { value: undefined },
+            outputType: { value: "msg"}
+        },
+        credentials : {
+            secretKey:    { type: "text" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "directline.png",  align: "left",
+        paletteLabel: "Directline Token",
+        label: function() { return this.name || "Directline token"; },
+        oneditprepare: function() {
+            $("#node-input-output").typedInput({ 
+                default: 'msg', 
+                types: ['msg'], 
+                typeField: $("#node-input-outputType")
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="msbot-directline-token">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-secretKey"><i class="icon-tag"></i> Secret key</label>
+        <input type="text" id="node-input-secretKey" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <input type="text" id="node-input-output" placeholder="">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="msbot-directline-token">
+    <p>Get access token and conversation id from secret key. </p>
+</script>
