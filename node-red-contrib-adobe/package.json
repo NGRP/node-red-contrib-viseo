@@ -1,0 +1,24 @@
+{
+	"name": "node-red-contrib-viseo-adobe",
+	"version": "0.0.1",
+	"description": "",
+	"dependencies": {
+		"node-red-viseo-helper": "~0.1",
+		"request": "^2.87.0",
+		"request-promise": "4.2.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-adobe"
+	},
+	"license": "Apache-2.0",
+	"keywords": [
+		"node-red"
+	],
+	"node-red": {
+		"nodes": {
+			"node-omniture-insertion": "node-omniture-insertion.js",
+			"node-omniture-config": "node-omniture-config.js"
+		}
+	}
+}

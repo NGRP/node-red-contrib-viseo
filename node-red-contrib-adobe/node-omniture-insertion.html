@@ -1,0 +1,49 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-omniture-insertion', {
+        category: 'VISEO LOG',
+        color: '#3FADB5',
+        defaults: {
+            name: { value: "" },
+            application: { type: "node-omniture-config" },
+            data: { value: "" },
+            dataType: { value: "msg" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "analytics.png",
+        align: "left",
+        paletteLabel: "Omniture Log",
+        label: function() { return this.name || 'Omniture Log'; },
+        oneditprepare: function() {
+
+            $("#node-input-data").typedInput({ 
+                default: 'msg', 
+                types: ['msg'], 
+                typeField: $("#node-input-dataType")
+            })
+        },
+        oneditsave: function() {
+
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-omniture-insertion">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-application"><i class="fa fa-tag"></i> Application</label>
+        <input type="text" id="node-input-application">
+    </div>
+    <div class="form-row">
+        <label for="node-input-data"><i class="fa fa-tag"></i> Data</label>
+        <input type="text" id="node-input-data">
+        <input type="hidden" id="node-input-dataType">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-omniture-insertion">
+   Data insertion for Omniture (https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/data-insertion-api/index.md)
+</script>
