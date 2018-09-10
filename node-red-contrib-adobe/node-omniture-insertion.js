@@ -70,6 +70,8 @@ const input = async (node, data, config) => {
         let url = node.application.url;
         let log = helper.getByString(data, config.data, "");
 
+        log.reportSuiteID = log.reportSuiteID || node.application.credentials.reportID;
+
         let builder = new xml2js.Builder();
         let xml = builder.buildObject(log);
 
@@ -82,7 +84,7 @@ const input = async (node, data, config) => {
         })
 
         xml2js.parseString(result, (err, xmlresult) => {
-            
+
             if(xmlresult.status !== "SUCCESS") {
                 node.error(result);
             }
