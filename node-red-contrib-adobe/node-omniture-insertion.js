@@ -1,6 +1,7 @@
 
 const request = require('request-promise');
 const helper = require('node-red-viseo-helper');
+const xml2js = require("xml2js");
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -65,23 +66,37 @@ const input = async (node, data, config) => {
     }
     
     try {
+        //use xml to js
+        let url = node.application.url;
+        let log = helper.getByString(data, config.data, "");
+
+        let builder = new xml2js.Builder();
+        let xml = builder.buildObject(log);
 
         let result = await request.post({
-            url : node.application.url,
-            form : helper.getByString(data, config.data, ""),
+            url : url,
+            form : xml,
             headers: {
                 Authorization: "Bearer "+accessToken
             }
         })
 
-        console.log(result);
+        xml2js.parseString(result, (err, xmlresult) => {
+            
+            if(xmlresult.status !== "SUCCESS") {
+                node.error(result);
+            }
+
+            node.send(data);
+        })
+        
 
     } catch(e) {
         node.error(e);
+        node.send(data);
     }
-    
-    node.send(data);
 }
+    
 
 const close = (node, data, config) => {
 
