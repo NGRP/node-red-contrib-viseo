@@ -18,7 +18,8 @@ module.exports = function(RED) {
 
     RED.nodes.registerType("node-omniture-config", register, {credentials: {
         applicationId: { value: ""},
-        applicationSecret: { value: ""}
+        applicationSecret: { value: ""},
+        reportID: {value: ""}
     }});
 }
 
