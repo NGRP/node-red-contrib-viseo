@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-omniture-config', {
+        category: 'config',
+        defaults: {
+            name: { value: ""},
+            url: {value: ""}
+        },
+        credentials: {
+            applicationId: { value: ""},
+            applicationSecret: { value: ""},
+            reportID: {value: ""}
+        },
+        align: "left",
+        paletteLabel: "Omniture Config",
+        label: function() { return this.name || 'Omniture Config'; },
+        oneditprepare: function() {
+    
+        },
+        oneditsave: function() {
+
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-omniture-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-url"><i class="fa fa-tag"></i> Url</label>
+        <input type="text" id="node-config-input-url">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-applicationId"><i class="fa fa-tag"></i> Application ID</label>
+        <input type="text" id="node-config-input-applicationId">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-applicationSecret"><i class="fa fa-tag"></i> Application secret</label>
+        <input type="text" id="node-config-input-applicationSecret">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-reportID"><i class="fa fa-tag"></i> Report ID Suite</label>
+        <input type="text" id="node-config-input-reportID">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-omniture-config">
+   <p>Configuration for meteo service</p>
+   
+</script>
