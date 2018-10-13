@@ -32,7 +32,7 @@ const input = (node, data, config) => {
     if (config.inputType === 'json') input = JSON.parse(input);
 
     if (!node.auth) {
-        console.log(ex);
+        console.log("node.auth was false");
         helper.setByString(data, config.output || "payload", { error: "Missing credentials" });
         return node.send(data);
     }
