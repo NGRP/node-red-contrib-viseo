@@ -6,13 +6,14 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
-    RED.nodes.registerType("set-credentials", register, {});
+    RED.nodes.registerType("set-credentials", register, {
+        credentials: { rules_to: {type: "text"}}
+    });
 }
 
-let CONF = {};
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
 
     var creds = (node.credentials.rules_to) ? JSON.parse(node.credentials.rules_to) : [''];
     var rules = config.rules;
@@ -30,32 +31,24 @@ const input = (node, data, config) => {
               break;
             case "msg":
             default:
-                RED.util.setMessageProperty(msg, rules[i].p, value);
+                RED.util.setMessageProperty(data, rules[i].p, value);
           }
     }
 
-	return node.send(msg);
+	return node.send(data);
 }
 
 function getValue(val, typ) {
     switch(typ) {
-        case "msg":
-            return RED.util.getMessageProperty(msg, val);
-        case "flow":
-            return flowContext.get(val);
-        case "global":
-            return globalContext.get(val);
         case "str": 
             if (typeof(val) === "string") return val;
             else if (typeof(val === "object")) return JSON.stringify(val);
             else return String(val);
         case "num": 
             return Number(val);
-        case "bool":
-            return (val === "true");
         case "json":
-            if (typeof(val === "object")) return val;
-            else return JSON.stringify(val);
+            if (typeof(val) === "object") return val;
+            else if (typeof(val) === "string") return JSON.parse(val);
         default :
             return val;
     }

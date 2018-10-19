@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-credentials",
-    "version"       : "0.0.0",
+    "version"       : "0.0.1",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Set credentials",
     "dependencies"  : {},
