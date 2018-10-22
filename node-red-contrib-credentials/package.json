@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-credentials",
-    "version"       : "0.0.1",
+    "version"       : "0.0.2",
     "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Set credentials",
     "dependencies"  : {},
@@ -12,7 +12,8 @@
     "keywords": [ "viseo", "sarah", "node-red" ],
     "node-red" : {
         "nodes": {
-            "set-credentials":"node-set-credentials.js"
+            "set-credentials":"node-set-credentials.js",
+            "credentials-config":"node-set-credentials-config.js"
         }
     }
 }
