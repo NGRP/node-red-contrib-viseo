@@ -65,14 +65,14 @@ async function input (node, data, config) {
 }
 
 async function processRequest (subKey, question, knowledge) {
-    let url = 'https://westus.api.cognitive.microsoft.com/qnamaker/v2.0/knowledgebases/' + knowledge + '/generateAnswer';
+    let url = 'https://test-qnamaker.azurewebsites.net/qnamaker/knowledgebases/' + knowledge + '/generateAnswer';
 
     let req = {
         method: 'POST',
         uri: url,
         headers: {
-            'ContentType': 'application/json',
-            'Ocp-Apim-Subscription-Key': subKey
+            'Content-Type': 'application/json',
+            'Authorization': subKey
         },
         body: JSON.stringify({
             "question" : question
