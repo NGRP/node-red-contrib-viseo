@@ -115,7 +115,7 @@ class NeDBManager extends DatabaseManager {
 	}
 
 	remove(key, data, config, callback) {
-	    this.db.remove(key, function(err, result) {
+	    this.db.remove(key, {multi: true}, function(err, result) {
 	        callback(err, data, result);
 	    });    
 
