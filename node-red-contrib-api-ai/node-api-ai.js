@@ -15,6 +15,8 @@ module.exports = function (RED) {
         let node = this;
 
         config.token = this.credentials.token;
+        node.status({fill:"red", shape:"ring", text: 'Deprecated'});
+        node.error("This package is old, please install and use node-red-contrib-viseo-dialogflow instead of node-red-contrib-viseo-api-ai.")
 
         start(node, config);
         this.on('input', (data)  => { input(node, data, config); });

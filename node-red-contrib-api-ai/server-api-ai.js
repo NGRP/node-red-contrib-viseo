@@ -17,8 +17,12 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
+        node.status({fill:"red", shape:"ring", text: 'Deprecated'});
+        node.error("This package is old, please install and use node-red-contrib-viseo-dialogflow instead of node-red-contrib-viseo-api-ai.")
+
         start(RED, node, config);
         this.on('close', (done)  => { stop(node, config, done) });
+
     }
     RED.nodes.registerType("api-ai-server", register);
 }
@@ -30,7 +34,6 @@ const start = (RED, node, config) => {
     // Start HTTP Route
     let uri = '/api-ai-server/';
     RED.httpNode.post (uri, (req, res, next) => { 
-
         receive(node, config, req, res); 
     });
 
