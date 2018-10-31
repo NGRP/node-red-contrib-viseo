@@ -11,6 +11,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         let node = this;
 
+        node.status({fill:"red", shape:"ring", text: 'Deprecated'});
+        node.error("This node is old, please install and use node-red-contrib-viseo-facebook instead.")
         this.config = RED.nodes.getNode(config.config);
         this.on('input', (data) => { input(node, data, config)  });
     }
