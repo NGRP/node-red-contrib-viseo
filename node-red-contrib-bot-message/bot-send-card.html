@@ -14,7 +14,7 @@
                 })
                 return (result > 1) ? false : true;
             }},
-            delay:        { value: 0 },
+            delay:        { value: undefined },
             repeat:       { value: 0 },
             outputs:      { value: 1 },
             btnOutput:    { value: undefined },
@@ -299,7 +299,7 @@
 
             // Outputs and labels
             let labels = new Array();
-            this.delay  = $('#node-input-delay').val()  || 0;
+            this.delay  = $('#node-input-delay').val();
             this.repeat = $('#node-input-repeat').val() || 0;
             this.outputs = 1 ;
 
@@ -491,7 +491,7 @@
 
         <div class="form-row">
             <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-            <input type="number" min="0" id="node-input-delay" placeholder="0" style="width:100px;">
+            <input type="number" min="0" id="node-input-delay" placeholder="none" style="width:100px;">
             <p style="display: inline-block;"> ms</p>
         </div>
 
