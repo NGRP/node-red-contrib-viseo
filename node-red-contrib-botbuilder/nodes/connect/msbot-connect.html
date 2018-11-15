@@ -33,7 +33,7 @@
             $("#node-input-port").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appId").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appPassword").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-input-delay").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-delay").typedInput({ default: 'num', types: ['num'], type: 'num' });
             setProject(this.project);
         },
         label: function () { return this.name || "BotBuilder"; },
@@ -68,7 +68,7 @@
     <br>
     <div class="form-row">
         <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-        <input type="text" id="node-input-delay" style="width:70%;" placeholder="2000">ms
+        <input type="text" id="node-input-delay" placeholder="2000" style="width:30%;">ms
     </div>
 </script>
 <script type="text/x-red" data-help-name="bot">
