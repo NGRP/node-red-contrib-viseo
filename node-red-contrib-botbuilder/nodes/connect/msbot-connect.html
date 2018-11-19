@@ -1,42 +1,42 @@
 
 <script type="text/javascript">
-    var setProject = function (value) {
+    var setProject = function(value){
         $('SPAN.logo SPAN').text(value || 'VISEO Framework')
     }
 
-    RED.events.on("nodes:add", function (node) {
+    RED.events.on("nodes:add", function(node){ 
         if (node.type !== 'bot') return;
         setProject(node.project);
     });
 
-    RED.nodes.registerType('bot', {
+    RED.nodes.registerType('bot',{
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults: {
-            name: { value: undefined },
-            project: { value: undefined },
-            port: { value: undefined },
-            delay: { value: 2000 },
+            name:           { value: undefined },
+            project:        { value: undefined },
+            port:           { value: undefined },
+            delay:          { value: 2000 },
 
         },
         credentials: {
-            appId: { type: "text" },
-            appPassword: { type: "text" },
+            appId:          { type : "text" },
+            appPassword:    { type : "text" },
         },
-        inputs: 0,
-        outputs: 1,
-        icon: "microsoft.svg", align: "left",
+        inputs:0,
+        outputs:1,
+        icon: "microsoft.svg",  align: "left",
         paletteLabel: "BotBuilder",
-        oneditsave: function () { var node = this; setTimeout(function () { setProject(node.project) }, 1) },
-        oneditprepare: function () {
-            $("#node-input-project").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-input-port").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-input-appId").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        oneditsave:    function(){ var node = this; setTimeout(function(){ setProject(node.project) },1) },
+        oneditprepare: function(){
+            $("#node-input-project").typedInput({     default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-port").typedInput({        default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-appId").typedInput({       default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appPassword").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-input-delay").typedInput({ default: 'num', types: ['num'], type: 'num' });
+            $("#node-input-delay").typedInput({       default: 'num', types: ['num'], type: 'num' });
             setProject(this.project);
         },
-        label: function () { return this.name || "BotBuilder"; },
+        label: function() { return this.name || "BotBuilder"; },
     });
 </script>
 <script type="text/x-red" data-template-name="bot">
@@ -71,6 +71,7 @@
         <input type="text" id="node-input-delay" placeholder="2000" style="width:30%;"> ms
     </div>
 </script>
+
 <script type="text/x-red" data-help-name="bot">
     <h1>Microsoft Bot Builder</h1>
     <p>Connect your flow to Bot Builder with this node. </p>
@@ -78,11 +79,13 @@
     <ul>
         Start a MS Bot Builder Server with the given configuration. (Configuration can also be read from config files defined by BOTBUILDER_CFG environment var).
     </ul>
+
     <h3>Main properties</h3>
     <ul>
         <li> <b>Settings</b>: Copy/paste the informations corresponding to your project. </li>
         <li> <b>Delay</b>: Enter the global delay for your messages.</li>
     </ul>
+
     <h3>Specifications</h3>
     <ul>
         The node will forward the received message to next node with the given properties: </p>
@@ -91,6 +94,7 @@
         <li> user: an empty object with an id to be filled by further nodes. </li>
         <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
     </ul>
+
     <h3>Getting help</h3>
     <ul>
         <li> <a href="https://dev.botframework.com/">Microsoft Bot Framework</a> </li>

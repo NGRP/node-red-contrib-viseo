@@ -221,7 +221,7 @@ const getMessage = exports.getMessage = (replies) => {
         for (let i=0; i<replies.length; i++) {
             if (i==0) {
                 let text = replies[i].subtitle || replies[i].title;
-                let speech = (replies[i].speech) ? replies[i].speech : text ;
+                let speech = replies[i].speech || text ;
                 msg.data.push(new SimpleResponse({speech: speech, text: text }))
                 continue;
             }
@@ -391,7 +391,7 @@ const getMessage = exports.getMessage = (replies) => {
     if (reply.type === 'text' || reply.type === 'quick') {
         let text = reply.text || reply.quicktext;
         if (!text && reply.title) text = reply.title + ' ' + (reply.subtitle || '');
-        let speech = (reply.speech) ? reply.speech : text
+        let speech = reply.speech || text;
         
         msg.data.push(new SimpleResponse({speech: speech, text: text }))
 

@@ -4,16 +4,18 @@
         color: '#3FADB5',
         defaults: { 
             name:               { value: undefined },
+            host:               { value: undefined, required: true },
+            hostType:           { value: "str" },
             knowledgeBaseId:    { value: undefined, required: true },
-            knowledgeType:      { value: "msg" },
-            subKeyType:         { value: "msg" },
+            knowledgeType:      { value: "str" },
+            endpointKeyType:    { value: "str" },
             question:           { value: "payload" },
             questionType:       { value: "msg" },
             output:             { value: "payload" },
             outputType:         { value: "msg" }
         },
         credentials: {
-            subKey:             { type: "text" }
+            endpointKey:        { type: "text" }
         },
         inputs: 1,
         outputs:1,
@@ -22,12 +24,14 @@
         paletteLabel: 'QnA',
         label: function() { return this.name || "QnA"; },
         oneditprepare: function() {
-            if (!this.knowledgeType) this.knowledgeType = 'msg';
-            if (!this.subKeyType) this.subKeyType = 'msg';
+            if (!this.hostType) this.hostType = 'str';
+            if (!this.knowledgeType) this.knowledgeType = 'str';
+            if (!this.endpointKeyType) this.endpointKeyType = 'str';
             if (!this.questionType) this.questionType = 'msg';
             if (!this.outputType) this.outputType = 'msg';
-            $("#node-input-knowledgeBaseId").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-knowledgeType") });
-            $("#node-input-subKey").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-subKeyType") });
+            $("#node-input-host").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-hostType") });
+            $("#node-input-knowledgeBaseId").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-knowledgeType") });
+            $("#node-input-endpointKey").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-endpointKeyType") });
             $("#node-input-question").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-questionType") });
             $("#node-input-output").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-outputType") });
         }
@@ -45,9 +49,14 @@
 
     <div class="form-row">
         <br>
-        <label for="node-input-subKey" style="width:160px;"><i class="fa fa-lock"></i> Subscription key</label>
-        <input type="text" id="node-input-subKey" style="width:57%;" placeholder="">
-        <input type="hidden" id="node-input-subKeyType">
+        <label for="node-input-host" style="width:160px;"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-input-host" style="width:57%;" placeholder="">
+        <input type="hidden" id="node-input-hostType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-endpointKey" style="width:160px;"><i class="fa fa-lock"></i> Endpoint key</label>
+        <input type="text" id="node-input-endpointKey" style="width:57%;" placeholder="">
+        <input type="hidden" id="node-input-endpointKeyType">
     </div>
     <div class="form-row">
         <label for="node-input-knowledgeBaseId" style="width:160px;"><i class="fa fa-globe"></i> Knowledge Base ID</label>
@@ -73,5 +82,5 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-qna">
-    <p>Query Microsoft QNA Maker API with the given payload.</p>
+    <p>Query Microsoft QNA Maker API V4 with the given payload.</p>
 </script>

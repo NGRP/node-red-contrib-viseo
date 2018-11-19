@@ -9,7 +9,7 @@ const botmgr  = require('node-red-viseo-bot-manager');
 
 // Retrieve server
 const msbot    = require('../../lib/msbot.js');
-const server = require('../../lib/server.js');
+const server   = require('../../lib/server.js');
 const DEFAULT_TYPING_DELAY = 2000;
 var globalTypingDelay;
 
@@ -131,7 +131,7 @@ const reply = (bot, node, data, config) => {
         doReply();
     } else {
         // Handle the delay
-        let delay  = config.delay// !== undefined ? parseInt(config.delay) : 0 
+        let delay  = config.delay;
         delayReply(delay, data, doReply, customTyping, config)
     }
 }
