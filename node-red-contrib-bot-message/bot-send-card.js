@@ -42,15 +42,15 @@ const buttonsStack = {
         data._buttonsStack = data._buttonsStack.concat(buttons);
     },
     popAll: function(data) {
-        let buttons = data._buttonsStack;       
-        data._buttonsStack = []; 
+        let buttons = data._buttonsStack;
+        data._buttonsStack = [];
         return buttons;
     }
 };
 
 const getButtons = (locale, config, data) => {
     if (data.buttons) return data.buttons
-    
+
     let buttons = [];
     if (config.sendType === 'quick'){
         buttons = JSON.parse(JSON.stringify(config.quickreplies));
@@ -126,17 +126,17 @@ const input = (node, data, config) => {
     // Retrieve replies
     let replies = buildReply(node, data, config);
 
-    if (!replies){ 
-        sendData(node, data, config); 
+    if (!replies){
+        sendData(node, data, config);
         return;
     }
-    
+
     // Emit reply message
     data.reply = replies;
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
         helper.emitAsyncEvent('replied', node, newData, config, () => {})
-        if (config.prompt) { 
-            return; 
+        if (config.prompt) {
+            return;
         }
         sendData(node, newData, config);
     });
@@ -242,7 +242,7 @@ const buildReply = (node, data, config) => {
             reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
         }
         if (reply.speech === undefined) reply.speech = reply.quicktext;
-    } 
+    }
     else if (config.sendType === 'card') {
 
         let title = config.title;
@@ -258,22 +258,76 @@ const buildReply = (node, data, config) => {
             let loc = (config.attachType === 'global') ? node.context().global : data;
             attach = helper.getByString(loc, attach);
         }
-        
+
         reply.title =    title;
         reply.subtitle = marshall(locale, config.subtitle,  data, '');
         reply.subtext =  marshall(locale, config.subtext,   data, '');
         reply.attach =   attach;
         if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
     }
-    
+    else if (config.sendType === 'AdaptiveCard') {
+        let title = config.titleAdaptiveCard;
+        let attach = config.attachAdaptiveCard;
+        let subtext = config.textAdaptiveCard;
+
+        if (!config.titleTypeAdaptiveCard) title = marshall(locale, title,  data, '');
+        else if (config.titleTypeAdaptiveCard !== 'str') {
+            let loc = (config.titleTypeAdaptiveCard === 'global') ? node.context().global : data;
+            title = helper.getByString(loc, title);
+        }
+        if (!config.attachTypeAdaptiveCard) attach = marshall(locale, attach,  data, '');
+        else if (config.attachTypeAdaptiveCard !== 'str') {
+            let loc = (config.attachTypeAdaptiveCard === 'global') ? node.context().global : data;
+            attach = helper.getByString(loc, attach);
+        }
+
+        reply.title = title;
+        reply.attach = attach;
+        reply.version = "1.0";
+        reply.body = [];
+        /*customized text to display*/
+	      let textToShow = marshall(locale, subtext,  data, '');
+	      if (textToShow.length > 350) {
+		    let tmp = textToShow.substring(0, 350);
+
+		    // in case Markdown Emphasis got truncated...
+		    let empIndex = tmp.lastIndexOf(" **");
+		    if (empIndex> 0 && tmp.substring(empIndex+ 2).lastIndexOf("**") < 0) tmp += '**';
+
+		    // in case hiperlink got truncated...
+		    let linkBegin = tmp.lastIndexOf("](http");
+		    let linkEnd;
+		    if (linkBegin > 0) {
+		      linkEnd = textToShow.substring(linkBegin).indexOf(")");
+		      if (linkEnd > 0) tmp = textToShow.substring(0, linkBegin + linkEnd + 1);
+		    }
+
+		    // assure attribute complete
+		    let attrIndex = (tmp.lastIndexOf("\n") < linkBegin + linkEnd + 1) ? (linkBegin + linkEnd + 1) : tmp.lastIndexOf("\n");
+		    tmp = textToShow.substring(0, attrIndex);
+		    buildAdaptiveCardJson(node, tmp, reply.body); //reply.body.push({"type": "TextBlock", "text": tmp, "size": "default", "wrap": true});
+
+
+		    reply.actions = [];
+		    tmp = textToShow.substring(attrIndex);
+
+        //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": config.sendType, "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
+		    reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": config.sendType, "body": []}});
+		    buildAdaptiveCardJson(node, tmp, reply.actions[0].card.body);
+	    } else {
+		    //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
+		    buildAdaptiveCardJson(node, textToShow, reply.body);
+	    }
+    }
+
     // Forward data without sending anything
     let context = botmgr.getContext(data);
     if (config.carousel){
         let carousel = context.carousel = context.carousel || [];
         carousel.push(reply);
-        return;    
+        return;
     }
-    
+
     // Handle carousel
     let carousel = context.carousel = context.carousel || [];
     if (carousel.length > 0){
@@ -308,7 +362,7 @@ const sendData = (node, data, config) => {
             data._tmp['rpt_'+node.id] = cpt + 1;
             if (cpt >= rpt){
                 out[out.length -1] = data;
-                return node.send(out);        
+                return node.send(out);
             }
         }
 
@@ -326,11 +380,11 @@ const sendData = (node, data, config) => {
         config.promptText = promptText;
 
         let acceptValue = false;
-        
+
         if (buttons && buttons.length > 0) {
 
             for (let i = 0 ; i < buttons.length ; i++){
-                let button = buttons[i]; 
+                let button = buttons[i];
                 let buttonValue = (button.value || '').replace(new RegExp(/\:/g),"\\:")
                 let rgxp = new RegExp(button.regexp || '^'+buttonValue+'$', 'i');
                 let testValue = data.prompt.text
@@ -342,7 +396,7 @@ const sendData = (node, data, config) => {
                     testValue = testValue.replace(new RegExp(/ç/g),"c");
                     testValue = testValue.replace(new RegExp(/[èéêë]/g),"e");
                     testValue = testValue.replace(new RegExp(/[ìíîï]/g),"i");
-                    testValue = testValue.replace(new RegExp(/ñ/g),"n");                
+                    testValue = testValue.replace(new RegExp(/ñ/g),"n");
                     testValue = testValue.replace(new RegExp(/[òóôõö]/g),"o");
                     testValue = testValue.replace(new RegExp(/œ/g),"oe");
                     testValue = testValue.replace(new RegExp(/[ùúûü]/g),"u");
@@ -358,26 +412,26 @@ const sendData = (node, data, config) => {
 
                 acceptValue = true;
 
-                if (promptText){ 
+                if (promptText){
                     helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) });
                 } else {
                     helper.setByString(data, "prompt.text", button.value, (ex) => { node.warn(ex) });
                 }
 
-                if (config.btnOutput || config.quickOutput){ 
+                if (config.btnOutput || config.quickOutput){
                     out[i+1] = data;
                     // Even if the button match, emit a prompt event for logs, etc ...
-                    helper.emitAsyncEvent('prompt', node, data, config, (data) => { 
+                    helper.emitAsyncEvent('prompt', node, data, config, (data) => {
                         node.send(out);
                     });
-                    return 
-                } 
+                    return
+                }
             }
         } else {
 
             acceptValue = true;
 
-            if (promptText) { 
+            if (promptText) {
                 helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
             }
         }
@@ -391,12 +445,85 @@ const sendData = (node, data, config) => {
             });
 
         } else {
-            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
-                _continue(data); 
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {
+                _continue(data);
             });
         }
 
     } else {
         _continue(data);
     }
-}   
+}
+
+const buildAdaptiveCardJson = function(node, whole, body) {
+	whole.split(' **').forEach((part, index) => {
+	  if (index === 0) {
+	    if (part.startsWith(' **', 0)) { // begins with title directly
+	    	body.push({
+				"type": "Container",
+				"items": [
+					{
+						"type": "TextBlock",
+						"wrap": true,
+						"size": "default",
+						"text": part //  here is what I found...
+					}
+				]
+	    	});
+	    } else { // Otherwise, begin with attributes belong to last title
+		part.split('\n').forEach((line, i) => {
+						let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+						body.push({
+							"type": "Container",
+							"items": [
+								{
+									"type": "TextBlock",
+									"wrap": true,
+									"size": "default",
+									"text": line
+								}
+							],
+							"selectAction": {
+								"type": "Action.Submit",
+								"title": "cool link",
+								"data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+							}
+	    					});
+		});
+	    }
+	  } else {
+		part.split('\n').forEach((line, i) => {
+				if (i === 0) {
+	    				body.push({
+					"type": "Container",
+					"items": [
+						{
+							"type": "TextBlock",
+							"wrap": true,
+							"size": "default",
+							"text": '**' + line // memory
+						}
+					]});
+				} else {
+						let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+						body.push({
+							"type": "Container",
+							"items": [
+								{
+									"type": "TextBlock",
+									"wrap": true,
+									"size": "default",
+									"text": line
+								}
+							],
+							"selectAction": {
+								"type": "Action.Submit",
+								"title": "cool link",
+								"data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+							}
+	    					});
+				}
+		});
+	  }
+	});
+}

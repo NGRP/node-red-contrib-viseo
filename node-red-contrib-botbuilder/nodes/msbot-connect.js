@@ -25,7 +25,7 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        
+
         if (config.port) {
             config.port = parseInt(config.port);
         }
@@ -58,6 +58,10 @@ const start = (node, config, RED) => {
     // -------
 
     server.start((err, bot) => {
+<<<<<<< HEAD:node-red-contrib-botbuilder/nodes/msbot-connect.js
+=======
+
+>>>>>>> AdaptiveCard added to send-card type:node-red-contrib-botbuilder/nodes/connect/msbot-connect.js
         if (err){
             let msg = "disconnected (" + err.message + ")";
             return node.status({fill:"red", shape:"ring", text: msg});
@@ -90,17 +94,17 @@ const stop = (node, config, done) => {
 //  REPLY
 // --------------------------------------------------------------------------
 
-const reply = (bot, node, data, config) => { 
+const reply = (bot, node, data, config) => {
 
     //check it's the last message
     let timestamp = data.message.timestamp
 
     let context = botmgr.getContext(data);
-    
+
     if(timestamp && context.lastMessageDate !== timestamp) {
         return false;
     }
-    
+
     // Assume we send the message to the current user address
     let address = botmgr.getUserAddress(data)
     if (!address || address.carrier !== 'botbuilder') return false;
@@ -139,6 +143,7 @@ const reply = (bot, node, data, config) => {
         doReply();
     } else {
         // Handle the delay
+<<<<<<< HEAD:node-red-contrib-botbuilder/nodes/msbot-connect.js
         let delay;
         if (!config.delay || config.delay == 0) {
             delay = globalTypingDelay;
@@ -146,6 +151,9 @@ const reply = (bot, node, data, config) => {
             delay = config.delay;
         }
         delay = delay <= MINIMUM_TYPING_DELAY ? MINIMUM_TYPING_DELAY : delay;
+=======
+        let delay  = config.delay !== undefined ? parseInt(config.delay) : 0
+>>>>>>> AdaptiveCard added to send-card type:node-red-contrib-botbuilder/nodes/connect/msbot-connect.js
         delayReply(delay, data, doReply, customTyping)
     }
 }
@@ -160,10 +168,14 @@ const delayReply = (delay, data, callback, customTyping) => {
         });
     } else {
         customTyping(function() {
+<<<<<<< HEAD:node-red-contrib-botbuilder/nodes/msbot-connect.js
             let handle = setTimeout(callback, delay);
+=======
+            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
+>>>>>>> AdaptiveCard added to send-card type:node-red-contrib-botbuilder/nodes/connect/msbot-connect.js
             msbot.saveTimeout(convId, handle);
         })
-        
+
     }
 }
 
@@ -203,8 +215,16 @@ const getMessage = (node, address, replies, isPush) => {
 
     // One or multiple cards
     for (let reply of replies) {
-        
-        let card = getHeroCard(reply);
+
+        //let card = getHeroCard(reply);
+        let card;
+
+        if (reply.type === "AdaptiveCard") {
+            card = getAdaptiveCard(reply);
+        } else {
+            card = getHeroCard(reply);
+        }
+        msg.textFormat("markdown");
         msg.addAttachment(card);
 
         // Only the latest speech is used
@@ -217,7 +237,7 @@ const getMessage = (node, address, replies, isPush) => {
     }
     return msg;
 };
-    
+
 const buildQuickReplyObject = (obj) => {
 
     return {
@@ -230,7 +250,7 @@ const buildQuickReplyObject = (obj) => {
 const buildButtonMessage = (msg, address, reply, isPush) => {
 
 }
-    
+
 const buildRawMessage = (node, msg, opts, address, isPush) => {
 
     var contentShare = false;
@@ -247,11 +267,11 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
         }
 
-        
+
         if (opts.type === 'card') {
             if(!opts.title && !opts.attach && opts.buttons && opts.subtitle) {
 
-                buildFacebookSpecificMessage(msg, "button", opts, isPush);            
+                buildFacebookSpecificMessage(msg, "button", opts, isPush);
                 return true;
             }
         }
@@ -273,7 +293,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
         card.text(opts.text);
-        
+
         if (msg.speak && opts.speech) { // Set speech value
             msg.speak(opts.speech === true ? opts.text : opts.speech);
         }
@@ -313,7 +333,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
         return true;
     }
 
-    // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
+    // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook
     if (opts.type === 'quick') {
         let fText = opts.quicktext;
         if (address.channelId === 'facebook') {
@@ -321,7 +341,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
             fText = fText.replace(/\n/g,'\n\n');
         }
         msg.text(fText);
-        
+
         if (msg.speak && opts.speech) { // Set speech value
             msg.speak(opts.speech === true ? fText : opts.speech);
         }
@@ -410,7 +430,7 @@ const buildFacebookSpecificMessage = (msg, template, reply, isPush) => {
         if (reply.subtext) _speech += reply.subtext ;
         if (reply.subtitle) _speech += reply.subtitle;
     }
-    
+
     if (msg.speak && reply.speech) {
         msg.speak(_speech || '');
     }
@@ -424,7 +444,7 @@ const buildFacebookSpecificMessage = (msg, template, reply, isPush) => {
 const buildFacebookButtonObject = (obj) => {
     if (obj.action === "share") return {
         "type": "element_share",
-        "share_contents": { 
+        "share_contents": {
             "attachment": {
             "type": "template",
             "payload": {
@@ -449,7 +469,7 @@ const buildFacebookButtonObject = (obj) => {
         "type":"web_url",
         "url": obj.value,
         "title": obj.title,
-        "messenger_extensions": "false",  
+        "messenger_extensions": "false",
         //"fallback_url": "https://www.facebook.com/"
     }
     if (obj.action === "call") return {
@@ -507,3 +527,26 @@ const getHeroCard = (opts) => {
 
     return card;
 }
+
+const getAdaptiveCard = (opts) => {
+    opts._speech = '';
+    // Attach Title to card
+    if (!!opts.title) {
+        opts._speech += opts.title + ' ';
+    }
+
+    // Attach Subtext, appears just below subtitle, differs from Subtitle in font styling only.
+    if (!!opts.subtext) {
+        opts._speech += opts.subtext
+    }
+
+    // Attach Subtitle, appears just below Title field, differs from Title in font styling only.
+    if (!!opts.subtitle) {
+        opts._speech += opts.subtitle;
+    }
+
+    return {
+                contentType: "application/vnd.microsoft.card.adaptive",
+                content: opts
+            };
+};
