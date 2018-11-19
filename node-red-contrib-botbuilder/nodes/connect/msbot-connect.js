@@ -10,6 +10,7 @@ const botmgr  = require('node-red-viseo-bot-manager');
 // Retrieve server
 const msbot    = require('../../lib/msbot.js');
 const server   = require('../../lib/server.js');
+
 const DEFAULT_TYPING_DELAY = 2000;
 var globalTypingDelay;
 
@@ -131,27 +132,25 @@ const reply = (bot, node, data, config) => {
         doReply();
     } else {
         // Handle the delay
-        let delay  = config.delay;
-        delayReply(delay, data, doReply, customTyping, config)
+        let delay  = config.delay || globalTypingDelay;
+        delayReply(delay, data, doReply, customTyping)
     }
 }
 
-const delayReply = (delay, data, callback, customTyping, config) => {
+const delayReply = (delay, data, callback, customTyping) => {
     let convId  = botmgr.getConvId(data)
     let session = getSession(data)
-    let finalDelay = delay || globalTypingDelay;
-    console.log("DELAI CALCULE : " + finalDelay + " ms (local : " + delay + " vs global : " + globalTypingDelay + ")");
-    if (finalDelay == 0) {
+    if (delay == 0) {
         return callback();
     }
     if (session){
         msbot.typing(session, () => {
-            let handle = setTimeout(callback, finalDelay);
+            let handle = setTimeout(callback, delay);
             msbot.saveTimeout(convId, handle);
         });
     } else {
         customTyping(function() {
-            let handle = setTimeout(callback, finalDelay);
+            let handle = setTimeout(callback, delay);
             msbot.saveTimeout(convId, handle);
         })
         

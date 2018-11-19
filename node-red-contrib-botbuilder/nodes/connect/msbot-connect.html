@@ -13,22 +13,22 @@
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults: {
-            name:           { value: undefined },
-            project:        { value: undefined },
-            port:           { value: undefined },
-            delay:          { value: 2000 },
+            name:          { value: undefined },
+            project:       { value: undefined },
+            port:          { value: undefined },
+            delay:         { value: 2000 },
 
         },
         credentials: {
-            appId:          { type : "text" },
-            appPassword:    { type : "text" },
+            appId:         { type : "text" },
+            appPassword:   { type : "text" },
         },
         inputs:0,
         outputs:1,
         icon: "microsoft.svg",  align: "left",
         paletteLabel: "BotBuilder",
         oneditsave:    function(){ var node = this; setTimeout(function(){ setProject(node.project) },1) },
-        oneditprepare: function(){
+        oneditprepare: function(){ 
             $("#node-input-project").typedInput({     default: 'str', types: ['str'], type: 'str' });
             $("#node-input-port").typedInput({        default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appId").typedInput({       default: 'str', types: ['str'], type: 'str' });
@@ -39,11 +39,13 @@
         label: function() { return this.name || "BotBuilder"; },
     });
 </script>
+
 <script type="text/x-red" data-template-name="bot">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+
     <br>
     <b>Microsoft Bot Builder settings </b>
     <div class="form-row">
@@ -75,6 +77,7 @@
 <script type="text/x-red" data-help-name="bot">
     <h1>Microsoft Bot Builder</h1>
     <p>Connect your flow to Bot Builder with this node. </p>
+    
     <h3>Description</h3>
     <ul>
         Start a MS Bot Builder Server with the given configuration. (Configuration can also be read from config files defined by BOTBUILDER_CFG environment var).
