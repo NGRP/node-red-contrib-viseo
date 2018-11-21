@@ -75,6 +75,7 @@
 
             // Typed Input
             $("#node-input-name").typedInput({         default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-eventName").typedInput({    default: 'str', types: ['str'], type: 'str' });
             $("#node-input-promptText").typedInput({   default: 'msg', types: ['msg'], type: 'msg' });
             $("#node-input-media").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-mediaType")});
             $("#node-input-title").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleType")});
@@ -104,8 +105,12 @@
             // Type : show and hide sections
             $('#node-input-sendType').change(function (event) { 
                 var type = $(this).val();
-                $('.section-type, .section-share').addClass('hide')
+                $('.section-type, .section-share').addClass('hide');
                 $('.section-'+type).removeClass('hide');
+
+                if (type === "event") $('.section-titles').addClass('hide');
+                else $('.section-titles').removeClass('hide');
+
                 if (type === "card") {
                     displaySharedCard()
                     $("#node-input-attach, #node-input-title").typedInput('show');
@@ -117,7 +122,7 @@
                     $("#node-input-signintitle, #node-input-signinurl").typedInput('show');
                 }
                 else if (type === "event") {
-                    $("#node-input-eventValue").typedInput('show');
+                    $("#node-input-eventValue, #node-input-eventName").typedInput('show');
                 }
             });
 
@@ -519,8 +524,10 @@
         </div>
         <br>
 
-        <b>Displayed content</b>
-        <br><br>
+        <section class="section-titles">
+            <b>Displayed content</b>
+            <br><br>
+        </section>
     
         <section class="section-type section-text">
             <div class="form-row">
@@ -590,29 +597,33 @@
         </section>
         <section class="section-type section-event">
             <div class="form-row">
-                <label for="node-input-eventName"><i class="fa fa-pencil-square-o"></i> Event</label>
-                <input type="text" id="node-input-eventName" placeholder="event-" style="width:80%;">
+                <label for="node-input-eventName"><i class="fa fa-tag"></i> Label</label>
+                <input type="text" id="node-input-eventName" placeholder="event" style="width:80%;">
             </div>
             <div class="form-row">
-                <label for="node-input-eventValue"><i class="fa fa-"></i> Value</label>
+                <label for="node-input-eventValue"><i class="fa fa-edit"></i> Value</label>
                 <input type="text" id="node-input-eventValue" style="width:80%;" placeholder="">
                 <input type="hidden" id="node-input-eventValueType">
             </div>
         </section>
 
-        <br>
-        <b>Played content</b>
-        <br><br>
+        <section class="section-titles">
 
-        <div class="form-row">
-            <label for="node-input-speech"><i class="fa fa-comment-o"></i> Speech</label>
-            <input type="checkbox" id="node-input-speech" style="width: auto; vertical-align:top; margin-left:20px;" > <span>Convert text to speech</span>
-        </div>
+            <br>
+            <b>Played content</b>
+            <br><br>
 
-        <div class="form-row display-speech">
-            <label for="node-input-speechText"><i class="fa fa-commenting-o"></i> Text</label>
-            <textarea id="node-input-speechText" rows="2" placeholder="Text to say"></textarea>
-        </div>
+            <div class="form-row">
+                <label for="node-input-speech"><i class="fa fa-comment-o"></i> Speech</label>
+                <input type="checkbox" id="node-input-speech" style="width: auto; vertical-align:top; margin-left:20px;" > <span>Convert text to speech</span>
+            </div>
+
+            <div class="form-row display-speech">
+                <label for="node-input-speechText"><i class="fa fa-commenting-o"></i> Text</label>
+                <textarea id="node-input-speechText" rows="2" placeholder="Text to say"></textarea>
+            </div>
+
+        </section>
 
 
         <section class="section-type section-quick">
@@ -754,6 +765,12 @@
                 <b>Text</b>: text to send to the user.
                 <br><b>Button</b>: text on the button.
                 <br><b>URL</b>: signin URL.
+            </p>
+            <h3>Event</h3>
+            <p>Send a custom event to the server.</p>
+            <p style="margin-left: 20px;">
+                <b>Label</b>: event's label to be interpreted.
+                <br><b>Value</b>: event's content.
             </p>
         </ol>
     </div>
