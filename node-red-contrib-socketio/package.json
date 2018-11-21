@@ -1,10 +1,10 @@
 {
     "name"          : "node-red-contrib-viseo-socketio",
-    "version"       : "0.1.2",
+    "version"       : "0.1.10",
     "author"        : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
     "description"   : "Implements SocketIO library for Node-RED",
     "dependencies"  : { 
-        "socket.io" : "~1.5.1"
+        "socket.io" : "~2.1"
     },
     "repository" : {
         "type":"git",
@@ -15,7 +15,8 @@
     "node-red" : {
         "nodes": {
             "socketio-in":  "node-socketio-in.js",
-            "socketio-out": "node-socketio-out.js"
+            "socketio-out": "node-socketio-out.js",
+            "socketio-server": "node-socketio-server.js"
         }
     }
 }

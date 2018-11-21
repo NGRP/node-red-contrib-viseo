@@ -13,10 +13,10 @@
         outputs:0,
         icon: "socketio.svg",
         align: "right",
-        paletteLabel: 'SocketIO OUT',
+        paletteLabel: 'Socket.io out',
         label: function() { 
             if (this.name !== undefined && this.name !== "") return this.name;
-            else if (this.path === undefined || this.path === "") return "SocketIO OUT";
+            else if (this.path === undefined || this.path === "") return "Socket.io out";
             else return this.path;
         },
         oneditprepare: function() {
