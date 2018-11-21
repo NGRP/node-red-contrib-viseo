@@ -32,24 +32,25 @@ async function input (node, data, config) {
         return node.error("Missing credentials");
     }
 
-    // Parameters
-    let parameters = {};
-    if (config.q) {
-        parameters['q'] = (config.qType === "str") ? config.q : helper.getByString(data, config.q);
+    // Request
+    let req = {
+        method: "GET",
+        uri: 'https://api.cognitive.microsoft.com/bing/v7.0/' + api,
+        headers: { 'Ocp-Apim-Subscription-Key': key }
     }
+
+    // Parameters
+    let parameters = {
+        q: (config.qType === "str") ? config.q : helper.getByString(data, config.q)
+    };
+
     for (let par of params) {
         let value = (config[par + 'Type'] === "str") ? config[par] : helper.getByString(data, config[par]);
         if (value) parameters[par] = value;
     }
 
-    // Request
-    let req = {
-        method: "GET",
-        uri: 'https://api.cognitive.microsoft.com/bing/v7.0/' + api + buildEndUrl(parameters),
-        headers: { 'Ocp-Apim-Subscription-Key': key }
-    }
-
-    node.warn(req)
+    if (api === "news") req.uri += "/search"
+    req.uri += buildEndUrl(parameters)
 
     request(req)
     .then( function (result) {
@@ -68,8 +69,8 @@ function buildEndUrl(parameters) {
     let keys = Object.keys(parameters);
 
     for (let i=0; i<keys.length; i++) {
-        if (i===0) url += '?' + keys[0] + '=' + parameters[keys[0]];
-        else url += '&' + keys[i] + '=' + parameters[keys[i]];
+        if (i===0) url += '?' + keys[0] + '=' + encodeURIComponent(parameters[keys[0]]);
+        else url += '&' + keys[i] + '=' + encodeURIComponent(parameters[keys[i]]);
     }
     return url;
 }

@@ -6,7 +6,7 @@
             name: { value: undefined },
             input: { value: undefined, required: false },
             output: { value: undefined, required: false },
-            enpoint: { value: undefined, required: false },
+            endpoint: { value: undefined, required: false },
             key: { value: undefined, required: true, type: 'ms-config'},
             api: { value: "DetectLanguage" },
             processType: { value: "ProcessText"},
@@ -53,7 +53,7 @@
             $("#node-input-CacheImage").typedInput({ default: 'msg',  types: ['bool','msg','global'], typeField: $("#node-input-CacheImageType")  });
 
             $("#node-input-processType").change(updateSelects);
-            $("#node-input-api").change(updateFiels);
+            $("#node-input-api").change(updateFields);
 
             function updateSelects() {
                 let api = $("#node-input-api").val() || selectedAPI;
@@ -82,10 +82,10 @@
                 }
 
                 $("#node-input-api").val(api)
-                updateFiels();
+                updateFields();
             }
 
-            function updateFiels() {
+            function updateFields() {
                 let field = $("#node-input-api").val() || selectedAPI;
 
                 $(".screen, .ocr, .match, .findfaces, .evaluate").hide();

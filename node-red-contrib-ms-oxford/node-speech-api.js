@@ -33,19 +33,22 @@ async function input (node, data, config) {
     if (config.inputType === "msg") input = helper.getByString(data, input);
     if (token && config.tokenType === "msg") token = helper.getByString(data, token);
 
-    // 1. Get Access Token
-    if (!token) {
-        tryToken = true;
-        try {
-            token = await getToken(config.key.key);
-        }
-        catch(err) {
-            node.error(err);
-            return node.send([null, data]);
-        }
-    }
+
 
     if (api === 'stt') {
+
+        // 1. Get Access Token
+        if (!token) {
+            tryToken = true;
+            try {
+                token = await getToken(config.key.key, config.key.region);
+            }
+            catch(err) {
+                node.error(err);
+                return node.send([null, data]);
+            }
+        }
+
         // 2. Prepare request
         let language =    (config.languageType === 'msg') ?     helper.getByString(data, config.language) : config.language;
         let contentType = (config.contentTypeType === 'msg') ?  helper.getByString(data, config.contentType) : config.contentType;
@@ -62,7 +65,7 @@ async function input (node, data, config) {
             catch(ex) { node.warn('JSON Parse Exception: ' + result) }
 
             // 4. Send result
-            helper.setByString(data,config.output || 'payload', {token: token, result: result});
+            helper.setByString(data, output, {token: token, result: result});
             return node.send([data, null]);
         }
         catch (err) {
@@ -70,12 +73,12 @@ async function input (node, data, config) {
             if (typeof(err) === "string" && err.match(/403/) && !tryToken) {
                 tryToken = true;
                 try {
-                    token = await getToken(config.key.key);
+                    token = await getToken(parameters, config.key.key);
                     let result = await STT(input, parameters, token);
                     try { result = JSON.parse(result); }
                     catch(ex) { node.warn('JSON Parse Exception: ' + result) }
         
-                    helper.setByString(data,config.output || 'payload', {token: token, result: result});
+                    helper.setByString(data, output, {token: token, result: result});
                     return node.send([data, null]);
                 }
                 catch(err) {
@@ -88,7 +91,7 @@ async function input (node, data, config) {
         }
     }
     else {
-         // 2. Prepare request
+         // 1. Prepare request
         let userAgent = (config.userAgentType === 'msg') ?     helper.getByString(data, config.userAgent) : config.userAgent;
         let outFormat = (config.outputFormatType === 'msg') ?  helper.getByString(data, config.outputFormat) : config.outputFormat;
         let region =    (config.regionType === 'msg') ?        helper.getByString(data, config.region) : config.region;
@@ -96,6 +99,18 @@ async function input (node, data, config) {
         parameters["X-Microsoft-OutputFormat"] = outFormat || "ssml-16khz-16bit-mono-tts";
         parameters["region"] = region || "westus";
         parameters["User-Agent"] = userAgent || undefined;
+
+        // 2. Get Access Token
+        if (!token) {
+            tryToken = true;
+            try {
+                token = await getToken(config.key.key, region);
+            }
+            catch(err) {
+                node.error(err);
+                return node.send([null, data]);
+            }
+        }
 
          // 3. Send request
          try {
@@ -110,7 +125,7 @@ async function input (node, data, config) {
              if (typeof(err) === "string" && err.match(/403/) && !tryToken) {
                  tryToken = true;
                  try {
-                    token = await getToken(config.key.key);
+                    token = await getToken(config.key.key, parameters.region);
                     let result = await TTS(input, parameters, token);        
                     helper.setByString(data,config.output || 'payload', {token: token, result: result});
                     return node.send([data, null]);
@@ -127,9 +142,10 @@ async function input (node, data, config) {
     }
 }
 
-async function getToken(key) {
+async function getToken(key, region) {
+    region = (region) ? region + '.' : '';
     auth = {
-        uri: 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken',
+        uri: 'https://' + region + 'api.cognitive.microsoft.com/sts/v1.0/issueToken',
         method: 'POST',
         headers: {
             'Ocp-Apim-Subscription-Key': key,
