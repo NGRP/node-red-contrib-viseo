@@ -280,7 +280,7 @@ const buildReply = (node, data, config) => {
             let loc = (config.attachTypeAdaptiveCard === 'global') ? node.context().global : data;
             attach = helper.getByString(loc, attach);
         }
-
+        reply.type = 'AdaptiveCard';
         reply.title = title;
         reply.attach = attach;
         reply.version = "1.0";
@@ -311,8 +311,8 @@ const buildReply = (node, data, config) => {
 		    reply.actions = [];
 		    tmp = textToShow.substring(attrIndex);
 
-        //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": config.sendType, "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
-		    reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": config.sendType, "body": []}});
+        //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
+		    reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": []}});
 		    buildAdaptiveCardJson(node, tmp, reply.actions[0].card.body);
 	    } else {
 		    //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
