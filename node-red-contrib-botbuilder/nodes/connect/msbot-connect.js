@@ -45,15 +45,20 @@ module.exports = function(RED) {
 
 let REPLY_HANDLER = {};
 const start = (node, config, RED) => {
+    
+    // restart server
+    if (REPLY_HANDLER[node.id]) helper.removeListener('reply', REPLY_HANDLER[node.id]);
+    server.stop();
+
+    // -------
+
     server.start((err, bot) => {
-        
         if (err){
             let msg = "disconnected (" + err.message + ")";
             return node.status({fill:"red", shape:"ring", text: msg});
         }
         node.status({fill:"green", shape:"dot", text:"connected"});
 
-        // Root Dialog
         msbot.bindDialogs(bot, (err, data, type) => {
             helper.emitEvent(type, node, data, config);
             if (type === 'received') { return node.send(data) }
@@ -67,6 +72,7 @@ const start = (node, config, RED) => {
 
     }, config, RED);
 }
+
 
 // Stop server
 const stop = (node, config, done) => {
