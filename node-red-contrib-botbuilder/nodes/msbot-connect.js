@@ -219,7 +219,7 @@ const getMessage = (node, address, replies, isPush) => {
         //let card = getHeroCard(reply);
         let card;
 
-        if (reply.type === "AdaptiveCard") {
+        if (reply.type === "adaptiveCard") {
             card = getAdaptiveCard(reply);
         } else {
             card = getHeroCard(reply);

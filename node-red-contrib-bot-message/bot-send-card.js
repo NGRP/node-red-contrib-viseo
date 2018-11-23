@@ -265,7 +265,7 @@ const buildReply = (node, data, config) => {
         reply.attach =   attach;
         if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
     }
-    else if (config.sendType === 'AdaptiveCard') {
+    else if (config.sendType === 'adaptiveCard') {
         let title = config.titleAdaptiveCard;
         let attach = config.attachAdaptiveCard;
         let subtext = config.textAdaptiveCard;
