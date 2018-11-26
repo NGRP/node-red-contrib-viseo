@@ -3,12 +3,15 @@
         category: 'VISEO_HELPER',
         color: '#3FADB5',
         defaults: { 
-            name:           { value: undefined },
-            scope:          { value: "msg" },
-            input:          { value: undefined },
-            inputType:      { value: "msg" },
-            output:         { value: undefined },
-            outputType:     { value: "msg" }
+            name:         { value: undefined },
+            scope:        { value: "msg" },
+            input:        { value: "payload" },
+            inputType:    { value: "msg" },
+            output:       { value: "payload" },
+            outputType:   { value: "msg" },
+            behavior:     { value: "after" },
+            delay:        { value: "0" },
+            delayType:    { value: "num" }
         },
         inputs:  1,
         outputs: 2,
@@ -16,23 +19,11 @@
         paletteLabel: "Loop",
         label: function() { return this.name || "Loop"; },
         oneditprepare: function() {
-            $("#node-input-scope").val(this.scope);
-
-            $("#node-input-input").typedInput({types:['msg','global']});
-            $("#node-input-input").typedInput('type',this.inputType);
-            $("#node-input-input").attr("placeholder","user");
-            $("#node-input-input").val(this.input || "user");
-
-            $("#node-input-output").typedInput({types:['msg','global']});
-            $("#node-input-output").typedInput('type',this.outputType);
-            $("#node-input-output").attr("placeholder","payload");
-            $("#node-input-output").val(this.output || "payload");
+            $("#node-input-input").typedInput({ default: 'msg',  types: ['msg', 'global'], typeField: $("#node-input-inputType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg', 'global'], typeField: $("#node-input-outputType") }).attr("placeholder","payload");
+            $("#node-input-delay").typedInput({ default: 'num', types: ['msg', 'num'], typeField: $("#node-input-delayType") });
         },
-        oneditsave: function() {
-            this.scope = $("#node-input-scope").val();
-            this.inputType = $("#node-input-input").typedInput('type');
-            this.outputType = $("#node-input-output").typedInput('type');
-        }
+        oneditsave: function() {}
     });
 </script>
 
@@ -43,9 +34,34 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
+
+    <div class="form-row">
+        <br><p style="margin-left:20px;"><b>Main object</b></p>
+
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width:70%;">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row">
+        <br><br><p style="margin-left:20px;"><b>Loop behavior</b></p>
+
+        <label for="node-input-behavior"><i class="fa fa-sign-out"></i> Output</label>
+        <select id="node-input-behavior" style="width:70%">
+            <option value="after">After the loop</option>
+            <option value="before" >For the last element</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output"></label>
+        <input type="text" id="node-input-output" style="width:70%;">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
     <div class="form-row">
         <label for="node-input-scope"><i class="fa fa-globe"></i> Scope</label>
-        <select id="node-input-scope" style="width:200px">
+        <select id="node-input-scope" style="width:70%">
             <option value="msg">msg</option>
             <option value="user" >user</option>
             <option value="global">global</option>
@@ -53,19 +69,10 @@
     </div>
 
     <div class="form-row">
-        <br><p style="margin-left:20px;"><b>Loop through the object:</b></p>
-
-        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
-        <input type="text" id="node-input-input" style="width:60%;">
+        <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+        <input type="text" id="node-input-delay" style="width:70%;">
+        <input type="hidden" id="node-input-delayType">
     </div>
-
-    <div class="form-row">
-        <br><br><p style="margin-left:20px;"><b>Put the current value in:</b></p>
-
-        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
-        <input type="text" id="node-input-output" style="width:60%;">
-    </div>
-
 </script>
 
 <script type="text/x-red" data-help-name="loop-management">
