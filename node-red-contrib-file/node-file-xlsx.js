@@ -69,34 +69,16 @@ async function input(node, data, config) {
       else parameters.data = sheets;
       
       sheets = JSON.parse(JSON.stringify((sheets.Sheets[worksheet])));
-
       parameters.usedRange = sheets["!ref"];
       delete sheets["!ref"];
-      let res = [];
 
-      if (parameters.usedRange) {
-        let borders = parameters.usedRange.split(':');
-        let i = borders[0].match(/[0-9]+/)[0];
-        let row = [];
-
-        for (let t in sheets) {
-          if (t.match(/[0-9]+/)[0] === String(i)) {
-            row.push(sheets[t].v);
-          }
-          else {
-              res.push(row);
-              row = [];
-              i++;
-              if (String(i) === borders[1].match(/[0-9]+/)[0]) break;
-              else row.push(sheets[t].v);
-          }
-        }
-      }
-
+      
+      let res = (parameters.usedRange) ?  getValues(parameters.usedRange, sheets) : [];
       if (config.save) helper.setByString(saveLoc, config.saveloc || '_sheet', {usedRange : parameters.usedRange, cells: res, data: parameters.data});
 
       parameters.cells = [];
       for (let ob of res) parameters.cells.push(Array.from(ob));
+      
     }
 
     if (action === "get" || action === "cell") {
@@ -130,9 +112,6 @@ async function input(node, data, config) {
   return node.send(data);
 
 }
-
-
-
 
 
 function getCell(node, data, ol_cells, config) {
@@ -205,6 +184,7 @@ function getData(node, cells, config) {
   for (let i=0; i<cLabels.length; i++) {
     result[cLabels[i]] = cells[i]; 
   }
+
   return result;
 }
 
@@ -360,4 +340,45 @@ function returnValue(obj, chaine) {
       }
   }
   return { keys: keys, values: values} ;
+}
+
+function getValues(range, data) {
+  range = range.split(':')
+
+  let end = range[1].match(/[A-Z]+/)[0];
+  let letter  = range[0].match(/[A-Z]+/)[0];
+  let letters = [letter];
+
+  do {
+    let len = letter.length;
+    if (letter[len - 1] === 'Z') {
+      let newWord = ""
+      for (let l=(letter.length-1); l>=0; l--) {
+        if (letter[l] === 'Z') newWord += (l===0) ? 'AA' : 'A';
+        else {
+          newWord = String.fromCharCode(1 + letter[l].charCodeAt()) + newWord;
+          break;
+        }
+      }
+      letter = newWord;
+    }
+    else {
+      letter = letter.substring(0, len - 1) + String.fromCharCode(letter[len - 1].charCodeAt() + 1);
+    }
+    letters.push(letter);
+  } while (letter !== end);
+
+  let nb_s = Number(range[0].match(/[0-9]+/)[0]);
+  let nb_e = Number(range[1].match(/[0-9]+/)[0]);
+  let res = [];
+
+  for (let i=nb_s; i<nb_e+1; i++) {
+    let row = [];
+    for (let l of letters) {
+      if (data[l + String(i)]) row.push(data[l + String(i)].v)
+    };
+    res.push(row);
+  }
+
+  return res;
 }
