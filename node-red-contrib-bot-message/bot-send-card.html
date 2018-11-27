@@ -69,7 +69,9 @@
             titleAdaptiveCard:        { value: undefined },
             titleTypeAdaptiveCard:    { value: "str" },
             textAdaptiveCard:      { value: undefined },
-            attachAdaptiveCard:       { value: undefined }
+            attachAdaptiveCard:       { value: undefined },
+            wrapTextAdaptiveCard: {value: false},
+            displayedTextSizeAdaptiveCard: {value: undefined}
 
         },
         inputs:  1,
@@ -105,7 +107,13 @@
 >>>>>>> refactor : lowercase adaptivecard; reuse addButtonItem
             $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
+<<<<<<< HEAD
 >>>>>>> AdaptiveCard added to send-card type
+=======
+
+            $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
+            
+>>>>>>> Added wrap text field to enter the size of the text to display for Adaptive Card
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -171,7 +179,7 @@
                 }
                   //---maybe reuse
                 else if (type === "adaptiveCard") {
-                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard").typedInput('show');
+                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard").typedInput('show');
                 }
             });
 
@@ -691,10 +699,15 @@
                 <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
             </div>
             <div class="form-row">
+                <label  for="node-input-displayedTextSizeAdaptiveCard"> Wrap text up to </label>
+                <input type="number" id="node-input-displayedTextSizeAdaptiveCard">
+            </div>
+            <div class="form-row">
                 <label for="node-input-attachAdaptiveCard"><i class="fa fa-image"></i> Image</label>
                 <input type="text" id="node-input-attachAdaptiveCard" style="width:80%;" placeholder="http://path/to/card/image">
                 <input type="hidden" id="node-input-attachTypeAdaptiveCard">
             </div>
+           
         </section>
 
         <section class="section-type section-quick">
