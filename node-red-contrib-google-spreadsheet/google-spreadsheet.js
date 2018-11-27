@@ -28,7 +28,7 @@ function input (node, data, config) {
     let action = config.action || 'set',
         spreadsheetId = config.sheet,
         range = config.range,
-        save = config.save;
+        save = config.save || '_sheet';
 
     if (config.sheetType !== 'str') {
         let loc = (config.sheetType === 'global') ? node.context().global : data;
@@ -39,7 +39,12 @@ function input (node, data, config) {
         range = helper.getByString(loc, range);
     }
 
-    let saveLoc = (config.saveType === 'global') ? node.context().global : data;
+    let saveField = range.replace(/[!: ]/g, "_");
+
+    let saveContainer = (config.saveType === 'global') ? node.context().global : data;
+    saveLoc = helper.getByString(saveContainer, save, {});
+    helper.setByString(saveContainer, save, saveLoc);
+
     let outloc =  (config.outputType === 'global') ? node.context().global : data;
     let parameters = { spreadsheetId, range };
     let method = config.method || 'append';
@@ -183,7 +188,7 @@ function input (node, data, config) {
             }
             if (action === "clear") {
                 helper.setByString(outloc, config.output || "payload", response);
-                helper.setByString(saveLoc, config.save || '_sheet', undefined);
+                helper.setByString(saveLoc, saveField, undefined);
                 return node.send([ data, undefined ]);
             }
             else return querySet();
@@ -192,7 +197,7 @@ function input (node, data, config) {
 
     function queryGet() {
 
-        let saveArray = helper.getByString(saveLoc, config.save || '_sheet');
+        let saveArray = helper.getByString(saveLoc, saveField);
         if (saveArray && saveArray.length > 0) {
             let response = [];
             for (let ob of saveArray) response.push(Array.from(ob));
@@ -248,6 +253,7 @@ function input (node, data, config) {
 
         parameters.majorDimension = (config.direction === "column") ? "COLUMNS" : "ROWS";
         sheets.spreadsheets.values.get(parameters, function(err, response) {
+
             if (err) { 
                 node.error(err);
                 return node.send([ undefined, data ]);
@@ -259,7 +265,7 @@ function input (node, data, config) {
 
             let result = [];
             for (let ob of response.values) result.push(Array.from(ob));
-            helper.setByString(saveLoc, config.save || '_sheet', result);
+            helper.setByString(saveLoc, saveField, result);
 
             if (!config.line && !config.column) {
                 helper.setByString(outloc, config.output || "payload", response.values);
@@ -329,7 +335,7 @@ function input (node, data, config) {
             return node.send([ undefined, data ]);
         }
 
-        let saveArray = helper.getByString(saveLoc, config.save || '_sheet');
+        let saveArray = helper.getByString(saveLoc, saveField);
         if (saveArray && saveArray.length > 0) {
             let response = [];
             for (let ob of saveArray) response.push(Array.from(ob));
@@ -365,7 +371,8 @@ function input (node, data, config) {
                 result.push(Array.from(ob));
                 saved.push(Array.from(ob));
             }
-            helper.setByString(saveLoc, config.save || '_sheet', saved);
+            helper.setByString(saveLoc, saveField, saved);
+
 
             let column_labels = result.shift();
                 column_labels.shift();
