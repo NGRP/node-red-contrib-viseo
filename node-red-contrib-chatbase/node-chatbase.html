@@ -69,12 +69,12 @@
                     }
 
                     $('<span>Name</span>').appendTo(row)
-                    var nameField = $('<input/>', { class:"node-input-property-name", type:"text",style:"margin-left: 5px;width:100px;margin-right:20px", value: name}).appendTo(row);
+                    var nameField = $('<input/>', { class:"node-input-property-name", type:"text",style:"margin-left: 5px;width:calc(50% - 50px);margin-right:15px", value: name}).appendTo(row);
 
                     $('<span>Value</span>').appendTo(row)
                     var typeField = $('<input/>', { type: "hidden", value: valueType, id: 'propertyType-'+index }).appendTo(row)
                     
-                    var valueField = $('<input/>', { class:"node-input-property-value", type:"text", style:"margin-left: 5px;width:200px", value: value }).appendTo(row).typedInput({default: valueType || 'str' ,types:['str', 'num', 'bool', 'msg'], typeField: $('#propertyType-'+index) });
+                    var valueField = $('<input/>', { class:"node-input-property-value", type:"text", style:"width:calc(50% - 50px)", value: value }).appendTo(row).typedInput({default: valueType || 'str' ,types:['str', 'num', 'bool', 'msg'], typeField: $('#propertyType-'+index) });
                     
                 },
 
@@ -135,69 +135,78 @@
     </div>
 
     <div class="form-row">
-        <label for="node-input-config"><i class="icon-tag"></i> Config</label>
+        <label for="node-input-config"><i class="fa fa-lock"></i> Config</label>
         <input type="text" id="node-input-config">
     </div>
     <div class="form-row">
-        <label for="node-input-platform"><i class="icon-tag"></i> Platform</label>
-        <input type="text" id="node-input-platform" placeholder="google">
+        <label for="node-input-platform"><i class="fa fa-globe"></i> Platform</label>
+        <input type="text" id="node-input-platform" placeholder="google" style="width:70%;">
         <input type="hidden" id="node-input-platformType">
     </div>
     <div class="form-row">
-        <label for="node-input-user"><i class="icon-tag"></i> User</label>
-        <input type="text" id="node-input-user" placeholder="user">
+        <label for="node-input-user"><i class="fa fa-user"></i> User</label>
+        <input type="text" id="node-input-user" placeholder="user" style="width:70%;">
     </div>
 
      <div class="form-row">
-        <label for="node-input-chatbaseType"><i class="icon-tag"></i> Type</label>
-        <select id="node-input-chatbaseType">
+        <label for="node-input-chatbaseType"><i class="fa fa-crop"></i> Type</label>
+        <select id="node-input-chatbaseType" style="width:70%;">
             <option value="generic">Generic</option>
             <option value="custom">Custom</option>
         </select>
     </div>
 
     <div class="section chatbase-custom">
-        <label for="node-input-properties-container"><i class="icon-tag"></i> Properties</label>
-        <ol id="node-input-properties-container"></ol>
+        <label for="node-input-properties-container"><i class="fa fa-list"></i> Properties</label>
+        <ol id="node-input-properties-container" style="width: calc( 70% + 105px );"></ol>
     </div>
 
     <div class="section chatbase-generic">
         <div class="form-row">
-            <label for="node-input-chatbaseSender"><i class="icon-tag"></i> Sender</label>
-            <select id="node-input-chatbaseSender">
+            <label for="node-input-chatbaseSender"><i class="fa fa-user"></i> Sender</label>
+            <select id="node-input-chatbaseSender" style="width:70%;">
                 <option value="user">User</option>
                 <option value="agent">Self</option>
             </select>
         </div>
 
         <div class="form-row"  id="notHandled-row">
-            <label for="node-input-notHandled"><i class="icon-tag"></i> Not handled</label>
-            <input type="checkbox" id="node-input-notHandled">
+            <label for="node-input-notHandled"><i class="fa fa-question-circle"></i> Not handled</label>
+            <input type="checkbox" id="node-input-notHandled" style="width: unset; margin-left:20px;">
         </div>
-
         
         <div class="form-row">
-            <label for="node-input-message"><i class="icon-tag"></i> Message</label>
-            <input type="text" id="node-input-message">
+            <label for="node-input-message"><i class="fa fa-edit"></i> Message</label>
+            <input type="text" id="node-input-message" style="width:70%;">
             <input type="hidden" id="node-input-messageType">
         </div>
     </div>
     
     <div class="form-row" id="chatbaseIntent-row">
-        <label for="node-input-chatbaseIntent"><i class="icon-tag"></i> Intent</label>
-        <input type="text" id="node-input-chatbaseIntent">
+        <label for="node-input-chatbaseIntent"><i class="fa fa-comment"></i> Intent</label>
+        <input type="text" id="node-input-chatbaseIntent" style="width:70%;">
         <input type="hidden" id="node-input-chatbaseIntentType">
     </div>
 
 </script>
 
-<script type="text/x-red" data-help-name="profile">
-    <p>Sends events to Chatbase. Uses different types of events :</p>
+<script type="text/x-red" data-help-name="node-chatbase">
+    <p>Sends events to Chatbase.</p>
+
+    <h3>Details</h3>
+    <p>This node sends logs to Chatbase with the given information.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Config <span class="property-type">config</span></dt>
+        <dd>token to access the Chatbase application</dd>
+    </dl>
+    
+    <h3>References</h3>
     <ul>
-        <li><a href="https://chatbase.com/documentation/generic">Chatbase generic events</a></li>
-        <li><a href="https://chatbase.com/documentation/events">Custom events</a></li>  
+        <li><a href="https://chatbase.com/documentation/generic">Chatbase</a> - generic events</a></li>
+        <li><a href="https://chatbase.com/documentation/events">Chatbase</a> - custom events</a></li>  
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
-    <p></p>
 </script>
 
    
