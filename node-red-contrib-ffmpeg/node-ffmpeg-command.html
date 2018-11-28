@@ -14,7 +14,7 @@
         outputs: 1,
         icon: "ffmpeg.svg",
         align: "left",
-        paletteLabel: 'ffmpeg command',
+        paletteLabel: 'ffmpeg',
         label: function() { return this.name || "ffmpeg"; },
         oneditprepare: function() {
             $("#node-input-output").typedInput({   default: 'msg',  types: ['msg'],  typeField: $("#node-input-outputType") });
@@ -58,19 +58,20 @@
 </style>
 
 <script type="text/x-red" data-help-name="ffmpeg-command">
+    <p>Allows to use the command line utility 'ffmpeg' in order to convert or maniupulate audio files.</p>
 
-    <p>This node allows to use the command line utility 'ffmpeg' in order to convert or maniupulate audio files.</p>
-    
-    <h2>Main parameters</h2>
-    <p>
-        <li><b>Command</b>: The command line (without 'ffmpeg')</li>
-        <li><b>Output</b>: Where to set the result / Process command line as spawn or exec.</li>
-    </p>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Command <span class="property-type">string</span></dt>
+        <dd>command line (without the key word 'ffmpeg')</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
 
-    <h2>Getting help</h2>
-    <p>
-        <li><b>FFMPEG documentation:</b> <a>https://www.ffmpeg.org/ffmpeg.html</a></li>
-        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-sox</a></li>
-        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
-    </p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://www.ffmpeg.org/ffmpeg.html">FFMPEG </a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>
