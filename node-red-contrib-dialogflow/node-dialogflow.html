@@ -30,6 +30,7 @@
         icon: 'google.svg',
         align: 'left',
         paletteLabel: 'Dialogflow',
+        outputLabels: ["stdout", "stderr"],
         label: function () { return this.name || 'Dialogflow' },
         oneditprepare: function() {
             $("#node-input-session").typedInput({   default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-sessionType")  });
@@ -221,52 +222,26 @@
 </style>
 
 <script type="text/x-red" data-help-name="dialogflow">
-    <section class="help-section">
-        <h3>Settings</h3>
-        <ol> 
-            <h4>Name</h4>
-            <p>
-                Type in a name to override the node default name
-            </p>
-            <h4>Tokens</h4>
-            <p>
-                Type in your client access token and your developper access token available on the Dialogflow website, in the configuration page of the agent you want to use.
-            </p>
-            <h4>Session ID</h4>
-            <p>
-                Type in the a session ID. The ID you choose will be hashed to ensure its unicity.
-            </p>
-        </ol> 
+    <p>Uses Google Dialogflow to perfom language understanding. </p>
 
-        <h3>Query</h3>
-        <ol> 
-            <h4>Language</h4>
-            <p>
-                Type in the language code you want to use with Dialogflow. You can find the list of the recognized language codes <a href="https://dialogflow.com/docs/reference/language">here</a>.
-            </p>
-            <h4>Text</h4>
-            <p>
-                Type in the text you want to be analized by Dialogflow services. The text should be in the selected language.
-            </p>
-            <h4>Output</h4>
-            <p>
-                Chose the field where to put the results
-            </p>
-        </ol> 
+    <h3>Details</h3>
+    <p>This node uses the <code>/amazon-alexa</code> route to connect with Alexa.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Tokens <span class="property-type">config</span></dt>
+        <dd>agent information to connect to Dialogflow</dd>
+        <dt>Session ID <span class="property-type">string</span></dt>
+        <dd>id to recognize the sender in Dialogflow UI</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p><i>Query</i> performs NLU with the input text, and <i>Manage</i> allows to add/manage/delete objects such as intents or entities.</p>
 
-        <h3>Manage</h3>
-        <ol>
-            <h4>Intents</h4>
-            <p>
-                To add or modify intents, find the object structures <a href="https://dialogflow.com/docs/reference/agent/intents">here</a>.
-            </p>
-            <h4>Entities</h4>
-            <p>
-                To add or modify entities, find the object structures <a href="https://dialogflow.com/docs/reference/agent/entities">here</a>.
-            </p>
-        </ol> 
-
-    </section>
-
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://dialogflow.com/docs/reference/agent/intents">Intents API</a> - reference</li>
+        <li><a href="https://dialogflow.com/docs/reference/agent/entities">Entities API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>
