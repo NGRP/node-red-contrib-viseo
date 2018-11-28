@@ -81,69 +81,33 @@
 
 <script type="text/x-red" data-help-name="facebook-server">
 
-    <h1>Amazon Messenger</h1>
-    <p>Connect your flow to Messenger with this node. </p>
+    <p>[<b>Bot server</b>] Connects to a Facebook Messenger application. </p>
 
-    <h3>Main properties</h3>
-    <ul>
-        <li> <b>Bot name</b>: Will be displayed in the card title if a text message is sent. </li>
-    </ul>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
 
-    <h3>Endpoint</h3>
-    <ul>
-        This node uses the <b>/facebook-server</b> route to connect with Messenger.
-    </ul>
+    <h3>Details</h3>
+    <p>This node uses the <code>/facebook-server</code> route to connect with Messenger.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Page token <span class="property-type">config</span></dt>
+        <dd>bot's Facebook page token</dd>
+        <dt>Verify token <span class="property-type">config</span></dt>
+        <dd>random token that you may copy/paste in Facebook developers application</dd>
+    </dl>
 
-    <h3>Specifications</h3>
+    <h3>References</h3>
     <ul>
-        The node will forward the received message to next node with the given properties: </p>
-        <li> payload: the message's text (see last section), event (START/END CONVERSATION) or object. </li>
-        <li> message: the message object. </li>
-        <li> user: an empty object with an id to be filled by further nodes. </li>
-        <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/">Facebook Messenger Platform</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
-    
-    <h3>Getting help</h3>
-    <ul>
-        <li> <a href="https://developers.facebook.com/docs/messenger-platform/introduction">Documentation</a></li>
-        <li> <a href=https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-amazon">VISEO GitHub (details for this node)</a> </li>
-        <li> <a href=https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a></li>
-    </ul>
-
-    <h3>Get user sentence</h3>
-    <ul>
-        To get the user sentence, copy/paste the following code in <b>Interaction Model/Code<b>:<br>
-    </ul>
-<pre type="javascript" style="width:400px; margin-left:20px;"> {
-    "languageModel": {
-        "intents": [
-            {
-                "name": "AMAZON.CancelIntent",
-                "samples": []
-            },
-            {
-                "name": "AMAZON.HelpIntent",
-                "samples": []
-            },
-            {
-                "name": "AMAZON.StopIntent",
-                "samples": []
-            },
-            {
-                "name": "RawText",
-                "samples": [ 
-                    "{a sentence|Text}"
-                ],
-                "slots": [
-                    {
-                        "name": "Text",
-                        "type": "AMAZON.LITERAL"
-                    }
-                ]
-            }
-        ],
-        "invocationName": APP_INVOCATION_NAME
-    }
-}   </pre>
 
 </script>

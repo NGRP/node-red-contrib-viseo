@@ -65,11 +65,24 @@
 </script>
 
 <script type="text/x-red" data-help-name="facebook-log-events">
-    Send log data to Facebook Analytics
+    <p>Send log data to Facebook Analytics.</p>
 
-    <h3>input</h3>
-    A string object to log. It is defined in pageId field
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Page ID <span class="property-type">string</span></dt>
+        <dd>Facebook page ID</dd>
+        <dt>App ID <span class="property-type">string</span></dt>
+        <dd>Facebook developers application ID</dd>
+        <dt>User ID <span class="property-type">string</span></dt>
+        <dd>where to get the user ID</dd>
+        <dt>Event log <span class="property-type">object</span></dt>
+        <dd>object with data (keys and values) to log</dd>
+    </dl>
 
-    <h3>Output</h3>
-    The previous Input data
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/analytics/quickstart-list/bots-for-messenger">Facebook Analytics</a> - quickstart for bots</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>
