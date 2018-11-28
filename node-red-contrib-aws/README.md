@@ -1,6 +1,6 @@
 # Node-RED
 
-A node to connect to AWS (Amazon Web Services).
+Two nodes to connect to AWS (Amazon Web Services): Lex and Rekognition.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
@@ -30,8 +30,11 @@ Please report unacceptable behavior to any of the project's core team.
 
 This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
+- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
 - Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
 
 
 ## Copyright and license

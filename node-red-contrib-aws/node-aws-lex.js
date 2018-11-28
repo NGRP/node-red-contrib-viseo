@@ -40,7 +40,7 @@ function input (node, config, data) {
     if (!config.botname || !config.botalias || !lexruntime ) {
         let err = (!config.botname || !config.botalias) ? "Missing bot information" : "Missing credentials";
         helper.setByString(data, config.output || "payload" , { error: err });
-        console.log("AWS Lex: Error - " + err);
+        node.warn("AWS Lex: Error - " + err);
         return node.send(data);
     }
 
@@ -94,7 +94,7 @@ function input (node, config, data) {
         lexruntime.postText(parameters, function (err, res) {
             if (err) {
                 helper.setByString(data, config.output || "payload" , { error: err });
-                console.log("AWS Lex: Error - postText - " + err);
+                node.warn("AWS Lex: Error - postText - " + err);
                 return node.send(data);
             }
 
@@ -119,7 +119,7 @@ function input (node, config, data) {
         lexruntime.postContent(parameters, function (err, res) {
             if (err) {
                 helper.setByString(data, config.output || "payload" , { error: err });
-                console.log("AWS Lex: Error - postContent - " + err);
+                node.warn("AWS Lex: Error - postContent - " + err);
                 return node.send(data);
             }
 
