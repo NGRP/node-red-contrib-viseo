@@ -17,6 +17,7 @@
         outputs: 2,
         icon: "loop.svg", align: "left",
         paletteLabel: "Loop",
+        outputLabels: ["loop body", "loop end"],
         label: function() { return this.name || "Loop"; },
         oneditprepare: function() {
             $("#node-input-input").typedInput({ default: 'msg',  types: ['msg', 'global'], typeField: $("#node-input-inputType") });
@@ -76,39 +77,43 @@
 </script>
 
 <script type="text/x-red" data-help-name="loop-management">
-    <p>This node helps you to manage your loops.</p>
+    <p>Loops through an object or array.</p>
 
-    <code style="margin-left:20px">for ( <font color="red">variable</font> in/of <font color="red">object</font> ) {...}</code><br>
-
-    <h2>Main properties</h2>
-    <p>
-        <li><b>Scope</b>: where to stock the variables needed for the loop management. 
-        <li><b>Input</b>: object to loop throught. <i style="color:blue;">myArray = ['a','b','c'] / myObject = {'lisa':0, 'marc':3}</i>
-        <li><b>Output</b>: where to stock the current value.
-    </p>
-    <p>
-        <li><b>OUT[0]:</b> go to the loop body. 
-        <li><b>OUT[1]:</b> go to the flow (after the loop execution).
-    </p>
-
-    <h2><i>Scope</i> property</h2>
-    <ol>
-        <h3>Global</h3>
-        <p> The counter is stored in a global variable. It is independent from the user or the current message.
-            <br><b>WARNING:</b> The 'global' scope is using a global variable which is set in the node source code. It could not be working on multi-server networks.
-        </p>
-        <h3>Msg</h3>
-        <p> The counter is stored in the 'msg._tmp' field.
-            <br><b>WARNING:</b> The 'msg' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
-        </p>
-        <h3>User</h3>
-        <p> The counter is stored in the 'msg.user._tmp' field. It can be stored in a database.
-            <br><b>WARNING:</b> The 'user' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
-        </p>
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Loop body: go to the loop body, must be reconnected to the input</li>
+        <li>Loop end: go to the flow after the loop execution</li>
     </ol>
 
-    <h2 style="color:red;">Warnings</h2>
+    <h3>Details</h3>p>
+    <p><code>for ( <font color="red">variable</font> in/of <font color="red">object</font> ) {...}</code></p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Input <span class="property-type">string</span></dt>
+        <dd>location of the array or object to loop though</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the object item</dd>
+        <dt>Delay <span class="property-type">number</span></dt>
+        <dd>delay before output</dd>
+    </dl>
     <p>
-        <li>The first out (OUT[0]) has to be linked to the input of the loop node.
+        Chose a <i>Scope</i> according to where you want to store the item and the main object:
     </p>
+    <p>
+        For <code>Global</code>, the counter is stored in a global variable. It is independent from the user or the 
+        current message. <b>Note:</b> The 'global' scope is using a global variable which is set in the node source code. It could not be working on multi-server networks.
+    </p>
+    <p>
+        For <code>Msg</code>, the counter is stored in the 'msg._tmp' field. <b>Note:</b> The 'msg' scope can cause infinite loops if you enable to continue sending 
+        messages when the value is overreached. Be sure to check out the links in your flow.
+    </p>
+    <p>
+        For <code>User</code>, the counter is stored in the 'msg.user._tmp' field. It can be stored in a database.
+        <b>Note:</b> The 'user' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
+    </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>
