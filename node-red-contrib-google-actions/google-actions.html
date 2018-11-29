@@ -50,12 +50,7 @@
     <b>Request settings</b>
 
     <div class="form-row">
-        <label for="node-input-input"><i class="fa fa-table"></i> Input</label>
-        <input type="text" id="node-input-input" style="width: 70%" placeholder="customPushMessage">
-        <input type="hidden" id="node-input-inputType">
-    </div>
-
-    <div class="form-row">
+        <br>
         <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
         <select id="node-input-action" style="width: 70%">
             <option value="token">Get token</option>
@@ -64,21 +59,37 @@
     </div>
 
     <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="customPushMessage">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row">
         <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
         <input type="hidden" id="node-input-outputType">
-
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="google-actions">
 
-    <section class="help-section">
-            <h3>Google actions Settings</h3>
-            <ol> 
-                
-            </ol> 
-    
-    </section>
+    <p>Sends actions to Google. </p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>Credentials <span class="property-type">config</span></dt>
+        <dd>informations from a Google service account</dd>
+        <dt>Input <span class="property-type">object/string</span></dt>
+        <dd>data needed to send the action</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to put the result</dd>
+    </dl>
+    <p><b>Note:</b> no input is required to get a token.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.google.com/actions/extending-the-assistant">Actions on Google</a> - conversation developers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>

@@ -1,8 +1,7 @@
 {
     "name": "node-red-contrib-viseo-google-authentication",
-    "version": "0.0.8",
-    "author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
-    "description": "Wrapper of Google Authentication",
+    "version": "0.0.9",
+    "description": "VISEO Bot Maker - Google Authentication",
     "dependencies": {
         "google-auth-library" : "~0.11.0"
     },
@@ -11,7 +10,7 @@
         "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-google-authentication"
     },
     "license": "Apache-2.0",
-    "keywords": ["viseo", "sarah", "node-red"],
+    "keywords": ["viseo", "sarah", "node-red", "google", "authentication", "auth", "service", "account"],
     "node-red": {
         "nodes": {
             "google-service-account" : "google-service-account.js",
