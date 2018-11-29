@@ -14,39 +14,60 @@
         icon: "log.svg",
         align: "right",
         paletteLabel: 'to Logstach',
-        label: function() { return this.name || "to Logstach"; }
+        label: function() { return this.name || "to Logstach"; },
+        oneditprepare: function() {
+            $("#node-input-port").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-host").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-protocol").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-log").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+        },
+        oneditsave: function(){}
     });
 </script>
 
 <script type="text/x-red" data-template-name="logstach">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-port"><i class="icon-tag"></i> Port</label>
-        <input type="text" id="node-input-port" placeholder="13333">
+        <label for="node-input-port"><i class="fa fa-globe"></i> Port</label>
+        <input type="text" id="node-input-port" style="width:70%;" placeholder="13333">
     </div>
     <div class="form-row">
-        <label for="node-input-host"><i class="icon-tag"></i> Host</label>
-        <input type="text" id="node-input-host" placeholder="localhost">
+        <label for="node-input-host"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-input-host" style="width:70%;" placeholder="localhost">
     </div>
     <div class="form-row">
-        <label for="node-input-protocol"><i class="icon-tag"></i> Type</label>
-        <input type="text" id="node-input-protocol" placeholder="udp">
+        <label for="node-input-protocol"><i class="fa fa-sliders"></i> Type</label>
+        <input type="text" id="node-input-protocol" style="width:70%;" placeholder="udp">
     </div>
     <div class="form-row">
-        <label for="node-input-log"><i class="icon-tag"></i> Log</label>
-        <input type="text" id="node-input-log" placeholder="payload">
+        <label for="node-input-log"><i class="fa fa-bars"></i> Log</label>
+        <input type="text" id="node-input-log" style="width:70%;" placeholder="payload">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="logstach">
-    Send log data to Logstach in TCP/UDP
 
-    <h3>input</h3>
-    An object to log.
+    <p>Sends log data to Logstach in TCP/UDP. </p>
 
-    <h3>Output</h3>
-    The previous Input data
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Port <span class="property-type">string</span></dt>
+        <dd>server port to use</dd>
+        <dt>Host <span class="property-type">string</span></dt>
+        <dd>server host to use</dd>
+        <dt>Type <span class="property-type">string</span></dt>
+        <dd>connection type (udp, tcp, memory)</dd>
+        <dt>Log <span class="property-type">object</span></dt>
+        <dd>data to log</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
 </script>

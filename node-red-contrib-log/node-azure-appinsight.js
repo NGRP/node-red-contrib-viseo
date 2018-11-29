@@ -20,6 +20,7 @@ module.exports = function(RED) {
 
 let client = undefined;
 const setup = (RED, node, config) => {
+    if (!config.key) return;
     appInsights.setup(config.key) 
                .setAutoCollectRequests(false)
                .setAutoCollectPerformance(false)
@@ -37,10 +38,10 @@ const close = (done) => {
 // See https://github.com/Microsoft/ApplicationInsights-node.js/tree/master
 const input = (node, data, config) => {
 
-    let log  = config.log || 'payload';
-        log  = helper.getByString(data, log, log);
-    let name = helper.resolve(config.evtname, data, config.evtname);
-    let type = helper.resolve(config.evttype, data, config.evttype);
+    let log =  config.log || "payload";
+    if (config.logType === "msg") log = helper.getByString(data, log) ;
+    let name = (config.evtnameType === "msg") ?  helper.getByString(data, config.evtname) : config.evtname;
+    let type = config.evttype || 'event';
 
     if (type === 'event'){
         client.trackEvent(name, log);
