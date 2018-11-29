@@ -1,8 +1,7 @@
 {
     "name": "node-red-contrib-viseo-google-maps",
-    "version": "0.0.1",
-    "author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
-    "description": "Wrapper of Google Maps",
+    "version": "0.0.2",
+    "description": "VISEO Bot Maker - Google Maps",
     "dependencies": {
         "node-red-contrib-viseo-google-authentication": "~0.0",
         "node-red-viseo-helper": "~0.1",
