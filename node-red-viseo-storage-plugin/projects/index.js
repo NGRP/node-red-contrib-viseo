@@ -79,15 +79,15 @@ function init(_settings, _runtime) {
         flowsFile = 'flows_'+require('os').hostname()+'.json';
         flowsFullPath = fspath.join(settings.userDir,flowsFile);
     }
+    
+    var ffExt = fspath.extname(flowsFullPath);
+    var ffBase = fspath.basename(flowsFullPath,ffExt);
 
     if(settings.credentialsFile) {
         cfName = settings.credentialsFile;
     } else {
         cfName = ffBase+"_cred"+ffExt;
     }
-
-    var ffExt = fspath.extname(flowsFullPath);
-    var ffBase = fspath.basename(flowsFullPath,ffExt);
 
     flowsFileBackup = getBackupFilename(flowsFullPath);
     credentialsFile = fspath.join(settings.userDir, cfName);
