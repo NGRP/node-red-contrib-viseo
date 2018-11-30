@@ -27,7 +27,8 @@ const stop  = (done) => { done(); }
 const start = (RED, node, config) => { }
 const input = (node, data, config) => {
 
-  let value = helper.getByString(data, config.input || 'prompt.attachments[0].contentUrl');
+  let value = config.input || 'prompt.attachments[0].contentUrl'
+  if (config.inputType === "msg") value = helper.getByString(data, value);
 
   // 3. End the node
   let done  = (err, json) => {
