@@ -357,34 +357,33 @@
 
 <script type="text/x-red" data-help-name="wechat">
 
-    <h1>WeChat</h1>
-    <p>Connect your flow to WeChat with this node. </p>
+    <p>[<b>Bot server</b>] Connects to a Wechat account. </p>
 
-    <h3>Main properties</h3>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <p>This node uses the <code>/wechat</code> route to connect with WeChat.</p>
+    <dl class="message-properties">
+        <dt>Config <span class="property-type">config</span></dt>
+        <dd>the WeChat configuration</dd>
+    </dl>
+    <p><b>Note:</b> Use the <i>Menu</i> section to customize the displayed 
+        menu - max. 3 main buttons, 5 sub-buttons. Click the node button to upload it.</p>
+
+    <h3>References</h3>
     <ul>
-        <li> <b>Settings</b>: Create or chose a WeChat configuration.</li>
-        <li> <b>Menu</b>: Displayed menu - max. 3 main buttons, 5 sub-buttons.</li>
+        <li><a href="http://admin.wechat.com/wiki/index.php?title=Main_Page">WeChat</a> - wiki</li>
+        <li><a href="https://mp.weixin.qq.com/debug/sandbox">WeChat</a> - sandbox</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
 
-    <h3>Endpoint</h3>
-    <ul>
-        This node uses the <b>/wechat</b> route to connect with WeChat, and '/wechatmenu' to send the menu.
-    </ul>
-
-    <h3>Specifications</h3>
-    <ul>
-        The node will forward the received message to next node with the given properties: </p>
-        <li> payload: the message's text or content. </li>
-        <li> message: the message object. Get attachments in the msg.message.attachments array.</li>
-        <li> user: an empty object with an id to be filled by further nodes. </li>
-        <li> context: a map with bot, session, and anything useful during the current stream's life (it's a workaround for Node-RED message clone). </li>
-    </ul>
-
-    <h3>Getting help</h3>
-    <ul>
-        <li> <a href="http://admin.wechat.com/wiki/index.php?title=Main_Page">WeChat wiki</a> </li>
-        <li> <a href="https://mp.weixin.qq.com/debug/sandbox">WeChat sandbox</a> </li>
-        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-wechat">VISEO GitHub (details for this node):</a> </li>
-        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a> </li>
-    </ul>
 </script>
