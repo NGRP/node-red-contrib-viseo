@@ -47,21 +47,23 @@
 </script>
 
 <script type="text/x-red" data-help-name="socketio-out">
-    <p>
-        Emit data to current <code>msg.socket</code> if defined, otherwise 
-        emit to all SocketIO listening to the given path.
-    </p>
 
-    <section class="help-section">
-        <ol> 
-            <h4>Path</h4>
-            <p>
-                Name of the path that is captured on the server side (ex: socket.io)
-            </p>
-            <h4>Data</h4>
-            <p>
-                Data to send.
-            </p>
-        </ol> 
-    </section>
+    <p>Emits a SocketIO message on the given path. </p>
+
+    <h3>Details</h3>p>
+    <p>Emit data to current <code>msg.socket</code> if defined, otherwise 
+        emit to all SocketIO listening to the given path.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Path <span class="property-type">string</span></dt>
+        <dd>name of the path that is captured on the server side (ex: socket.io)</dd>
+        <dt>Value <span class="property-type">string</span></dt>
+        <dd>where to get the data to send</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://socket.io/docs/">Socket.io</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

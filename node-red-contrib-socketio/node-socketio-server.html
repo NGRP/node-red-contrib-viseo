@@ -36,9 +36,6 @@
             config: { value: undefined,  type: 'socketio-server-config' },
             namespace: { value: "assistant" }
         },
-        credentials: {
-            secret: { type: "text", required: true }
-        },
         inputs:  0,
         outputs: 1,
         icon: "socketio.svg",
@@ -47,9 +44,7 @@
         label: function() { return this.name || "Socket.io bot server"; },
         oneditprepare: function() {
             $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-input-secret").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-namespace").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#refresh-path").click(function() { console.log('balahezf')});
         },
         oneditsave: function(){},
         button: {
@@ -98,18 +93,6 @@
         <input type="text" id="node-input-namespace" style="width: 70%;">
     </div>
 
-    <div class="form-row">
-        <label for="node-input-key"><i class="fa fa-lock"></i> Key</label>
-        <div style="display: inline-block; position: relative; width: 70%; height: 20.0114px;">
-            <div style="position: absolute; left: 0px; right: 40px;">
-                <input type="text" id="node-input-secret" style="width:100%;" placeholder="Generate a key...">
-            </div>
-            <a id="refresh-secret" class="editor-button" style="position: absolute; right: 0px; top: 0px;">
-                <i class="fa fa-refresh"></i>
-            </a>
-        </div>
-    </div>
-
     <br><div class="form-tips">
         <span><b>Tip: </b>Find an example of code for client applications in the info tab. </span>
     </div>
@@ -118,61 +101,31 @@
 
 <script type="text/x-red" data-help-name="socketio-server">
 
-    <h1>Socket.io bot server</h1>
-    <p>Connect your flow to a web application with Socket.IO. </p>
+    <p>[<b>Bot server</b>] Connects to a web application with Socket.IO. </p>
 
-    <h3>Main properties</h3>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>Details</h3>
+    <p>This node uses the <code>/socket.io</code> route.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Socket.io <span class="property-type">config</span></dt>
+        <dd>the socket.io server - please make sure to have only one server per flow</dd>
+        <dt>Namespace <span class="property-type">string</span></dt>
+        <dd>the namespace for the application communication</dd>
+    </dl>
+
+    <h3>References</h3>
     <ul>
-        <li> <b>Socket.io</b>: The socket.io server. Please make sure to have only one server per flow. </li>
-        <li> <b>Namespace</b>: The namespace for the application communication. </li>
-        <li> <b>Key</b>: A key to validate the application. </li>
+        <li><a href="https://socket.io/docs/">Socket.io</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
-
-    <h3>Endpoint</h3>
-    <ul>
-        This node uses the Node-RED server, so the <b>/socket.io</b> default route.
-    </ul>
-
-    <h3>Specifications</h3>
-    <ul>
-        The node will forward the received message to next node with the given properties: </p>
-        <li> payload: the message's content. </li>
-        <li> message: the complete message object. </li>
-        <li> user: an empty object with an id (socket id) to be filled by further nodes. </li>
-        <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
-    </ul>
-    
-    <h3>Getting help</h3>
-    <ul>
-        <li> <a href="https://socket.io/">Socket.io</a></li>
-        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-socketio">VISEO GitHub (details for this node)</a> </li>
-        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a></li>
-    </ul>
-
-    <h3>Client code example</h3>
-
-    <pre>
-
-var socket = io('https://myserver.com', { path: '/myPath/socket.io', secure: true });
-
-socket.on('myNamespace', function (data) {
-    if (data.event) socket.emit('myNamespace', { type: "event", content: 'ok' });
-});
-    
-socket.on('disconnect', function () {
-    console.log('you have been disconnected');
-    socket.removeAllListeners('myNamespace');
-    socket.removeAllListeners('disconnect');
-    socket.removeAllListeners('reconnect');
-    socket.removeAllListeners('connect');
-});
-
-socket.on('reconnect', function () {
-    console.log('you have been reconnected');
-});
-    
-socket.on('connect', function () {
-    console.log('you have been connected');
-});
-    </pre>
 </script>
