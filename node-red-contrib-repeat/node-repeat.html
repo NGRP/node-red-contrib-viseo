@@ -15,6 +15,7 @@
         icon: "repeat.svg",
         align: "left",
         paletteLabel: "Repeat",
+        outputLabels: ["repeat", "end"],
         label: function() { return this.name || "Repeat" },
         oneditprepare: function() {
             $("#node-input-outputs" ).spinner({min:2});
@@ -41,7 +42,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-scope"><i class="fa fa-globe"></i> Scope</label>
-        <select id="node-input-scope" style="width:210px">
+        <select id="node-input-scope" style="width:70%">
             <option value="msg">msg</option>
             <option value="user" >user</option>
             <option value="global">global</option>
@@ -49,7 +50,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-outputs"><i class="fa fa-repeat"></i> Repeat</label>
-        <input type="text" id="node-input-outputs" placeholder="1">
+        <input type="text" id="node-input-outputs" style="width:70%" placeholder="1">
     </div>
     <div class="form-row" id="reset">
         <label for="node-input-reset"><i class="fa fa-edit"></i> Then</label>
@@ -62,77 +63,42 @@
 </script>
 
 <script type="text/x-red" data-help-name="repeat">
-    <p>This node selects an output according to a stored counter. </p>
 
-        <h2>Main properties</h2>
-    <p>
-        <li><b>Scope</b>: where to stock the counter. 
-        <li><b>Repeat</b>: number of repetitions (outputs).
-        <li><b>Then</b>: behavior when the value is overreached.
-    </p>
+    <p>Forwards the message to a random outputs.</p>
 
-    <h2><i>Scope</i> property</h2>
-    <ol>
-        <h3>Global</h3>
-        <p> The counter is stored in a global variable. It is independent from the user or the current message.
-            <br><b>WARNING:</b> The 'global' scope is using a global variable which is set in the node source code. It could not be working on multi-server networks.
-        </p>
-        <h3>Msg</h3>
-        <p> The counter is stored in the 'msg._tmp' field.
-            <br><b>WARNING:</b> The 'msg' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
-        </p>
-        <h3>User</h3>
-        <p> The counter is stored in the 'msg.user._tmp' field. It can be stored in a database.
-            <br><b>WARNING:</b> The 'user' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.
-        </p>
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Repeat output</li>
+        <li>End output</li>
     </ol>
 
-    <h2><i>Then</i> property</h2>
-    <ol>  
-        <h3>Case 1: "Never reset the counter and stop sending msg"</h3>
-        <p>When the counter reaches the maximum value, it stops sending messages.</p>
-
-        <h3>Case 2: "Reset the counter when the value is reached"</h3>
-        <p>When the counter reaches the maximum value, it is reset to 1 and start counting again.</p>
-
-        <h3>Case 3: "Send to the last output when the value is overreached"</h3>
-        <p>When the counter reaches the maximum value, it continues to send messages to the last output.</p>
-            
-        <h3>Examples:</h3>
-        <p>Repeat=3, used output in blue </p>
-        <span>
-        <div style="display: inline-block; margin-right: 50px;"><p><b>Case 1: </b>
-                <br><b style="color:blue;">[0]</b> [1] [2]
-                <br>[0] <b style="color:blue;">[1]</b> [2]
-                <br>[0] [1] <b style="color:blue;">[2]</b>
-                <br>[0] [1] [2]
-                <br>[0] [1] [2]
-                <br>[0] [1] [2]
-                <br> ...
-            </p>
-        </div>
-        <div style="display: inline-block; margin-right: 50px;"><p><b>Case 2: </b>
-                <br><b style="color:blue;">[0]</b> [1] [2]
-                <br>[0] <b style="color:blue;">[1]</b> [2]
-                <br>[0] [1] <b style="color:blue;">[2]</b>
-                <br><b style="color:blue;">[0]</b> [1] [2]
-                <br>[0] <b style="color:blue;">[1]</b> [2]
-                <br>[0] [1] <b style="color:blue;">[2]</b>
-                <br> ...
-            </p>
-        </div>
-        <div style="display: inline-block;"><p><b>Case 3: </b>
-                <br><b style="color:blue;">[0]</b> [1] [2]
-                <br>[0] <b style="color:blue;">[1]</b> [2]
-                <br>[0] [1] <b style="color:blue;">[2]</b>
-                <br>[0] [1] <b style="color:blue;">[2]</b>
-                <br>[0] [1] <b style="color:blue;">[2]</b>
-                <br>[0] [1] <b style="color:blue;">[2]</b>
-                <br> ...
-            </p>
-        </div>
-        </span>
+    <h3>Details</h3>p>
+    <p>Scopes</p>
+    <dl class="message-properties">
+        <dt>Global</dt>
+        <dd>the counter for random is stored in a global variable. It is independent from the user or the current message.
+        <b>WARNING:</b> The 'global' scope is using a global variable which is set in the node source code. It could not be working on multi-server networks.</dd>
+        <dt>Msg</dt>
+        <dd>The counter is stored in the 'msg._tmp' field.
+        <b>WARNING:</b> The 'msg' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.</dd>
+        <dt>User</dt>
+        <dd>The counter is stored in the 'msg.user._tmp' field. It can be stored in a database.
+        <b>WARNING:</b> The 'user' scope can cause infinite loops if you enable to continue sending messages when the value is overreached. Be sure to check out the links in your flow.</dd>
+    </dl>
+    <p>Chose the <i>Then</i> property according to the behaviour you want when the counter's value is overreached: </p>
+    <dl class="message-properties">
+        <dt>Case 1: "Never reset the counter and stop sending msg"</dt>
+        <dd>When the counter reaches the maximum value, it stops sending messages.</dd>
+        <dt>Case 2: "Reset the counter when the value is reached"</dt>
+        <dd>When the counter reaches the maximum value, it is reset to 1 and start counting again.</dd>
+        <dt>Case 3: "Send to the last output when the value is overreached"</dt>
+        <dd>When the counter reaches the maximum value, it continues to send messages to the last output.</dd>
+    </dl>
+    
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 
-    </ol>
 </script>

@@ -1,7 +1,7 @@
 {
     "name"          : "node-red-contrib-viseo-repeat",
-    "version"       : "0.2.0",
-    "description"   : "Iterate on calls between outputs",
+    "version"       : "0.2.1",
+    "description"   : "VISEO Bot Maker - Iterate on calls between outputs",
     "dependencies"  : { 
         "node-red-viseo-helper" : "~0.1"
     },
@@ -10,7 +10,7 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-repeat"
     },
     "license": "Apache-2.0",
-    "keywords": ["viseo", "sarah", "node-red"],
+    "keywords": ["viseo", "sarah", "node-red", "repeat"],
     "node-red" : {
         "nodes": {
             "repeat": "node-repeat.js"
