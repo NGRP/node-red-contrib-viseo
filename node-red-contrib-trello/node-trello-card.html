@@ -940,15 +940,26 @@
 </script>
 
 <script type="text/x-red" data-help-name="trello-card">
-    <p>Create, update, list or delete Trello boards, lists, cards, labels or custom fields.</p>
 
-    <h3>Fields</h3>
+    <p>Creates, updates, lists or deletes Trello boards, lists, cards, labels or custom fields. </p>
 
+    <h3>Details</h3>
+    <p>Properties</p>
     <dl class="message-properties">
+        <dt>Trello key <span class="property-type">config</span></dt>
+        <dd>key for access to Trello</dd>
         <dt>Path / Query / Body <span class="property-type">object</span></dt>
         <dd>Objects with fields that are needed to perform the action. You can click on the "refresh" button 
             to reset the fields with default parameters. Or you can chose a field in the "msg" object.
         </dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
     </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.trello.com/">Trello API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>

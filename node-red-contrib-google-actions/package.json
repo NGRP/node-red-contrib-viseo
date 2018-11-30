@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-viseo-google-actions",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "VISEO Bot Maker - Google Actions",
     "dependencies": {
         "node-red-contrib-viseo-google-authentication": "~0.0",
