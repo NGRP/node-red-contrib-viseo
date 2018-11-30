@@ -21,8 +21,8 @@
         outputs:1,
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: 'QnA',
-        label: function() { return this.name || "QnA"; },
+        paletteLabel: 'QnA Maker',
+        label: function() { return this.name || "QnA Maker"; },
         oneditprepare: function() {
             if (!this.hostType) this.hostType = 'str';
             if (!this.knowledgeType) this.knowledgeType = 'str';
@@ -82,5 +82,26 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-qna">
-    <p>Query Microsoft QNA Maker API V4 with the given payload.</p>
+    <p>Query Microsoft QNA Maker API V4.</p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Host <span class="property-type">string</span></dt>
+        <dd>host specified in the Azure portal</dd>
+        <dt>Endpoint key <span class="property-type">string</span></dt>
+        <dd>endpoint containing the key specified in Azure Portal</dd>
+        <dt>Knowledge Base ID <span class="property-type">string</span></dt>
+        <dd>base ID to request</dd>
+        <dt>Input <span class="property-type">string</span></dt>
+        <dd>where to get the input text</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/fr-fr/azure/cognitive-services/QnAMaker/index">Microsoft QnA Maker</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

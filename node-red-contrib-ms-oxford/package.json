@@ -1,8 +1,7 @@
 {
     "name"          : "node-red-contrib-viseo-ms-oxford",
-    "version"       : "0.2.0",
-    "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
-    "description"   : "Wrapper of Microsoft Oxford / Cognitive Services",
+    "version"       : "0.2.1",
+    "description"   : "VISEO Bot Maker - Microsoft Cognitive Services",
     "dependencies"  : {  
         "request"   : "^2.76.0",
         "extend"    : "^3.0.0",
@@ -15,10 +14,11 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford"
     },
     "license": "Apache-2.0",
-    "keywords": ["viseo", "sarah", "node-red"],
+    "keywords": ["viseo", "sarah", "node-red", "ai", "intelligence", "text", "image", "nlu", "nlp", 
+        "recognition", "analyze", "luis", "irma", "spell check", "content moderator", "text analytics",
+        "computer vision", "face", "qna", "maker", "speech", "tts", "stt"],
     "node-red" : {
         "nodes": {
-            "ms-video-face-track":   "node-video-face-track.js",
             "ms-video-indexer":      "node-video-indexer.js",
             "ms-speech-api":         "node-speech-api.js",
             "ms-cs-search":          "node-search.js",
