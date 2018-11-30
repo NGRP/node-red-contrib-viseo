@@ -14,7 +14,7 @@
         outputs: 1,
         icon: "volume.svg",
         align: "left",
-        paletteLabel: 'SoX command',
+        paletteLabel: 'SoX',
         label: function() { return this.name || "SoX"; },
         oneditprepare: function() {
             $("#node-input-output").typedInput({   default: 'msg',  types: ['msg'],  typeField: $("#node-input-outputType") });
@@ -59,18 +59,20 @@
 
 <script type="text/x-red" data-help-name="sox-command">
 
-    <p>This node allows to use the command line utility 'Sox of Silence' in order to convert or maniupulate audio files.</p>
+    <p>Uses the command line utility 'Sox of Silence' in order to convert or maniupulate audio files.</p>
     
-    <h2>Main parameters</h2>
-    <p>
-        <li><b>Command</b>: The command line (without 'sox')</li>
-        <li><b>Output</b>: Where to set the result / Process command line as spawn or exec.</li>
-    </p>
+    <h3>Details</h3>p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Command <span class="property-type">string</span></dt>
+        <dd>the command line without 'sox'</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
 
-    <h2>Getting help</h2>
-    <p>
-        <li><b>Sox documentation:</b> <a>http://sox.sourceforge.net/sox.html</a></li>
-        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-sox</a></li>
-        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
-    </p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="http://sox.sourceforge.net/sox.html">SoX</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>
