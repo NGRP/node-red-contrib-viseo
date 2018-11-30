@@ -20,8 +20,8 @@
             return this.path.substring(this.path.lastIndexOf('/') + 1, this.path.lastIndexOf('.'));            
         },
         oneditprepare: function() {
-            $("#node-input-path").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-input-xlsx").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-path").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-xlsx").typedInput({ default: 'num', types: ['num'], type: 'num' });
         },
     });
 </script>
@@ -31,14 +31,21 @@
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
+    
+    <br>
+    <b>DB File</b>
     <div class="form-row">
-        <label for="node-config-input-path"><i class="icon-tag"></i> Path</label>
+        <br>
+        <label for="node-config-input-path"><i class="fa fa-file"></i> Path</label>
         <input type="text" id="node-config-input-path" placeholder="{cwd}/data/database.db">
     </div>
+
+    <br>
+    <b>XLSX File (only)</b>
     <div class="form-row">
-        <label for="node-config-input-xlsx"><i class="icon-tag"></i> XLSX Tab</label>
-        <input type="text" id="node-config-input-xlsx" placeholder="">
-        <div style="padding-left: 104px;"><em>For XLSX Path import tab to NeDB readonly</em></div>
+        <br>
+        <label for="node-config-input-xlsx"><i class="fa fa-table"></i> XLSX Tab</label>
+        <input type="text" id="node-config-input-xlsx" placeholder="0">
     </div>
    
 </script>
@@ -55,4 +62,6 @@
         <dt>XLSX Tab <span class="property-type">string</span></dt>
         <dd>tab to use to import the data (xlsx only)</dd>
     </dl>
+    <p>If the file is a <i>XLSX</i>, precise the tab (number). The tab  content will be imported to a NeDB database (<b>readonly</b>.)</p>
+    
 </script>
