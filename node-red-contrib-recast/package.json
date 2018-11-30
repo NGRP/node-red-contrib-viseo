@@ -1,8 +1,7 @@
 {
     "name"          : "node-red-contrib-viseo-recast",
-    "version"       : "0.0.1",
-    "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
-    "description"   : "Wrapper of Recast API",
+    "version"       : "0.0.2",
+    "description"   : "VISEO Bot Maker - Recast API",
     "dependencies"  : {  
         "recastai"   : "~3.6",
 		"node-red-viseo-helper" : "~0.1"
@@ -12,7 +11,7 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-recast"
     },
     "license": "Apache-2.0",
-    "keywords": ["viseo", "sarah", "node-red"],
+    "keywords": ["viseo", "sarah", "node-red", "recast", "nlp"],
     "node-red" : {
         "nodes": {
             "node-recast":          "node-recast.js",
