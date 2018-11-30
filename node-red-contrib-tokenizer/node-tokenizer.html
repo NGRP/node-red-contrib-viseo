@@ -14,6 +14,11 @@
         align: "left",
         paletteLabel: "Tokenizer",
         label: function() { return this.name || "Tokenizer"; },
+        oneditprepare: function() {
+            $("#node-input-salt").typedInput({   default: 'str', types: ['str'],  type:'str'});
+            $("#node-input-source").typedInput({   default: 'msg', types: ['msg'],  type:'msg'});
+            $("#node-input-destination").typedInput({   default: 'msg', types: ['msg'],  type:'msg'});
+        }
     });
 </script>
 
@@ -23,21 +28,38 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-salt"><i class="icon-tag"></i> Salt</label>
+        <label for="node-input-salt"><i class="fa fa-random"></i> Salt</label>
         <input type="text" id="node-input-salt" placeholder="Salt">
     </div>
     <div class="form-row">
-        <label for="node-input-source"><i class="icon-tag"></i> Source</label>
+        <label for="node-input-source"><i class="fa fa-sign-in"></i> Input</label>
         <input type="text" id="node-input-source" placeholder="payload">
     </div>
     <div class="form-row">
-        <label for="node-input-destination"><i class="icon-tag"></i> Destination</label>
+        <label for="node-input-destination"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-destination" placeholder="payload">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="tokenizer">
-    <p>Takes an array of values and transforms it into a token, using the given salt.</p>
-    <p>The salt should be a random string that cannot be guessed by anyone, it helps securing the token.</p>
-    <p>If source is defined, it is expected to be a string to tokenize. If not, it is set as the current payload, as a string or a javascript object/array</p>
+
+    <p>Takes an array of values and transforms it into a token, using the given salt. </p>
+
+    <h3>Details</h3>p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Salt <span class="property-type">config</span></dt>
+        <dd>should be a random string that cannot be guessed by anyone, it helps securing the token</dd>
+        <dt>Input <span class="property-type">string/array/object</span></dt>
+        <dd>where to get the input content</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the result</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/brix/crypto-js">CryptoJS</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
 </script>
