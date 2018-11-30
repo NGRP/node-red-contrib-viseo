@@ -1,23 +1,16 @@
 # Node-RED
 
-Searches keys or values in complex objects.
+Query Salesforce API for objects.
 
-This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
+This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the node documentation in the Node-RED info tab. 
+
+Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-search
+npm install node-red-contrib-viseo-salesforce
 ```
-
-### Build the Node-RED Flow
-
-The `search` node 
-- searches if the key/value is in the sent object.
-- If the key/value is found, returns the parent object.
-- If the 'deep' parameter is checked, it searches in all the child objects, and returns the parent object.
-
-![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-search/doc/flow.jpg)
 
 ## Getting Help
 

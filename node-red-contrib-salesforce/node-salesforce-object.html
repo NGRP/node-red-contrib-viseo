@@ -154,26 +154,35 @@
 </script>
 
 <script type="text/x-red" data-help-name="salesforce-object">
-    <ol> 
-        <p>This node allows to connect your flow to Salesforce objects.</p><br>
 
-        <b>Salesforce settings</b>
-        <p style="margin-left: 20px;"><b>Config</b>: required information to connect to Salesforce.
-        <br><b>Token</b>: facultative. If empty, a request is send to get it (slower).</p>
+    <p>Query Salesforce API for objects. </p>
 
-        <b>Object settings</b>
-        <p style="margin-left: 20px;">The object to get/create/update/query on...
-           <br><b>Id</b> (Get/Update/Delete): ID of the object.
-           <br><b>Body</b> (New/Update): Body of the object (JSON). Read the documentation to get more info about the required field. 
-           <br><b>Select</b> (Query): Fields of the object to select, separated with ','.
-           <br><b>Where</b> (Query): Field of the object to check, and value (=).
-        </p>
-        
-        <b>Tips</b>
-        <p style="margin-left: 20px;">► You can send a "GET" request on an object with a empty ID field to get the object description.
-        <br>► You can specify your own object by selecting "Else" as the object, and by typing its API label in the "Object" filed.</p>
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>the request response, and a "token" field to keep it</dd>
+            </dl>
+        </li>
+    </ol>
 
-        <b>Response</b>
-        <p style="margin-left: 20px;"><b>Payload</b>: this field contains the request response, and a "token" field to keep it.</p>
-    </ol> 
+    <h3>Details</h3>p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Config <span class="property-type">config</span></dt>
+        <dd>information to connect to Salesforce</dd>
+    </dl>
+    <p><i>Describe</i> gives information about an object type.</p>
+    <p><i>Get</i> returns an object according to its ID and <i>Delete</i> removes it.</p>
+    <p><i>New</i> takes a JSON object with data in order to create an object in Salesforce. Read the documentation to get more info about the required field. </p>
+    <p><i>Updates</i> needs an ID to select an object, and a JSON object to apply the changes.</p>
+    <p><i>Query</i> needs fields of the object to select (separated with ','), a field of the object to check, and a value (=).</p>
+    <p><b>Notes:</b> You can send a <i>Get</i> request on an object with a empty ID field to get the object description. You also can
+         specify your own object by selecting "Else" as the object, and by typing its API label in the "Object" filed.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>
