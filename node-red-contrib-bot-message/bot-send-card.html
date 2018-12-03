@@ -684,154 +684,84 @@
 </script>
 
 <script type="text/x-red" data-help-name="send-card">
-    <div class="red-ui-tabs" style="margin-bottom: 10px;">
-        <div>
-            <ul id="send-card-tabs-help">
-                <li class="send-card-tab-help active" style="min-width:100px;"><a href="#help-over" class="red-ui-tab-label"><span class="bidiAware" dir="">Overview</span></a></li>
-                <li class="send-card-tab-help" style="min-width:100px;"><a href="#help-types" class="red-ui-tab-label"><span class="bidiAware" dir="">Types</span></a></li>
-                <li class="send-card-tab-help" style="min-width:100px;"><a href="#help-buttons" class="red-ui-tab-label"><span class="bidiAware" dir="">Buttons</span></a></li>
-            </ul>
-        </div>
-    </div>
-    <div id="help-over" class="send-card-panel-help">
-        <p>This node allows to send messages to users.</p><br>
-        <b>Content</b><br>
-        <ol> 
-            <p>Contains the message content options and fields</p><br>
-            <b>Type</b>
-            <p style="margin-left: 20px;">Type of message to send, such as an image or a simple text.</p>
-            <b>Display content</b>
-            <p style="margin-left: 20px;">The textaul/visual content to send. The fields depends on the message's type.</p>
-            <b>Played content</b>
-            <p style="margin-left: 20px;">The vocalized/sounds content to send. If 'Speech' is unchecked, do not forget the "<speak>" tags.</p>
-            <b>Quick replies / Buttons / Shared card</b>
-            <p style="margin-left: 20px;">Qucik replies, buttons or shared card associated with the sent message.</p>
-        </ol> 
-        <b>Settings</b>
-        <br>
-        <ol> 
-            <p>Contains the node options.</p><br>
-            <b>Name</b>
-            <p style="margin-left: 20px;">Name of the node</p>
-            <b>Unique ID</b>
-            <p style="margin-left: 20px;">Select or generate a unique ID for your send node. This can be used to import/export send-card nodes in your flows.</p>
-            <b>Prompt</b>
-            <p style="margin-left: 20px;">Check if this message should wait for a user answer or input.</p>
-            <b>Outputs</b>
-            <p style="margin-left: 20px;">Add n outputs to the node, depending on the number of buttons or quickreplies.</p>
-            <b>Repeat</b>
-            <p style="margin-left: 20px;">Uses n times the 'default' output (first output), and then uses the 'repeat' output (last output).</p>
-            <b>Delay</b>
-            <p style="margin-left: 20px;">Wait before sending the message.</p>
-        </ol> 
-    </div>
-    <div id="help-types" class="send-card-panel-help hide">
-        <h2>Types of messages</h2>
-        <ol>  
-            <h3>Text</h3>
-            <p>Send simple text to the user.</p>
-            <p style="margin-left: 20px;">
-                <b>Text</b>: text to send to the user.
-                <br><b>Random</b>: choose a random line between each lines of text.
-            </p>
-            
-            <h3>Image</h3>
-            <p>Send an image to the user.</p>
-            <p style="margin-left: 20px;">
-                <b>Media</b>: path to the image (serveur or url).
-            </p>
-            <h3>Card</h3>
-            <p>Send a card to the user.
-            <br>Learn more about cards: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Messenger generic templates</a></p>
-            <p style="margin-left: 20px;">
-                <b>Carousel</b>: send several cards (several nodes are needed).
-                <br><b>Title</b>: title of the card.
-                <br><b>Subtitle</b>: subtitle of the card.
-                <br><b>Attachement</b>: image to add to the card.
-                <br><b>Buttons</b>: buttons to add to the card.
-                br><b>Shared card</b>: fields of the shared card (Facebook Messenger only).
-            </p>
-            <h3>Quick replies</h3>
-            <p>Send quick replies to the user.
-            <br>Learn more about quick replies: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Messenger quick replies</a></p>
-            <p style="margin-left: 20px;">
-                <b>Text</b>: text to send to the user.
-                <br><b>Random</b>: choose a random line between each lines of text.
-                <br><b>Quick replies</b>: buttons to add to the card.
-            </p>
-            <h3>SignIn</h3>
-            <p>Signin to an account.</p>
-            <p style="margin-left: 20px;">
-                <b>Text</b>: text to send to the user.
-                <br><b>Button</b>: text on the button.
-                <br><b>URL</b>: signin URL.
-            </p>
-            <h3>Event</h3>
-            <p>Send a custom event to the server.</p>
-            <p style="margin-left: 20px;">
-                <b>Label</b>: event's label to be interpreted.
-                <br><b>Value</b>: event's content.
-            </p>
-        </ol>
-    </div>
-    <div id="help-buttons" class="send-card-panel-help hide">
-        <h2>Buttons properties</h2>
-        <ol>            
-            <h3>Cards</h3>
-            <p><b>Post-back / IM Back</b></p>
-            <p style="margin-left: 20px;">
-                <b>Label</b>: displayed text on the button.
-                <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
-                <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
-            </p>
-            <p><b>Call</b></p>
-            <p style="margin-left: 20px;">
-                This option allows to call the user (Skype only for the moment).
-            </p>
-            <p><b>Share</b></p>
-            <p style="margin-left: 20px;">
-                This option allows the user to share a card with a friend. (Messenger only for the moment).
-            </p>
-            <p><b>Other options</b></p>
-            <p style="margin-left: 20px;">
-                <b>Label</b>: displayed text on the button.
-                <br><b>Value</b>: 
-                <br><b>Open URL</b>: URL to open.
-                <br><b>Show image</b>: path to the image to display - URL (computers)/ image (cellphones).
-                <br><b>Play audio / Play video</b> path to the audio/video to send.
-                <br><br>
-            </p>
-            <h3>Quick replies</h3>
-            <p><b>Post-back / IM Back</b></p>
-            <p style="margin-left: 20px;">
-                <b>Label</b>: displayed text on the button.
-                <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
-                <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
-            </p>
-            <p><b>Location</b></p>
-            <p style="margin-left: 20px;">
-                This quick reply asks the user to send its location, then sends it to Node-Red as an attachment.
-            <br>
-            <p><b>Identity</b></p>
-            <p style="margin-left: 20px;">
-                This quick reply asks the user to send information. (Google Home / Assistant only).
-            <br>
-            </p>
-            <h3>Dynamic buttons</h3>
-            <p>You can dynamically add buttons in a function node before the send-card node. 
-            <br>Don't forget to delete them after using them. 
-            <pre type="javascript" style="width:400px"> msg.buttons = [];
+
+    <p>Sends messages to users using bot connectors. </p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>buttons <span class="property-type">array</span></dt>
+        <dd>override the buttons with a Button array; don't forget to delete the field after using it. 
+<pre type="javascript" style="width:400px"> 
+    msg.buttons = [];
     msg.buttons.push({
         title  : 'Choice 1',
         action : 'postBack',
         value  : 'choice1',
         regexp : 'one|first|choice 1'
-    });     </pre>
-            </p>
-            <h3>Carousels</h3>
-            <p>To create a caroussel (several cards side by side), branch several send-card nodes together, and click the 'Carousel' option.
-            <br>In the last send-card node, don't click this option.
-            </p>
-        </ol>
-    </div>
+    });     
+</pre>
+        </dd>
+    </dl>
+
+    <h3>Details: content</h3>
+    <p>Chose a message type and complete the required informations to send it to the active user. 
+        Be careful, some types are not availables for all sources.</p>
+    <p>Types</p>
+    <dl class="message-properties">
+        <dt>Text</dt>
+        <dd>text to send to the user; if you check <i>Random</i>, the the program choses a random line between each lines of text </dd>
+        <dt>Text + Quick replies</dt>
+        <dd>same behavior as behind, but with buttons; if no button is set and <code>msg.buttons</code> is empty, then acts like <i>Text</i>.</dd>
+        <dt>Image</dt>
+        <dd>sends an image to the user; the <i>Image</i> input must be a path to the image (serveur or url)</dd>
+        <dt>Card</dt>
+        <dd>sends a card to the user, with possible image, text and buttons; if <i>Carousel</i> is checked, the card will not be sent;
+            the program will wait for another card (with the option unchecked) to send all the cards as a carousel </dd>
+        <dt>SignIn</dt>
+        <dd>sends card to signin to an account; a signin URL should be precised</dd>
+        <dt>Event</dt>
+        <dd>sends an event (label and value - object) to the bot connector</dd>
+    </dl>
+    <p>Buttons and quick replies</p>
+    <dl class="message-properties">
+        <dt>Post Back / IM Back </dt>
+        <dd>when the user clicks the button, the <i>Value</i> is sent into the flow</dd>
+        <dt>Location</dt>
+        <dd>asks the user to send its location (Messenger), then sends it into the flow as an attachment</dd>
+        <dt>Identity</dt>
+        <dd>asks the user to send information (Google Home / Assistant only)</dd>
+        <dt>Call</dt>
+        <dd>calls the number (Skype only)</dd>
+        <dt>Share</dt>
+        <dd>shares a card with a friend (Messenger only)</dd>
+        <dt>Show image</dt>
+        <dd>shows an image; the value must be a path to the image to display - URL (computers)/ image (cellphones)</dd>
+        <dt>Play audio/video</dt>
+        <dd>play the media; the value must be a path to the media to send</dd>
+    </dl>
+
+    <p><b>Note:</b> if your bot is a vocal application, then customize the played content: uncheck the <i>Speech</i> checkbox. </p>
+    
+    <h3>Details: settings</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Unique ID <span class="property-type">string</span></dt>
+        <dd>can be used to import/export send-card nodes in your flows</dd>
+        <dt>Delay <span class="property-type">number</span></dt>
+        <dd>uses n times the 'default' output (first output), and then uses the 'repeat' output (last output)</dd>
+        <dt>Repeat <span class="property-type">number</span></dt>
+        <dd>waits before sending the message</dd>
+    </dl>
+    <p>
+        The <i>Prompt</i> checkbox is checked if the message should wait for a user answer or input. The <i>Outputs</i>
+        checkbox adds n outputs to the node, depending on the number of buttons or quickreplies.
+    </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Cards example</a> - Messenger generic templates</li>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Quick replies example</a> - Messenger quick replies</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
 </script>

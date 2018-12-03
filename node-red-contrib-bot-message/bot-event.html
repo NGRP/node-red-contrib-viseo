@@ -22,8 +22,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-listen"><i class="icon-tag"></i> Event</label>
-        <select id="node-input-listen">
+        <label for="node-input-listen"><i class="fa fa-calendar"></i> Event</label>
+        <select id="node-input-listen" style="width:70%;">
             <option value="prompt">Prompt</option>
             <option value="prompt-unexpected">Prompt unexpected text</option>
             <option value="received">Received</option>
@@ -35,5 +35,29 @@
 </script>
 
 <script type="text/x-red" data-help-name="bot-event">
+
+    <p>Event listener: sends a message when an event between the bot connectors and the messages is triggered.</p>
+
+    <h3>Details</h3>
+    <p>For some events, you must add a <code>continue</code> node at the end of the treatment in order to continue the process.</p>
+    <p>Events</p>
+    <dl class="message-properties">
+        <dt>Prompt <span class="property-type">continue</span></dt>
+        <dd>when a prompt message arrives</dd>
+        <dt>Prompt unespected text <span class="property-type">continue</span></dt>
+        <dd>when a prompt message arrives but does not validate the options (buttons, quickreplies, regexp)</dd>
+        <dt>Received <span class="property-type">continue</span></dt>
+        <dd>when the connector just received a message from the user</dd>
+        <dt>Replied </dt>
+        <dd>when the bot replied to the user</dd>
+        <dt>Reply <span class="property-type">continue</span></dt>
+        <dd>when the bot just prepared the message to reply to the user</dd>
+    </dl>
+    
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>

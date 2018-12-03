@@ -30,6 +30,7 @@
             $('#node-input-intent').change(function() {
 
                 $('.row-for-transaction, .row-after-transaction').hide()
+                $('.form-row').find('input[type="text"]').typedInput('show');
 
                 switch($(this).val()) {
                     case 'confirm':
@@ -41,6 +42,10 @@
                         break;
                 }
             }).val(this.intent);
+
+            $('#node-input-name').typedInput({ default: 'str', types: ['str'], type:'str' });
+            $('#node-input-merchant').typedInput({ default: 'str', types: ['str'], type:'str' });
+            $('#node-input-receiptStatusName').typedInput({ default: 'str', types: ['str'], type:'str' });
 
             $('#node-input-orderItems').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderItemsType") });
             $('#node-input-orderActions').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderActionsType") });
@@ -56,8 +61,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-intent"><i class="icon-tag"></i> Intent</label>
-        <select id="node-input-intent">
+        <label for="node-input-intent"><i class="fa fa-sliders"></i> Intent</label>
+        <select id="node-input-intent" style="width:70%;">
             <option value="requirement_check">Requirement Check</option>
             <option value="delivery_address">Delivery Address</option>
             <option value="confirm">Confirmation</option>
@@ -65,43 +70,48 @@
         </select>
     </div>
     <div class="form-row row-for-transaction">
-        <label for="node-input-merchant"><i class="fa fa-tag"></i> Merchant</label>
-        <input type="text" id="node-input-merchant" placeholder="Merchant name">
+        <label for="node-input-merchant"><i class="fa fa-globe"></i> Merchant</label>
+        <input type="text" id="node-input-merchant" style="width:70%;" placeholder="Merchant name">
     </div>
     <div class="form-row row-for-transaction row-after-transaction">
         <label for="node-input-orderId"><i class="fa fa-tag"></i> Order ID</label>
-        <input type="text" id="node-input-orderId" placeholder="msg.id">
+        <input type="text" id="node-input-orderId" style="width:70%;" placeholder="msg.id">
         <input type="hidden" id="node-input-orderIdType"/>
     </div>
     <div class="form-row row-for-transaction">
-        <label for="node-input-orderItems"><i class="fa fa-tag"></i> Order Items</label>
-        <input type="text" id="node-input-orderItems" placeholder="msg.items">
+        <label for="node-input-orderItems"><i class="fa fa-bars"></i> Order Items</label>
+        <input type="text" id="node-input-orderItems" style="width:70%;" placeholder="msg.items">
         <input type="hidden" id="node-input-orderItemsType"/>
     </div>
     <div class="form-row row-after-transaction">
         <label for="node-input-carrierId"><i class="fa fa-tag"></i> Carrier ID</label>
-        <input type="text" id="node-input-carrierId" placeholder="msg.id">
+        <input type="text" id="node-input-carrierId" style="width:70%;" placeholder="msg.id">
         <input type="hidden" id="node-input-carrierIdType"/>
     </div>
     <div class="form-row row-after-transaction">
-        <label for="node-input-receiptStatus"><i class="icon-tag"></i> Receipt status</label>
-        <select id="node-input-receiptStatus">
+        <label for="node-input-receiptStatus"><i class="fa fa-flag"></i> Receipt status</label>
+        <select id="node-input-receiptStatus" style="width:70%;">
             <option value="CREATED">CREATED</option>
             <option value="CONFIRMED">CONFIRMED</option>
         </select>
     </div>
     <div class="form-row row-after-transaction">
-        <label for="node-input-receiptStatusName"><i class="fa fa-tag"></i> Receipt status name</label>
-        <input type="text" id="node-input-receiptStatusName" placeholder="">
+        <label for="node-input-receiptStatusName"><i class="fa fa-flag"></i> Receipt status name</label>
+        <input type="text" id="node-input-receiptStatusName" style="width:70%;" placeholder="">
     </div>
      <div class="form-row row-after-transaction">
-        <label for="node-input-orderActions"><i class="fa fa-tag"></i> Order Actions</label>
-        <input type="text" id="node-input-orderActions" placeholder="msg.actions">
+        <label for="node-input-orderActions"><i class="fa fa-edit"></i> Order Actions</label>
+        <input type="text" id="node-input-orderActions"style="width:70%;"  placeholder="msg.actions">
         <input type="hidden" id="node-input-orderActionsType"/>
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="node-bot-transaction">
-   <p>Transactions for bots.</p>
+   <p>Performs transactions for bots.</p>
+
+   <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
    
 </script>

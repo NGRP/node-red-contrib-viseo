@@ -3,13 +3,13 @@
 const fs      = require('fs');
 const path    = require('path');
 const builder = require('botbuilder');
-const logger  = require('../../lib/logger.js');
+const logger  = require('../lib/logger.js');
 const helper  = require('node-red-viseo-helper');
 const botmgr  = require('node-red-viseo-bot-manager');
 
 // Retrieve server
-const msbot    = require('../../lib/msbot.js');
-const server   = require('../../lib/server.js');
+const msbot    = require('../lib/msbot.js');
+const server   = require('../lib/server.js');
 
 
 // --------------------------------------------------------------------------
