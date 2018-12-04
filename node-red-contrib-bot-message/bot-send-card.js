@@ -305,6 +305,9 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
 
         //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
         buildAdaptiveCardJson(textToShow, reply.body, separator);
+        // AAAAAAAAAAAAAAAAA Maybe this
+        //buildAdaptiveCardJson(tmp, reply.actions[0].card.body, '**');
+        
     }
 };
 
@@ -495,6 +498,7 @@ const sendData = (node, data, config) => {
     }
 };  
 
+<<<<<<< HEAD
 /**
  * Takes the "whole" text and builds a "body" for the adaptive card.
  * @param {*} whole The whole text to process
@@ -617,3 +621,81 @@ part is:  with index: 0
       });
     }
 
+=======
+const buildAdaptiveCardJson = function(whole, body, separator) {
+  debugger;
+    console.log("Enter buildAdaptiveCardJson");
+    console.log("Whole " + whole);
+    console.log("Body " + body);
+	whole.split(' **').forEach((part, index) => {
+	  if (index === 0) { 
+	    if (part.startsWith(' **', 0)) { // begins with title directly
+	    	body.push({
+				"type": "Container",
+				"items": [
+					{
+						"type": "TextBlock",
+						"wrap": true,
+						"size": "default",
+						"text": part //  here is what I found...
+					}	
+				]
+	    	});
+	    } else { // Otherwise, begin with attributes belong to last title
+		part.split('\n').forEach((line, i) => {
+						let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+						body.push({
+							"type": "Container",
+							"items": [
+								{
+									"type": "TextBlock",
+									"wrap": true,
+									"size": "default",
+									"text": line						
+								}
+							],
+							"selectAction": {
+								"type": "Action.Submit",
+								"title": "cool link",
+								"data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+							}
+	    					});
+		});
+	    }
+	  } else {
+		part.split('\n').forEach((line, i) => {
+				if (i === 0) {
+	    				body.push({
+					"type": "Container",
+					"items": [
+						{
+							"type": "TextBlock",
+							"wrap": true,
+							"size": "default",
+							"text": '**' + line // memory
+						}
+					]});
+				} else {
+						let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+						body.push({
+							"type": "Container",
+							"items": [
+								{
+									"type": "TextBlock",
+									"wrap": true,
+									"size": "default",
+									"text": line						
+								}
+							],
+							"selectAction": {
+								"type": "Action.Submit",
+								"title": "cool link",
+								"data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+							}
+	    					});
+				}
+		});
+	  }
+	});
+}
+>>>>>>> Added field to configure separator for containers in Adaptive card. By default, containers are build for each line starting with ** separator

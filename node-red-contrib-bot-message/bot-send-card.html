@@ -70,8 +70,8 @@
             titleTypeAdaptiveCard:    { value: "str" },
             textAdaptiveCard:      { value: undefined },
             attachAdaptiveCard:       { value: undefined },
-            wrapTextAdaptiveCard: {value: false},
-            displayedTextSizeAdaptiveCard: {value: undefined}
+            displayedTextSizeAdaptiveCard: {value: undefined},
+            containerSeparatorAdaptiveCard: {value: "**"},
 
         },
         inputs:  1,
@@ -112,6 +112,7 @@
 =======
 
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
+            $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
             
 >>>>>>> Added wrap text field to enter the size of the text to display for Adaptive Card
             // Prompt and speech : show and hide fields
@@ -179,7 +180,7 @@
                 }
                   //---maybe reuse
                 else if (type === "adaptiveCard") {
-                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard").typedInput('show');
+                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
             });
 
@@ -701,6 +702,10 @@
             <div class="form-row">
                 <label  for="node-input-displayedTextSizeAdaptiveCard"> Wrap text up to </label>
                 <input type="number" id="node-input-displayedTextSizeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-containerSeparatorAdaptiveCard"> Container separator </label>
+                <input type="text" id="node-input-containerSeparatorAdaptiveCard">
             </div>
             <div class="form-row">
                 <label for="node-input-attachAdaptiveCard"><i class="fa fa-image"></i> Image</label>
