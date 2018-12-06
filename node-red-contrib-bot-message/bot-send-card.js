@@ -305,9 +305,12 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
 
         //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
         buildAdaptiveCardJson(textToShow, reply.body, separator);
+<<<<<<< HEAD
         // AAAAAAAAAAAAAAAAA Maybe this
         //buildAdaptiveCardJson(tmp, reply.actions[0].card.body, '**');
         
+=======
+>>>>>>> Replacing magic string ** everywhere with separator
     }
 };
 
@@ -627,9 +630,9 @@ const buildAdaptiveCardJson = function(whole, body, separator) {
     console.log("Enter buildAdaptiveCardJson");
     console.log("Whole " + whole);
     console.log("Body " + body);
-	whole.split(' **').forEach((part, index) => {
+	whole.split(' '+ separator).forEach((part, index) => {
 	  if (index === 0) { 
-	    if (part.startsWith(' **', 0)) { // begins with title directly
+	    if (part.startsWith(' '+ separator, 0)) { // begins with title directly
 	    	body.push({
 				"type": "Container",
 				"items": [
@@ -672,7 +675,7 @@ const buildAdaptiveCardJson = function(whole, body, separator) {
 							"type": "TextBlock",
 							"wrap": true,
 							"size": "default",
-							"text": '**' + line // memory
+							"text": separator + line // memory
 						}
 					]});
 				} else {
