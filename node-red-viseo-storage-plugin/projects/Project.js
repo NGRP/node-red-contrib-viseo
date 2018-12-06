@@ -473,6 +473,9 @@ Project.prototype.revertFile = function (filePath) {
     });
 };
 
+Project.prototype.rebaseContinue = function() {
+    return gitTools.rebaseContinue(this.path);
+}
 
 
 Project.prototype.status = function(user, includeRemote) {
@@ -500,12 +503,13 @@ Project.prototype.status = function(user, includeRemote) {
 
         var promises = [
             gitTools.getStatus(self.path),
-            fs.exists(fspath.join(self.path,".git","MERGE_HEAD"))
+            fs.exists(fspath.join(self.path,".git","MERGE_HEAD")),
+            fs.exists(fspath.join(self.path,".git","REBASE_HEAD"))
         ];
         return when.all(promises).then(function(results) {
 
             var result = results[0];
-            if (results[1]) {
+            if (results[1] || results[2]) {
                 result.merging = true;
                 if (!self.merging) {
                     self.merging = true;
@@ -523,6 +527,7 @@ Project.prototype.status = function(user, includeRemote) {
             } else {
                 self.merging = false;
             }
+
             self.branches.local = result.branches.local;
             self.branches.remote = result.branches.remote;
             if (fetchError && !/ambiguous argument/.test(fetchError.message)) {

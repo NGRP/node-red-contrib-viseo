@@ -636,6 +636,9 @@ module.exports = {
             throw err;
         })
     },
+    rebaseContinue: function(cwd) {
+        return runGitCommand(['rebase', '--continue'], cwd);
+    },
     getBranches: getBranches,
     // getBranchInfo: getBranchInfo,
     checkoutBranch: function(cwd, branchName, isCreate) {
