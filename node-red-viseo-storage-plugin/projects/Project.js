@@ -812,11 +812,13 @@ Project.prototype.getCredentialsFileBackup = function() {
 
 Project.prototype.export = function () {
 
+    let package = this.package || {};
+
     return {
         name: this.name,
-        summary: this.package.description,
+        summary: package.description || '',
         description: this.description,
-        dependencies: this.package.dependencies||{},
+        dependencies: package.dependencies||{},
         empty: this.empty,
         settings: {
             credentialsEncrypted: (typeof this.credentialSecret === "string"),
