@@ -465,10 +465,16 @@ function createProject(user, metadata) {
     metadata.path = fspath.join(projectsDir,metadata.name);
 
     return Projects.create(user, metadata).then(function(p) {
-        return setActiveProject(user, p.name);
-    }).then(function() {
-        return getProject(user, metadata.name);
-    })
+        runtime.events.emit("runtime-event",{
+            id:"viseo-success",
+            payload:{
+                type:"success",
+                error:"project-created",
+                text:"Project "+p.name+" created. You can load it now.",
+            },
+            retain:true
+        });
+    });
 }
 
 function setActiveProject(user, projectName) {
