@@ -36,23 +36,35 @@
 
 <script type="text/x-red" data-help-name="bot-event">
 
-    <p>Event listener: sends a message when an event between the bot connectors and the messages is triggered.</p>
+    <p>Event listener: listens to events triggered during a bot conversation.</p>
 
     <h3>Details</h3>
-    <p>For some events, you must add a <code>continue</code> node at the end of the treatment in order to continue the process.</p>
-    <p>Events</p>
+
+    The node catches the event, sometimes interrupting the course of the flow. To resume the execution of the flow you need to use the <code>Continue</code> node. 
+    However some nodes must not lead to a <code>Continue</code> node as they do not interrupt the flow (see below).
+
+    <h4>Events handled</h4>
     <dl class="message-properties">
-        <dt>Prompt <span class="property-type">continue</span></dt>
+        <dt>Prompt <span class="property-type">needs Continue</span></dt>
         <dd>when a prompt message arrives</dd>
-        <dt>Prompt unespected text <span class="property-type">continue</span></dt>
-        <dd>when a prompt message arrives but does not validate the options (buttons, quickreplies, regexp)</dd>
-        <dt>Received <span class="property-type">continue</span></dt>
+        <dt>Prompt unexpected text <span class="property-type">needs Continue</span></dt>
+        <dd>when a prompt message arrives but does not match any of the following : button values/regexp, quickreplies values/regexp</dd>
+        <dt>Received <span class="property-type">needs Continue</span></dt>
         <dd>when the connector just received a message from the user</dd>
         <dt>Replied </dt>
         <dd>when the bot replied to the user</dd>
-        <dt>Reply <span class="property-type">continue</span></dt>
+        <dt>Reply </dt>
         <dd>when the bot just prepared the message to reply to the user</dd>
     </dl>
+
+    <h4>Precedence</h4>
+    The order in which the events are triggered is as follows :
+    <ul>
+        <li>Received > Prompt > Prompt Unexpected text</li>
+
+        <li>Reply > Replied</li>
+    </ul>
+
     
     <h3>References</h3>
     <ul>
