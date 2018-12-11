@@ -11,13 +11,7 @@
             convId:    { value: undefined },
             source:    { value: undefined, required: true },
             payload:   { value: undefined },
-            context:   { value: undefined },
-
-            typeUserId:   { value: "msg", required: false },
-            typeUserName: { value: "msg", required: false },
-            typeConvId:   { value: "msg", required: false },
-            typePayload:  { value: "msg", required: false },
-            typeContext:  { value: "msg", required: false },
+            context:   { value: undefined }
         },
         inputs:  1,
         outputs: 2,
@@ -25,11 +19,12 @@
         paletteLabel: "Wrapper",
         label: function() { return this.name || "Wrapper"; },
         oneditprepare: function() {
-            $("#node-input-userId")   .typedInput({ default: this.typeUserId   || 'msg', types:['msg']});
-            $("#node-input-userName") .typedInput({ default: this.typeUserName || 'msg', types:['msg']});
-            $("#node-input-convId")   .typedInput({ default: this.typeConvId   || 'msg', types:['msg']});
-            $("#node-input-payload")  .typedInput({ default: this.typePayload  || 'msg', types:['msg']});
-            $("#node-input-context")  .typedInput({ default: this.typeContext  || 'msg', types:['msg']});
+            $("#node-input-source").typedInput({ default: 'str', types:['msg'], type: 'str'});
+            $("#node-input-userId").typedInput({ default: 'msg', types:['msg'], type: 'msg'});
+            $("#node-input-userName").typedInput({ default: 'msg', types:['msg'], type: 'msg'});
+            $("#node-input-convId").typedInput({ default: 'msg', types:['msg'], type: 'msg'});
+            $("#node-input-payload").typedInput({ default: 'msg', types:['msg'], type: 'msg'});
+            $("#node-input-context").typedInput({ default: 'msg', types:['msg'], type: 'msg'});
         }
     });
 </script>
@@ -40,31 +35,47 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-source"><i class="icon-tag"></i> Source</label>
-        <input type="text" id="node-input-source" placeholder="">
+        <label for="node-input-source"><i class="fa fa-tag"></i> Source</label>
+        <input type="text" id="node-input-source" style="width: 70%" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-input-userId"><i class="icon-tag"></i> UserId</label>
-        <input type="text" id="node-input-userId" style="width: 70%" placeholder=""/>  
-    </div>
-    <div class="form-row">
-        <label for="node-input-userName"><i class="icon-tag"></i> UserName</label>
-        <input type="text" id="node-input-userName" style="width: 70%" placeholder="Unknown"/>  
-    </div>
-    <div class="form-row">
-        <label for="node-input-convId"><i class="icon-tag"></i> ConvId</label>
+        <label for="node-input-convId"><i class="fa fa-tag"></i> ConvId</label>
         <input type="text" id="node-input-convId" style="width: 70%" placeholder=""/>  
     </div>
     <div class="form-row">
-        <label for="node-input-payload"><i class="icon-tag"></i> Payload</label>
+        <label for="node-input-userId"><i class="fa fa-user"></i> UserId</label>
+        <input type="text" id="node-input-userId" style="width: 70%" placeholder=""/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-userName"><i class="fa fa-user"></i> UserName</label>
+        <input type="text" id="node-input-userName" style="width: 70%" placeholder="Unknown"/>  
+    </div>
+    <div class="form-row">
+        <label for="node-input-payload"><i class="fa fa-bars"></i> Payload</label>
         <input type="text" id="node-input-payload" style="width: 70%" placeholder="payload">
     </div>
     <div class="form-row">
-        <label for="node-input-context"><i class="icon-tag"></i> Context</label>
+        <label for="node-input-context"><i class="fa fa-sliders"></i> Context</label>
         <input type="text" id="node-input-context" style="width: 70%" placeholder="context">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="bot-wrapper">
+    <p>Tests a chatbot connector. </p>
 
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

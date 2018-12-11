@@ -1,8 +1,7 @@
 {
 	"name": "node-red-contrib-viseo-inbenta",
-	"version": "0.0.2",
-	"author": "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
-	"description": "API requests to Inbenta",
+	"version": "0.0.3",
+	"description": "VISEO Bot Maker - Inbenta",
 	"dependencies": {
 		"request": "^2.76.0",
 		"extend": "^3.0.0",
@@ -14,13 +13,7 @@
 		"url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-inbenta"
 	},
 	"license": "Apache-2.0",
-	"keywords": [
-		"node-red",
-		"inbenta",
-		"connect",
-		"api",
-		"viseo"
-	],
+	"keywords": ["node-red", "inbenta", "connect","api","viseo", "nlp"],
 	"node-red": {
 		"nodes": {
 			"ibenta-request": "node-inbenta-request.js"

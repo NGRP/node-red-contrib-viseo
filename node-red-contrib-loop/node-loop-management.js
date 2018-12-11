@@ -35,6 +35,7 @@ const input = (node, data, config) => {
     let confObject = CONF;
     if (scope !== 'global') confObject = _tmp[loopKey] || {};
 
+
     // 2. PREMIER PASSAGE : init object
     if (JSON.stringify(confObject) === '{}') {
 
@@ -65,23 +66,48 @@ const input = (node, data, config) => {
     // 3. OUTPUT : outputObject
     let outputType = config.outputType || 'msg',
         outputObject = config.output || 'payload',
-        loc = (outputType === 'global') ? node.context().global : data;
+        loc = (outputType === 'global') ? node.context().global : data,    
+        behavior = config.behavior || 'after';
 
     // 4. BEHAVIOR
     let len = (confObject.array !== undefined) ? confObject.array.length : confObject.properties.length;
+    let returnedValue = [];
 
     // 4.1. Out of loop
-    if (confObject.count >= len) {  (scope === 'global') ? CONF = {} : _tmp[loopKey] = undefined;
-                                    helper.setByString(loc, outputObject, undefined);
-                                    return node.send([undefined,data]); }
+    if (confObject.count === (len-1) && behavior === "before") {
+        let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};  
+        if (scope === 'global') CONF = {} 
+        else {
+            delete (scope === 'user' ? data.user._tmp : data._tmp)
+            _tmp[loopKey] = undefined; 
+        }
+        helper.setByString(loc, outputObject, outObject);      
+        returnedValue = [undefined,data];
+    }
 
-    // 4.2. Increment
-    (scope === 'global') ? CONF = confObject : _tmp[loopKey] = confObject;
-    let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};
+    else if (confObject.count >= len) {  
+        if (scope === 'global') CONF = {} 
+        else {
+            delete (scope === 'user' ? data.user._tmp : data._tmp)
+            _tmp[loopKey] = undefined; 
+        }
+        helper.setByString(loc, outputObject, undefined);
+        returnedValue = [undefined,data];
+    }
 
-    helper.setByString(loc, outputObject, outObject);
-    node.send([data, undefined]);
+    else {
+        // 4.2. Increment
+        (scope === 'global') ? CONF = confObject : _tmp[loopKey] = confObject;
+        let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};
 
+        helper.setByString(loc, outputObject, outObject);
+        returnedValue = [data, undefined];
+    }
 
-    
+    let delay = 0;
+    if (config.delay) {
+        delay = Number(config.delayType === 'msg' ? helper.getByString(data, config.delay) : config.delay);
+        setTimeout(function() { node.send(returnedValue);}, delay);
+    }
+    else return node.send(returnedValue);
 }

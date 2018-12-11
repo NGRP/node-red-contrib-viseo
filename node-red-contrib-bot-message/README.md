@@ -1,10 +1,12 @@
 # Node-RED
 
-A Node-RED node for Bot Message.
+Sends messages to users (needs VISEO bot servers - connectors).
 
 ![Framework](https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/master/node-red-contrib-bot-message/doc/framework.png)
 
-This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
+This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the node documentation in the Node-RED info tab. 
+
+Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 
 ## Quick Start
 
@@ -29,9 +31,14 @@ Please report unacceptable behavior to any of the project's core team.
 ## Authors
 
 This project is a creation of [VISEO](http://www.viseo.com) Technology.
-- Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
 
+- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
+- Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
+- Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
 
 ## Copyright and license
 
-Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2012-2019 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.

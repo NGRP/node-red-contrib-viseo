@@ -18,9 +18,10 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
     let now = new Date();
-    let url = 'http://logv2.xiti.com/hit.xiti'
-            + '?s=' + helper.resolve(config.siteId, data, config.siteId) //581280
-            + '&p=' + helper.resolve(config.pageId, data, config.pageId)
+    let pageId = (config.pageIdType === "msg") ? helper.getByString(data, config.pageId) : config.pageId;
+    let siteId = (config.siteIdType === "msg") ? helper.getByString(data, config.siteId) : config.siteId;
+
+    let url = 'http://logv2.xiti.com/hit.xiti' + '?s=' + siteId + '&p=' + pageId
             + '&hl='+now.getHours()+'x'+now.getMinutes()+'x'+now.getSeconds();
     
     

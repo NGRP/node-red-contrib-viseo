@@ -9,12 +9,14 @@
                 collection:         { value: undefined },
                 collectionType:     { value: "str" },
                 key:                { value: undefined },
-                offset:             { value: undefined, validate: RED.validators.typedInput("offsetType") },
-                offsetType:         { value: undefined }, 
-                limit:              { value: undefined, validate: RED.validators.typedInput("limitType") },
-                limitType:          { value: undefined },
+                keyType:            { value: "msg" },
                 value:              { value: undefined },
-                operation:          { value: undefined },
+                valueType:          { value: "msg" },
+                offset:             { value: undefined, validate: RED.validators.typedInput("offsetType") },
+                offsetType:         { value: "num" }, 
+                limit:              { value: undefined, validate: RED.validators.typedInput("limitType") },
+                limitType:          { value: "num" },
+                operation:          { value: "get" },
                 merge:              { value: undefined }
             };
 
@@ -37,9 +39,8 @@
                     '</option>');
 
                 $choice = $('<div class="form-row server-type" id="section-server-'+qName+'"></div>');
-                $choice.append('<label for="node-input-server-'+qName+'"><i class="icon-tag"></i> '+result[index].name+'</label>');
-                $choice.append('<input type="text" id="node-input-server-'+qName+'">');
-
+                $choice.append('<label for="node-input-server-'+qName+'"><i class="fa fa-database"></i> '+result[index].name+'</label>');
+                $choice.append('<input type="text" id="node-input-server-'+qName+'" style="width:70%;">');
                 $choice.insertAfter($selectSection);
             }
 
@@ -60,49 +61,26 @@
                 align: "left",
                 paletteLabel: "NoSQL",
                 label: function() { 
-                    if(this.name) {
-                        return this.name;
-                    }
-                    if(this.operation) {
+                    if (this.name) return this.name;
+                    if (this.operation) {
                         let label = this.operation[0].toUpperCase() + this.operation.substring(1);
-                        if(this.collection) {
-                            label += " "+this.collection;
-                        }
+                        if (this.collection) label += " "+this.collection;
                         return label;
                     }
-                    return "no SQL" 
+                    return "NoSQL";
                 },
                 oneditprepare: function() {
 
                     let node = this;
 
-                    const initLimits = function() {
-                        $("#node-input-offset").typedInput({ 
-                            default: 'num', 
-                            types: ['num', 'msg'], 
-                            typeField: $("#node-input-offsetType")
-                        })
-                        .typedInput('width', '100px');
-                        $("#node-input-limit").typedInput({ 
-                            default: 'num', 
-                            types: ['num', 'msg'], 
-                            typeField: $("#node-input-limitType")
-                        })
-                        .typedInput('width', '100px');
-                    }
-
-                    initLimits();
-
-                    $("#node-input-collection").typedInput({ 
-                        default: 'str', 
-                        types: ['str', 'msg'], 
-                        typeField: $("#node-input-collectionType")
-                    });
+                    $("#node-input-collection").typedInput({ default: 'str', types: ['str', 'msg'], typeField: $("#node-input-collectionType")});
+                    $("#node-input-offset").typedInput({ default: 'num', types: ['num', 'msg'], typeField: $("#node-input-offsetType")})
+                    $("#node-input-limit").typedInput({ default: 'num', types: ['num', 'msg'], typeField: $("#node-input-limitType")})
+                    $("#node-input-key").typedInput({ default: 'msg', types: ['str', 'msg', 'json'], typeField: $("#node-input-keyType")})
+                    $("#node-input-value").typedInput({ default: 'msg', types: ['str', 'msg', 'json'], typeField: $("#node-input-valueType")})
 
                     $('.server-type').hide();
-                    if(node['server-type']) {
-                        $('#node-input-server-type option[value="'+node['server-type']+'"]').prop('selected', true);
-                    }
+                    if (node['server-type']) $('#node-input-server-type option[value="'+node['server-type']+'"]').prop('selected', true);
 
                     $('#node-input-server-type').on('change', function() {
                         $('.server-type').hide();
@@ -110,20 +88,21 @@
                     })
 
                     $('#node-input-operation').on('change', function() {
-                        if($(this).val() === 'find') {
-                            $('#row-limit').show();
-                            node.outputs = 1;
-                            initLimits();
-                        } else if($(this).val() === 'test') {
+                        let val = $(this).val();
+                        node.outputs = 1;
+                        $('.row-limit, .row-merge').hide();
+
+                        if (val === 'test') {
                             node.outputs = 2;
-                        } else {
-                            $('#row-limit').hide();
-                            node.outputs = 1;
                         }
-
+                        else if (val === 'find') {
+                            $('.row-limit').show();
+                            $("#node-input-offset, #node-input-limit").typedInput('show');
+                        }
+                        else if (val === 'get') {
+                            $('.row-merge').show();
+                        }
                     })
-
-
                 }
             });
         }
@@ -137,31 +116,29 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
-    <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Config</h4>
+    <br>
+    <b>Config</b>
+
     <div class="form-row" id="server-type-section">
-        <label for="node-input-server-type"><i class="icon-tag"></i> Source</label>
-        <select id="node-input-server-type" style="width:125px">
+        <br>
+        <label for="node-input-server-type"><i class="fa fa-sliders"></i> Source</label>
+        <select id="node-input-server-type" style="width:70%;">
         </select>
     </div>
-   
 
-    <h4 style="border-bottom: 1px solid #AAA; margin: 1em 0em 1em 0em;">Query</h4>
-     <div class="form-row">
-        <label for="node-input-collection"><i class="icon-tag"></i> Collection</label>
-        <input type="text" id="node-input-collection" placeholder="collection">
+    <div class="form-row">
+        <label for="node-input-collection"><i class="fa fa-bookmark"></i> Collection</label>
+        <input type="text" id="node-input-collection" style="width:70%;">
         <input type="hidden" id="node-input-collectionType">
     </div>
+   
+    <br>
+    <b>Query</b>
+
     <div class="form-row">
-        <label for="node-input-key"><i class="icon-tag"></i> Key</label>
-        <input type="text" id="node-input-key" placeholder="payload">
-    </div>
-   <div class="form-row">
-        <label for="node-input-value"><i class="icon-tag"></i> Value</label>
-        <input type="text" id="node-input-value" placeholder="payload">
-    </div>
-    <div class="form-row">
-        <label for="node-input-operation"><i class="icon-tag"></i> Operation</label>
-        <select id="node-input-operation" style="width:125px">
+        <br>
+        <label for="node-input-operation"><i class="fa fa-plus"></i> Operation</label>
+        <select id="node-input-operation" style="width: 70%;">
             <optgroup>
                 <option value="get">get</option>
                 <option value="set">set</option>
@@ -178,33 +155,71 @@
             </optgroup>
         </select>
     </div>
-    <div class="form-row" id="row-limit" style="display:none">
-        <label for="node-input-offset"><i class="icon-tag"></i> Offset</label>
-        <input type="text" id="node-input-offset" >
+
+    <div class="row-limit row-merge" style="display:none;">
+        <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+        --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+        <br><br>
+    </div>
+
+    <div class="form-row row-limit" style="display:none;">
+        <label for="node-input-offset" style="margin-left:15px; width: 85px; color:#848484"> Offset</label>
+        <input type="text" id="node-input-offset" style="width: 70%;">
         <input type="hidden" id="node-input-offsetType">
-    
-        <label for="node-input-limit" style="text-align:right"><i class="icon-tag"></i> Limit</label>
-        <input  type="text" id="node-input-limit" >
+    </div>
+
+    <div class="form-row row-limit" style="display:none;">
+        <label for="node-input-limit" style="margin-left:15px; width: 85px; color:#848484"> Limit</label>
+        <input  type="text" id="node-input-limit" style="width: 70%;">
         <input type="hidden" id="node-input-limitType">
     </div>
     
+    <div class="form-row row-merge" style="display:none;">
+        <label for="node-input-merge" style="margin-left:15px; width: 85px; color:#848484"> Merge</label>
+        <input type="checkbox" style="width: auto;" id="node-input-merge"> <span style="font-size: 12px">Merge with existing properties</span>
+    </div>
+
+    <div class="row-limit row-merge" style="display:none;">
+        <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+        --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+        <br><br>
+    </div>
+
     <div class="form-row">
-        <label for="node-input-merge"></label>
-        <input type="checkbox" style="width: auto;" id="node-input-merge"> <span style="font-size: 12px">(merge GET with existing property)</span>
+        <label for="node-input-key"><i class="fa fa-key"></i> Key</label>
+        <input type="text" id="node-input-key" placeholder="payload" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-value"><i class="fa fa-times"></i> Value</label>
+        <input type="text" id="node-input-value" placeholder="payload" style="width: 70%;">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="nosql">
-    Retrieve or Save an object of the data flow according to a data flow id.
-    For instance, to retrieve or save a data.user then set key=data.user.id and value=data.user 
-    For a get, if the user already exists in the flow then it is merged with new one  
-    <h2>Fields</h2>
+    
+    <p>Performs NoSQL operations on databases.</p>
+
+    <h3>Details</h3>
+    <p>Retrieve or Save an object of the data flow according to a data flow id.
+        For instance, to retrieve or save (<i>set</i>) a <code>data.user</code> then set <code>key=data.user.id</code> and <code>value=data.user</code>.
+        For a <i>get</i> operation, if the <code>user</code> already exists in the flow then it is merged with new one.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Source</dt>
+        <dd>chose the source, according to the installed configurations.</dd>
+        <dt>Collection <span class="property-type">string</span></dt>
+        <dd>collection's name, if appropriate</dd>
+        <dt>Key <span class="property-type">string/json</span></dt>
+        <dd>filled with the property used as the key (mandatory)</dd>
+        <dt>Value <span class="property-type">string/json</span></dt>
+        <dd>filled with the property used as the value (mandatory)</dd>
+    </dl>
+    <p><b>Note:</b> <i>Set</i> is used to store the value. <i>Get</i> is used to fetch the value according to a given id. 
+        <i>Find</i> query database with JSON key. <i>Test</i> tests if the collection is available.</p>
+
+    <h3>References</h3>
     <ul>
-        <li><b>Name:</b> can be used to override the default name of the node.</li>
-        <li><b>Key:</b> filled with the property used as the key (mandatory). </li>
-        <li><b>Value:</b> filled with the property used as the value (mandatory).</li>
-        <li><b>Operation:</b> <i>set</i> is used to store the value. <i>get</i> is used to 
-        fetch the value according to a given id. <i>find</i> query database with JSON key.<i>test</i> test if collection is available</li>
-        <li><b>Offset/Limit: For find operations</b></li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
+
 </script>

@@ -22,8 +22,8 @@ let logger = undefined;
 const setup = (RED, node, config) => {
     let  filepath = helper.resolve(config.file);
     if (!filepath) return;
-         filepath = path.normalize(filepath);
-
+    
+    filepath = path.normalize(filepath);
     logger = new (winston.Logger)({
         'level': 'info',
         'transports': [
@@ -39,14 +39,17 @@ const close = (done) => {
 }
 
 const input = (node, data, config) => {
-    let log = config.log || 'payload'; 
-        log = helper.getByString(data, log, log);
 
+    let log = config.log || 'payload'; 
+    if (config.logType === 'msg') log = helper.getByString(data, log);
     if (typeof log === 'object'){
         log = JSON.stringify(log);
         log = log.replace ("\n","");
     }
 
-    logger.log(config.level || 'info', log);
+    let level = config.level || 'info';
+    if (config.levelType === 'msg') level = helper.getByString(data, level);
+
+    logger.log(level, log);
     node.send(data);
 }

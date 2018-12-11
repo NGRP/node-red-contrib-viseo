@@ -6,7 +6,7 @@
             name: { value: undefined },
             input: { value: undefined, required: false },
             output: { value: undefined, required: false },
-            enpoint: { value: undefined, required: false },
+            endpoint: { value: undefined, required: false },
             key: { value: undefined, required: true, type: 'ms-config'},
             api: { value: "DetectLanguage" },
             processType: { value: "ProcessText"},
@@ -35,8 +35,8 @@
         outputs: 1,
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: 'MS Content Moderator',
-        label: function() { return this.name || "Microsoft Content Moderator"; },
+        paletteLabel: 'Content Moderator',
+        label: function() { return this.name || "Content Moderator"; },
         oneditprepare: function() {
             let selectedAPI = this.api;
             let selectedProcess = this.process;
@@ -53,7 +53,7 @@
             $("#node-input-CacheImage").typedInput({ default: 'msg',  types: ['bool','msg','global'], typeField: $("#node-input-CacheImageType")  });
 
             $("#node-input-processType").change(updateSelects);
-            $("#node-input-api").change(updateFiels);
+            $("#node-input-api").change(updateFields);
 
             function updateSelects() {
                 let api = $("#node-input-api").val() || selectedAPI;
@@ -82,10 +82,10 @@
                 }
 
                 $("#node-input-api").val(api)
-                updateFiels();
+                updateFields();
             }
 
-            function updateFiels() {
+            function updateFields() {
                 let field = $("#node-input-api").val() || selectedAPI;
 
                 $(".screen, .ocr, .match, .findfaces, .evaluate").hide();
@@ -220,22 +220,25 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-content-moderator">
-    <p>This node uses the Microsoft Cognitive Services Language API to get informations on a text. </p>
+    <p>Uses the Microsoft Cognitive Services Language API to get informations on a text. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Key <span class="property-type">config</span></dt>
+        <dd>credentials for the Content Moderator API</dd>
+        <dt>Endpoint <span class="property-type">string</span></dt>
+        <dd>endpoint specified with the key in Azure Portal</dd>
+        <dt>Input <span class="property-type">string</span></dt>
+        <dd>where to get the input text</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://westus.dev.cognitive.microsoft.com/docs/services/57cf753a3f9b070c105bd2c1/">Microsoft Content Moderator</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
     
-        <h2>Main parameters</h2>
-        <p>
-            <li><b>Key</b>: A key for the Content Moderator API is required for the process.</li>
-            <li><b>Endpoint</b>: Endpoint specified with the key in Azure Portal.</li>
-            <li><b>Input</b>: Where to get the input text.</li>
-            <li><b>Output</b>: Where to set the result.</li>
-            <li><b>Api</b>: Process.</li>
-        </p>
-    
-        <h2>Getting help</h2>
-        <p>
-            <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a></li>
-            <li><b>API reference and examples:</b> <a>https://westus.dev.cognitive.microsoft.com/docs/services/57cf753a3f9b070c105bd2c1/</a></li>
-            <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a></li>
-            <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
-        </p>
 </script>

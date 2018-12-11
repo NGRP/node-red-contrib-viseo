@@ -1,11 +1,41 @@
 # Node-RED
 
-A Node-RED node to send/receive data using [Socket.io](http://socket.io/).
+Sends/receives data using [Socket.io](http://socket.io/). Also a **bot server** node to connect with a web client.
+
+This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the node documentation in the Node-RED info tab. 
+
+Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 
 ## Quick Start
 
 ```
 npm install node-red-contrib-viseo-socketio
+```
+
+## Client code example
+
+```javascript
+var socket = io('https://myserver.com', { path: '/myPath/socket.io', secure: true });
+
+socket.on('myNamespace', function (data) {
+    if (data.event) socket.emit('myNamespace', { type: "event", content: 'ok' });
+});
+    
+socket.on('disconnect', function () {
+    console.log('you have been disconnected');
+    socket.removeAllListeners('myNamespace');
+    socket.removeAllListeners('disconnect');
+    socket.removeAllListeners('reconnect');
+    socket.removeAllListeners('connect');
+});
+
+socket.on('reconnect', function () {
+    console.log('you have been reconnected');
+});
+    
+socket.on('connect', function () {
+    console.log('you have been connected');
+});
 ```
 
 ## Getting Help
@@ -24,12 +54,15 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [Jean-Philippe Encausse](http://www.encausse.net) for the [SARAH](http://sarah.encausse.net) home automation project.
+This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
+- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
-
+- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
+- Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
 
 ## Copyright and license
 
-Copyright 2012-2017 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.
-Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2012-2019 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.

@@ -228,8 +228,8 @@
     </div>
 
     <div class="form-row parameters mediaUrl">
-        <label for="node-input-destination" style="margin-left:15px; width: 85px; color:#848484"> Folder</label>
-        <input type="text" id="node-input-destination" style="width:70%;" placeholder="{cwd}/destinationFolder">
+        <label for="node-input-destination" style="margin-left:15px; width: 85px; color:#848484"> Destination</label>
+        <input type="text" id="node-input-destination" style="width:70%;" placeholder="{cwd}/destinationFolderOrFile">
         <input type="hidden" id="node-input-destinationType">
     </div>
 
@@ -259,7 +259,18 @@
 
 <script type="text/x-red" data-help-name="blink">
     <p>Implements CURL Blink for Home unofficial API</p>
-    <p>Use Login/password to login Blink API and retrieve an authentication token. Then get information about your Blink devices.</p>
 
-    <p><br>Reference : https://github.com/MattTW/BlinkMonitorProtocol</p>
+    <h3>Details</h3>
+    <p>This node uses unofficial Blink API to login then get/set information about/for your Blink devices.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Output</dt>
+        <dd>where to store the result</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/MattTW/BlinkMonitorProtocol">Blink for Home</a> - unofficial API reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

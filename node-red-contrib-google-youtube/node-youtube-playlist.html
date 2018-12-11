@@ -7,15 +7,17 @@
             account:    { type: 'google-api-key', required: true },
             playlistId:  { value: undefined },
             playlistIdType:  { value: 'str' },
-            maxResults: { value: undefined , validate: RED.validators.number() }
+            maxResults: { value: 5 , validate: RED.validators.number() }
         },
         inputs:  1,
         outputs: 2,
         icon: "youtube.svg",
         align: "left",
-        paletteLabel: "Youtube Playlist",
+        paletteLabel: "Playlist",
+        outputLabels: ["stdout", "stderr"],
         label: function() { return this.name || 'Youtube Playlist'; },
         oneditprepare: function() {
+            $('#node-input-maxResults').typedInput({ default: 'num', types: ['num'], type: 'num' })
             $('#node-input-playlistId').typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-playlistIdType") })
         }
     });
@@ -32,16 +34,38 @@
     </div>
     <div class="form-row">
         <label for="node-input-playlistId"><i class="fa fa-youtube"></i> Playlist ID </label>
-        <input type="text" id="node-input-playlistId" placeholder="">
-        <input type="hidden" id="node-input-playlistIdType" placeholder="">
+        <input type="text" id="node-input-playlistId" placeholder="" style="width: 70%;">
+        <input type="hidden" id="node-input-playlistIdType" >
     </div>
     <div class="form-row">
         <label for="node-input-maxResults"><i class="fa fa-bars"></i> Max results</label>
-        <input type="text" id="node-input-maxResults" placeholder="" value="5">
+        <input type="text" id="node-input-maxResults" style="width: 70%;">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="node-youtube-playlist">
-   <p>Connector to Youtube Data REST API for [ playlist listing ] (https://developers.google.com/youtube/v3/docs/playlistItems/list).</p>
-   
+   <p>Uses Youtube Data REST API for playlist listing.</p>
+
+   <h3>Outputs</h3>
+   <dl class="message-properties">
+       <dt>payload <span class="property-type">object</span></dt>
+       <dd>the result</dd>
+   </dl>
+
+   <h3>Details</h3>
+   <p>Properties</p>
+   <dl class="message-properties">
+       <dt>API Key <span class="property-type">config</span></dt>
+       <dd>key to access Youtube API</dd>
+       <dt>Playlist ID <span class="property-type">string</span></dt>
+       <dd>the ID that YouTube uses to uniquely identify the playlist</dd>
+       <dt>Max results <span class="property-type">number</span></dt>
+       <dd>the maximum number of results to return</dd>
+   </dl>
+
+   <h3>References</h3>
+   <ul>
+       <li><a href="https://developers.google.com/youtube/v3/docs/playlistItems/list">Youtube</a> - playlists documentation</li>
+       <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+   </ul>
 </script>

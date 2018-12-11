@@ -37,7 +37,6 @@ module.exports = function(RED) {
 const stop  = (done) => { done(); }
 const start = (RED, node, config) => {
     let uri = '/trello-callback'+config.path+'/';
-    node.warn('Add Trello route to: '+ uri)
     RED.httpNode.get  (uri, (req, res, next) => { node.send({'payload' : req.body}); res.sendStatus(200); });
     RED.httpNode.post (uri, (req, res, next) => { node.send({'payload' : req.body}); res.sendStatus(200); });
 }

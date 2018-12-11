@@ -21,35 +21,32 @@
 <script type="text/x-red" data-template-name="dialogflow-server">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="dialogflow-server">
+    <p>[<b>Bot server</b>] Connects to a Dialogflow V2 agent, such as a Google Home application. </p>
 
-    <h1>Google Dialogflow server</h1>
-    <p>Connect your flow to Dialogflow V2 with this node. </p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
 
-    <h3>Endpoint</h3>
+    <h3>Details</h3>
+    <p>This node uses the <code>/dialogflow-server</code> route to connect with Dialogflow.</p>
+
+    <h3>References</h3>
     <ul>
-        This node uses the <b>/dialogflow-server</b> route to connect with Dialoglfow.
-    </ul>
-
-    <h3>Specifications</h3>
-    <ul>
-        The node will forward the received message to next node with the given properties: </p>
-        <li> payload: the message's text. </li>
-        <li> message: the message object. </li>
-        <li> user: an empty object with an id to be filled by further nodes. </li>
-        <li> context: a map with bot, session, and anything useful during the current stream's' life (it's a workaround for Node-RED message clone). </li>
-    </ul>
-
-    <h3>Getting help</h3>
-    <ul>
-        <li> <a href="https://dialogflow.com/">Dialoglfow interface</a> </li>
-        <li> <a href="https://actions-on-google.github.io/actions-on-google-nodejs/globals.html">Dialoglfow reference</a> </li>
-        <li> <a href="https://developers.google.com/actions/reference/nodejs/lib-v1-migration">Dialoglfow documentation</a> </li>
-        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-dialogflow">VISEO GitHub (details for this node):</a> </li>
-        <li> <a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO GitHub (main informations)</a> </li>
+        <li><a href="https://dialogflow.com/">Dialoglfow console</a> - create and test Dialogflow agents</li>
+        <li><a href="https://actions-on-google.github.io/actions-on-google-nodejs/globals.html">Dialoglfow reference</a></li>
+        <li><a href="https://developers.google.com/actions/reference/nodejs/lib-v1-migration">Dialoglfow documentation</a></li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
 </script>

@@ -6,19 +6,22 @@
             name:       { value: undefined },
             account:    { type: 'google-api-key', required: true },
             channelId:  { value: undefined },
-            region:     { value: undefined },
+            region:     { value: "FR" },
             query:      { value: undefined },
             queryType:  { value: 'str' },
-            maxResults: { value: undefined , validate: RED.validators.number() },
+            maxResults: { value: 5 , validate: RED.validators.number() },
             order:      { value: "relevance" }
         },
         inputs:  1,
         outputs: 2,
         icon: "youtube.svg",
         align: "left",
-        paletteLabel: "Youtube Search",
+        paletteLabel: "Search",
+        outputLabels: ["stdout", "stderr"],
         label: function() { return this.name || 'Youtube Search'; },
         oneditprepare: function() {
+            $('#node-input-channelId').typedInput({ default: 'str', types: ['str'], type: 'str' })
+            $('#node-input-maxResults').typedInput({ default: 'num', types: ['num'], type: 'num' })
             $('#node-input-query').typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-queryType") })
         }
     });
@@ -29,32 +32,33 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    
     <div class="form-row">
         <label for="node-input-account"><i class="fa fa-key"></i> API Key</label>
-        <input type="text" id="node-input-account">
+        <input type="text" id="node-input-account" style="width: 70%;">
     </div>
     <div class="form-row">
         <label for="node-input-channelId"><i class="fa fa-youtube"></i> Channel ID </label>
-        <input type="text" id="node-input-channelId" placeholder="">
+        <input type="text" id="node-input-channelId" style="width: 70%;">
     </div>
     <div class="form-row">
         <label for="node-input-region"><i class="fa fa-globe"></i> Region </label>
-        <select id="node-input-region">
+        <select id="node-input-region" style="width: 70%;">
             <option value="FR" selected>France</option>
         </select>
     </div>
     <div class="form-row">
         <label for="node-input-query"><i class="fa fa-search"></i> Query</label>
-        <input type="text" id="node-input-query" placeholder="">
+        <input type="text" id="node-input-query" style="width: 70%;">
         <input type="hidden" id="node-input-queryType"/>
     </div>
     <div class="form-row">
         <label for="node-input-maxResults"><i class="fa fa-bars"></i> Max results</label>
-        <input type="text" id="node-input-maxResults" placeholder="" value="5">
+        <input type="text" id="node-input-maxResults" style="width: 70%;" >
     </div>
     <div class="form-row">
         <label for="node-input-order"><i class="fa fa-sort-down"></i> Order </label>
-        <select id="node-input-order">
+        <select id="node-input-order" style="width: 70%;">
             <option value="relevance" selected>Most relevant</option>
             <option value="date">Latest</option>
             <option value="rating">Best rated</option>
@@ -66,6 +70,30 @@
 </script>
 
 <script type="text/x-red" data-help-name="node-youtube">
-   <p>Connector to Youtube Data REST API for [ video search ] (https://developers.google.com/youtube/v3/docs/search/list).</p>
-   
+   <p>Uses Youtube Data REST API for video search.</p>
+
+   <h3>Outputs</h3>
+   <dl class="message-properties">
+       <dt>payload <span class="property-type">object</span></dt>
+       <dd>the result</dd>
+   </dl>
+
+   <h3>Details</h3>
+   <p>Properties</p>
+   <dl class="message-properties">
+       <dt>API Key <span class="property-type">config</span></dt>
+       <dd>key to access Youtube API</dd>
+       <dt>Channel ID <span class="property-type">string</span></dt>
+       <dd>the ID that YouTube uses to uniquely identify the channel</dd>
+       <dt>Query <span class="property-type">string</span></dt>
+       <dd>the search input</dd>
+       <dt>Max results <span class="property-type">number</span></dt>
+       <dd>the maximum number of results to return</dd>
+   </dl>
+
+   <h3>References</h3>
+   <ul>
+       <li><a href="https://developers.google.com/youtube/v3/docs/search/list">Youtube</a> - search documentation</li>
+       <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+   </ul>
 </script>

@@ -14,7 +14,7 @@
         inputs:  1,
         outputs: 1,
         icon: "download.svg",
-        align: "right",
+        align: "left",
         paletteLabel: 'Get lines',
         label: function() { return this.name || "Get lines"; },
         oneditprepare: function() {
@@ -60,5 +60,23 @@
 </script>
 
 <script type="text/x-red" data-help-name="get-lines">
-    Open a file and returns an array with all the lines.
+
+    <p>Opens a file and returns an array of lines.</p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>File<span class="property-type">string</span></dt>
+        <dd>the file location (path)</dd>
+        <dt>Output<span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p>Chose the number of wanted lines and if you want them to be splited. For example, if the lines are composed of data separated with ' / ' then you
+        can chose to split all lines with ' / ' to get an array of arrays.
+    </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

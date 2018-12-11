@@ -6,8 +6,7 @@
             name:     { value: undefined },
             input:    { value: undefined },
             output:   { value: undefined },
-            pptTypeIn:  { value:"msg"  },
-            pptTypeOut: { value:"msg"  },
+            inputType:  { value:"msg"  },
         },
         inputs: 1,
         outputs: 1,
@@ -16,8 +15,8 @@
         paletteLabel: 'QRDecode',
         label: function () { return this.name || 'QRDecode' },
         oneditprepare: function() {
-            $("#node-input-input") .typedInput({ default: this.pptTypeIn  || 'msg', types:['msg']});
-            $("#node-input-output").typedInput({ default: this.pptTypeout || 'msg', types:['msg']});
+            $("#node-input-input").typedInput({ default: 'msg', types: ['msg','str'],  typeField: $("#node-input-inputType")  });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'],  type: 'msg' });
         }
     });
 </script>
@@ -27,16 +26,34 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="QRDecode">
     </div>
+
     <div class="form-row">
-        <label for="node-input-input"><i class="icon-tag"></i> Input</label>
+        <br>
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
         <input type="text" id="node-input-input" style="width: 70%" placeholder="prompt.attachments[0].contentUrl"/>  
+        <input type="hidden" id="node-input-inputType">
     </div>
     <div class="form-row">
-        <label for="node-input-output"><i class="icon-tag"></i> Output</label>
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>  
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="qrDecode">
+    <p>Uses jsQr to locate, extract and parse any QR code found in an image. </p>
 
+    <h3>Details</h3>p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Input <span class="property-type">string/buffer</span></dt>
+        <dd>an image buffer or an URL</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href=" https://github.com/cozmo/jsQR">JsQR</a> - the github repository</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

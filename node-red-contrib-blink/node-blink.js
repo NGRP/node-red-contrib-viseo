@@ -130,9 +130,20 @@ async function input (node, data, config) {
             if (destination) {
                 destination = helper.resolve(destination, data, '');
                 destination = path.normalize(destination);
-                destination += (destination[destination.length-1] !== '\\') ? '\\' : '';
-                destination += req.uri.split('/').pop();
-                result.destination = destination;
+
+                try {
+                    let stat = fs.lstatSync(destination); 
+                    if (stat.isDirectory()) {
+                        let filename = req.uri.split('/').pop();
+                        destination = path.join(destination, filename);
+                    }
+                }
+                catch(err) {
+                    node.warn(destination);
+                    return node.error(err);
+                }
+
+                // is Directory
     
                 let outVideo = fs.createWriteStream( destination );
                     outVideo.write( buffer, "binary" );

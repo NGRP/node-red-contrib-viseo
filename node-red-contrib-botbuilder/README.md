@@ -1,6 +1,6 @@
 # Node-RED
 
-A Node-RED wrapper on top of [Microsoft Bot Builder](https://github.com/Microsoft/BotBuilder) Framework.
+A **bot server** node to connect to a [Microsoft Bot Builder](https://github.com/Microsoft/BotBuilder) application.
 
 ![Framework](https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/master/node-red-contrib-botbuilder/doc/framework.png)
 
@@ -65,7 +65,7 @@ This project is a creation of [VISEO](http://www.viseo.com) Technology.
 - Klervi Menoret [@klervix](https://twitter.com/klervix)
 - To-Thi Hoang 
 
-
 ## Copyright and license
 
-Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2012-2019 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.

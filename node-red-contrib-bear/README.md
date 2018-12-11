@@ -1,22 +1,16 @@
 # Node-RED
 
-A Node-RED nodes to use [Bear2B API](https://bear2b.com/). 
+A Node-RED nodes to use [Bear2B API](https://bear2b.com/) API. 
 
-This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
+This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the node documentation in the Node-RED info tab. 
+
+Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 
 ## Quick Start
 
 ```
 npm install node-red-contrib-viseo-bear
 ```
-
-### Build the Node-RED Flow
-
- 
-
-### Limitations
-
- 
 
 ## Getting Help
 
@@ -34,10 +28,13 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [VISEO](http://www.viseo.com) Innovation.
+This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
+- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
-
+- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
+- Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
 
 ## Copyright and license
 

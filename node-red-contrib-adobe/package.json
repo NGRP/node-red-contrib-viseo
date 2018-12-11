@@ -1,7 +1,7 @@
 {
 	"name": "node-red-contrib-viseo-adobe",
-	"version": "0.0.3",
-	"description": "",
+	"version": "0.0.4",
+	"description": "VISEO Bot Maker - Adobe Analytics",
 	"dependencies": {
 		"node-red-viseo-helper": "~0.1",
 		"request": "^2.87.0",
@@ -13,9 +13,7 @@
 		"url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-adobe"
 	},
 	"license": "Apache-2.0",
-	"keywords": [
-		"node-red"
-	],
+	"keywords": [ "viseo", "sarah", "node-red", "adobe", "analytics", "omniture", "bot", "chatbot", "log" ],
 	"node-red": {
 		"nodes": {
 			"node-omniture-insertion": "node-omniture-insertion.js",

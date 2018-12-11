@@ -1,9 +1,6 @@
-const fs = require('fs');
-const helper =  require('node-red-viseo-helper');
-const google =  require('googleapis');
-const request = require('request-promise');
-//const dialog = google.dialogflow('v4');
 
+const helper =  require('node-red-viseo-helper');
+const request = require('request-promise');
 
 // --------------------------------------------------------------------------
 //  NODE-RED

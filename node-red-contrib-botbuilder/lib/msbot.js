@@ -29,12 +29,12 @@ const bindDialogs = exports.bindDialogs = (bot, callback) => {
 
     // Root Dialog
     bot.on('incoming', (msg) => { handleIncomingMessage(bot, msg, callback); })
-    bot.dialog('/', [(session) => {  }]);
+    bot.dialog('/', [(session) => { }]);
 }
 
 const handleIncomingMessage = (bot, message, callback) => {
     // Fix
-    if (!message.address || !message.address.serviceUrl){ return; }
+    if (!message.address || !message.address.serviceUrl ){ return; }
     
     // Build data
     let data = botmgr.buildMessageFlow({ 'message': JSON.parse(JSON.stringify(message)), 'payload': message.text }, { agent: 'botbuilder' })

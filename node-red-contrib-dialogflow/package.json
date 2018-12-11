@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-viseo-dialogflow",
-  "version": "0.0.12",
-  "description": "Dialogflow Wrapper",
+  "version": "0.0.14",
+  "description"   : "VISEO Bot Maker - Dialogflow server and NLP",
   "dependencies": {
     "actions-on-google": "~2.3",
     "node-red-viseo-bot-manager": "~0.0",
@@ -20,7 +20,9 @@
     "google",
     "apiai",
     "dialogflow",
-    "nlp"
+    "nlp",
+    "home",
+    "assistant"
   ],
   "node-red": {
     "nodes": {

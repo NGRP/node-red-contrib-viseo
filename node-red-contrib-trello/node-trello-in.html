@@ -71,16 +71,21 @@
 
 <script type="text/x-red" data-help-name="trello-in">
     <p>Receive updates regarding actions that have occurred in Trello.</p>
-    <p>The node can specify the ID of the object the webhook is watching.</p>
 
-    <h3>Fields</h3>
-
+    <h3>Details</h3>
+    <p>Properties</p>
     <dl class="message-properties">
         <dt>Path <span class="property-type">string</span></dt>
         <dd>Explicit path append to /trello-callback to avoid Trello messy conf.</dd>
         <dt>Model ID <span class="property-type">string</span></dt>
         <dd>ID of the object the webhook is watching. </dd>
     </dl>
+    <p><b>Notes:</b> The node can specify the ID of the object the webhook is watching.</p>
 
-    <p><b>Notes: </b>A Node-RED restart is required to clean previous routes</p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.trello.com/">Trello API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
 </script>

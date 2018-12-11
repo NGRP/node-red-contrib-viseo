@@ -117,6 +117,7 @@ const input = (node, data, config) => {
     if (config.prompt){
         botmgr.delayCallback(convId, (prompt) => {
             data.prompt = prompt
+            node.warn({ prompt: data})
             sendData(node, data, config)
         })
 
@@ -148,6 +149,26 @@ const buildReply = (node, data, config) => {
         "prompt"    : config.prompt,
         "receipt"   : data._receipt
     };
+
+    // Simple event message
+    if (config.sendType === 'event'){
+        let event = { name : config.eventName  }
+        let value = config.eventValue;
+        if (!config.eventValueType || config.eventValueType === 'str'){
+            event.value = marshall(locale, value,  data, '');
+        }
+        else if (config.eventValueType === 'msg') {
+            event.value = helper.getByString(data, value);
+        }
+        else if (config.eventValueType === 'global') {
+            event.value = helper.getByString(node.context().global, value);
+        }
+        else if (config.eventValueType === 'json') {
+            event.value = JSON.parse(value);
+        }
+        reply.event = event;
+        return [ reply ]
+    }
 
     // Prepare speech
     reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
@@ -206,27 +227,6 @@ const buildReply = (node, data, config) => {
         return [ reply ]
     }
 
-
-    // Simple event message
-    if (config.sendType === 'event'){
-
-        let event = { name : config.eventName  }
-        let value = config.eventValue;
-        if (!config.eventValueType || config.eventValueType === 'str'){
-            event.value = marshall(locale, value,  data, '');
-        }
-        else if (config.eventValueType === 'msg') {
-            event.value = helper.getByString(data, value);
-        }
-        else if (config.eventValueType === 'global') {
-            event.value = helper.getByString(node.context().global, value);
-        }
-        else if (config.eventValueType === 'json') {
-            event.value = JSON.parse(value);
-        }
-        reply.event = event;
-        return [ reply ]
-    }
 
     // Other card message
     let buttons = getButtons(locale, config, data);

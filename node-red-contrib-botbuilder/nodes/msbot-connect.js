@@ -3,13 +3,13 @@
 const fs      = require('fs');
 const path    = require('path');
 const builder = require('botbuilder');
-const logger  = require('../../lib/logger.js');
+const logger  = require('../lib/logger.js');
 const helper  = require('node-red-viseo-helper');
 const botmgr  = require('node-red-viseo-bot-manager');
 
 // Retrieve server
-const msbot    = require('../../lib/msbot.js');
-const server   = require('../../lib/server.js');
+const msbot    = require('../lib/msbot.js');
+const server   = require('../lib/server.js');
 
 const DEFAULT_TYPING_DELAY = 2000;
 const MINIMUM_TYPING_DELAY = 200;
@@ -50,15 +50,20 @@ module.exports = function(RED) {
 
 let REPLY_HANDLER = {};
 const start = (node, config, RED) => {
+    
+    // restart server
+    if (REPLY_HANDLER[node.id]) helper.removeListener('reply', REPLY_HANDLER[node.id]);
+    server.stop();
+
+    // -------
+
     server.start((err, bot) => {
-        
         if (err){
             let msg = "disconnected (" + err.message + ")";
             return node.status({fill:"red", shape:"ring", text: msg});
         }
         node.status({fill:"green", shape:"dot", text:"connected"});
 
-        // Root Dialog
         msbot.bindDialogs(bot, (err, data, type) => {
             helper.emitEvent(type, node, data, config);
             if (type === 'received') { return node.send(data) }
@@ -72,6 +77,7 @@ const start = (node, config, RED) => {
 
     }, config, RED);
 }
+
 
 // Stop server
 const stop = (node, config, done) => {
