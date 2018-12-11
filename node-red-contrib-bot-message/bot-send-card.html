@@ -14,7 +14,7 @@
                 })
                 return (result > 1) ? false : true;
             }},
-            delay:        { value: 0 },
+            delay:        { value: undefined },
             repeat:       { value: 0 },
             outputs:      { value: 1 },
             btnOutput:    { value: undefined },
@@ -304,7 +304,7 @@
 
             // Outputs and labels
             let labels = new Array();
-            this.delay  = $('#node-input-delay').val()  || 0;
+            this.delay  = $('#node-input-delay').val();
             this.repeat = $('#node-input-repeat').val() || 0;
             this.outputs = 1 ;
 
@@ -496,8 +496,8 @@
 
         <div class="form-row">
             <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-            <input type="number" min="0" id="node-input-delay" placeholder="0" style="width:100px;">
-            <p style="display: inline-block;"> ms</p>
+            <input type="number" min="0" id="node-input-delay" placeholder="none" style="width:100px;">
+            <p style="display: inline-block;"> ms (empty or 0 to use global delay)</p>
         </div>
 
         <div class="form-row" >
@@ -747,10 +747,10 @@
     <dl class="message-properties">
         <dt>Unique ID <span class="property-type">string</span></dt>
         <dd>can be used to import/export send-card nodes in your flows</dd>
-        <dt>Delay <span class="property-type">number</span></dt>
-        <dd>uses n times the 'default' output (first output), and then uses the 'repeat' output (last output)</dd>
         <dt>Repeat <span class="property-type">number</span></dt>
-        <dd>waits before sending the message</dd>
+        <dd>uses n times the 'default' output (first output), and then uses the 'repeat' output (last output)</dd>
+        <dt>Delay <span class="property-type">number</span></dt>
+        <dd>Overide the global delay before sending the message. (Minimum possible 200ms)</dd>
     </dl>
     <p>
         The <i>Prompt</i> checkbox is checked if the message should wait for a user answer or input. The <i>Outputs</i>

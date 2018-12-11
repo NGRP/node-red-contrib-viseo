@@ -11,6 +11,9 @@ const botmgr  = require('node-red-viseo-bot-manager');
 const msbot    = require('../lib/msbot.js');
 const server   = require('../lib/server.js');
 
+const DEFAULT_TYPING_DELAY = 2000;
+const MINIMUM_TYPING_DELAY = 200;
+var globalTypingDelay;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -27,6 +30,8 @@ module.exports = function(RED) {
             config.port = parseInt(config.port);
         }
 
+        globalTypingDelay = config.delay || DEFAULT_TYPING_DELAY;
+        
         config.appId = node.credentials.appId;
         config.appPassword = node.credentials.appPassword;
 
@@ -134,23 +139,28 @@ const reply = (bot, node, data, config) => {
         doReply();
     } else {
         // Handle the delay
-        let delay  = config.delay !== undefined ? parseInt(config.delay) : 0 
+        let delay;
+        if (!config.delay || config.delay == 0) {
+            delay = globalTypingDelay;
+        } else {
+            delay = config.delay;
+        }
+        delay = delay <= MINIMUM_TYPING_DELAY ? MINIMUM_TYPING_DELAY : delay;
         delayReply(delay, data, doReply, customTyping)
     }
 }
 
-const TYPING_DELAY_CONSTANT = 2000;
 const delayReply = (delay, data, callback, customTyping) => {
     let convId  = botmgr.getConvId(data)
     let session = getSession(data)
     if (session){
         msbot.typing(session, () => {
-            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
+            let handle = setTimeout(callback, delay);
             msbot.saveTimeout(convId, handle);
         });
     } else {
         customTyping(function() {
-            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT) 
+            let handle = setTimeout(callback, delay);
             msbot.saveTimeout(convId, handle);
         })
         
