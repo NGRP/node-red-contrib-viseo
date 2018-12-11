@@ -461,6 +461,15 @@ Project.prototype.getCommit = function(sha) {
 }
 Project.prototype.getFile = function (filePath,treeish) {
     if (treeish !== "_") {
+
+        if(this.isMerging) {//invert stage number because we are rebasing and not merging
+            if(treeish === ":2") {
+                treeish = ":3";
+            } else if(treeish === ":3") {
+                treeish = ":2";
+            }
+        }
+
         return gitTools.getFile(this.path, filePath, treeish);
     } else {
         return fs.readFile(fspath.join(this.path,filePath),"utf8");
@@ -530,6 +539,7 @@ Project.prototype.status = function(user, includeRemote) {
 
             self.branches.local = result.branches.local;
             self.branches.remote = result.branches.remote;
+
             if (fetchError && !/ambiguous argument/.test(fetchError.message)) {
                 result.branches.remoteError = {
                     remote: fetchError.remote,

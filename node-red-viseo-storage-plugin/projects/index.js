@@ -267,19 +267,22 @@ async function commit(user, project,options) {
             });
         })
     } else {
-        if(changes.tocommit) {
-            if(isMerging) {
-                return activeProject.rebaseContinue().then(() => {
-                    return pullPush(user, project, isMerging);
-                })
-            } else {
-                return activeProject.commit(user, options).then(() => {
-                    return pullPush(user, project, isMerging);
-                })
-            }
+        
+        if(isMerging) {
+            return activeProject.rebaseContinue().then(() => {
+                return pullPush(user, project, isMerging);
+            });
         } else {
 
-            return pullPush(user, project, isMerging);
+            if(changes.tocommit) {
+                return activeProject.commit(user, options).then(() => {
+                    return pullPush(user, project, isMerging);
+                });
+                
+            } else {
+
+                return pullPush(user, project, isMerging);
+            }
         }
     }
    
