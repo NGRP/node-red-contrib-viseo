@@ -492,7 +492,7 @@
         <div class="form-row">
             <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
             <input type="number" min="0" id="node-input-delay" placeholder="none" style="width:100px;">
-            <p style="display: inline-block;"> ms</p>
+            <p style="display: inline-block;"> ms (empty or 0 to use global delay)</p>
         </div>
 
         <div class="form-row" >
@@ -711,7 +711,7 @@
             <b>Repeat</b>
             <p style="margin-left: 20px;">Uses n times the 'default' output (first output), and then uses the 'repeat' output (last output).</p>
             <b>Delay</b>
-            <p style="margin-left: 20px;">Wait before sending the message.</p>
+            <p style="margin-left: 20px;">Overide the global delay before sending the message. (Minimum possible 200ms)</p>
         </ol> 
     </div>
     <div id="help-types" class="send-card-panel-help hide">

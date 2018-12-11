@@ -12,6 +12,7 @@ const msbot    = require('../../lib/msbot.js');
 const server   = require('../../lib/server.js');
 
 const DEFAULT_TYPING_DELAY = 2000;
+const MINIMUM_TYPING_DELAY = 200;
 var globalTypingDelay;
 
 // --------------------------------------------------------------------------
@@ -132,7 +133,13 @@ const reply = (bot, node, data, config) => {
         doReply();
     } else {
         // Handle the delay
-        let delay  = config.delay || globalTypingDelay;
+        let delay;
+        if (!config.delay || config.delay == 0) {
+            delay = globalTypingDelay;
+        } else {
+            delay = config.delay;
+        }
+        delay = delay <= MINIMUM_TYPING_DELAY ? MINIMUM_TYPING_DELAY : delay;
         delayReply(delay, data, doReply, customTyping)
     }
 }
@@ -140,9 +147,6 @@ const reply = (bot, node, data, config) => {
 const delayReply = (delay, data, callback, customTyping) => {
     let convId  = botmgr.getConvId(data)
     let session = getSession(data)
-    if (delay == 0) {
-        return callback();
-    }
     if (session){
         msbot.typing(session, () => {
             let handle = setTimeout(callback, delay);
