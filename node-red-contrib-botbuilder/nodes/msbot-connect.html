@@ -17,8 +17,7 @@
             name:          { value: undefined },
             project:       { value: undefined },
             port:          { value: undefined },
-            delay:         { value: 2000 },
-
+            delay:         { value: undefined }
         },
         credentials: {
             appId:         { type : "text" },
@@ -35,6 +34,14 @@
             $("#node-input-appId").typedInput({       default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appPassword").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-delay").typedInput({       default: 'num', types: ['num'], type: 'num' });
+
+            $("#node-input-delay").change(function(e) {
+                var val = $(this).val();
+                if(val && val != 0  && val < 200) {
+                    $("#node-input-delay").val(200);
+                }
+            }).val(this.delay || 2000);
+
             setProject(this.project);
         },
         label: function() { return this.name || "BotBuilder"; },
@@ -71,7 +78,7 @@
     <div class="form-row">
         <br>
         <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-        <input type="text" id="node-input-delay" placeholder="2000" style="width:30%;"> ms (min delay 200ms)
+        <input type="text" id="node-input-delay" style="width:30%;"> ms <small>(> 200 ms)</small>
     </div>
 </script>
 

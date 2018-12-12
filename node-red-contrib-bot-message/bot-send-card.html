@@ -87,6 +87,10 @@
             $("#node-input-shcardbutton").typedInput({ default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardbuttonType")});
             $("#node-input-shcardurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardurlType")});
             $("#node-input-eventValue").typedInput({   default: 'str', types: ['msg','global','str', 'json'], typeField: $("#node-input-eventValueType")});
+            $("#node-input-delay").typedInput({        default: 'num', types: ['num'], type: 'num' })
+                .typedInput("width", "100px");
+            $("#node-input-repeat").typedInput({       default: 'num', types: ['num'], type: 'num' })
+                .typedInput("width", "100px");
 
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
@@ -101,6 +105,33 @@
                 if ($(this).is(":checked")) $(".display-speech").hide();
                 else $(".display-speech").show();
             });
+
+
+            $("#node-input-delay").change(function(e) {
+                var val = $(this).val();
+                if($('#node-input-delay-category').val() == "custom" && val < 200) {
+                    $("#node-input-delay").val(200);
+                }
+            });
+
+            $('#node-input-delay-category').change(function(e) {
+                if($(this).val() == "default") {
+                    $("#node-input-delay").val(0);
+                    $("#node-input-delay-custom").hide();
+                } else {
+                    $("#node-input-delay-custom").show();
+                    $("#node-input-delay").typedInput('show');
+                    if($("#node-input-delay").val() == 0) {
+                        $("#node-input-delay").val(this.delay || 2000);
+                    }
+                }
+            });
+
+            if(this.delay && this.delay != 0) {
+                $('#node-input-delay-category').val('custom');
+            } else {
+                $('#node-input-delay-category').change();
+            }
 
             // Type : show and hide sections
             $('#node-input-sendType').change(function (event) { 
@@ -408,6 +439,8 @@
 
             $("#node-input-promptText").typedInput('show');
             $("#node-input-name").typedInput('show');
+            $("#node-input-delay").typedInput('show');
+            $("#node-input-repeat").typedInput('show');
         })
         // info section
         $(document).on('click', '#send-card-tabs-help .red-ui-tab-label', function(){
@@ -496,13 +529,19 @@
 
         <div class="form-row">
             <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-            <input type="number" min="0" id="node-input-delay" placeholder="none" style="width:100px;">
-            <p style="display: inline-block;"> ms (empty or 0 to use global delay)</p>
+            <select id="node-input-delay-category">
+                <option value="default">default</option>
+                <option value="custom">custom</option>
+            </select>
+            <div id="node-input-delay-custom" style="display:inline-block">
+                <input type="text" id="node-input-delay" > 
+                <p style="display: inline-block;"> ms</p>
+            </div>
         </div>
 
         <div class="form-row" >
             <label for="node-input-repeat"><i class="fa fa-repeat"></i> Repeat</label>
-            <input type="number" min="0" id="node-input-repeat" placeholder="0" style="width:100px;">
+            <input type="number" min="0" id="node-input-repeat" placeholder="0">
             <p style="display: inline-block;"> times</p>
         </div>
     </div>
