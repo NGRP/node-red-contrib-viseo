@@ -65,11 +65,10 @@
             shcardbuttonType:    { value: "str" },
             shcardurl:       { value: undefined },
             shcardurlType:       { value: "str" },
+            //--- reuse the card attributes?
             titleAdaptiveCard:        { value: undefined },
             titleTypeAdaptiveCard:    { value: "str" },
-            //subtitleAdaptiveCard:     { value: undefined },
             textAdaptiveCard:      { value: undefined },
-            subtextAdaptiveCard:      { value: undefined },
             attachAdaptiveCard:       { value: undefined }
 
         },
@@ -79,7 +78,6 @@
             return this.labels[index];
         },
         oneditprepare: function () {
-
             // Typed Input
             $("#node-input-name").typedInput({         default: 'str', types: ['str'], type: 'str' });
             $("#node-input-eventName").typedInput({    default: 'str', types: ['str'], type: 'str' });
@@ -95,12 +93,16 @@
             $("#node-input-shcardurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardurlType")});
             $("#node-input-eventValue").typedInput({   default: 'str', types: ['msg','global','str', 'json'], typeField: $("#node-input-eventValueType")});
 <<<<<<< HEAD
+<<<<<<< HEAD
             $("#node-input-delay").typedInput({        default: 'num', types: ['num'], type: 'num' })
                 .typedInput("width", "100px");
             $("#node-input-repeat").typedInput({       default: 'num', types: ['num'], type: 'num' })
                 .typedInput("width", "100px");
 
 =======
+=======
+            //---maybe reuse
+>>>>>>> refactor : lowercase adaptivecard; reuse addButtonItem
             $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
 >>>>>>> AdaptiveCard added to send-card type
@@ -167,80 +169,59 @@
                 else if (type === "event") {
                     $("#node-input-eventValue, #node-input-eventName").typedInput('show');
                 }
-                else if (type === "AdaptiveCard") {
+                  //---maybe reuse
+                else if (type === "adaptiveCard") {
                     $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard").typedInput('show');
                 }
             });
 
+            function addButtonItem( row, index, data ) {
+                var button = data.btn,
+                    title = '',
+                    action = 'postBack',
+                    value = '',
+                    regexp = '';
+
+                if (button) {
+                    if (button.hasOwnProperty('title'))  title =  button.title;
+                    if (button.hasOwnProperty('action')) action = button.action;
+                    if (button.hasOwnProperty('value'))  value =  button.value;
+                    if (button.hasOwnProperty('regexp')) regexp = button.regexp;
+                }
+
+                var hiddenField = $('<span/>', {}).appendTo(row);
+                var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
+                var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                    actionField.append($("<option></option>").val("postBack").text("Post Back"));
+                    actionField.append($("<option></option>").val("imBack").text("IM Back"));
+                    actionField.append($("<option></option>").val("openUrl").text("Open URL"));
+                    actionField.append($("<option></option>").val("share").text("Share card"));
+                    actionField.append($("<option></option>").val("showImage").text("Show Image"));
+                    actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
+                    actionField.append($("<option></option>").val("playVideo").text("Play Video"));
+                    actionField.append($("<option></option>").val("call").text("Call"));
+                var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
+                    actionField.val(action).change();
+            };
+
+
             // Buttons and quick replies : init
             $("#btn-container").css('min-height','100px').editableList({
-                addItem: function ( row, index, data ) {
-
-                    var button = data.btn,
-                        title = '',
-                        action = 'postBack',
-                        value = '',
-                        regexp = '';
-
-                    if (button) {
-                        if (button.hasOwnProperty('title'))  title =  button.title;
-                        if (button.hasOwnProperty('action')) action = button.action;
-                        if (button.hasOwnProperty('value'))  value =  button.value;
-                        if (button.hasOwnProperty('regexp')) regexp = button.regexp;
-                    }
-
-                    var hiddenField = $('<span/>', {}).appendTo(row);
-                    var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
-                    var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
-                        actionField.append($("<option></option>").val("postBack").text("Post Back"));
-                        actionField.append($("<option></option>").val("imBack").text("IM Back"));
-                        actionField.append($("<option></option>").val("openUrl").text("Open URL"));
-                        actionField.append($("<option></option>").val("share").text("Share card"));
-                        actionField.append($("<option></option>").val("showImage").text("Show Image"));
-                        actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
-                        actionField.append($("<option></option>").val("playVideo").text("Play Video"));
-                        actionField.append($("<option></option>").val("call").text("Call"));
-                    var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
-                    var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
-                        actionField.val(action).change();
-                },
-                sortable: true,
-                removable: true
+              addItem: function ( row, index, data ) {
+			                 addButtonItem( row, index, data );
+	                    },
+              sortable: true,
+              removable: true
             });
 
+  //---maybe reuse
             $("#btn-container-AdaptiveCard").css('min-height','100px').editableList({
-                addItem: function ( row, index, data ) {
-
-                    var button = data.btn,
-                        title = '',
-                        action = 'postBack',
-                        value = '',
-                        regexp = '';
-
-                    if (button) {
-                        if (button.hasOwnProperty('title'))  title =  button.title;
-                        if (button.hasOwnProperty('action')) action = button.action;
-                        if (button.hasOwnProperty('value'))  value =  button.value;
-                        if (button.hasOwnProperty('regexp')) regexp = button.regexp;
-                    }
-
-                    var hiddenField = $('<span/>', {}).appendTo(row);
-                    var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
-                    var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
-                        actionField.append($("<option></option>").val("postBack").text("Post Back"));
-                        actionField.append($("<option></option>").val("imBack").text("IM Back"));
-                        actionField.append($("<option></option>").val("openUrl").text("Open URL"));
-                        actionField.append($("<option></option>").val("share").text("Share card"));
-                        actionField.append($("<option></option>").val("showImage").text("Show Image"));
-                        actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
-                        actionField.append($("<option></option>").val("playVideo").text("Play Video"));
-                        actionField.append($("<option></option>").val("call").text("Call"));
-                    var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
-                    var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
-                        actionField.val(action).change();
-                },
-                sortable: true,
-                removable: true
+              addItem: function ( row, index, data ) {
+			                 addButtonItem( row, index, data );
+	                    },
+              sortable: true,
+              removable: true
             });
 
             $("#qck-container").css('min-height','150px').editableList({
@@ -353,13 +334,44 @@
                 })
             }
 
+            function addButtonItem( row, index, data ) {
+
+                var button = data.btn,
+                    title = '',
+                    action = 'postBack',
+                    value = '',
+                    regexp = '';
+
+                if (button) {
+                    if (button.hasOwnProperty('title'))  title =  button.title;
+                    if (button.hasOwnProperty('action')) action = button.action;
+                    if (button.hasOwnProperty('value'))  value =  button.value;
+                    if (button.hasOwnProperty('regexp')) regexp = button.regexp;
+                }
+
+                var hiddenField = $('<span/>', {}).appendTo(row);
+                var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
+                var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                    actionField.append($("<option></option>").val("postBack").text("Post Back"));
+                    actionField.append($("<option></option>").val("imBack").text("IM Back"));
+                    actionField.append($("<option></option>").val("openUrl").text("Open URL"));
+                    actionField.append($("<option></option>").val("share").text("Share card"));
+                    actionField.append($("<option></option>").val("showImage").text("Show Image"));
+                    actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
+                    actionField.append($("<option></option>").val("playVideo").text("Play Video"));
+                    actionField.append($("<option></option>").val("call").text("Call"));
+                var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
+                    actionField.val(action).change();
+            }
+
         },
         oneditsave: function(){
 
              // Buttons
             let butt;
             var type = $('#node-input-sendType').val();
-            if (type === 'AdaptiveCard'){
+            if (type === 'adaptiveCard'){
               butt = $("#btn-container-AdaptiveCard").editableList('items');
             } else {
               butt = $("#btn-container").editableList('items');
@@ -397,7 +409,7 @@
             this.outputs = 1 ;
 
             var type = $('#node-input-sendType').val();
-            if (type === 'card' || type === 'AdaptiveCard'){
+            if (type === 'card' || type === 'adaptiveCard'){
                 var btnOut = $('#node-input-btnOutput').is(':checked')
                 if (btnOut) {
                     labels.push("Unexpected");
@@ -447,7 +459,7 @@
                 }
                 else return "Send: \"\"";
             }
-            if (this.sendType === "card"  || type === 'AdaptiveCard')  {
+            if (this.sendType === "card"  || type === 'adaptiveCard')  {
                 if (this.carousel === true) return "Card";
                 else return "Send card";
             }
@@ -616,7 +628,7 @@
                 <option value="card">Card</option>
                 <option value="signin">SignIn</option>
                 <option value="event">Event</option>
-                <option value="AdaptiveCard">AdaptiveCard</option>
+                <option value="adaptiveCard">AdaptiveCard</option>
             </select>
         </div>
         <br>
@@ -668,16 +680,12 @@
             </div>
         </section>
 
-        <section class="section-type section-AdaptiveCard">
+        <section class="section-type section-adaptiveCard">
             <div class="form-row">
                 <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
                 <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
                 <input type="hidden" id="node-input-titleTypeAdaptiveCard">
             </div>
-            <!--<div class="form-row">
-                <label for="node-input-subtextAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
-                <textarea id="node-input-subtextAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
-            </div>-->
             <div class="form-row">
                 <label for="node-input-textAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
                 <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
