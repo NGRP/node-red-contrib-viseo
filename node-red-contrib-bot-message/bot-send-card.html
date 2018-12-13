@@ -65,14 +65,14 @@
             shcardbuttonType:    { value: "str" },
             shcardurl:       { value: undefined },
             shcardurlType:       { value: "str" },
-            //--- reuse the card attributes?
             titleAdaptiveCard:        { value: undefined },
             titleTypeAdaptiveCard:    { value: "str" },
+            //subtitleAdaptiveCard:     { value: undefined },
             textAdaptiveCard:      { value: undefined },
+            subtextAdaptiveCard:      { value: undefined },
             attachAdaptiveCard:       { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: "**"},
-
         },
         inputs:  1,
         outputs: 1,
@@ -80,6 +80,7 @@
             return this.labels[index];
         },
         oneditprepare: function () {
+
             // Typed Input
             $("#node-input-name").typedInput({         default: 'str', types: ['str'], type: 'str' });
             $("#node-input-eventName").typedInput({    default: 'str', types: ['str'], type: 'str' });
@@ -94,27 +95,15 @@
             $("#node-input-shcardbutton").typedInput({ default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardbuttonType")});
             $("#node-input-shcardurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardurlType")});
             $("#node-input-eventValue").typedInput({   default: 'str', types: ['msg','global','str', 'json'], typeField: $("#node-input-eventValueType")});
-<<<<<<< HEAD
-<<<<<<< HEAD
             $("#node-input-delay").typedInput({        default: 'num', types: ['num'], type: 'num' })
                 .typedInput("width", "100px");
             $("#node-input-repeat").typedInput({       default: 'num', types: ['num'], type: 'num' })
                 .typedInput("width", "100px");
 
-=======
-=======
-            //---maybe reuse
->>>>>>> refactor : lowercase adaptivecard; reuse addButtonItem
             $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
-<<<<<<< HEAD
->>>>>>> AdaptiveCard added to send-card type
-=======
-
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
-            
->>>>>>> Added wrap text field to enter the size of the text to display for Adaptive Card
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -177,8 +166,7 @@
                 }
                 else if (type === "event") {
                     $("#node-input-eventValue, #node-input-eventName").typedInput('show');
-                }
-                  //---maybe reuse
+                } 
                 else if (type === "adaptiveCard") {
                     $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
@@ -212,23 +200,21 @@
                 var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
                 var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
                     actionField.val(action).change();
-            };
+            }; 
 
-
-            // Buttons and quick replies : init
-            $("#btn-container").css('min-height','100px').editableList({
+             // Buttons and quick replies : init
+             $("#btn-container").css('min-height','100px').editableList({
               addItem: function ( row, index, data ) {
-			                 addButtonItem( row, index, data );
-	                    },
+			            addButtonItem( row, index, data );
+	          },
               sortable: true,
               removable: true
             });
 
-  //---maybe reuse
-            $("#btn-container-AdaptiveCard").css('min-height','100px').editableList({
+           $("#btn-container-AdaptiveCard").css('min-height','100px').editableList({
               addItem: function ( row, index, data ) {
-			                 addButtonItem( row, index, data );
-	                    },
+			            addButtonItem( row, index, data );
+	          },
               sortable: true,
               removable: true
             });
@@ -341,37 +327,6 @@
                         $("#node-input-shcardbutton, #node-input-shcardurl").typedInput('show');
                     }
                 })
-            }
-
-            function addButtonItem( row, index, data ) {
-
-                var button = data.btn,
-                    title = '',
-                    action = 'postBack',
-                    value = '',
-                    regexp = '';
-
-                if (button) {
-                    if (button.hasOwnProperty('title'))  title =  button.title;
-                    if (button.hasOwnProperty('action')) action = button.action;
-                    if (button.hasOwnProperty('value'))  value =  button.value;
-                    if (button.hasOwnProperty('regexp')) regexp = button.regexp;
-                }
-
-                var hiddenField = $('<span/>', {}).appendTo(row);
-                var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
-                var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
-                    actionField.append($("<option></option>").val("postBack").text("Post Back"));
-                    actionField.append($("<option></option>").val("imBack").text("IM Back"));
-                    actionField.append($("<option></option>").val("openUrl").text("Open URL"));
-                    actionField.append($("<option></option>").val("share").text("Share card"));
-                    actionField.append($("<option></option>").val("showImage").text("Show Image"));
-                    actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
-                    actionField.append($("<option></option>").val("playVideo").text("Play Video"));
-                    actionField.append($("<option></option>").val("call").text("Call"));
-                var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
-                var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
-                    actionField.val(action).change();
             }
 
         },
@@ -642,17 +597,11 @@
         </div>
         <br>
 
-<<<<<<< HEAD
         <section class="section-titles">
             <b>Displayed content</b>
             <br><br>
         </section>
     
-=======
-        <b>Displayed content</b>
-        <br><br>
-
->>>>>>> AdaptiveCard added to send-card type
         <section class="section-type section-text">
             <div class="form-row">
                 <label for="node-input-text"><i class="fa fa-pencil-square-o"></i> Text</label>
@@ -695,6 +644,10 @@
                 <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
                 <input type="hidden" id="node-input-titleTypeAdaptiveCard">
             </div>
+            <!--<div class="form-row">
+                <label for="node-input-subtextAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-subtextAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
+            </div>-->
             <div class="form-row">
                 <label for="node-input-textAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
                 <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
@@ -702,17 +655,16 @@
             <div class="form-row">
                 <label  for="node-input-displayedTextSizeAdaptiveCard"> Wrap text up to </label>
                 <input type="number" id="node-input-displayedTextSizeAdaptiveCard">
-            </div>
-            <div class="form-row">
-                <label for="node-input-containerSeparatorAdaptiveCard"> Container separator </label>
-                <input type="text" id="node-input-containerSeparatorAdaptiveCard">
-            </div>
-            <div class="form-row">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-containerSeparatorAdaptiveCard"> Container separator </label>
+                    <input type="text" id="node-input-containerSeparatorAdaptiveCard">
+                </div>
+                <div class="form-row">
                 <label for="node-input-attachAdaptiveCard"><i class="fa fa-image"></i> Image</label>
                 <input type="text" id="node-input-attachAdaptiveCard" style="width:80%;" placeholder="http://path/to/card/image">
                 <input type="hidden" id="node-input-attachTypeAdaptiveCard">
             </div>
-           
         </section>
 
         <section class="section-type section-quick">
@@ -844,7 +796,6 @@
 </script>
 
 <script type="text/x-red" data-help-name="send-card">
-<<<<<<< HEAD
 
     <p>Sends messages to users using bot connectors. </p>
 
@@ -854,145 +805,11 @@
         <dd>override the buttons with a Button array; don't forget to delete the field after using it. 
 <pre type="javascript" style="width:400px"> 
     msg.buttons = [];
-=======
-    <div class="red-ui-tabs" style="margin-bottom: 10px;">
-        <div>
-            <ul id="send-card-tabs-help">
-                <li class="send-card-tab-help active" style="min-width:100px;"><a href="#help-over" class="red-ui-tab-label"><span class="bidiAware" dir="">Overview</span></a></li>
-                <li class="send-card-tab-help" style="min-width:100px;"><a href="#help-types" class="red-ui-tab-label"><span class="bidiAware" dir="">Types</span></a></li>
-                <li class="send-card-tab-help" style="min-width:100px;"><a href="#help-buttons" class="red-ui-tab-label"><span class="bidiAware" dir="">Buttons</span></a></li>
-            </ul>
-        </div>
-    </div>
-    <div id="help-over" class="send-card-panel-help">
-        <p>This node allows to send messages to users.</p><br>
-        <b>Content</b><br>
-        <ol>
-            <p>Contains the message content options and fields</p><br>
-            <b>Type</b>
-            <p style="margin-left: 20px;">Type of message to send, such as an image or a simple text.</p>
-            <b>Display content</b>
-            <p style="margin-left: 20px;">The textaul/visual content to send. The fields depends on the message's type.</p>
-            <b>Played content</b>
-            <p style="margin-left: 20px;">The vocalized/sounds content to send. If 'Speech' is unchecked, do not forget the "<speak>" tags.</p>
-            <b>Quick replies / Buttons / Shared card</b>
-            <p style="margin-left: 20px;">Qucik replies, buttons or shared card associated with the sent message.</p>
-        </ol>
-        <b>Settings</b>
-        <br>
-        <ol>
-            <p>Contains the node options.</p><br>
-            <b>Name</b>
-            <p style="margin-left: 20px;">Name of the node</p>
-            <b>Unique ID</b>
-            <p style="margin-left: 20px;">Select or generate a unique ID for your send node. This can be used to import/export send-card nodes in your flows.</p>
-            <b>Prompt</b>
-            <p style="margin-left: 20px;">Check if this message should wait for a user answer or input.</p>
-            <b>Outputs</b>
-            <p style="margin-left: 20px;">Add n outputs to the node, depending on the number of buttons or quickreplies.</p>
-            <b>Repeat</b>
-            <p style="margin-left: 20px;">Uses n times the 'default' output (first output), and then uses the 'repeat' output (last output).</p>
-            <b>Delay</b>
-            <p style="margin-left: 20px;">Wait before sending the message.</p>
-        </ol>
-    </div>
-    <div id="help-types" class="send-card-panel-help hide">
-        <h2>Types of messages</h2>
-        <ol>
-            <h3>Text</h3>
-            <p>Send simple text to the user.</p>
-            <p style="margin-left: 20px;">
-                <b>Text</b>: text to send to the user.
-                <br><b>Random</b>: choose a random line between each lines of text.
-            </p>
-
-            <h3>Image</h3>
-            <p>Send an image to the user.</p>
-            <p style="margin-left: 20px;">
-                <b>Media</b>: path to the image (serveur or url).
-            </p>
-            <h3>Card</h3>
-            <p>Send a card to the user.
-            <br>Learn more about cards: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Messenger generic templates</a></p>
-            <p style="margin-left: 20px;">
-                <b>Carousel</b>: send several cards (several nodes are needed).
-                <br><b>Title</b>: title of the card.
-                <br><b>Subtitle</b>: subtitle of the card.
-                <br><b>Attachement</b>: image to add to the card.
-                <br><b>Buttons</b>: buttons to add to the card.
-                br><b>Shared card</b>: fields of the shared card (Facebook Messenger only).
-            </p>
-            <h3>Quick replies</h3>
-            <p>Send quick replies to the user.
-            <br>Learn more about quick replies: <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Messenger quick replies</a></p>
-            <p style="margin-left: 20px;">
-                <b>Text</b>: text to send to the user.
-                <br><b>Random</b>: choose a random line between each lines of text.
-                <br><b>Quick replies</b>: buttons to add to the card.
-            </p>
-            <h3>SignIn</h3>
-            <p>Signin to an account.</p>
-            <p style="margin-left: 20px;">
-                <b>Text</b>: text to send to the user.
-                <br><b>Button</b>: text on the button.
-                <br><b>URL</b>: signin URL.
-            </p>
-        </ol>
-    </div>
-    <div id="help-buttons" class="send-card-panel-help hide">
-        <h2>Buttons properties</h2>
-        <ol>
-            <h3>Cards</h3>
-            <p><b>Post-back / IM Back</b></p>
-            <p style="margin-left: 20px;">
-                <b>Label</b>: displayed text on the button.
-                <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
-                <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
-            </p>
-            <p><b>Call</b></p>
-            <p style="margin-left: 20px;">
-                This option allows to call the user (Skype only for the moment).
-            </p>
-            <p><b>Share</b></p>
-            <p style="margin-left: 20px;">
-                This option allows the user to share a card with a friend. (Messenger only for the moment).
-            </p>
-            <p><b>Other options</b></p>
-            <p style="margin-left: 20px;">
-                <b>Label</b>: displayed text on the button.
-                <br><b>Value</b>:
-                <br><b>Open URL</b>: URL to open.
-                <br><b>Show image</b>: path to the image to display - URL (computers)/ image (cellphones).
-                <br><b>Play audio / Play video</b> path to the audio/video to send.
-                <br><br>
-            </p>
-            <h3>Quick replies</h3>
-            <p><b>Post-back / IM Back</b></p>
-            <p style="margin-left: 20px;">
-                <b>Label</b>: displayed text on the button.
-                <br><b>Value</b>: value sent (PB: as a message/IMB: as an info) when the user clicks on the button (default: prompt.text).
-                <br><b>Regexp</b>: if the user's answer matches the regexp, the corresponding value is sent.
-            </p>
-            <p><b>Location</b></p>
-            <p style="margin-left: 20px;">
-                This quick reply asks the user to send its location, then sends it to Node-Red as an attachment.
-            <br>
-            <p><b>Identity</b></p>
-            <p style="margin-left: 20px;">
-                This quick reply asks the user to send information. (Google Home / Assistant only).
-            <br>
-            </p>
-            <h3>Dynamic buttons</h3>
-            <p>You can dynamically add buttons in a function node before the send-card node.
-            <br>Don't forget to delete them after using them.
-            <pre type="javascript" style="width:400px"> msg.buttons = [];
->>>>>>> AdaptiveCard added to send-card type
     msg.buttons.push({
         title  : 'Choice 1',
         action : 'postBack',
         value  : 'choice1',
         regexp : 'one|first|choice 1'
-<<<<<<< HEAD
     });     
 </pre>
         </dd>
@@ -1060,14 +877,3 @@
     </ul>
 
 </script>
-=======
-    });     </pre>
-            </p>
-            <h3>Carousels</h3>
-            <p>To create a caroussel (several cards side by side), branch several send-card nodes together, and click the 'Carousel' option.
-            <br>In the last send-card node, don't click this option.
-            </p>
-        </ol>
-    </div>
-</script>
->>>>>>> AdaptiveCard added to send-card type
