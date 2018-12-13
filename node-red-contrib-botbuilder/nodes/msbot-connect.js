@@ -58,10 +58,6 @@ const start = (node, config, RED) => {
     // -------
 
     server.start((err, bot) => {
-<<<<<<< HEAD:node-red-contrib-botbuilder/nodes/msbot-connect.js
-=======
-
->>>>>>> AdaptiveCard added to send-card type:node-red-contrib-botbuilder/nodes/connect/msbot-connect.js
         if (err){
             let msg = "disconnected (" + err.message + ")";
             return node.status({fill:"red", shape:"ring", text: msg});
@@ -143,7 +139,6 @@ const reply = (bot, node, data, config) => {
         doReply();
     } else {
         // Handle the delay
-<<<<<<< HEAD:node-red-contrib-botbuilder/nodes/msbot-connect.js
         let delay;
         if (!config.delay || config.delay == 0) {
             delay = globalTypingDelay;
@@ -151,9 +146,6 @@ const reply = (bot, node, data, config) => {
             delay = config.delay;
         }
         delay = delay <= MINIMUM_TYPING_DELAY ? MINIMUM_TYPING_DELAY : delay;
-=======
-        let delay  = config.delay !== undefined ? parseInt(config.delay) : 0
->>>>>>> AdaptiveCard added to send-card type:node-red-contrib-botbuilder/nodes/connect/msbot-connect.js
         delayReply(delay, data, doReply, customTyping)
     }
 }
@@ -168,11 +160,7 @@ const delayReply = (delay, data, callback, customTyping) => {
         });
     } else {
         customTyping(function() {
-<<<<<<< HEAD:node-red-contrib-botbuilder/nodes/msbot-connect.js
             let handle = setTimeout(callback, delay);
-=======
-            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
->>>>>>> AdaptiveCard added to send-card type:node-red-contrib-botbuilder/nodes/connect/msbot-connect.js
             msbot.saveTimeout(convId, handle);
         })
 
