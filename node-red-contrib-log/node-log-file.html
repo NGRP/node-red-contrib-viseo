@@ -6,14 +6,22 @@
             name:    { value: undefined },
             file:    { value: undefined },
             log:     { value: undefined },
-            level:   { value: undefined }
+            level:   { value: undefined },
+            levelType: { value: 'str' },
+            logType:   { value: 'msg' }
         },
         inputs:  1,
         outputs: 1,
         icon: "log.svg",
         align: "right",
         paletteLabel: 'to File',
-        label: function() { return this.name || "to File"; }
+        label: function() { return this.name || "to File"; },
+        oneditprepare: function() {
+            $("#node-input-file").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-level").typedInput({ default: 'str', types: ['str', 'msg'], typeField: $("#node-input-levelType") });
+            $("#node-input-log").typedInput({ default: 'msg', types: ['str', 'msg'], typeField: $("#node-input-logType") });
+        },
+        oneditsave: function(){}
     });
 </script>
 
@@ -23,25 +31,37 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-file"><i class="icon-tag"></i> File</label>
-        <input type="text" id="node-input-file" placeholder="{cwd}/path/to/file">
+        <label for="node-input-file"><i class="fa fa-file"></i> File</label>
+        <input type="text" id="node-input-file" style="width:70%;" placeholder="{cwd}/path/to/file">
     </div>
     <div class="form-row">
-        <label for="node-input-log"><i class="icon-tag"></i> Log</label>
-        <input type="text" id="node-input-log" placeholder="payload">
+        <label for="node-input-log"><i class="fa fa-bars"></i> Log</label>
+        <input type="text" id="node-input-log" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-logType">
     </div>
         <div class="form-row">
-        <label for="node-input-level"><i class="icon-tag"></i> Level</label>
-        <input type="text" id="node-input-level" placeholder="info">
+        <label for="node-input-level"><i class="fa fa-info-circle"></i> Level</label>
+        <input type="text" id="node-input-level" style="width:70%;" placeholder="info">
+        <input type="hidden" id="node-input-levelType">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="log-file">
-    Use Winston library to log JSON object into a log file
+    <p>Uses Winston library to log JSON object into a log file.</p>
 
-    <h3>input</h3>
-    A JSON object to log. It is defined in Log field
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>File <span class="property-type">string</span></dt>
+        <dd>path to the log file</dd>
+        <dt>Log <span class="property-type">object</span></dt>
+        <dd>the location of the object that will be stringified</dd>
+        <dt>Level <span class="property-type">string</span></dt>
+        <dd>the log level</dd>
+    </dl>
 
-    <h3>Output</h3>
-    The previous Input data
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

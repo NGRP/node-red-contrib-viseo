@@ -26,8 +26,8 @@
         outputs: 2,
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: 'MS Speech',
-        label: function() { return this.name || "Microsoft Speech"; },
+        paletteLabel: 'Speech',
+        label: function() { return this.name || "Speech"; },
         outputLabels: ["standard output", "error output"],
         oneditprepare: function() {
             $("#node-input-name").typedInput({ default: 'str', types:['str'], type: 'str' });
@@ -133,29 +133,55 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-speech-text">
-    <p>This node uses the Microsoft Cognitive Services Speech API to get informations on a text. </p>
+
+    <p>Processes Speech to Text (STT) or Text to Speech (TTS) with Microsoft Cognitive services.</p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>API key <span class="property-type">config</span></dt>
+        <dd>key from Azure Portal for Microsoft Speech or Bing Speech</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p>For <b>TTS</b>, the ouput will be an object containing an audio buffer. </p>
+    <p>TTS properties</p>
+    <dl class="message-properties">
+        <dt>Input<span class="property-type">string</span></dt>
+        <dd>should be a SSML tag string</dd>
+        <dt>Token<span class="property-type">string</span></dt>
+        <dd>an access token, leave empty to get a new one</dd>
+        <dt>Region<span class="property-type">string</span></dt>
+        <dd>the region specified in the Azure Portal</dd>
+        <dt>User-Agent<span class="property-type">string</span></dt>
+        <dd>the service label</dd>
+        <dt>Format<span class="property-type">string</span></dt>
+        <dd>output audio format, such as <i>riff-16khz-16bit-mono-pcm</i></dd>
+    </dl>
+    <p>For <b>STT</b>, the ouput will be an object containing the text. </p>
+    <p>STT properties</p>
+    <dl class="message-properties">
+        <dt>Input<span class="property-type">string</span></dt>
+        <dd>should be an audio buffer</dd>
+        <dt>Token<span class="property-type">string</span></dt>
+        <dd>an access token, leave empty to get a new one</dd>
+        <dt>Language<span class="property-type">string</span></dt>
+        <dd>the language code, such as <i>fr-FR</i></dd>
+        <dt>ContentType<span class="property-type">string</span></dt>
+        <dd>the input format, such as <i>audio/wav; codec=audio/pcm; samplerate=16000</i></dd>
+    </dl>
     
-        
-    <h2>Outputs</h2>
-    <p>
-        </p><li><b>[0]</b>: Standard output</li>
-        <li><b>[1]</b>: Error output</li>
-    <p></p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoiceoutput">Speech</a> - documentation</li>
+        <li><a href="https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/rest-apis#speech-to-text">Speech</a> - STT documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
-    <h2>Main parameters</h2>
-    <p>
-        </p><li><b>API Key</b>: A key for the Bing Speech API is required for the process.</li>
-        <li><b>Input</b>: A buffer (STT) or a SSML tag string (TSS)</li>
-        <li><b>Token</b>: Leave empty to get a token, or reuse one.</li>
-        <li><b>Output</b>: Where to set the result.</li>
-    <p></p>
-
-    <h2>Getting help</h2>
-    <p>
-        </p><li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a></li>
-        <li><b>APIs</b> <a>https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/rest-apis#speech-to-text</a></li>
-        <li><b>API TTS (bis)</b> <a>https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoiceoutput</a></li>
-        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a></li>
-        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
-    <p></p>
 </script>

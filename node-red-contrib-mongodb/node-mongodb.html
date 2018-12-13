@@ -6,12 +6,12 @@
             name:      { value: undefined }
         },
         credentials: {
-            hosts:     { type: "text" },
-            user:      { type: "text" },
-            password:  { type: "text" },
-            database:  { type: "text" },
+            hosts:      { type: "text" },
+            user:       { type: "text" },
+            password:   { type: "text" },
+            database:   { type: "text" },
             replicaSet: { type: "text" },
-            ssl:       { type: "text" }
+            ssl:        { type: "text" }
         },
         inputs:  1,
         outputs: 1,
@@ -21,7 +21,12 @@
         label: function() { return this.name || "Mongo DB"; },
         oneditprepare: function() {
 
-            if(this.credentials.ssl == "on") {
+            $("#node-config-input-database").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-user").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-password").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-replicaSet").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+            if (this.credentials.ssl == "on") {
                 $("#node-config-input-ssl").prop("checked", true);
             } else {
                 $("#node-config-input-ssl").prop("checked", false);
@@ -31,7 +36,9 @@
                 addItem: function(row, index, data) {
                     var port = data.port || '';
                     var host = data.host || '';
-                    $(row).html('<input type="text" name="host['+index+']" placeholder="localhost" value="'+host+'"/>&nbsp;<input type="text" name="port['+index+']" placeholder="27017" value="'+port+'" style="width:20%"/>');
+                    $(row).html('<input type="text" name="host['+index+']" placeholder="localhost" class="input-host" style="width:70%" value="'+host+'"/>&nbsp;<input type="text" name="port['+index+']" placeholder="27017" class="input-port" value="'+port+'" style="width:25%"/>');
+                    $('.input-host').typedInput({ default: 'str', types: ['str'], type: 'str' });
+                    $('.input-port').typedInput({ default: 'num', types: ['num'], type: 'num' });
                 },
                 removable: true
             });
@@ -47,7 +54,7 @@
                     continue;
                 }
 
-                if(hosts[parseResult[2]] === undefined) {
+                if (hosts[parseResult[2]] === undefined) {
                     hosts[parseResult[2]] = {}
                 }
                 hosts[parseResult[2]][parseResult[1]] = object.value
@@ -60,7 +67,7 @@
             
         },
         oneditsave: function() {
-            if($("#node-config-input-ssl").prop("checked")) {
+            if ($("#node-config-input-ssl").prop("checked")) {
                 $("#node-config-input-ssl").val('on');
             } else {
                 $("#node-config-input-ssl").val('off');
@@ -77,43 +84,63 @@
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
+
+    <br>
+    <b>Database</b>
+
     <div class="form-row">
-        <label for="node-config-input-database"><i class="icon-tag"></i> DB</label>
-        <input type="text" id="node-config-input-database" placeholder="database">
+        <br>
+        <label for="node-config-input-database"><i class="fa fa-database"></i> DB</label>
+        <input type="text" id="node-config-input-database" style="width:70%;" placeholder="database">
     </div>
     <div class="form-row">
-        <label for="node-config-input-user"><i class="icon-tag"></i> User</label>
-        <input type="text" id="node-config-input-user" placeholder="">
+        <label for="node-config-input-user"><i class="fa fa-user"></i> User</label>
+        <input type="text" id="node-config-input-user" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-config-input-password"><i class="icon-tag"></i> Password</label>
-        <input type="text" id="node-config-input-password" placeholder="">
+        <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
+        <input type="text" id="node-config-input-password" style="width:70%;" placeholder="">
     </div>
+    <div class="form-row">
+        <label for="node-config-input-replicaSet"><i class="fa fa-group"></i> Replica Set</label>
+        <input type="text" id="node-config-input-replicaSet" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-ssl"><i class="fa fa-certificate"></i> SSL</label>
+        <input type="checkbox" id="node-config-input-ssl" style="width: unset; vertical-align: top;">
+    </div>
+
+    <br>
+    <b>Hosts</b>
+
      <div class="form-row">
-        <label for="node-config-input-hosts"><i class="icon-tag"></i> Hosts</label>
+        <br>
         <input type="hidden" id="node-config-input-hosts">
         <ol id="node-hosts"></ol>
     </div>
 
-    <div class="form-row">
-        <label for="node-config-input-replicaSet"><i class="icon-tag"></i> Replica Set</label>
-        <input type="text" id="node-config-input-replicaSet" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-ssl"><i class="icon-tag"></i> SSL</label>
-        <input type="checkbox" id="node-config-input-ssl">
-    </div>
+
 </script>
 
 <script type="text/x-red" data-help-name="mongodb">
-    Connection to a MongoDB database.
-    <h2>Fields</h2>
+    <p>Configuration to connect the NoSQL node to a MongoDB database. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>DB <span class="property-type">string</span></dt>
+        <dd>the database name</dd>
+        <dt>User/Password <span class="property-type">string</span></dt>
+        <dd>credentials for authentication</dd>
+        <dt>Host <span class="property-type">string</span></dt>
+        <dd>server name where MongoDB is installed</dd>
+        <dt>Port <span class="property-type">string</span></dt>
+        <dd>server port on which MongoDB will respond</dd>
+    </dl>
+
+    <h3>References</h3>
     <ul>
-        <li><b>Name:</b> can be used to override the default name of the node.</li>
-        <li><b>Host:</b> server name where MongoDB is installed </li>
-        <li><b>Port:</b> server port on which MongoDB will respond.</li>
-        <li><b>DB:</b> database name
-        <li><b>User:</b> username for authentication
-        <li><b>password:</b> password for authentication
+        <li><a href="https://docs.mongodb.com">MongoDB</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
 </script>

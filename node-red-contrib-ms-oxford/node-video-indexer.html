@@ -299,7 +299,7 @@
         },
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: "MS Video Indexer",
+        paletteLabel: "Video Indexer",
         label: function() { return this.name || "Video Indexer"; }
     });
 
@@ -387,23 +387,30 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-video-indexer">
-    <p>This node uses the Microsoft Cognitive Services Vision API to get informations about an image. </p>
 
-    <h2>Main properties</h2>
-    <p>
-        <li><b>Image</b> location: Where to get the image. It can be a buffer (in a 'msg' or 'global' field) or an url (directly by chosing 'str' or in a field of 'msg' or 'global'). 
-        <li><b>Options</b> checkboxes: Informations to get from the image. 
-        <li><b>Key</b> values: A key for the Vision API is required for the process.
-    </p>
-    <p>
-        <li><b>OUT[0]:</b> Returns an object in the msg.payload field with the informations.
-    </p>
+    <p>Query Video Indexer from Microsoft Cognitive Services.</p>
 
-    <h2>Getting help</h2>
-    <p>
-        <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a>
-        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a>
-        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a>
-    </p>
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">object</span></dt>
+                <dd>the process result</dd>
+            </dl>
+        </li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>API key <span class="property-type">config</span></dt>
+        <dd>key from Azure Portal for Video Indexer</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/fr-fr/azure/media-services/video-indexer/video-indexer-overview">Video Indexer</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>

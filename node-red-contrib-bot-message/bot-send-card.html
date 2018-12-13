@@ -14,7 +14,7 @@
                 })
                 return (result > 1) ? false : true;
             }},
-            delay:        { value: 0 },
+            delay:        { value: undefined },
             repeat:       { value: 0 },
             outputs:      { value: 1 },
             btnOutput:    { value: undefined },
@@ -64,17 +64,25 @@
             shcardbutton:    { value: undefined },
             shcardbuttonType:    { value: "str" },
             shcardurl:       { value: undefined },
-            shcardurlType:       { value: "str" }
+            shcardurlType:       { value: "str" },
+            //--- reuse the card attributes?
+            titleAdaptiveCard:        { value: undefined },
+            titleTypeAdaptiveCard:    { value: "str" },
+            textAdaptiveCard:      { value: undefined },
+            attachAdaptiveCard:       { value: undefined },
+            displayedTextSizeAdaptiveCard: {value: undefined},
+            containerSeparatorAdaptiveCard: {value: "**"},
+
         },
-        inputs:  1, 
+        inputs:  1,
         outputs: 1,
-        outputLabels: function(index) { 
+        outputLabels: function(index) {
             return this.labels[index];
         },
         oneditprepare: function () {
-
             // Typed Input
             $("#node-input-name").typedInput({         default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-eventName").typedInput({    default: 'str', types: ['str'], type: 'str' });
             $("#node-input-promptText").typedInput({   default: 'msg', types: ['msg'], type: 'msg' });
             $("#node-input-media").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-mediaType")});
             $("#node-input-title").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleType")});
@@ -86,7 +94,27 @@
             $("#node-input-shcardbutton").typedInput({ default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardbuttonType")});
             $("#node-input-shcardurl").typedInput({    default: 'str', types: ['msg','global','str'], typeField: $("#node-input-shcardurlType")});
             $("#node-input-eventValue").typedInput({   default: 'str', types: ['msg','global','str', 'json'], typeField: $("#node-input-eventValueType")});
+<<<<<<< HEAD
+<<<<<<< HEAD
+            $("#node-input-delay").typedInput({        default: 'num', types: ['num'], type: 'num' })
+                .typedInput("width", "100px");
+            $("#node-input-repeat").typedInput({       default: 'num', types: ['num'], type: 'num' })
+                .typedInput("width", "100px");
 
+=======
+=======
+            //---maybe reuse
+>>>>>>> refactor : lowercase adaptivecard; reuse addButtonItem
+            $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
+            $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
+<<<<<<< HEAD
+>>>>>>> AdaptiveCard added to send-card type
+=======
+
+            $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
+            $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
+            
+>>>>>>> Added wrap text field to enter the size of the text to display for Adaptive Card
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -101,11 +129,42 @@
                 else $(".display-speech").show();
             });
 
+
+            $("#node-input-delay").change(function(e) {
+                var val = $(this).val();
+                if($('#node-input-delay-category').val() == "custom" && val < 200) {
+                    $("#node-input-delay").val(200);
+                }
+            });
+
+            $('#node-input-delay-category').change(function(e) {
+                if($(this).val() == "default") {
+                    $("#node-input-delay").val(0);
+                    $("#node-input-delay-custom").hide();
+                } else {
+                    $("#node-input-delay-custom").show();
+                    $("#node-input-delay").typedInput('show');
+                    if($("#node-input-delay").val() == 0) {
+                        $("#node-input-delay").val(this.delay || 2000);
+                    }
+                }
+            });
+
+            if(this.delay && this.delay != 0) {
+                $('#node-input-delay-category').val('custom');
+            } else {
+                $('#node-input-delay-category').change();
+            }
+
             // Type : show and hide sections
-            $('#node-input-sendType').change(function (event) { 
+            $('#node-input-sendType').change(function (event) {
                 var type = $(this).val();
-                $('.section-type, .section-share').addClass('hide')
+                $('.section-type, .section-share').addClass('hide');
                 $('.section-'+type).removeClass('hide');
+
+                if (type === "event") $('.section-titles').addClass('hide');
+                else $('.section-titles').removeClass('hide');
+
                 if (type === "card") {
                     displaySharedCard()
                     $("#node-input-attach, #node-input-title").typedInput('show');
@@ -117,44 +176,61 @@
                     $("#node-input-signintitle, #node-input-signinurl").typedInput('show');
                 }
                 else if (type === "event") {
-                    $("#node-input-eventValue").typedInput('show');
+                    $("#node-input-eventValue, #node-input-eventName").typedInput('show');
+                }
+                  //---maybe reuse
+                else if (type === "adaptiveCard") {
+                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
             });
 
+            function addButtonItem( row, index, data ) {
+                var button = data.btn,
+                    title = '',
+                    action = 'postBack',
+                    value = '',
+                    regexp = '';
+
+                if (button) {
+                    if (button.hasOwnProperty('title'))  title =  button.title;
+                    if (button.hasOwnProperty('action')) action = button.action;
+                    if (button.hasOwnProperty('value'))  value =  button.value;
+                    if (button.hasOwnProperty('regexp')) regexp = button.regexp;
+                }
+
+                var hiddenField = $('<span/>', {}).appendTo(row);
+                var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
+                var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                    actionField.append($("<option></option>").val("postBack").text("Post Back"));
+                    actionField.append($("<option></option>").val("imBack").text("IM Back"));
+                    actionField.append($("<option></option>").val("openUrl").text("Open URL"));
+                    actionField.append($("<option></option>").val("share").text("Share card"));
+                    actionField.append($("<option></option>").val("showImage").text("Show Image"));
+                    actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
+                    actionField.append($("<option></option>").val("playVideo").text("Play Video"));
+                    actionField.append($("<option></option>").val("call").text("Call"));
+                var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
+                    actionField.val(action).change();
+            };
+
+
             // Buttons and quick replies : init
             $("#btn-container").css('min-height','100px').editableList({
-                addItem: function ( row, index, data ) {
+              addItem: function ( row, index, data ) {
+			                 addButtonItem( row, index, data );
+	                    },
+              sortable: true,
+              removable: true
+            });
 
-                    var button = data.btn,
-                        title = '',
-                        action = 'postBack',
-                        value = '',
-                        regexp = '';
-
-                    if (button) {
-                        if (button.hasOwnProperty('title'))  title =  button.title;
-                        if (button.hasOwnProperty('action')) action = button.action;
-                        if (button.hasOwnProperty('value'))  value =  button.value;
-                        if (button.hasOwnProperty('regexp')) regexp = button.regexp;
-                    }
-
-                    var hiddenField = $('<span/>', {}).appendTo(row);
-                    var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
-                    var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
-                        actionField.append($("<option></option>").val("postBack").text("Post Back"));
-                        actionField.append($("<option></option>").val("imBack").text("IM Back"));
-                        actionField.append($("<option></option>").val("openUrl").text("Open URL"));
-                        actionField.append($("<option></option>").val("share").text("Share card"));
-                        actionField.append($("<option></option>").val("showImage").text("Show Image"));
-                        actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
-                        actionField.append($("<option></option>").val("playVideo").text("Play Video"));
-                        actionField.append($("<option></option>").val("call").text("Call"));
-                    var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
-                    var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
-                        actionField.val(action).change();
-                },
-                sortable: true,
-                removable: true
+  //---maybe reuse
+            $("#btn-container-AdaptiveCard").css('min-height','100px').editableList({
+              addItem: function ( row, index, data ) {
+			                 addButtonItem( row, index, data );
+	                    },
+              sortable: true,
+              removable: true
             });
 
             $("#qck-container").css('min-height','150px').editableList({
@@ -215,11 +291,12 @@
             }).change();
 
             // Get buttons and quick replies
-            for (var i=0; i<this.buttons.length; i++) {      
+            for (var i=0; i<this.buttons.length; i++) {
                 var infos = this.buttons[i];
                 $("#btn-container").editableList('addItem', { btn: infos, i:i });
+                $("#btn-container-AdaptiveCard").editableList('addItem', { btn: infos, i:i });
             }
-            for (var i=0; i<this.quickreplies.length; i++) {      
+            for (var i=0; i<this.quickreplies.length; i++) {
                 var infos = this.quickreplies[i];
                 $("#qck-container").editableList('addItem', { btn: infos, i:i });
             }
@@ -241,7 +318,7 @@
                 }
                 else  $(this).addClass("input-error");
             });
-            
+
             function newID() {
                 let result = false;
                 let nodeid = "";
@@ -266,11 +343,48 @@
                 })
             }
 
+            function addButtonItem( row, index, data ) {
+
+                var button = data.btn,
+                    title = '',
+                    action = 'postBack',
+                    value = '',
+                    regexp = '';
+
+                if (button) {
+                    if (button.hasOwnProperty('title'))  title =  button.title;
+                    if (button.hasOwnProperty('action')) action = button.action;
+                    if (button.hasOwnProperty('value'))  value =  button.value;
+                    if (button.hasOwnProperty('regexp')) regexp = button.regexp;
+                }
+
+                var hiddenField = $('<span/>', {}).appendTo(row);
+                var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
+                var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                    actionField.append($("<option></option>").val("postBack").text("Post Back"));
+                    actionField.append($("<option></option>").val("imBack").text("IM Back"));
+                    actionField.append($("<option></option>").val("openUrl").text("Open URL"));
+                    actionField.append($("<option></option>").val("share").text("Share card"));
+                    actionField.append($("<option></option>").val("showImage").text("Show Image"));
+                    actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
+                    actionField.append($("<option></option>").val("playVideo").text("Play Video"));
+                    actionField.append($("<option></option>").val("call").text("Call"));
+                var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
+                    actionField.val(action).change();
+            }
+
         },
         oneditsave: function(){
 
              // Buttons
-            let butt = $("#btn-container").editableList('items');
+            let butt;
+            var type = $('#node-input-sendType').val();
+            if (type === 'adaptiveCard'){
+              butt = $("#btn-container-AdaptiveCard").editableList('items');
+            } else {
+              butt = $("#btn-container").editableList('items');
+            }
             let quic = $("#qck-container").editableList('items');
             let results = new Array();
 
@@ -284,7 +398,7 @@
                 if ((btn.title && btn.value) || btn.action === 'share') { results.push(btn); }
             });
             this.buttons = (results.length === 0) ? [{ title: "", action:"postBack", value:"", regexp:""}] : results;
-            
+
             results = new Array();
             quic.each(function(i) {
                 var btn = {
@@ -299,12 +413,12 @@
 
             // Outputs and labels
             let labels = new Array();
-            this.delay  = $('#node-input-delay').val()  || 0;
+            this.delay  = $('#node-input-delay').val();
             this.repeat = $('#node-input-repeat').val() || 0;
             this.outputs = 1 ;
 
             var type = $('#node-input-sendType').val();
-            if (type === 'card'){
+            if (type === 'card' || type === 'adaptiveCard'){
                 var btnOut = $('#node-input-btnOutput').is(':checked')
                 if (btnOut) {
                     labels.push("Unexpected");
@@ -325,8 +439,8 @@
                     }
                 }
             }
-            
-            this.labels = (labels.length > 0) ? labels : ["Default output"]; 
+
+            this.labels = (labels.length > 0) ? labels : ["Default output"];
 
             if  (this.repeat > 0) {
                 this.labels.push("Repeat");
@@ -334,31 +448,31 @@
             }
         },
         icon: function() {
-            if (this.sendType === "text")   return "text.svg"; 
-            if (this.sendType === "media")  return "picture.svg"; 
+            if (this.sendType === "text")   return "text.svg";
+            if (this.sendType === "media")  return "picture.svg";
             if (this.sendType === "quick")  return "buttons.svg";
             if (this.sendType === "signin") return "fingerprint.svg";
             if (this.sendType === "event")  return "tech.svg";
             if (this.carousel === true)     return "carousel.svg";
             return "card.svg";
-        }, 
+        },
         align: "left",
         paletteLabel: "Message",
         labelStyle: "bot-card-name",
-        label: function() { 
+        label: function() {
             if (this.name) return this.name;
-            if (this.sendType === "text" || this.sendType === "quick")  { 
+            if (this.sendType === "text" || this.sendType === "quick")  {
                 if (this.text) {
                     if (this.text.length <= 20) return "Send: \"" + this.text + "\"";
                     else return "Send: \"" + this.text.substring(0,17) + '...\"';
                 }
                 else return "Send: \"\"";
             }
-            if (this.sendType === "card")  {
+            if (this.sendType === "card"  || type === 'adaptiveCard')  {
                 if (this.carousel === true) return "Card";
-                else return "Send card"; 
+                else return "Send card";
             }
-            if (this.sendType === "media")  return "Send media"; 
+            if (this.sendType === "media")  return "Send media";
             if (this.sendType === "signin") return "Send signin";
             if (this.sendType === "event")  return "Send event";
             else return "Send Card";
@@ -403,6 +517,8 @@
 
             $("#node-input-promptText").typedInput('show');
             $("#node-input-name").typedInput('show');
+            $("#node-input-delay").typedInput('show');
+            $("#node-input-repeat").typedInput('show');
         })
         // info section
         $(document).on('click', '#send-card-tabs-help .red-ui-tab-label', function(){
@@ -437,7 +553,7 @@
 </style>
 
 <script type="text/x-red" data-template-name="send-card">
-   
+
     <div class="red-ui-tabs" style="margin-bottom: 10px; min-width:600px;">
         <div>
             <ul id="send-card-tabs">
@@ -491,13 +607,19 @@
 
         <div class="form-row">
             <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
-            <input type="number" min="0" id="node-input-delay" placeholder="0" style="width:100px;">
-            <p style="display: inline-block;"> ms</p>
+            <select id="node-input-delay-category">
+                <option value="default">default</option>
+                <option value="custom">custom</option>
+            </select>
+            <div id="node-input-delay-custom" style="display:inline-block">
+                <input type="text" id="node-input-delay" > 
+                <p style="display: inline-block;"> ms</p>
+            </div>
         </div>
 
         <div class="form-row" >
             <label for="node-input-repeat"><i class="fa fa-repeat"></i> Repeat</label>
-            <input type="number" min="0" id="node-input-repeat" placeholder="0" style="width:100px;">
+            <input type="number" min="0" id="node-input-repeat" placeholder="0">
             <p style="display: inline-block;"> times</p>
         </div>
     </div>
@@ -515,13 +637,22 @@
                 <option value="card">Card</option>
                 <option value="signin">SignIn</option>
                 <option value="event">Event</option>
+                <option value="adaptiveCard">AdaptiveCard</option>
             </select>
         </div>
         <br>
 
+<<<<<<< HEAD
+        <section class="section-titles">
+            <b>Displayed content</b>
+            <br><br>
+        </section>
+    
+=======
         <b>Displayed content</b>
         <br><br>
-    
+
+>>>>>>> AdaptiveCard added to send-card type
         <section class="section-type section-text">
             <div class="form-row">
                 <label for="node-input-text"><i class="fa fa-pencil-square-o"></i> Text</label>
@@ -558,11 +689,37 @@
             </div>
         </section>
 
+        <section class="section-type section-adaptiveCard">
+            <div class="form-row">
+                <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-titleTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-textAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
+            </div>
+            <div class="form-row">
+                <label  for="node-input-displayedTextSizeAdaptiveCard"> Wrap text up to </label>
+                <input type="number" id="node-input-displayedTextSizeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-containerSeparatorAdaptiveCard"> Container separator </label>
+                <input type="text" id="node-input-containerSeparatorAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-attachAdaptiveCard"><i class="fa fa-image"></i> Image</label>
+                <input type="text" id="node-input-attachAdaptiveCard" style="width:80%;" placeholder="http://path/to/card/image">
+                <input type="hidden" id="node-input-attachTypeAdaptiveCard">
+            </div>
+           
+        </section>
+
         <section class="section-type section-quick">
             <div class="form-row">
                 <label for="node-input-quicktext"><i class="fa fa-pencil-square-o"></i> Text</label>
                 <textarea id="node-input-quicktext" rows="4" placeholder="Text to send"></textarea>
-            </div>    
+            </div>
         </section>
 
         <section class="section-type section-signin">
@@ -580,7 +737,7 @@
                 <input type="text" id="node-input-signinurl" placeholder="https://url.to/auth" style="width:80%;">
                 <input type="hidden" id="node-input-signinurlType">
             </div>
-        </section>       
+        </section>
 
         <section class="section-type section-text section-quick">
             <div class="form-row">
@@ -590,29 +747,33 @@
         </section>
         <section class="section-type section-event">
             <div class="form-row">
-                <label for="node-input-eventName"><i class="fa fa-pencil-square-o"></i> Event</label>
-                <input type="text" id="node-input-eventName" placeholder="event-" style="width:80%;">
+                <label for="node-input-eventName"><i class="fa fa-tag"></i> Label</label>
+                <input type="text" id="node-input-eventName" placeholder="event" style="width:80%;">
             </div>
             <div class="form-row">
-                <label for="node-input-eventValue"><i class="fa fa-"></i> Value</label>
+                <label for="node-input-eventValue"><i class="fa fa-edit"></i> Value</label>
                 <input type="text" id="node-input-eventValue" style="width:80%;" placeholder="">
                 <input type="hidden" id="node-input-eventValueType">
             </div>
         </section>
 
-        <br>
-        <b>Played content</b>
-        <br><br>
+        <section class="section-titles">
 
-        <div class="form-row">
-            <label for="node-input-speech"><i class="fa fa-comment-o"></i> Speech</label>
-            <input type="checkbox" id="node-input-speech" style="width: auto; vertical-align:top; margin-left:20px;" > <span>Convert text to speech</span>
-        </div>
+            <br>
+            <b>Played content</b>
+            <br><br>
 
-        <div class="form-row display-speech">
-            <label for="node-input-speechText"><i class="fa fa-commenting-o"></i> Text</label>
-            <textarea id="node-input-speechText" rows="2" placeholder="Text to say"></textarea>
-        </div>
+            <div class="form-row">
+                <label for="node-input-speech"><i class="fa fa-comment-o"></i> Speech</label>
+                <input type="checkbox" id="node-input-speech" style="width: auto; vertical-align:top; margin-left:20px;" > <span>Convert text to speech</span>
+            </div>
+
+            <div class="form-row display-speech">
+                <label for="node-input-speechText"><i class="fa fa-commenting-o"></i> Text</label>
+                <textarea id="node-input-speechText" rows="2" placeholder="Text to say"></textarea>
+            </div>
+
+        </section>
 
 
         <section class="section-type section-quick">
@@ -630,9 +791,19 @@
             <br>
             <b>Buttons</b>
             <br><br>
-            
+
             <div class="form-row" style="width:97%;">
                 <ol id="btn-container"></ol>
+            </div>
+        </section>
+
+        <section class="section-type section-adaptiveCard">
+            <br>
+            <b>Buttons</b>
+            <br><br>
+
+            <div class="form-row" style="width:97%;">
+                <ol id="btn-container-AdaptiveCard"></ol>
             </div>
         </section>
 
@@ -673,6 +844,17 @@
 </script>
 
 <script type="text/x-red" data-help-name="send-card">
+<<<<<<< HEAD
+
+    <p>Sends messages to users using bot connectors. </p>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt>buttons <span class="property-type">array</span></dt>
+        <dd>override the buttons with a Button array; don't forget to delete the field after using it. 
+<pre type="javascript" style="width:400px"> 
+    msg.buttons = [];
+=======
     <div class="red-ui-tabs" style="margin-bottom: 10px;">
         <div>
             <ul id="send-card-tabs-help">
@@ -685,7 +867,7 @@
     <div id="help-over" class="send-card-panel-help">
         <p>This node allows to send messages to users.</p><br>
         <b>Content</b><br>
-        <ol> 
+        <ol>
             <p>Contains the message content options and fields</p><br>
             <b>Type</b>
             <p style="margin-left: 20px;">Type of message to send, such as an image or a simple text.</p>
@@ -695,10 +877,10 @@
             <p style="margin-left: 20px;">The vocalized/sounds content to send. If 'Speech' is unchecked, do not forget the "<speak>" tags.</p>
             <b>Quick replies / Buttons / Shared card</b>
             <p style="margin-left: 20px;">Qucik replies, buttons or shared card associated with the sent message.</p>
-        </ol> 
+        </ol>
         <b>Settings</b>
         <br>
-        <ol> 
+        <ol>
             <p>Contains the node options.</p><br>
             <b>Name</b>
             <p style="margin-left: 20px;">Name of the node</p>
@@ -712,18 +894,18 @@
             <p style="margin-left: 20px;">Uses n times the 'default' output (first output), and then uses the 'repeat' output (last output).</p>
             <b>Delay</b>
             <p style="margin-left: 20px;">Wait before sending the message.</p>
-        </ol> 
+        </ol>
     </div>
     <div id="help-types" class="send-card-panel-help hide">
         <h2>Types of messages</h2>
-        <ol>  
+        <ol>
             <h3>Text</h3>
             <p>Send simple text to the user.</p>
             <p style="margin-left: 20px;">
                 <b>Text</b>: text to send to the user.
                 <br><b>Random</b>: choose a random line between each lines of text.
             </p>
-            
+
             <h3>Image</h3>
             <p>Send an image to the user.</p>
             <p style="margin-left: 20px;">
@@ -759,7 +941,7 @@
     </div>
     <div id="help-buttons" class="send-card-panel-help hide">
         <h2>Buttons properties</h2>
-        <ol>            
+        <ol>
             <h3>Cards</h3>
             <p><b>Post-back / IM Back</b></p>
             <p style="margin-left: 20px;">
@@ -778,7 +960,7 @@
             <p><b>Other options</b></p>
             <p style="margin-left: 20px;">
                 <b>Label</b>: displayed text on the button.
-                <br><b>Value</b>: 
+                <br><b>Value</b>:
                 <br><b>Open URL</b>: URL to open.
                 <br><b>Show image</b>: path to the image to display - URL (computers)/ image (cellphones).
                 <br><b>Play audio / Play video</b> path to the audio/video to send.
@@ -801,14 +983,84 @@
             <br>
             </p>
             <h3>Dynamic buttons</h3>
-            <p>You can dynamically add buttons in a function node before the send-card node. 
-            <br>Don't forget to delete them after using them. 
+            <p>You can dynamically add buttons in a function node before the send-card node.
+            <br>Don't forget to delete them after using them.
             <pre type="javascript" style="width:400px"> msg.buttons = [];
+>>>>>>> AdaptiveCard added to send-card type
     msg.buttons.push({
         title  : 'Choice 1',
         action : 'postBack',
         value  : 'choice1',
         regexp : 'one|first|choice 1'
+<<<<<<< HEAD
+    });     
+</pre>
+        </dd>
+    </dl>
+
+    <h3>Details: content</h3>
+    <p>Chose a message type and complete the required informations to send it to the active user. 
+        Be careful, some types are not availables for all sources.</p>
+    <p>Types</p>
+    <dl class="message-properties">
+        <dt>Text</dt>
+        <dd>text to send to the user; if you check <i>Random</i>, the the program choses a random line between each lines of text </dd>
+        <dt>Text + Quick replies</dt>
+        <dd>same behavior as behind, but with buttons; if no button is set and <code>msg.buttons</code> is empty, then acts like <i>Text</i>.</dd>
+        <dt>Image</dt>
+        <dd>sends an image to the user; the <i>Image</i> input must be a path to the image (serveur or url)</dd>
+        <dt>Card</dt>
+        <dd>sends a card to the user, with possible image, text and buttons; if <i>Carousel</i> is checked, the card will not be sent;
+            the program will wait for another card (with the option unchecked) to send all the cards as a carousel </dd>
+        <dt>SignIn</dt>
+        <dd>sends card to signin to an account; a signin URL should be precised</dd>
+        <dt>Event</dt>
+        <dd>sends an event (label and value - object) to the bot connector</dd>
+    </dl>
+    <p>Buttons and quick replies</p>
+    <dl class="message-properties">
+        <dt>Post Back / IM Back </dt>
+        <dd>when the user clicks the button, the <i>Value</i> is sent into the flow</dd>
+        <dt>Location</dt>
+        <dd>asks the user to send its location (Messenger), then sends it into the flow as an attachment</dd>
+        <dt>Identity</dt>
+        <dd>asks the user to send information (Google Home / Assistant only)</dd>
+        <dt>Call</dt>
+        <dd>calls the number (Skype only)</dd>
+        <dt>Share</dt>
+        <dd>shares a card with a friend (Messenger only)</dd>
+        <dt>Show image</dt>
+        <dd>shows an image; the value must be a path to the image to display - URL (computers)/ image (cellphones)</dd>
+        <dt>Play audio/video</dt>
+        <dd>play the media; the value must be a path to the media to send</dd>
+    </dl>
+
+    <p><b>Note:</b> if your bot is a vocal application, then customize the played content: uncheck the <i>Speech</i> checkbox. </p>
+    
+    <h3>Details: settings</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Unique ID <span class="property-type">string</span></dt>
+        <dd>can be used to import/export send-card nodes in your flows</dd>
+        <dt>Repeat <span class="property-type">number</span></dt>
+        <dd>uses n times the 'default' output (first output), and then uses the 'repeat' output (last output)</dd>
+        <dt>Delay <span class="property-type">number</span></dt>
+        <dd>Overide the global delay before sending the message. (Minimum possible 200ms)</dd>
+    </dl>
+    <p>
+        The <i>Prompt</i> checkbox is checked if the message should wait for a user answer or input. The <i>Outputs</i>
+        checkbox adds n outputs to the node, depending on the number of buttons or quickreplies.
+    </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Cards example</a> - Messenger generic templates</li>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Quick replies example</a> - Messenger quick replies</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>
+=======
     });     </pre>
             </p>
             <h3>Carousels</h3>
@@ -818,3 +1070,4 @@
         </ol>
     </div>
 </script>
+>>>>>>> AdaptiveCard added to send-card type

@@ -1,8 +1,8 @@
 "use strict";
 
-const helper     =    require('node-red-viseo-helper');
+const helper     = require('node-red-viseo-helper');
 const directline = require("offline-directline");
-const express    =    require("express");
+const express    = require("express");
 const fs         = require('fs')
  
 

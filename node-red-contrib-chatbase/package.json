@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-viseo-chatbase",
-  "version": "0.0.4",
-  "description": "API wrapper for Chatbase",
+  "version": "0.0.5",
+  "description": "VISEO Bot Maker - Chatbase",
   "dependencies": {
     "request-promise": "^4.1.1",
     "moment"    : "^2.15.2",
@@ -12,11 +12,7 @@
     "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-chatbase"
   },
   "license": "Apache-2.0",
-  "keywords": [
-    "viseo",
-    "sarah",
-    "node-red"
-  ],
+  "keywords": [ "viseo", "sarah", "node-red", "chatbase", "log", "bot", "chatbot" ],
   "node-red": {
     "nodes": {
       "node-chatbase": "node-chatbase.js",

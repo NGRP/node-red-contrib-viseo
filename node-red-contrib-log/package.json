@@ -1,8 +1,7 @@
 {
     "name"          : "node-red-contrib-viseo-log",
-    "version"       : "0.1.0",
-    "author"       : "Jean-Philippe Encausse <jp@encausse.net> (http://encausse.net/)",
-    "description"   : "Logging nodes",
+    "version"       : "0.1.1",
+    "description"   : "VISEO Bot Maker - Logging nodes",
     "dependencies"  : { 
         "winston"               : "~2.3.1",
         "applicationinsights"   : "~0.18.0",
@@ -15,7 +14,7 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-log"
     },
     "license": "Apache-2.0",
-    "keywords": [ "viseo", "sarah", "node-red" ],
+    "keywords": [ "viseo", "sarah", "node-red", "logs", "xiti", "logstash", "azure", "insights", "file" ],
     "node-red" : {
         "nodes": {
             "log-file":               "node-log-file.js",

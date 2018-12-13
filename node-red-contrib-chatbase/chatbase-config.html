@@ -17,18 +17,25 @@
 <script type="text/x-red" data-template-name="chatbase-config">
     <div class="form-row">
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name">
+        <input type="text" id="node-config-input-name" style="width:70%;">
     </div>
     <div class="form-row">
-        <label for="node-config-input-token"><i class="icon-tag"></i> Token</label>
-        <input type="text" id="node-config-input-token" placeholder="">
+        <label for="node-config-input-token"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-config-input-token" placeholder="" style="width:70%;">
     </div>
     <div class="form-row">
-        <label for="node-config-input-version"><i class="icon-tag"></i> Version</label>
-        <input type="text" id="node-config-input-version" placeholder="0.0.1">
+        <label for="node-config-input-version"><i class="fa fa-id-card"></i> Version</label>
+        <input type="text" id="node-config-input-version" placeholder="0.0.1" style="width:70%;">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="chatbase-config">
-     <p>Configuration for chatbase logging.</p>
+    <p>Configuration for chatbase logging.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://chatbase.com/documentation/generic">Chatbase</a> - generic events</a></li>
+        <li><a href="https://chatbase.com/documentation/events">Chatbase</a> - custom events</a></li>  
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

@@ -227,93 +227,54 @@
 </style>
 
 <script type="text/x-red" data-help-name="ms-graph-excel">
-    <section class="help-section">
-        <h3>MS Graph Excel Settings</h3>
-        <ol> 
-            <h4>Token</h4>
-            <p>
-                The token should include the following scopes : "Files.Read" and "Files.ReadWrite"
-            </p>
-            <h4>Workbook</h4>
-            <p>
-                The workbook is the name of the file. It is included in the request URL such as: <br>
-                <blockquote>https://graph.microsoft.com/{version}/me/drive/root:/{workbook}:/workbook</blockquote>
-            </p>
-            <h4>Worksheet</h4>
-            <p>
-                The name/ID of the sheet/tab in the document.
-            </p>
-            <h4>Range</h4>
-            <p>
-                The range to get/set/update (ex: "A1:C2"). Please be careful when you want to set data: the range has to be the exact one.
-                Leave empty to use an automatic range.
-            </p>
-            <h4>Save</h4>
-            <p>
-                In order to avoid multiple calls to Sheets API, the node uses this field to stock the Sheet data (if checked).<br>
-                <b>Please delete its content every time the sheet's data has been changed! </b><br>
-                This can be done with a simple "inject" node followed by a "change" node (delete global._sheet).
-            </p>
-        </ol> 
 
-        <h3>"Set data" request Settings</h3>
-        <ol> 
-            <h4>Method</h4>
-            <p>
-                Update current data or delete all data before setting.
-            </p>
-            <h4>Labels</h4>
-            <p>
-                Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
-                It will write labels (object's keys) in the first line/column.
-            </p>
-            <h4>Input</h4>
-            <p>
-                Input field in the flow. Input field has to be an <b>array</b> or a <b>JSON object</b>.<br>
-                Note that it is only possible to set data by lines, and not by columns.
-            </p>
-            <h4>Fields</h4>
-            <p>
-                Fields of the object items to write in the spreadsheet.
-            </p>
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results.
-            </p>
-        </ol> 
+    <p>Manipulate a Google spreadhseet with Sheets API. </p>
 
-        <h3>"Get data" request Settings</h3>
-        <ol> 
-            <h4>Labels</h4>
-            <p>
-                Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
-                The keys of the resulting objects will be adjusted accordingly.
-            </p>
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results.
-            </p>
-        </ol>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Token <span class="property-type">string</span></dt>
+        <dd>from a Microsoft Graph authentication</dd>
+        <dt>Session ID <span class="property-type">string</span></dt>
+        <dd>if a session was created - leave empty to create a new one</dd>
+        <dt>Workbook <span class="property-type">string</span></dt>
+        <dd>the name of the file, included in the request URL such as <code>https://graph.microsoft.com/{version}/me/drive/root:/{workbook}:/workbook</code> </dd>
+        <dt>Worksheet <span class="property-type">string</span></dt>
+        <dd>name/ID of the sheet/tab in the document</dd>
+        <dt>Range <span class="property-type">string</span></dt>
+        <dd>to get/set/update, ex: "A1:C2" ; please be careful when you want to set data: the range has to be the exact one ; leave empty to use an automatic range</dd>
+        <dt>Save <span class="property-type">string</span></dt>
+        <dd>if checked, where to save the data in order to avoid multiple calls to the Excel API</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p>
+        <b>Note:</b> the client must authenticate with the "Files.Read" and "Files.ReadWrite" scopes.
+    </p>
+    <p><b>Note:</b> If <i>Save</i> is checked, please delete the content of its location every time the sheet's data has been changed!
+        This can be done with a simple "inject" node followed by a "change" node (delete <code>global._sheet</code>).
+    </p>
+    <p>
+        <code>Set data</code> updates or replaces (new) the value of the range, or append after. The <i>input</i> has to be an <b>array</b> or a <b>JSON object</b>. If the input
+        is an object, it is possible to use the object keys as labels, eg first line and/or column. If you chose the 'append' method, this will not impact the result.
+    </p>
+    <p>
+        <b>Note:</b> You can chose to only write some <i>fields</i> of the input object in the spreadsheet. Chose these fields as: if the input object is 
+        <code>msg.payload = { "monday": 3, "tuesday": 25, "wednesday": 12, "thursday": 6, "friday": 2" }</code> then I can chose to write only the <i>monday</i>
+        and <i>tuesday</i> fields in my worksheet.
+    </p>
+    <p>
+        <code>Get data</code> gets the value of the range. Check <i>labels</i> for line and/or column if the first line and/or the first column in your 
+        spreadsheet is used for labels. The keys of the resulting objects will be adjusted accordingly.
+    </p>
+    <p>
+        <code>Get cell</code> gets the value of a cell. Precise line and column labels. Both should be precised. If nothing is found, the result is "Not found".
+    </p>
 
-        <h3>"Get cell" request Settings</h3>
-        <ol> 
-            <h4>Cell</h4>
-            <p>
-                Precise line and column labels. Both should be precised.
-            </p>
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results : the found data or "Not Found".
-            </p>
-        </ol>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/en-us/graph/api/resources/excel?view=graph-rest-beta">Microsoft Graph</a> - Excel reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
-        <h3>"Clear data" request Settings</h3>
-        <ol> 
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results.
-            </p>
-        </ol>
-
-    </section>
 </script>

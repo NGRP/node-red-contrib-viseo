@@ -22,8 +22,8 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-listen"><i class="icon-tag"></i> Event</label>
-        <select id="node-input-listen">
+        <label for="node-input-listen"><i class="fa fa-calendar"></i> Event</label>
+        <select id="node-input-listen" style="width:70%;">
             <option value="prompt">Prompt</option>
             <option value="prompt-unexpected">Prompt unexpected text</option>
             <option value="received">Received</option>
@@ -35,5 +35,41 @@
 </script>
 
 <script type="text/x-red" data-help-name="bot-event">
+
+    <p>Event listener: listens to events triggered during a bot conversation.</p>
+
+    <h3>Details</h3>
+
+    The node catches the event, sometimes interrupting the course of the flow. To resume the execution of the flow you need to use the <code>Continue</code> node. 
+    However some nodes must not lead to a <code>Continue</code> node as they do not interrupt the flow (see below).
+
+    <h4>Events handled</h4>
+    <dl class="message-properties">
+        <dt>Prompt <span class="property-type">needs Continue</span></dt>
+        <dd>when a prompt message arrives</dd>
+        <dt>Prompt unexpected text <span class="property-type">needs Continue</span></dt>
+        <dd>when a prompt message arrives but does not match any of the following : button values/regexp, quickreplies values/regexp</dd>
+        <dt>Received <span class="property-type">needs Continue</span></dt>
+        <dd>when the connector just received a message from the user</dd>
+        <dt>Replied </dt>
+        <dd>when the bot replied to the user</dd>
+        <dt>Reply </dt>
+        <dd>when the bot just prepared the message to reply to the user</dd>
+    </dl>
+
+    <h4>Precedence</h4>
+    The order in which the events are triggered is as follows :
+    <ul>
+        <li>Received > Prompt > Prompt Unexpected text</li>
+
+        <li>Reply > Replied</li>
+    </ul>
+
+    
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>

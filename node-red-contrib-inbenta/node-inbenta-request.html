@@ -112,24 +112,35 @@
 </script>
 
 <script type="text/x-red" data-help-name="inbenta-request">
-    <h2>Main properties</h2>
-    <ol> 
-        <p>This node allows to connect your flow to Inbenta for NLP and FAQ usages.</p><br>
 
-        <b>Inbenta settings</b>
-        <p style="margin-left: 20px;"><b>URL</b>: Inbenta URL. Ex: https://f01.inenta.com/my_instance</p>
+    <p>Performs NLU with Inbenta API (FAQ usages). </p>
 
-        <b>Request settings</b>
-        <p style="margin-left: 20px;"><b>Question</b> (Search): User question to classify.
-           <br><b>Id</b> (Click): Inbenta Id of the selected content.
-           <br><b>Rating</b> (Rate): Yes/No/No-Comment Id of the selected content.
-           <br><b>Comment</b> (Rate): Comment to add if "No-Comment" was selected.
-        </p>
-        
-        <b>Tips</b>
-        <p style="margin-left: 20px;">► When there is a unique result after a search operation, there is no need to send back a 'click' on the content.</p>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the request response</dd>
+    </dl>
 
-        <b>Response</b>
-        <p style="margin-left: 20px;"><b>Payload</b>: this field contains the request response.</p>
-    </ol> 
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>URL <span class="property-type">string</span></dt>
+        <dd>Inbenta URL, ex: https://f01.inenta.com/my_instance</dd>
+        <dt>Question <span class="property-type">string</span></dt>
+        <dd>user question to classify</dd>
+        <dt>Id <span class="property-type">string</span></dt>
+        <dd>Inbenta Id of the selected content</dd>
+        <dt>Rating <span class="property-type">string</span></dt>
+        <dd>Yes/No/No-Comment Id of the selected content</dd>
+        <dt>Comment <span class="property-type">string</span></dt>
+        <dd>comment to add if "No-Comment" was selected</dd>
+    </dl>
+    <p><b>Note:</b> When there is a unique result after a search operation, there is no need to send back a 'click' on the content.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://apidocs.inbenta.io/">Inbenta</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
 </script>

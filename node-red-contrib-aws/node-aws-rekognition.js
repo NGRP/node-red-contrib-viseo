@@ -36,7 +36,7 @@ function input(node, config, data){
     let rekognition = _AWS[config.key];
     if (!rekognition) {
         helper.setByString(data, config.output || "payload" , { error: "Missing credentials" });
-        console.log("AWS Lex: Error - Missing credentials");
+        node.warn("AWS Lex: Error - Missing credentials");
         return node.send(data);
     }
 
@@ -55,7 +55,7 @@ function input(node, config, data){
     rekognition[action](params = parameters, function (err, res) {
         if (err) {
             helper.setByString(data, config.output || "payload" , { error: err });
-            console.log("AWS Lex: Error - postText - " + err);
+            node.warn("AWS Lex: Error - postText - " + err);
             return node.send(data);
         }
         helper.setByString(data, config.output || "payload" , res);

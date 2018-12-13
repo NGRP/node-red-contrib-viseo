@@ -1,0 +1,131 @@
+<script type="text/javascript">
+    RED.nodes.registerType('socketio-server-config',{
+        category: 'config',
+        defaults: { 
+            name:   { value: undefined }
+        },
+        label: function() { return this.name || "Socket.io server config"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        },
+        oneditsave: function(){}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="socketio-server-config">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;">
+    </div>
+
+    <br><br>
+    <div class="form-tips">
+        <span><b>Caution:</b> Make sure to have only one configuration in use.</span>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="socketio-server-config">
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('socketio-server',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: { 
+            name:   { value: undefined },
+            config: { value: undefined,  type: 'socketio-server-config' },
+            namespace: { value: "assistant" }
+        },
+        inputs:  0,
+        outputs: 1,
+        icon: "socketio.svg",
+        align: "left",
+        paletteLabel: 'Socket.io bot',
+        label: function() { return this.name || "Socket.io bot server"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-namespace").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        },
+        oneditsave: function(){},
+        button: {
+            enabled: true,
+            onclick: function() {
+                $.ajax({
+                    url: "socketioserver/"+this.id,
+                    type:"POST",
+                    success: function(resp) {
+                        RED.notify("Reset server with success","success");
+                    },
+                    error: function(jqXHR,textStatus,errorThrown) {
+                        if (jqXHR.status == 404) {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.not-deployed")}),"error");
+                        } else if (jqXHR.status == 500) {
+                            RED.notify(node._("common.notification.error",{message:node._("inject.errors.failed")}),"error");
+                        } else if (jqXHR.status == 0) {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.no-response")}),"error");
+                        } else {
+                            RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.unexpected",{status:jqXHR.status,message:textStatus})}),"error");
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="socketio-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;">
+    </div>
+
+    <br><b>Socket.io bot server configuration</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-config"><i class="fa fa-wrench"></i> Socket.io</label>
+        <input type="text" id="node-input-config" style="width: 70%;">
+    </div>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-namespace"><i class="fa fa-square"></i> Namespace</label>
+        <input type="text" id="node-input-namespace" style="width: 70%;">
+    </div>
+
+    <br><div class="form-tips">
+        <span><b>Tip: </b>Find an example of code for client applications in the info tab. </span>
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="socketio-server">
+
+    <p>[<b>Bot server</b>] Connects to a web application with Socket.IO. </p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>Details</h3>
+    <p>This node uses the <code>/socket.io</code> route.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Socket.io <span class="property-type">config</span></dt>
+        <dd>the socket.io server - please make sure to have only one server per flow</dd>
+        <dt>Namespace <span class="property-type">string</span></dt>
+        <dd>the namespace for the application communication</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://socket.io/docs/">Socket.io</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

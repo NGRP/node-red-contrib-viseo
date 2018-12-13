@@ -31,7 +31,7 @@
                 $select.append('<option value="'+qName+'">'+ result[index].name +'</option>');
 
                 $choice = $('<div class="form-row server-type" id="section-server-'+qName+'"></div>');
-                $choice.append('<label for="node-input-server-'+qName+'" style="padding-right:4px;"><i class="fa fa-lock"></i> '+result[index].name+'</label>');
+                $choice.append('<label for="node-input-server-'+qName+'" style="padding-right:4px;"><i class="fa fa-database"></i> '+result[index].name+'</label>');
                 $choice.append('<input type="text" id="node-input-server-'+qName+'" style="width:70%;">');
                 $choice.insertAfter($selectSection);
             }
@@ -123,9 +123,15 @@
 
     <div class="form-row" id="server-type-section">
         <br>
-        <label for="node-input-server-type"><i class="fa fa-globe"></i> Source</label>
+        <label for="node-input-server-type"><i class="fa fa-sliders"></i> Source</label>
         <select id="node-input-server-type" style="width:70%">
         </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-collection"><i class="fa fa-bookmark"></i> Collection</label>
+        <input type="text" id="node-input-collection" style="width:70%">
+        <input type="hidden" id="node-input-collectionType">
     </div>
 
     <br>
@@ -138,11 +144,6 @@
             <option value="get">Get</option>
             <option value="set">Set</option>
         </select>
-    </div>
-     <div class="form-row">
-        <label for="node-input-collection"><i class="icon-tag"></i> Collection</label>
-        <input type="text" id="node-input-collection" style="width:70%">
-        <input type="hidden" id="node-input-collectionType">
     </div>
     <div class="form-row">
         <label for="node-input-key"><i class="icon-tag"></i> Key</label>
@@ -166,18 +167,25 @@
 </style>
 
 <script type="text/x-red" data-help-name="handover">
-    Retrieve or save a "_handover" boolean in an object of the data flow according to an id.
-   
-    <h3>Fields</h3>
-    <ol> 
-        <h4>Key (and collection)</h4>
-        <p>
-            Filled with the property used as the key (mandatory). Ex : msg.user.id
-        </p>
-        <h4>Value</h4>
-        <p>
-            GET: Get the result in the msg.payload field, or get the result in OUT[0] if true, OUT[1] if false, OUT[2] if not found. <br>
-            SET: Change the value of the handover to true or false.
-        </p>
-    </ol> 
+
+    <p>Retrieves or saves a "_handover" boolean in an object of the data flow according to an id.</p>
+
+    <h3>Details</h3>
+    <dl class="message-properties">
+        <dt>Source</dt>
+        <dd>chose the source, according to the installed configurations.</dd>
+        <dt>Collection <span class="property-type">string</span></dt>
+        <dd>collection's name, if appropriate</dd>
+        <dt>Key <span class="property-type">string/json</span></dt>
+        <dd>filled with the property used as the key (mandatory). Ex : msg.user.id</dd>
+    </dl>
+    <p><b>Note:</b> <i>Get</i> retrieves the result in the msg.payload field. Gets the result in OUT[0] if true, OUT[1] if false, OUT[2] if not found.
+        <i>Set</i> changes the value of the handover to true or false.
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+
 </script>

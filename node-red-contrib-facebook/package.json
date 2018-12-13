@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-facebook",
-    "version"       : "0.1.0",
+    "version"       : "0.1.1",
     "description"   : "A set of facebook utilies for Node-RED",
     "dependencies"  : {
         "node-red-viseo-helper"      : "~0.1",
@@ -13,7 +13,7 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-facebook"
     },
     "license": "Apache-2.0",
-    "keywords": [ "viseo", "sarah", "node-red" ],
+    "keywords": [ "viseo", "sarah", "node-red", "facebook", "messenger", "bot", "chatbot", "server" ],
     "node-red" : {
         "nodes": {
             "facebook-handover": "facebook-handover.js",

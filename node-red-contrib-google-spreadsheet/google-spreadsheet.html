@@ -200,94 +200,42 @@
 
 <script type="text/x-red" data-help-name="google-spreadsheet">
 
-    <section class="help-section">
-            <h3>Google Spreadsheet Settings</h3>
-            <ol> 
-                <h4>ID</h4>
-                <p>
-                    Spreadsheet ID<br> <blockquote cite="https://developers.google.com/sheets/api/guides/concepts">
-                    https://docs.google.com/spreadsheets/d/<b>{ID}</b>/edit#gid=0</blockquote>
-                </p>
-                <h4>Range</h4>
-                <p>
-                    Should at least be set as the name of the targeted spreadhseet's tab. <br>
-                    <blockquote cite="https://developers.google.com/sheets/api/guides/concepts">
-                    <b>Sheet1!A1:B2</b> refers to the first two cells in the top two rows of Sheet1.<br>
-                    <b>Sheet1!A:A</b> refers to all the cells in the first column of Sheet1.<br>
-                    <b>Sheet1!1:2</b> refers to the all the cells in the first two rows of Sheet1.<br>
-                    <b>Sheet1!A5:A</b> refers to all the cells of the first column of Sheet 1, from row 5 onward.<br>
-                    <b>A1:B2</b> refers to the first two cells in the top two rows of the first visible sheet.<br>
-                    <b>Sheet1</b> refers to all the cells in Sheet1.
-                    </blockquote>
-                </p>
-                <h4>Save</h4>
-                <p>
-                    In order to avoid multiple calls to Sheets API, the node uses this field to stock the Sheet data.<br>
-                    <b>Please delete its content every time the sheet's data has been changed! </b><br>
-                    This can be done with a simple "inject" node followed by a "change" node (delete global._sheet).
-                </p>
-            </ol> 
-    
-            <h3>"Set data" request Settings</h3>
-            <ol> 
-                <h4>Method</h4>
-                <p>
-                    Update current data or append data at the end of the sheet.
-                </p>
-                <h4>Labels</h4>
-                <p>
-                    Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
-                    If you chose the 'append' method, this will not impact the result.<br>
-                    Otherwise, it will write labels (object's keys) in the first line/column.
-                </p>
-                <h4>Input</h4>
-                <p>
-                    Input field in the flow. Input field has to be an <b>array</b> or a <b>JSON object</b>.<br>
-                    Note that it is only possible to set data by lines, and not by columns.
-                </p>
-                <h4>Fields</h4>
-                <p>
-                    Fields of the object items to write in the spreadsheet.
-                </p>
-                <h4>Output</h4>
-                <p>
-                    Where to get the operation results.
-                </p>
-            </ol> 
+    <p>Manipulate a Google spreadhseet with Sheets API. </p>
 
-            <h3>"Get data" request Settings</h3>
-            <ol> 
-                <h4>Labels</h4>
-                <p>
-                    Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
-                    The keys of the resulting objects will be adjusted accordingly.
-                </p>
-                <h4>Output</h4>
-                <p>
-                    Where to get the operation results.
-                </p>
-            </ol>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Credentials <span class="property-type">config</span></dt>
+        <dd>information from a Google service account</dd>
+        <dt>ID <span class="property-type">string</span></dt>
+        <dd>spreadsheet ID such as <i>https://docs.google.com/spreadsheets/d/<b>{ID}</b>/edit#gid=0</i></dd>
+        <dt>Range <span class="property-type">string</span></dt>
+        <dd>should at least be set as the name of the targeted spreadhseet's tab; ex: <i>Sheet1</i> or <i>Sheet1!A5:B8</i></dd>
+        <dt>Save <span class="property-type">string</span></dt>
+        <dd>where to save the data in order to avoid multiple calls to Sheets API</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p><b>Note:</b> Please delete the content of the <i>Save</i> location every time the sheet's data has been changed!
+        This can be done with a simple "inject" node followed by a "change" node (delete <code>global._sheet</code>).
+    </p>
+    <p>
+        <code>Set data</code> updates or replaces (new) the value of the range, or append after. The <i>input</i> has to be an <b>array</b> or a <b>JSON object</b>. If the input
+        is an object, it is possible to use the object keys as labels, eg first line and/or column. If you chose the 'append' method, this will not impact the result. 
+    </p>
+    <p>
+        <code>Get data</code> gets the value of the range. Check <i>labels</i> for line and/or column if the first line and/or the first column in your 
+        spreadsheet is used for labels. The keys of the resulting objects will be adjusted accordingly.
+    </p>
+    <p>
+        <code>Get cell</code> gets the value of a cell. Precise line and column labels. Both should be precised. If nothing is found, the result is "Not found".
+    </p>
 
-            <h3>"Get cell" request Settings</h3>
-            <ol> 
-                <h4>Cell</h4>
-                <p>
-                    Precise line and column labels. Both should be precised.
-                </p>
-                <h4>Output</h4>
-                <p>
-                    Where to get the operation results : the found data or "Not Found".
-                </p>
-            </ol>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.google.com/sheets/api/guides/concepts">Google Sheets</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
-            <h3>"Clear data" request Settings</h3>
-            <ol> 
-                <h4>Output</h4>
-                <p>
-                    Where to get the operation results.
-                </p>
-            </ol>
-    
-        </section>
 
 </script>

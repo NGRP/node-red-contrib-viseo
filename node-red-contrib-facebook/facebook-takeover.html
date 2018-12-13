@@ -59,11 +59,29 @@
 
 <script type="text/x-red" data-help-name="facebook-takeover">
 
-    Take thread from secondary app
+    <p>Takes Facebook Messenger thread from a secondary app.</p>
 
-    <h3>Output</h3>
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Page token <span class="property-type">config</span></dt>
+        <dd>bot's Facebook page token</dd>
+        <dt>User ID <span class="property-type">string</span></dt>
+        <dd>the Facebook's user ID</dd>
+        <dt>Metadata <span class="property-type">object</span></dt>
+        <dd>metadata passed to the receiving app</dd>
+    </dl>
+
+    <h3>References</h3>
     <ul>
-        <li>0: Success</li>
-        <li>1: Failure</li>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol">Facebook Messenger Platform</a> - handover reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
+    
 </script>

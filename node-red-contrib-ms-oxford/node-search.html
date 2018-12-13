@@ -34,8 +34,8 @@
         icon: "microsoft.svg",
         align: "left",
         paletteLabel: 'Search',
-        label: function() { return this.name || "Microsoft Search"; },
-        outputLabels: ["standard output", "error output"],
+        label: function() { return this.name || "Search"; },
+        outputLabels: ["stdout", "stderr"],
         oneditprepare: function() {
             $("#node-input-name").typedInput({ default: 'str', types:['str'], type: 'str' });
             $("#node-input-output").typedInput({ default: 'msg', types:['msg'], type: 'msg' });
@@ -176,27 +176,30 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-cs-search">
-    <p>This node uses the Microsoft Cognitive Services Speech API to get informations on a text. </p>
+
+    <p>Query the Microsoft Cognitive Services Bing Search API. </p>
     
-        
-    <h2>Outputs</h2>
-    <p>
-        </p><li><b>[0]</b>: Standard output</li>
-        <li><b>[1]</b>: Error output</li>
-    <p></p>
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
 
-    <h2>Main parameters</h2>
-    <p>
-        </p><li><b>API Key</b>: A key for the Bing Speech API is required for the process.</li>
-        <li><b>Output</b>: Where to set the result.</li>
-    <p></p>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>API key <span class="property-type">config</span></dt>
+        <dd>key for the Bing Speech API</dd>
+        <dt>Query <span class="property-type">string</span></dt>
+        <dd>text to search</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
 
-    <h2>Getting help</h2>
-    <p>
-        </p><li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a></li>
-        <li><b>Bing Web Search API</b> <a>https://docs.microsoft.com/en-us/rest/api/cognitiveservices/bing-web-api-v7-reference</a></li>
-        <li><b>Bing News Search API</b> <a>https://docs.microsoft.com/en-us/rest/api/cognitiveservices/bing-news-api-v7-reference</a></li>
-        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a></li>
-        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
-    <p></p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/en-us/rest/api/cognitiveservices/bing-web-api-v7-reference">Bing Web Search API</a> - reference</li>
+        <li><a href="https://docs.microsoft.com/en-us/rest/api/cognitiveservices/bing-news-api-v7-reference">Bing News Search API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

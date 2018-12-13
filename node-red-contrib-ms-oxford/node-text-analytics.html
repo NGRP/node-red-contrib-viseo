@@ -17,8 +17,8 @@
         outputs: 1,
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: 'MS Text Analytics',
-        label: function() { return this.name || "Microsoft Text Analytics"; },
+        paletteLabel: 'Text Analytics',
+        label: function() { return this.name || "Text Analytics"; },
         oneditprepare: function() {
             $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global','json'], typeField: $("#node-input-inputType")  });
             $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
@@ -71,22 +71,25 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-text-analytics">
-    <p>This node uses the Microsoft Cognitive Services Language API to get informations on a text. </p>
+
+    <p>Uses the Microsoft Cognitive Services Language API to get informations on a text. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Key <span class="property-type">config</span></dt>
+        <dd>credentials for the Content Moderator API</dd>
+        <dt>Endpoint <span class="property-type">string</span></dt>
+        <dd>endpoint specified with the key in Azure Portal</dd>
+        <dt>Input <span class="property-type">string</span></dt>
+        <dd>where to get the input text</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
     
-        <h2>Main parameters</h2>
-        <p>
-            <li><b>Key</b>: A key for the Text Analytics API is required for the process.</li>
-            <li><b>Endpoint</b>: Endpoint specified with the key in Azure Portal.</li>
-            <li><b>Api</b>: Process.</li>
-            <li><b>Input</b>: Where to get the input object.</li>
-            <li><b>Output</b>: Where to set the result.</li>
-        </p>
-    
-        <h2>Getting help</h2>
-        <p>
-            <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a></li>
-            <li><b>API reference and examples:</b> <a>https://westus.dev.cognitive.microsoft.com/docs/services/TextAnalytics.V2.0/</a></li>
-            <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a></li>
-            <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a></li>
-        </p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://westus.dev.cognitive.microsoft.com/docs/services/TextAnalytics.V2.0/">Microsoft Text Analytics</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

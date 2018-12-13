@@ -174,8 +174,8 @@
         },
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: "MS Image: Face",
-        label: function() { return this.name || "Face detection"; }
+        paletteLabel: "Face",
+        label: function() { return this.name || "Face"; }
     });
 </script>
 
@@ -335,21 +335,19 @@
 </script>
 
 <script type="text/x-red" data-help-name="vision-image-faces">
-    <p>This node uses the Microsoft Cognitive Services Face API to detect, analyse or recognize human faces in an image. </p>
 
-    <h2>Main properties</h2>
-    <p>
-        <li><b>Keys</b> values: A key for the Face API is required for the process.
-        <li><b>Image</b> location: Where to get the image. It can be a buffer (in a 'msg' or 'global' field) or an url (directly by chosing 'str' or in a field of 'msg' or 'global'). 
-    </p>
-    <p>
-        <li><b>OUT[0]:</b> Returns an array in the msg.payload field with the informations (an item per found person).
-    </p>
+    <p>Query the Microsoft Cognitive Services Computer Face API to detect, analyse or recognize human faces in an image. </p>
 
-    <h2>Getting help</h2>
-    <p>
-        <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a>
-        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a>
-        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a>
-    </p>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Face key <span class="property-type">config</span></dt>
+        <dd>credentials for Computer Vision API from Azure portal</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://azure.microsoft.com/en-us/services/cognitive-services/face/">Face</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

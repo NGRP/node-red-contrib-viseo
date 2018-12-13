@@ -9,7 +9,14 @@
             recognizer: { value: undefined },
             hotword:    { value: undefined },
         },
-        label: function() { return this.name || "SARAH config"; }
+        label: function() { return this.name || "SARAH config"; },
+        oneditprepare: function() {
+            $("#node-config-input-confidence").typedInput({ default: 'num', types: ['num'], type: 'num' });
+            $("#node-config-input-language").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-hotword").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-process").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-recognizer").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        }
     });
 </script>
 
@@ -19,23 +26,32 @@
         <input type="text" id="node-config-input-name" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-config-input-confidence"><i class="icon-tag"></i> Confidence</label>
-        <input type="text" id="node-config-input-confidence" placeholder="0.7">
+        <label for="node-config-input-confidence"><i class="fa fa-check"></i> Confidence</label>
+        <input type="text" id="node-config-input-confidence" style="width: 70%;" placeholder="0.7">
     </div>
     <div class="form-row">
-        <label for="node-config-input-language"><i class="icon-tag"></i> Language</label>
-        <input type="text" id="node-config-input-language" placeholder="fr-FR">
+        <label for="node-config-input-language"><i class="fa fa-globe"></i> Language</label>
+        <input type="text" id="node-config-input-language" style="width: 70%;" placeholder="fr-FR">
     </div>
     <div class="form-row">
-        <label for="node-config-input-hotword"><i class="icon-tag"></i> Hotword</label>
-        <input type="text" id="node-config-input-hotword" placeholder="SARAH">
+        <label for="node-config-input-hotword"><i class="fa fa-comment"></i> Hotword</label>
+        <input type="text" id="node-config-input-hotword" style="width: 70%;" placeholder="SARAH">
     </div>
     <div class="form-row">
-        <label for="node-config-input-process"><i class="icon-tag"></i> Process</label>
-        <input type="text" id="node-config-input-process" placeholder="/bin/listen.exe">
+        <label for="node-config-input-process"><i class="fa fa-wrench"></i> Process</label>
+        <input type="text" id="node-config-input-process" style="width: 70%;" placeholder="/bin/listen.exe">
     </div>
     <div class="form-row">
-        <label for="node-config-input-recognizer"><i class="icon-tag"></i> Recognizer</label>
-        <input type="text" id="node-config-input-recognizer" placeholder="">
+        <label for="node-config-input-recognizer"><i class="fa fa-brain"></i> Recognizer</label>
+        <input type="text" id="node-config-input-recognizer" style="width: 70%;" placeholder="">
     </div>
+</script>
+
+<script type="text/x-red" data-help-name="win-listen-config">
+    <p>Options for SARAH connection. </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="http://sarah.encausse.net">SARAH</a> - reference</li>
+    </ul>
 </script>

@@ -15,6 +15,10 @@
         labelStyle: "node-help-html",
         label: function() { return ""; },
         oneditprepare: function() {
+            $("#node-input-width").typedInput({ default: 'num', types: ['num'], type: 'num' });
+            $("#node-input-height").typedInput({ default: 'num', types: ['num'], type: 'num' });
+            $("#node-input-background").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
             this.editor = RED.editor.createEditor({
                 id: 'node-input-content-editor',
                 mode: 'ace/mode/html',
@@ -99,16 +103,16 @@
 
 <script type="text/x-red" data-template-name="help-html">
     <div class="form-row">
-        <label for="node-input-width"><i class="icon-tag"></i> Width</label>
-        <input type="text" id="node-input-width" placeholder="240">
+        <label for="node-input-width"><i class="fa fa-text-width"></i> Width</label>
+        <input type="text" id="node-input-width" placeholder="240" style="width:70%;">
     </div>
     <div class="form-row">
-        <label for="node-input-height"><i class="icon-tag"></i> Height</label>
-        <input type="text" id="node-input-height" placeholder="90">
+        <label for="node-input-height"><i class="fa fa-text-height"></i> Height</label>
+        <input type="text" id="node-input-height" placeholder="90" style="width:70%;">
     </div>
     <div class="form-row">
-        <label for="node-input-background"><i class="icon-tag"></i> Background</label>
-        <input type="text" id="node-input-background" placeholder="#FFFFFF">
+        <label for="node-input-background"><i class="fa fa-square"></i> Background</label>
+        <input type="text" id="node-input-background" placeholder="#FFFFFF" style="width:70%;">
     </div>
     <div class="form-row" style="position: relative; margin-bottom: 0px;">
         <label for="node-input-content"><i class="fa fa-file-code-o"></i> Content</label>
@@ -129,5 +133,23 @@
 </script>
 
 <script type="text/x-red" data-help-name="help-html">
-    <p></p>
+    <p>An HTML node to display information in the flow. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Width <span class="property-type">number</span></dt>
+        <dd>element's width in pixels</dd>
+        <dt>height <span class="property-type">number</span></dt>
+        <dd>element's height in pixels</dd>
+        <dt>Background <span class="property-type">string</span></dt>
+        <dd>color in hexa</dd>
+        <dt>Content <span class="property-type">html</span></dt>
+        <dd>html content to display</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

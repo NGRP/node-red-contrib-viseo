@@ -83,19 +83,26 @@
 </script>
 
 <script type="text/x-red" data-help-name="object-search">
-    <p>This node helps you to find a property in a given object.</p>
 
-    <h2>Main properties</h2>
+    <p>Finds a property in a given object </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Input <span class="property-type">string</span></dt>
+        <dd>where to get the object</dd>
+        <dt>Search <span class="property-type">string/number</span></dt>
+        <dd>name of the object's key, or the object's value to search</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the result</dd>
+    </dl>
     <p>
-        <li><b>In</b>: search in the properties or in the values.
-        <li><b>Of</b>: the object to search in.
-        <li><b>Search</b>: the name of the object's key, or the object's value to search.
-        <li><b>Output</b>: where to stock the result.
+        If the key (or the value) wasn't found, the output field is null. If the key (or the value) is found, the parent object is returned.
     </p>
 
-    <h2>Results</h2>
-    <p>
-        The result is sent in the output field.
-        <br>If the key (or the value) wasn't found, the field is null. If the key (or the value) is found, the parent object is returned.
-    </p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
 </script>

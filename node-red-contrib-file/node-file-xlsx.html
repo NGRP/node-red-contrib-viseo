@@ -201,87 +201,47 @@
 </style>
 
 <script type="text/x-red" data-help-name="file-xlsx">
-    <section class="help-section">
-        <h3>Xlsx file Settings</h3>
-        <ol> 
-            <h4>File</h4>
-            <p>
-                Path to file
-            </p>
-            <h4>Worksheet</h4>
-            <p>
-                The name/ID of the sheet/tab in the document.
-            </p>
-            <h4>Range</h4>
-            <p>
-                The range to get/set/update (ex: "A1:C2"). Leave empty to use an automatic range.
-            </p>
-            <h4>Save</h4>
-            <p>
-                In order to avoid multiple calls to Sheets API, the node uses this field to stock the Sheet data (if checked).<br>
-                <b>Please delete its content every time the sheet's data has been changed! </b><br>
-                This can be done with a simple "inject" node followed by a "change" node (delete global._sheet).
-            </p>
-        </ol> 
 
-        <h3>"Set data" request Settings</h3>
-        <ol> 
-            <h4>Method</h4>
-            <p>
-                Update current data or delete all data before setting.
-            </p>
-            <h4>Labels</h4>
-            <p>
-                Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
-                It will write labels (object's keys) in the first line/column.
-            </p>
-            <h4>Input</h4>
-            <p>
-                Input field in the flow. Input field has to be an <b>array</b> or a <b>JSON object</b>.<br>
-                Note that it is only possible to set data by lines, and not by columns.
-            </p>
-            <h4>Fields</h4>
-            <p>
-                Fields of the object items to write in the spreadsheet.
-            </p>
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results.
-            </p>
-        </ol> 
+    <p>Manipulate a XLSX file. </p>
 
-        <h3>"Get data" request Settings</h3>
-        <ol> 
-            <h4>Labels</h4>
-            <p>
-                Check for line and/or column if the first line and/or the first column in your spreadsheet is used for labels.<br>
-                The keys of the resulting objects will be adjusted accordingly.
-            </p>
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results.
-            </p>
-        </ol>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>File<span class="property-type">string</span></dt>
+        <dd>the file location (path)</dd>
+        <dt>Worksheet<span class="property-type">string</span></dt>
+        <dd>the tab/sheet name or ID</dd>
+        <dt>Range<span class="property-type">string</span></dt>
+        <dd>the range to get/set/update (ex: "A1:C2"); leave empty to use an automatic range</dd>
+        <dt>Output<span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p>In order to avoid processing the same operation several times, the node can <i>save</i> the data in the given field.
+        <b>Note:</b> Please delete its content every time the sheet's data has been changed! Otherwise, it will not be uploaded.
+        This can be done with a simple "inject" node followed by a "change" node (ex: delete global._sheet).
+    </p>
+    <p>
+        <code>Set data</code> updates the value of the range. The <i>input</i> has to be an <b>array</b> or a <b>JSON object</b>. If the input
+        is an object, it is possible to use the object keys as labels, eg first line and/or column. Note that it is only possible to set data by lines, 
+        and not by columns. You can process a <code>Clear data</code> action before setting new data to ensure the range is correct.
+    </p>
+    <p>
+        <b>Note:</b> You can chose to only write some <i>fields</i> of the input object in the spreadsheet. Chose these fields as: if the input object is 
+        <code>msg.payload = { "monday": 3, "tuesday": 25, "wednesday": 12, "thursday": 6, "friday": 2" }</code> then I can chose to write only the <i>monday</i>
+        and <i>tuesday</i> fields in my worksheet.
+    </p>
+    <p>
+        <code>Get data</code> gets the value of the range. Check <i>labels</i> for line and/or column if the first line and/or the first column in your 
+        spreadsheet is used for labels. The keys of the resulting objects will be adjusted accordingly.
+    </p>
+    <p>
+        <code>Get cell</code> gets the value of a cell. Precise line and column labels. Both should be precised. If nothing is found, the result is "Not found".
+    </p>
 
-        <h3>"Get cell" request Settings</h3>
-        <ol> 
-            <h4>Cell</h4>
-            <p>
-                Precise line and column labels. Both should be precised.
-            </p>
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results : the found data or "Not Found".
-            </p>
-        </ol>
+    <h3>References</h3>
+    <ul>
+        <li><a href="http://sheetjs.com/opensource">SheetJS</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
-        <h3>"Clear data" request Settings</h3>
-        <ol> 
-            <h4>Output</h4>
-            <p>
-                Where to get the operation results.
-            </p>
-        </ol>
-
-    </section>
 </script>

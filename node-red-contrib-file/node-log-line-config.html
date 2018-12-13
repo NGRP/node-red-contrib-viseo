@@ -117,3 +117,31 @@
     </div>
 
 </script>
+
+<script type="text/x-red" data-help-name="log-line-configuration">
+
+    <p>Create a line pattern to log data.</p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Path<span class="property-type">string</span></dt>
+        <dd>the file location (path)</dd>
+        <dt>Sepatator<span class="property-type">string</span></dt>
+        <dd>data separator in lines such ad ' / ' or '-'.</dd>
+    </dl>
+    <p>
+        At the end of the <i>Path</i>, it is possible to precise a date. This will create a log file every day. 
+        You also can chose to delete old files. For example, keeping 7 files will delete all the file older than a week.
+    </p>
+    <p>
+        If you precise a label value as a string, the label will be added to the log-line node to be dynamically configurable.
+        You can also chose among the sample data to log, such as a timestamp of conversation ID.
+    </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>
