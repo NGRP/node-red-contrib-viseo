@@ -638,8 +638,14 @@ module.exports = {
             throw err;
         })
     },
-    rebaseContinue: function(cwd) {
+    abortRebase: function(cwd) {
+        return runGitCommand(['rebase','--abort'],cwd);
+    },
+    continueRebase: function(cwd) {
         return runGitCommand(['rebase', '--continue'], cwd);
+    },
+    skipRebase: function(cwd) {
+        return runGitCommand(['rebase', '--skip'], cwd);
     },
     getBranches: getBranches,
     // getBranchInfo: getBranchInfo,

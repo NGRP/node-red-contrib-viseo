@@ -267,9 +267,8 @@ async function commit(user, project,options) {
             });
         })
     } else {
-        
         if(isMerging) {
-            return activeProject.rebaseContinue().then(() => {
+            return activeProject.continueRebase().then(() => {
                 return pullPush(user, project, isMerging);
             });
         } else {
@@ -379,7 +378,7 @@ function resolveMerge(user, project,file,resolution) {
 }
 function abortMerge(user, project) {
     checkActiveProject(project);
-    return activeProject.abortMerge().then(function() {
+    return activeProject.abortRebase().then(function() {
         return reloadActiveProject("merge-abort")
     });
 }

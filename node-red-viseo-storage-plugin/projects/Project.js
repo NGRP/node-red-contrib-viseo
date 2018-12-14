@@ -482,8 +482,21 @@ Project.prototype.revertFile = function (filePath) {
     });
 };
 
-Project.prototype.rebaseContinue = function() {
-    return gitTools.rebaseContinue(this.path);
+Project.prototype.continueRebase = function() {
+    return gitTools.continueRebase(this.path).catch(function(err) {
+
+        if(/No changes - did you forget to use 'git add'\?/.test(err.stdout)) {
+            return gitTools.skipRebase(this.path);
+        }
+        return err;
+    });
+}
+
+Project.prototype.abortRebase = function() {
+    var self = this;
+    return gitTools.abortRebase(this.path).then(function() {
+        self.merging = false;
+    })
 }
 
 
@@ -624,6 +637,7 @@ Project.prototype.pull = function (user,remoteBranchName,setRemote,allowUnrelate
         })
     } else {
         var remote = this.parseRemoteBranch(remoteBranchName);
+        console.log(remote);
         return gitTools.pull(this.path, remote.remote, remote.branch, allowUnrelatedHistories, authCache.get(this.name,this.remotes[remote.remote||self.currentRemote].fetch,username),getGitUser(user));
     }
 };
