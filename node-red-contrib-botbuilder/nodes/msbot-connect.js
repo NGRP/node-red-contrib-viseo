@@ -3,14 +3,17 @@
 const fs      = require('fs');
 const path    = require('path');
 const builder = require('botbuilder');
-const logger  = require('../../lib/logger.js');
+const logger  = require('../lib/logger.js');
 const helper  = require('node-red-viseo-helper');
 const botmgr  = require('node-red-viseo-bot-manager');
 
 // Retrieve server
-const msbot    = require('../../lib/msbot.js');
-const server   = require('../../lib/server.js');
+const msbot    = require('../lib/msbot.js');
+const server   = require('../lib/server.js');
 
+const DEFAULT_TYPING_DELAY = 2000;
+const MINIMUM_TYPING_DELAY = 200;
+var globalTypingDelay;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -22,11 +25,13 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-
+        
         if (config.port) {
             config.port = parseInt(config.port);
         }
 
+        globalTypingDelay = config.delay || DEFAULT_TYPING_DELAY;
+        
         config.appId = node.credentials.appId;
         config.appPassword = node.credentials.appPassword;
 
@@ -45,15 +50,20 @@ module.exports = function(RED) {
 
 let REPLY_HANDLER = {};
 const start = (node, config, RED) => {
-    server.start((err, bot) => {
+    
+    // restart server
+    if (REPLY_HANDLER[node.id]) helper.removeListener('reply', REPLY_HANDLER[node.id]);
+    server.stop();
 
+    // -------
+
+    server.start((err, bot) => {
         if (err){
             let msg = "disconnected (" + err.message + ")";
             return node.status({fill:"red", shape:"ring", text: msg});
         }
         node.status({fill:"green", shape:"dot", text:"connected"});
 
-        // Root Dialog
         msbot.bindDialogs(bot, (err, data, type) => {
             helper.emitEvent(type, node, data, config);
             if (type === 'received') { return node.send(data) }
@@ -68,6 +78,7 @@ const start = (node, config, RED) => {
     }, config, RED);
 }
 
+
 // Stop server
 const stop = (node, config, done) => {
     helper.removeListener('reply', REPLY_HANDLER[node.id])
@@ -79,17 +90,17 @@ const stop = (node, config, done) => {
 //  REPLY
 // --------------------------------------------------------------------------
 
-const reply = (bot, node, data, config) => {
+const reply = (bot, node, data, config) => { 
 
     //check it's the last message
     let timestamp = data.message.timestamp
 
     let context = botmgr.getContext(data);
-
+    
     if(timestamp && context.lastMessageDate !== timestamp) {
         return false;
     }
-
+    
     // Assume we send the message to the current user address
     let address = botmgr.getUserAddress(data)
     if (!address || address.carrier !== 'botbuilder') return false;
@@ -149,21 +160,20 @@ const reply = (bot, node, data, config) => {
     }
 }
 
-const TYPING_DELAY_CONSTANT = 2000;
 const delayReply = (delay, data, callback, customTyping) => {
     let convId  = botmgr.getConvId(data)
     let session = getSession(data)
     if (session){
         msbot.typing(session, () => {
-            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
+            let handle = setTimeout(callback, delay);
             msbot.saveTimeout(convId, handle);
         });
     } else {
         customTyping(function() {
-            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
+            let handle = setTimeout(callback, delay);
             msbot.saveTimeout(convId, handle);
         })
-
+        
     }
 }
 
@@ -203,16 +213,8 @@ const getMessage = (node, address, replies, isPush) => {
 
     // One or multiple cards
     for (let reply of replies) {
-
-        //let card = getHeroCard(reply);
-        let card;
-
-        if (reply.type === "AdaptiveCard") {
-            card = getAdaptiveCard(reply);
-        } else {
-            card = getHeroCard(reply);
-        }
-        msg.textFormat("markdown");
+        
+        let card = getHeroCard(reply);
         msg.addAttachment(card);
 
         // Only the latest speech is used
@@ -225,7 +227,7 @@ const getMessage = (node, address, replies, isPush) => {
     }
     return msg;
 };
-
+    
 const buildQuickReplyObject = (obj) => {
 
     return {
@@ -238,7 +240,7 @@ const buildQuickReplyObject = (obj) => {
 const buildButtonMessage = (msg, address, reply, isPush) => {
 
 }
-
+    
 const buildRawMessage = (node, msg, opts, address, isPush) => {
 
     var contentShare = false;
@@ -255,11 +257,11 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
         }
 
-
+        
         if (opts.type === 'card') {
             if(!opts.title && !opts.attach && opts.buttons && opts.subtitle) {
 
-                buildFacebookSpecificMessage(msg, "button", opts, isPush);
+                buildFacebookSpecificMessage(msg, "button", opts, isPush);            
                 return true;
             }
         }
@@ -271,7 +273,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
 
     if(isPush) {
-        msg.sourceEvent({ facebook : {
+        msg.sourceEvent({ facebook : {
             messaging_type: "MESSAGE_TAG",
             tag: "NON_PROMOTIONAL_SUBSCRIPTION"
 
@@ -281,7 +283,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
         card.text(opts.text);
-
+        
         if (msg.speak && opts.speech) { // Set speech value
             msg.speak(opts.speech === true ? opts.text : opts.speech);
         }
@@ -321,7 +323,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
         return true;
     }
 
-    // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook
+    // Work In Progress: Facebook Quick Buttons: Should be exported to a facebook.js hook 
     if (opts.type === 'quick') {
         let fText = opts.quicktext;
         if (address.channelId === 'facebook') {
@@ -329,7 +331,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
             fText = fText.replace(/\n/g,'\n\n');
         }
         msg.text(fText);
-
+        
         if (msg.speak && opts.speech) { // Set speech value
             msg.speak(opts.speech === true ? fText : opts.speech);
         }
@@ -418,7 +420,7 @@ const buildFacebookSpecificMessage = (msg, template, reply, isPush) => {
         if (reply.subtext) _speech += reply.subtext ;
         if (reply.subtitle) _speech += reply.subtitle;
     }
-
+    
     if (msg.speak && reply.speech) {
         msg.speak(_speech || '');
     }
@@ -432,7 +434,7 @@ const buildFacebookSpecificMessage = (msg, template, reply, isPush) => {
 const buildFacebookButtonObject = (obj) => {
     if (obj.action === "share") return {
         "type": "element_share",
-        "share_contents": {
+        "share_contents": { 
             "attachment": {
             "type": "template",
             "payload": {
@@ -457,7 +459,7 @@ const buildFacebookButtonObject = (obj) => {
         "type":"web_url",
         "url": obj.value,
         "title": obj.title,
-        "messenger_extensions": "false",
+        "messenger_extensions": "false",  
         //"fallback_url": "https://www.facebook.com/"
     }
     if (obj.action === "call") return {
