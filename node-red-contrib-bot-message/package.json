@@ -20,7 +20,8 @@
             "bot-event":    "bot-event.js",
             "bot-continue": "bot-continue.js",
             "bot-wrapper":  "bot-wrapper.js",
-            "node-bot-transaction": "bot-transaction.js"
+            "node-bot-transaction": "bot-transaction.js",
+            "send-custom-message": "bot-send-custom-message.js"
         }
     }
 }
