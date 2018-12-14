@@ -3,17 +3,14 @@
 const fs      = require('fs');
 const path    = require('path');
 const builder = require('botbuilder');
-const logger  = require('../lib/logger.js');
+const logger  = require('../../lib/logger.js');
 const helper  = require('node-red-viseo-helper');
 const botmgr  = require('node-red-viseo-bot-manager');
 
 // Retrieve server
-const msbot    = require('../lib/msbot.js');
-const server   = require('../lib/server.js');
+const msbot    = require('../../lib/msbot.js');
+const server   = require('../../lib/server.js');
 
-const DEFAULT_TYPING_DELAY = 2000;
-const MINIMUM_TYPING_DELAY = 200;
-var globalTypingDelay;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -30,8 +27,6 @@ module.exports = function(RED) {
             config.port = parseInt(config.port);
         }
 
-        globalTypingDelay = config.delay || DEFAULT_TYPING_DELAY;
-        
         config.appId = node.credentials.appId;
         config.appPassword = node.credentials.appPassword;
 
@@ -50,20 +45,15 @@ module.exports = function(RED) {
 
 let REPLY_HANDLER = {};
 const start = (node, config, RED) => {
-    
-    // restart server
-    if (REPLY_HANDLER[node.id]) helper.removeListener('reply', REPLY_HANDLER[node.id]);
-    server.stop();
-
-    // -------
-
     server.start((err, bot) => {
+
         if (err){
             let msg = "disconnected (" + err.message + ")";
             return node.status({fill:"red", shape:"ring", text: msg});
         }
         node.status({fill:"green", shape:"dot", text:"connected"});
 
+        // Root Dialog
         msbot.bindDialogs(bot, (err, data, type) => {
             helper.emitEvent(type, node, data, config);
             if (type === 'received') { return node.send(data) }
@@ -77,7 +67,6 @@ const start = (node, config, RED) => {
 
     }, config, RED);
 }
-
 
 // Stop server
 const stop = (node, config, done) => {
@@ -106,10 +95,20 @@ const reply = (bot, node, data, config) => {
     if (!address || address.carrier !== 'botbuilder') return false;
 
     // Building the message
-    let message = getMessage(node, address, data.reply, timestamp == undefined);
-    if (!message) return false;
+    let message;
 
-    message.address(address);
+    if (data.customReply) {
+        message = data.customReply;
+        message.address = address;                                             
+        message.data = {
+            type: message.type
+        };
+    } else {
+        message = getMessage(node, address, data.reply, timestamp == undefined);
+        if (!message) return false;
+
+        message.address(address);
+    }
 
     let customTyping = (callback) => {
        try {
@@ -150,17 +149,18 @@ const reply = (bot, node, data, config) => {
     }
 }
 
+const TYPING_DELAY_CONSTANT = 2000;
 const delayReply = (delay, data, callback, customTyping) => {
     let convId  = botmgr.getConvId(data)
     let session = getSession(data)
     if (session){
         msbot.typing(session, () => {
-            let handle = setTimeout(callback, delay);
+            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
             msbot.saveTimeout(convId, handle);
         });
     } else {
         customTyping(function() {
-            let handle = setTimeout(callback, delay);
+            let handle = setTimeout(callback, delay + TYPING_DELAY_CONSTANT)
             msbot.saveTimeout(convId, handle);
         })
 
@@ -271,7 +271,7 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
 
     if(isPush) {
-        msg.sourceEvent({ facebook : {
+        msg.sourceEvent({ facebook : {
             messaging_type: "MESSAGE_TAG",
             tag: "NON_PROMOTIONAL_SUBSCRIPTION"
 
