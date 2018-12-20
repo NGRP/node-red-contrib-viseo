@@ -1,0 +1,36 @@
+<script type="text/javascript">
+    RED.nodes.registerType('repeat-card',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:   { value: undefined }
+        },
+        inputs:  0,
+        outputs: 1,
+        icon: "event.svg",  align: "left",
+        paletteLabel: "Repeat last message",
+        label: function() { return this.name || "Repeat last message"; }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="repeat-card">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="repeat-card">
+
+    <p>Trigger an event: the last sent message needs to be sent again by the appropriate send-message node.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>
