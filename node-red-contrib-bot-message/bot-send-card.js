@@ -24,7 +24,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        start(RED, node, config);
+        this.on('input', (data)  => { input(node, data, config, null)  });
     }
     RED.nodes.registerType("send-card", register, {});
 
@@ -33,6 +34,28 @@ module.exports = function(RED) {
         return;
     }
 }
+
+let REPEAT_HANDLER = {};
+const start = (RED, node, config) => {
+
+    REPEAT_HANDLER[node.id] = (n, d, c) => {
+        try { 
+            if (!d || !d._replyid || !d.reply) return;
+            if (d._replyid === node.id) {
+                let reply = d.reply;
+                delete d.reply;
+                input(node, d, config, reply);
+            }
+        } 
+        catch (ex){ 
+            console.log(ex);
+        }
+    };
+
+    helper.listenEvent('repeat', REPEAT_HANDLER[node.id]);
+};
+
+
 
 const buttonsStack = {
     push: function(data, buttons) {
@@ -110,7 +133,7 @@ const getButtons = (locale, config, data) => {
     return buttons;
 }
 
-const input = (node, data, config) => {
+const input = (node, data, config, reply) => {
     let convId = botmgr.getConvId(data)
 
     // Prepare the prompt
@@ -119,11 +142,10 @@ const input = (node, data, config) => {
             data.prompt = prompt
             sendData(node, data, config)
         })
-
     }
 
     // Retrieve replies
-    let replies = buildReply(node, data, config);
+    let replies = reply || buildReply(node, data, config);
 
     if (!replies){ 
         sendData(node, data, config); 
@@ -132,6 +154,7 @@ const input = (node, data, config) => {
     
     // Emit reply message
     data.reply = replies;
+    data._replyid = node.id;
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
         helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
@@ -384,7 +407,6 @@ const buildReply = (node, data, config) => {
     } //else, buttons popped on prompt
     return carousel.length > 0 ? carousel : [ reply ];
 };
-
 
 const sendData = (node, data, config) => {
 
