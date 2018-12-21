@@ -11,11 +11,4 @@ module.exports = function(RED) {
     	}
     });
 
-    // TRELLO-ID
-    RED.nodes.registerType("trello-list-id", function(config){
-        RED.nodes.createNode(this, config);
-        this.name  = config.name;
-        this.item  = config.item;
-    }, {});
-
 }

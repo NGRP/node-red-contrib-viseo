@@ -21,9 +21,19 @@
         },
 
         oneditprepare: function () {
+            $("#node-config-input-intent-version").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-intent-instance").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-intent-login").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-intent-refresh").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-intent-secret").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-intent-id").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-intent-iss").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-intent-subject").typedInput({ default: 'str', types: ['str'], type:'str' });
+
             $("#node-config-input-oauthtype").change(function() {
                 $('.credential-info').hide();
                 $('.credential-info.'+$(this).val()+'-info').show();
+                $('.credential-info').find('input[type="text"]').typedInput('show')
             })
             if(this.oauthtype === undefined) {
                 $('#node-config-input-oauthtype').val("refresh-token");
@@ -39,20 +49,23 @@
     </div>
     <div class="form-row">
         <label for="node-config-input-version"><i class="icon-tag"></i> Version</label>
-        <input type="text" id="node-config-input-version" placeholder="v20.0">
+        <input type="text" id="node-config-input-version" style="width:70%;" placeholder="v20.0">
     </div>
     <div class="form-row">
         <label for="node-config-input-instance"><i class="fa fa-lock"></i> Instance</label>
-        <input type="text" id="node-config-input-instance" placeholder="Salesforce root url">
+        <input type="text" id="node-config-input-instance" style="width:70%;" placeholder="Salesforce root url">
     </div>
     <div class="form-row">
         <label for="node-config-input-login"><i class="fa fa-lock"></i> Login Endpoint</label>
-        <input type="text" id="node-config-input-login" placeholder="Salesforce login url">
+        <input type="text" id="node-config-input-login" style="width:70%;" placeholder="Salesforce login url">
     </div>
+
+    <br>
     <b>Credentials for token</b>
     <div class="form-row">
+        <br>
         <label for="node-config-input-oauthtype"><i class="fa fa-lock"></i> Type</label>
-        <select id="node-config-input-oauthtype" >
+        <select id="node-config-input-oauthtype" style="width:70%;" >
             <option value="refresh-token" selected="selected">Refresh token</option>
             <option value="jwt">JWT</option>
         </select>
@@ -60,27 +73,41 @@
     <!-- refresh token -->
     <div class="form-row credential-info refresh-token-info">
         <label for="node-config-input-id"><i class="fa fa-lock"></i> Client ID</label>
-        <input type="text" id="node-config-input-id" placeholder="">
+        <input type="text" id="node-config-input-id" style="width:70%;"  placeholder="">
     </div>
     <div class="form-row credential-info refresh-token-info">
         <label for="node-config-input-secret"><i class="fa fa-lock"></i> Client secret</label>
-        <input type="text" id="node-config-input-secret" placeholder="">
+        <input type="text" id="node-config-input-secret" style="width:70%;"  placeholder="">
     </div>
     <div class="form-row credential-info refresh-token-info">
         <label for="node-config-input-refresh"><i class="fa fa-lock"></i> Refresh Token</label>
-        <input type="text" id="node-config-input-refresh" placeholder="">
+        <input type="text" id="node-config-input-refresh" style="width:70%;" placeholder="">
     </div>
     <!-- jwt -->
     <div class="form-row credential-info jwt-info">
         <label for="node-config-input-iss"><i class="fa fa-lock"></i> ISS</label>
-        <input type="text" id="node-config-input-iss" placeholder="Consumer key">
+        <input type="text" id="node-config-input-iss" style="width:70%;" placeholder="Consumer key">
     </div>
     <div class="form-row credential-info jwt-info">
         <label for="node-config-input-subject"><i class="fa fa-lock"></i> Subject</label>
-        <input type="text" id="node-config-input-subject" placeholder="Email address of the account">
+        <input type="text" id="node-config-input-subject" style="width:70%;" placeholder="Email address of the account">
     </div>
      <div class="form-row credential-info jwt-info">
         <label for="node-config-input-privateKey"><i class="fa fa-lock"></i> Private Key</label>
-        <textarea id="node-config-input-privateKey" placeholder="RSA Private Key"></textarea>
+        <textarea id="node-config-input-privateKey" style="width:70%;" placeholder="RSA Private Key"></textarea>
     </div>
+</script>
+
+
+<script type="text/x-red" data-help-name="salesforce-config">
+    <p>Connects to Salesforce. </p>
+
+    <h3>Details</h3>
+    <p>Chose to connect with JWT or refresh token, and copy/paste the information from your Salesforce account. </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
 </script>

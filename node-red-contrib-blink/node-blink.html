@@ -1,0 +1,276 @@
+<script type="text/javascript">
+    RED.nodes.registerType('blink',{
+        category: 'VISEO_IOT',
+        color: '#3FADB5',
+        defaults: { 
+            name:      { value: undefined },
+            api:       { value: "login" },
+            action:    { value: "" },
+            output:     { value: "payload" },
+            token:      { value: "" },
+            uri:        { value: "" },
+            outputType:     { value: "msg" },
+            tokenType:      { value: "msg" },
+            uriType:        { value: "str" },
+            commandId:   { value: "" },
+            networkId:   { value: "" },
+            mediaUrl:    { value: "" },
+            cameraId:    { value: "" },
+            videoId:     { value: "" },
+            destination: { value: "" },
+            networkIdType:  { value: "msg" },
+            commandIdType:  { value: "msg" },
+            mediaUrlType:   { value: "msg" },
+            cameraIdType:   { value: "msg" },
+            videoIdType:    { value: "msg" },
+            destinationType: { value: "str" }
+        },
+        credentials: {
+            login:     { type:"text"      },
+            password:  { type:"password"  }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "blink.svg",
+        align: "left",
+        paletteLabel: 'Blink',
+        label: function() { return this.name || "Blink"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({      default: 'str', types: ['str'], type: "str" });
+            $("#node-input-output").typedInput({    default: 'msg', types: ['msg'], type: "msg" });
+            $("#node-input-login").typedInput({     default: 'str', types: ['str'], type: "str" });
+            $("#node-input-password").typedInput({  default: 'str', types: ['str'], type: "str" });
+
+            $("#node-input-token").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-tokenType") });
+            $("#node-input-uri").typedInput({   default: 'str', types: ['msg', 'str'], typeField: $("#node-input-uriType") });
+
+            $("#node-input-networkId").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-networkIdType") });
+            $("#node-input-commandId").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-commandIdType") });
+            $("#node-input-mediaUrl").typedInput({  default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-mediaUrlType") });
+            $("#node-input-cameraId").typedInput({  default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-cameraIdType") });
+            $("#node-input-videoId").typedInput({   default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-videoIdType") });
+            $("#node-input-destination").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-destinationType") });
+
+            let saveparam = {
+                "api"    : this.api,
+                "action" : this.action
+            }
+
+            $("#node-input-api").change(changeAPI);
+            $("#node-input-action").change(changeOptions);
+
+            function changeAPI() {
+                let apiVal = $("#node-input-api").val();
+                $('#node-input-action').empty();
+
+                switch(apiVal) {
+                    case "login":
+                        addChoice("login", "Client login to the Blink Servers");
+                        break;
+                    case "homescreen":
+                        addChoice("homescreen", "Get information displayed on the home screen");
+                        break;
+                    case "network":
+                        addChoice("networks",    "List Blink networks informations");
+                        addChoice("syncmodules", "List Blink Sync Modules on the given network");
+                        addChoice("arm",         "Arm the given network");
+                        addChoice("disarm",      "Disarm the given network");
+                        break;
+                    case "events":
+                        addChoice("events",     "Get events for a network");
+                        addChoice("thumbnail",  "Capture a thumbnail");
+                        addChoice("clip",       "Capture a video");
+                        addChoice("command",    "Get status info on the given command");
+                        break;
+                    case "video":
+                        addChoice("count",   "Get the total number of videos");
+                        addChoice("page/0",  "Get a paginated set of video information");
+                        addChoice("info_video",     "Get information for a specific video");
+                        addChoice("unwatched",      "Get a list of unwatched videos");
+                        addChoice("get_media",      "Save a video clip on the server");
+                        addChoice("delete_video",   "Delete a video");
+                        addChoice("deleteall",      "Delete all videos");
+                        break;
+                    case "cameras":
+                        addChoice("info_allcameras",    "Get a list of cameras");
+                        addChoice("info_camera",        "Get information for one camera");
+                        addChoice("signals",         "Gets camera sensor information");
+                        addChoice("enable",  "Enable motion detection for one camera");
+                        addChoice("disable", "Disable motion detection for one camera");
+                        break;
+                    case "miscellaneous":
+                        addChoice("account/clients",   "Get information about connected devices");
+                        addChoice("regions",   "Get information about supported regions");
+                        addChoice("programs",  "Get information about programs");
+                }
+
+                $("#node-input-action > option").each(function() {
+                    if ($(this).val() === saveparam.action) $("#node-input-action").val(saveparam.action);
+                });
+
+                changeOptions();
+            }
+
+            function changeOptions() {
+                $(".parameters").hide();
+                let action = $('#node-input-action').val() || saveparam.action;
+                let api = $('#node-input-api').val() || saveparam.api;
+
+                if (action === "login") {
+                    $(".login").show();
+                    $("#node-input-login, #node-input-password").typedInput('show');
+                }
+                else {
+                    $(".token").show();
+                    $("#node-input-token").typedInput('show');
+                }
+
+                if (action.match(/syncmodules|arm|events|thumbnail|clip|command|programs/) || api === "cameras") {
+                    $(".networkId").show();
+                    $("#node-input-networkId").typedInput('show');
+                }
+                if (action.match(/command/)) {
+                    $(".commandId").show();
+                    $("#node-input-commandId").typedInput('show');
+                }
+                if (action === "get_media") {
+                    $(".mediaUrl").show();
+                    $("#node-input-mediaUrl, #node-input-destination").typedInput('show');
+                }
+                if ((api === "cameras" && action !== "info_allcameras") || action.match(/thumbnail|clip/)) {
+                    $(".cameraId").show();
+                    $("#node-input-cameraId").typedInput('show');
+                }
+                if (action.match(/info_video|delete_video/)) {
+                    $(".videoId").show();
+                    $("#node-input-videoId").typedInput('show');
+                }
+            }
+
+            function addChoice(value, name) {
+                let opt = $('<option></option>').attr("value", value).text(name);
+                $("#node-input-action").append(opt);
+            } 
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="blink">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name"  style="width:70%;" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Blink action</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-api"><i class="fa fa-globe"></i>  API</label>
+        <select id="node-input-api" style="width:70%;">
+            <option value="login">Login</option>
+            <option value="homescreen">Home Screen</option>
+            <option value="network">Network</option>
+            <option value="events">Events</option>
+            <option value="video">Videos</option>
+            <option value="cameras">Cameras</option>
+            <option value="miscellaneous">Miscellaneous</option>
+        </select>
+    </div>
+
+    <div class="form-row action">
+        <label for="node-input-action"><i class="fa fa-navicon"></i> Action</label>
+        <select id="node-input-action" style="width:70%;">
+        </select>
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row parameters login">
+        <label for="node-input-login" style="margin-left:15px; width: 85px; color:#848484"> Login</label>
+        <input type="text" id="node-input-login" style="width:70%;" placeholder="email address">
+        <input type="hidden" id="node-inputloginType">
+    </div>
+    <div class="form-row parameters login">
+        <label for="node-input-password" style="margin-left:15px; width: 85px; color:#848484"> Password</label>
+        <input type="password" id="node-input-password" style="width:70%;">
+        <input type="hidden" id="node-input-passwordType">
+    </div>
+    <div class="form-row parameters token">
+        <label for="node-input-token" style="margin-left:15px; width: 85px; color:#848484"> Token</label>
+        <input type="text" id="node-input-token" style="width:70%;">
+        <input type="hidden" id="node-input-tokenType">
+    </div>
+    <div class="form-row parameters login token">
+        <label for="node-input-uri" style="margin-left:15px; width: 85px; color:#848484"> URI</label>
+        <input type="text" id="node-input-uri" style="width:70%;" placeholder="https://rest.prde.immedia-semi.com">
+        <input type="hidden" id="node-input-uriType">
+    </div>
+
+    <div class="form-row parameters networkId">
+        <label for="node-input-networkId" style="margin-left:15px; width: 85px; color:#848484"> Network ID</label>
+        <input type="text" id="node-input-networkId" style="width:70%;" placeholder="000000">
+        <input type="hidden" id="node-input-networkIdType">
+    </div>
+
+    <div class="form-row parameters commandId">
+        <label for="node-input-commandId" style="margin-left:15px; width: 85px; color:#848484"> Command ID</label>
+        <input type="text" id="node-input-commandId" style="width:70%;" placeholder="000000">
+        <input type="hidden" id="node-input-commandIdType">
+    </div>
+
+    <div class="form-row parameters mediaUrl">
+        <label for="node-input-mediaUrl" style="margin-left:15px; width: 85px; color:#848484"> Media</label>
+        <input type="text" id="node-input-mediaUrl" style="width:70%;" placeholder="/media/production/account...">
+        <input type="hidden" id="node-input-mediaUrlType">
+    </div>
+
+    <div class="form-row parameters mediaUrl">
+        <label for="node-input-destination" style="margin-left:15px; width: 85px; color:#848484"> Destination</label>
+        <input type="text" id="node-input-destination" style="width:70%;" placeholder="{cwd}/destinationFolderOrFile">
+        <input type="hidden" id="node-input-destinationType">
+    </div>
+
+    <div class="form-row parameters cameraId">
+        <label for="node-input-cameraId" style="margin-left:15px; width: 85px; color:#848484"> Camera ID</label>
+        <input type="text" id="node-input-cameraId" style="width:70%;" placeholder="000000">
+        <input type="hidden" id="node-input-cameraIdType">
+    </div>
+
+    <div class="form-row parameters videoId">
+        <label for="node-input-videoId" style="margin-left:15px; width: 85px; color:#848484"> Video ID</label>
+        <input type="text" id="node-input-videoId" style="width:70%;" placeholder="000000">
+        <input type="hidden" id="node-input-videoIdType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="blink">
+    <p>Implements CURL Blink for Home unofficial API</p>
+
+    <h3>Details</h3>
+    <p>This node uses unofficial Blink API to login then get/set information about/for your Blink devices.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Output</dt>
+        <dd>where to store the result</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/MattTW/BlinkMonitorProtocol">Blink for Home</a> - unofficial API reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

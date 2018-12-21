@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-viseo-nosql",
-  "version": "0.2.9",
-  "description": "Get/Set content in a NoSQL database",
+  "version": "0.3.0",
+  "description": "VISEO Bot Maker - Manage a NoSQL database",
   "dependencies": {
     "node-red-viseo-helper": "~0.1",
     "node-red-contrib-viseo-nosql-manager": "~0.0",
@@ -12,7 +12,7 @@
     "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-nosql"
   },
   "license": "Apache-2.0",
-  "keywords": ["viseo", "sarah", "node-red"],
+  "keywords": ["viseo", "sarah", "node-red", "database", "db", "nosql"],
   "node-red": {
     "nodes": {
       "node-mongodb": "node-nosql.js",

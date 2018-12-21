@@ -1,9 +1,9 @@
 {
     "name"          : "node-red-contrib-viseo-aws",
-    "version"       : "0.0.2",
-    "description"   : "A connexion to AWS",
+    "version"       : "0.0.8",
+    "description"   : "VISEO Bot Maker - AWS Lex and Rekognition",
     "dependencies"  : {
-        "aws-sdk"                    : "~2.224",
+        "aws-sdk"                    : "~2.284",
         "node-red-viseo-helper"      : "~0.1",
         "node-red-viseo-bot-manager" : "~0.0"
     },
@@ -12,11 +12,12 @@
         "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-aws"
     },
     "license": "Apache-2.0",
-    "keywords": [ "viseo", "sarah", "node-red" ],
+    "keywords": [ "viseo", "sarah", "node-red", "aws", "amazon", "bot", "chatbot", "nlp", "lex", "rekognition" ],
     "node-red" : {
         "nodes": {
             "aws-lex":  "node-aws-lex.js",
-            "aws-config":  "node-aws-config.js"
+            "aws-config":  "node-aws-config.js",
+            "aws-rekognition": "node-aws-rekognition.js"
         }
     }
 }

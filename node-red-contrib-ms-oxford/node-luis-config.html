@@ -4,7 +4,9 @@
         defaults: {
             name:   { value: undefined },
             way:    { value: "key" },
-            host:   { value: undefined }
+            location: { value: "westus" },
+            verbose:  { value: "false" },
+            staging:  { value: "false" }
         },
         credentials: {
             appId:        { type: "text" },
@@ -13,18 +15,23 @@
         },
         oneditprepare: function() {
             if (!this.way) this.way = "key";
-            $("#node-config-input-host").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-location").typedInput({ default: 'str', types: ['str'], type: 'str'});
             $("#node-config-input-appId").typedInput({ default: 'str', types: ['str'], type: 'str'});
             $("#node-config-input-subKey").typedInput({ default: 'str', types: ['str'], type: 'str'});
             $("#node-config-input-endpoint").typedInput({ default: 'str', types: ['str'], type: 'str'});
+
+            $("#node-config-input-verbose").typedInput({ default: 'bool', types: ['bool'], type: 'bool'});
+            $("#node-config-input-staging").typedInput({ default: 'bool', types: ['bool'], type: 'bool'});
 
             $("#node-config-input-way").change(function() {
                 $(".key, .endpoint").hide();
                 if ($(this).val() === "key" ) {
                     $(".key").show();
-                    $("#node-config-input-host").typedInput('show');
+                    $("#node-config-input-location").typedInput('show');
                     $("#node-config-input-appId").typedInput('show');
                     $("#node-config-input-subKey").typedInput('show');
+                    $("#node-config-input-verbose").typedInput('show');
+                    $("#node-config-input-staging").typedInput('show');
                 }
                 else {
                     $(".endpoint").show();
@@ -55,8 +62,8 @@
 
     <br>
     <div class="form-row key">
-        <label for="node-config-input-host"><i class="fa fa-globe"></i> Host</label>
-        <input type="text" id="node-config-input-host" style="width:70%;" placeholder="https://westus.api.cognitive.microsoft.com">
+        <label for="node-config-input-location"><i class="fa fa-globe"></i> Location</label>
+        <input type="text" id="node-config-input-location" style="width:70%;">
     </div>
     <div class="form-row key">
         <label for="node-config-input-appId"><i class="fa fa-lock"></i> App ID</label>
@@ -66,6 +73,15 @@
         <label for="node-config-input-subKey"><i class="fa fa-lock"></i> Sub Key</label>
         <input type="text" id="node-config-input-subKey" style="width:70%;" placeholder="">
     </div>
+    <div class="form-row key">
+        <label for="node-config-input-verbose"><i class="fa fa-lock"></i> Verbose</label>
+        <input type="text" id="node-config-input-verbose" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row key">
+        <label for="node-config-input-staging"><i class="fa fa-lock"></i> Staging</label>
+        <input type="text" id="node-config-input-staging" style="width:70%;" placeholder="">
+    </div>
+
     <div class="form-row endpoint">
         <label for="node-config-input-endpoint"><i class="fa fa-globe"></i> Endpoint</label>
         <input type="text" id="node-config-input-endpoint" style="width:70%;" placeholder="https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/{app}?subscription-key={key}&verbose=true&timezoneOffset=0&q=">
@@ -73,4 +89,15 @@
 
 </script>
 
-<script type="text/x-red" data-help-name="ms-luis-config"></script>
+<script type="text/x-red" data-help-name="ms-luis-config">
+    <p>Credentials for Microsoft LUIS API. </p>
+
+    <h3>Details</h3>
+    <p>Find the endpoint or the informations in the LUIS UI or in the Azure Portal.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/fr-fr/azure/cognitive-services/luis/">LUIS</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

@@ -1,8 +1,10 @@
 # Node-RED
 
-A Node-RED node to play with Trello. 
+Some nodes to play with Trello. 
 
-This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
+This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the node documentation in the Node-RED info tab. 
+
+Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 
 ## Quick Start
 
@@ -12,7 +14,7 @@ npm install node-red-contrib-viseo-trello
 
 ### Build the Node-RED Flow
 
-The `trello-in` will trigger an event of each action on the target ModelId (board, card, user, ...)
+The `trello-in` will trigger an event of each action on the target ModelId (board, card, user, ...).
 
 ![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-trello/doc/flow.jpg)
 
@@ -20,10 +22,7 @@ On a Trello URL, add `.json` to get the board description and retrieve all model
 
 Credential require a [Trello Application Key and a Token](https://trello.com/app-key).
 
-The `trello-card` will retrieve, create or update a card. 
-- A POST (create) is performed if there is no Card Id
-- A PUT (update) is performed if there is a Card Id and a List Id
-- A GET (read) is performed if there is a Card Id but no List Id
+The `trello-card` will retrieve, create, update or delete a board, a list, a card, a label or a custom field. 
 
 ![Flow 2](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-trello/doc/flow2.jpg)
 
@@ -52,11 +51,15 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [VISEO](http://www.viseo.com) Innovation.
+This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
+- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
-
+- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
+- Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
 
 ## Copyright and license
 
-Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2012-2019 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.

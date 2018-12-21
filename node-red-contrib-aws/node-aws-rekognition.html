@@ -1,0 +1,315 @@
+<script type="text/javascript">
+    RED.nodes.registerType('aws-rekognition',{
+        category: 'VISEO_VISION',
+        color: '#3FADB5',
+        defaults: { 
+            name:   { value: undefined },
+            key:    { value: undefined, type: 'aws-config'},
+            output:     { value: "payload"},
+            action:     { value: "DetectFaces"},
+            parameters: { value: [] },
+            Image:      { value: '{ "Bytes": [], "S3Object": { "Bucket": "", "Name": "", "Version": "" }}' },
+            ImageType:  { value: 'json'},
+            Attributes:      { value: '["DEFAULT"]' },
+            AttributesType:  { value: 'json'},
+            CollectionId:      { value: undefined },
+            CollectionIdType:  { value: 'str'},
+            DetectionAttributes:      { value: '["DEFAULT"]' },
+            DetectionAttributesType:  { value: 'json'},
+            ExternalImageId:      { value: undefined },
+            ExternalImageIdType:  { value: 'str'},
+            FaceId:      { value: undefined },
+            FaceIdType:  { value: 'str'},
+            FaceMatchThreshold:      { value: undefined },
+            FaceMatchThresholdType:  { value: 'str'},
+            MaxFaces:      { value: undefined },
+            MaxFacesType:  { value: 'str'},
+            MaxResults:      { value: undefined },
+            MaxResultsType:  { value: 'str'},
+            NextToken:      { value: undefined },
+            NextTokenType:  { value: 'str'},
+            SimilarityThreshold:      { value: undefined },
+            SimilarityThresholdType:  { value: 'str'},
+            SourceImage:      { value: '{ "Bytes": [], "S3Object": { "Bucket": "", "Name": "", "Version": "" }}' },
+            SourceImageType:  { value: 'json'},
+            TargetImage:      { value: '{ "Bytes": [], "S3Object": { "Bucket": "", "Name": "", "Version": "" }}' },
+            TargetImageType:  { value: 'json'},
+            FaceIds:      { value: '[]' },
+            FaceIdsType:  { value: 'json'},
+            MaxLabels:      { value: undefined },
+            MaxLabelsType:  { value: 'str'},
+            MinConfidence:      { value: undefined },
+            MinConfidenceType:  { value: 'str'},
+            Id:     { value: undefined },
+            IdType: { value: 'str'}
+        },
+        inputs:  1,
+        outputs: 1,
+        oneditprepare: function () {
+            $("#node-input-name").typedInput({   default: 'str', types: ['str'], type: "str" });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], type: "msg" });
+
+            $("#node-input-Image").typedInput({ default: 'json', types: ['msg', 'json'], typeField: $("#node-input-ImageType") });
+            $("#node-input-Attributes").typedInput({ default: 'json', types: ['msg', 'json'], typeField: $("#node-input-AttributesType") });
+            $("#node-input-CollectionId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-CollectionIdType") });
+            $("#node-input-DetectionAttributes").typedInput({ default: 'json', types: ['msg', 'json'], typeField: $("#node-input-DetectionAttributesType") });
+            $("#node-input-ExternalImageId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-ExternalImageIdType") });
+            $("#node-input-FaceId").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-FaceIdType") });
+            $("#node-input-FaceMatchThreshold").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-FaceMatchThresholdType") });
+            $("#node-input-MaxFaces").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-MaxFacesType") });
+            $("#node-input-MaxResults").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-MaxResultsType") });
+            $("#node-input-NextToken").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-NextTokenType") });
+            $("#node-input-SimilarityThreshold").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-SimilarityThresholdType") });
+            $("#node-input-SourceImage").typedInput({ default: 'json', types: ['msg', 'json'], typeField: $("#node-input-SourceImageType") });
+            $("#node-input-TargetImage").typedInput({ default: 'json', types: ['msg', 'json'], typeField: $("#node-input-TargetImageType") });
+            $("#node-input-FaceIds").typedInput({ default: 'json', types: ['msg', 'json'], typeField: $("#node-input-FaceIdsType") });
+            $("#node-input-MaxLabels").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-MaxLabelsType") });
+            $("#node-input-MinConfidence").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-MinConfidenceType") });
+            $("#node-input-Id").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-IdType") });
+
+            let saveAction = this.action;
+            let saveRequest = this.request;
+
+            $("#node-input-action").change(changeAction);
+
+            function changeAction() {
+
+                $(".parameters").hide(); $("#bars").show();
+                let action = $("#node-input-action").val();
+                $('.' + action).show().find('input[type=text]').typedInput('show');
+
+            }
+        },
+        oneditsave: function () { 
+            let parameters = [];
+            $(".parameters:visible").find('input[type=text]').each( function(i, elt) {
+                parameters.push(elt.id.split('-').pop());
+            })
+            this.parameters = parameters;
+        },
+        icon: "aws.png",
+        align: "left",
+        paletteLabel: "Rekognition",
+        label: function() { return this.name || "Rekognition"; }
+    });
+</script>
+
+<style>
+    .parameters > .red-ui-typedInput-container {
+        width: calc( 70% - 40px) !important;
+        margin-left: 40px !important;
+    }
+</style>
+
+<script type="text/x-red" data-template-name="aws-rekognition">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width: 70%" placeholder="Name">
+    </div>
+
+    <br>
+    <b>AWS settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-key"><i class="fa fa-lock"></i> Credentials</label>
+        <input type="text" id="node-input-key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-action"><i class="fa fa-globe"></i> API</label>
+        <select id="node-input-action" style="width:70%;">
+            <optgroup label="Image">
+                <option value="DetectFaces">DetectFaces</option>
+                <option value="IndexFaces">IndexFaces</option> 
+                <option value="SearchFaces">SearchFaces</option> 
+                <option value="SearchFacesByImage">SearchFacesByImage</option>
+                <option value="ListFaces">ListFaces</option> 
+
+                <option value="CompareFaces">CompareFaces</option>
+                <option value="DeleteFaces">DeleteFaces</option> 
+
+                <option value="CreateCollection">CreateCollection</option> 
+                <option value="ListCollections">ListCollections</option> 
+                <option value="DeleteCollection">DeleteCollection</option>
+
+                <option value="DetectLabels">DetectLabels</option> 
+                <option value="DetectModerationLabels">DetectModerationLabels</option> 
+                <option value="DetectText">DetectText</option> 
+
+                <option value="RecognizeCelebrities">RecognizeCelebrities</option> 
+                <option value="GetCelebrityInfo">GetCelebrityInfo</option>
+
+            </optgroup>
+            <optgroup label="Video" disabled>
+                // Streams
+                <option value="CreateStreamProcessor">CreateStreamProcessor</option> 
+                <option value="StartStreamProcessor">StartStreamProcessor</option> 
+                <option value="StopStreamProcessor">StopStreamProcessor</option>
+                <option value="DescribeStreamProcessor">DescribeStreamProcessor</option> 
+                <option value="ListStreamProcessors">ListStreamProcessors</option> 
+                <option value="DeleteStreamProcessor">DeleteStreamProcessor</option>
+
+                // Video
+                <option value="StartFaceDetection">StartFaceDetection</option> 
+                <option value="GetFaceDetection">GetFaceDetection</option> 
+                <option value="StartFaceSearch">StartFaceSearch</option>
+                <option value="GetFaceSearch">GetFaceSearch</option>
+
+                
+                <option value="StartCelebrityRecognition">StartCelebrityRecognition</option> 
+               
+                <option value="StartLabelDetection">StartLabelDetection</option> 
+                <option value="GetLabelDetection">GetLabelDetection</option>
+                <option value="StartContentModeration">StartContentModeration</option>
+                <option value="GetContentModeration">GetContentModeration</option> 
+                <option value="StartPersonTracking">StartPersonTracking</option>
+                <option value="GetPersonTracking">GetPersonTracking</option> 
+            </optgroup>
+        </select>
+    </div>
+
+    <br>
+    <b>Requests settings</b><br><br>
+
+    <div id="bars">
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 0.9px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 0.9px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row parameters IndexFaces SearchFacesByImage DetectFaces DetectLabels DetectModerationLabels DetectText RecognizeCelebrities">
+        <label for="node-input-Image" style="margin-left:15px; width: 85px; color:#848484"> Image</label>
+        <input type="text" id="node-input-Image" placeholder='{ "Bytes": [], "S3Object": { "Bucket": "", "Name": "", "Version": "" }}' >
+        <input type="hidden" id="node-input-ImageType">
+    </div>
+
+    <div class="form-row parameters DetectFaces">
+        <label for="node-input-Attributes" style="margin-left:15px; width: 85px; color:#848484"> Attributes</label>
+        <input type="text" id="node-input-Attributes" placeholder='["DEFAULT"]' >
+        <input type="hidden" id="node-input-AttributesType">
+    </div>
+
+    <div class="form-row parameters IndexFaces SearchFaces SearchFacesByImage ListFaces DeleteFaces CreateCollection DeleteCollection">
+        <label for="node-input-CollectionId" style="margin-left:15px; width: 85px; color:#848484"> CollectionId</label>
+        <input type="text" id="node-input-CollectionId" placeholder="" >
+        <input type="hidden" id="node-input-CollectionIdType">
+    </div>
+
+    <div class="form-row parameters IndexFaces">
+        <label for="node-input-DetectionAttributes" style="margin-left:15px; width: 85px; color:#848484"> DetectionAttr.</label>
+        <input type="text" id="node-input-DetectionAttributes" placeholder='["DEFAULT"]' >
+        <input type="hidden" id="node-input-DetectionAttributesType">
+    </div>
+
+    <div class="form-row parameters IndexFaces">
+        <label for="node-input-ExternalImageId" style="margin-left:15px; width: 85px; color:#848484"> ExternalImageId</label>
+        <input type="text" id="node-input-ExternalImageId" placeholder="" >
+        <input type="hidden" id="node-input-ExternalImageIdType">
+    </div>
+
+    <div class="form-row parameters SearchFaces">
+        <label for="node-input-FaceId" style="margin-left:15px; width: 85px; color:#848484"> FaceId</label>
+        <input type="text" id="node-input-FaceId" placeholder="" >
+        <input type="hidden" id="node-input-FaceIdType">
+    </div>
+
+    <div class="form-row parameters SearchFaces SearchFacesByImage">
+        <label for="node-input-FaceMatchThreshold" style="margin-left:15px; width: 85px; color:#848484"> FaceMatchThresh.</label>
+        <input type="text" id="node-input-FaceMatchThreshold" placeholder="" >
+        <input type="hidden" id="node-input-FaceMatchThresholdType">
+    </div>
+
+    <div class="form-row parameters SearchFaces SearchFacesByImage">
+        <label for="node-input-MaxFaces" style="margin-left:15px; width: 85px; color:#848484"> MaxFaces</label>
+        <input type="text" id="node-input-MaxFaces" placeholder="" >
+        <input type="hidden" id="node-input-MaxFacesType">
+    </div>
+
+    <div class="form-row parameters ListFaces ListCollections">
+        <label for="node-input-MaxResults" style="margin-left:15px; width: 85px; color:#848484"> MaxResults</label>
+        <input type="text" id="node-input-MaxResults" placeholder="" >
+        <input type="hidden" id="node-input-MaxResultsType">
+    </div>
+
+    <div class="form-row parameters ListFaces ListCollections">
+        <label for="node-input-NextToken" style="margin-left:15px; width: 85px; color:#848484"> NextToken</label>
+        <input type="text" id="node-input-NextToken" placeholder="" >
+        <input type="hidden" id="node-input-NextTokenType">
+    </div>
+
+    <div class="form-row parameters DeleteFaces">
+        <label for="node-input-FaceIds" style="margin-left:15px; width: 85px; color:#848484"> FaceIds</label>
+        <input type="text" id="node-input-FaceIds" placeholder="[]" >
+        <input type="hidden" id="node-input-FaceIdsType">
+    </div>
+
+    <div class="form-row parameters CompareFaces">
+        <label for="node-input-SimilarityThreshold" style="margin-left:15px; width: 85px; color:#848484"> SimilarityThresh.</label>
+        <input type="text" id="node-input-SimilarityThreshold" placeholder="" >
+        <input type="hidden" id="node-input-SimilarityThresholdType">
+    </div>
+
+    <div class="form-row parameters CompareFaces">
+        <label for="node-input-SourceImage" style="margin-left:15px; width: 85px; color:#848484"> SourceImage</label>
+        <input type="text" id="node-input-SourceImage" placeholder='{ "Bytes": [], "S3Object": { "Bucket": "", "Name": "", "Version": "" }}' >
+        <input type="hidden" id="node-input-SourceImageType">
+    </div>
+
+    <div class="form-row parameters CompareFaces">
+        <label for="node-input-TargetImage" style="margin-left:15px; width: 85px; color:#848484"> TargetImage</label>
+        <input type="text" id="node-input-TargetImage" placeholder='{ "Bytes": [], "S3Object": { "Bucket": "", "Name": "", "Version": "" }}' >
+        <input type="hidden" id="node-input-TargetImageType">
+    </div>
+
+    <div class="form-row parameters DetectLabels">
+        <label for="node-input-MaxLabels" style="margin-left:15px; width: 85px; color:#848484"> MaxLabels</label>
+        <input type="text" id="node-input-MaxLabels" placeholder="" >
+        <input type="hidden" id="node-input-MaxLabelsType">
+    </div>
+
+    <div class="form-row parameters DetectLabels DetectModerationLabels">
+        <label for="node-input-MinConfidence" style="margin-left:15px; width: 85px; color:#848484"> MinConfidence</label>
+        <input type="text" id="node-input-MinConfidence" placeholder="50" >
+        <input type="hidden" id="node-input-MinConfidenceType">
+    </div>
+    
+    <div class="form-row parameters GetCelebrityInfo">
+        <label for="node-input-Id" style="margin-left:15px; width: 85px; color:#848484"> Id</label>
+        <input type="text" id="node-input-Id" placeholder="50" >
+        <input type="hidden" id="node-input-IdType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-outputType">
+    </div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="aws-rekognition">
+
+    <p>Uses the AWS Rekognition to analyse, detect labels or recognize humans in an image. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Credentials <span class="property-type">config</span></dt>
+        <dd>IAM user's key and secret for AWS Rekognition</dd>
+        <dt>Output</dt>
+        <dd>where to store the result</dd>
+    </dl>
+    <p>The <i>Image</i> field must contain an image buffer. When an action is selected, the default parameters appear in the fields. </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/aws/aws-sdk-js">AWS SDK</a> - the github repository</li>
+        <li><a href="https://docs.aws.amazon.com/lex/latest/dg/API_Operations_Amazon_Lex_Runtime_Service.html">AWS Recognition</a> - API reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

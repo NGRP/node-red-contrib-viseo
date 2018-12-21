@@ -1,6 +1,10 @@
 # Node-RED
 
-A Node-RED node wrapper of [Dialogflow](https://dialogflow.com/) NLP (Natural Language Processing) from Google
+A **bot server** node to connect to [Dialogflow](https://dialogflow.com/) server (Google Assistant, Google Home), and a node to perform NLP (Natural Language Processing).
+
+These nodes are parts of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the nodes documentations in the Node-RED info tabs. 
+
+Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 
 ## Quick Start
 
@@ -24,10 +28,13 @@ Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
-This project is a creation of [Jean-Philippe Encausse](http://www.encausse.net) for the [SARAH](http://sarah.encausse.net) home automation project.
+This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
-- Jean-Philippe Encausse [@jpencausse](https://github.com/JpEncausse)
-- Klervi Menoret [@klervix](https://github.com/klervix)
+- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
+- Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
+- Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
 
 
 ## Copyright and license

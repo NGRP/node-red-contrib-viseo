@@ -18,7 +18,11 @@
                 return this.name;
             }
             return this.path.substring(this.path.lastIndexOf('/') + 1, this.path.lastIndexOf('.'));            
-        }
+        },
+        oneditprepare: function() {
+            $("#node-config-input-path").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-xlsx").typedInput({ default: 'num', types: ['num'], type: 'num' });
+        },
     });
 </script>
 
@@ -27,25 +31,37 @@
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-config-input-name" placeholder="Name">
     </div>
+    
+    <br>
+    <b>DB File</b>
     <div class="form-row">
-        <label for="node-config-input-path"><i class="icon-tag"></i> Path</label>
+        <br>
+        <label for="node-config-input-path"><i class="fa fa-file"></i> Path</label>
         <input type="text" id="node-config-input-path" placeholder="{cwd}/data/database.db">
     </div>
-    <div class="form-row">
-        <label for="node-config-input-xlsx"><i class="icon-tag"></i> XLSX Tab</label>
-        <input type="text" id="node-config-input-xlsx" placeholder="">
-        <div style="padding-left: 104px;"><em>For XLSX Path import tab to NeDB readonly</em></div>
-    </div>
 
+    <br>
+    <b>XLSX File (only)</b>
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-xlsx"><i class="fa fa-table"></i> XLSX Tab</label>
+        <input type="text" id="node-config-input-xlsx" placeholder="0">
+    </div>
    
 </script>
 
 <script type="text/x-red" data-help-name="nedb">
-    Configuration for NeDB Database.
-    <h2>Fields</h2>
-    <ul>
-        <li><b>Name:</b> can be used to override the default name of the node.</li>
-        <li><b>Path:</b> path to the local NeDB file </li>
-        <li><b>XLSX Tab:</b> tab to use to import the data (xlsx only) </li>
-    </ul>
+
+    <p>Configuration to connect the NoSQL node to a NeDB database. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Path <span class="property-type">string</span></dt>
+        <dd>path to the local NeDB file</dd>
+        <dt>XLSX Tab <span class="property-type">string</span></dt>
+        <dd>tab to use to import the data (xlsx only)</dd>
+    </dl>
+    <p>If the file is a <i>XLSX</i>, precise the tab (number). The tab  content will be imported to a NeDB database (<b>readonly</b>.)</p>
+    
 </script>

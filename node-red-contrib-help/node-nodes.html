@@ -110,14 +110,24 @@
 </script>
 
 <script type="text/x-red" data-help-name="nodes">
-    <p>This node helps you to find a or several nodes with a given property value.</p>
 
-    <h2>Get nodes</h2>
-    <p>
-        The result (array of obejcts) is sent in the output field.
+    <p>Helps you to find or update nodes and to authenticate to Node-RED. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the result (an array of objects)</dd>
+    </dl>
+    <p>Use <code>Get nodes</code> to find nodes according to a key and a value. For example, 
+        the key can be <code>type</code> and the value <code>switch</code>.
     </p>
-    <h2>Set nodes</h2>
-    <p>
-        The data in the input field has to be an array of objects (nodes data).
+    <p>Use <code>Update nodes</code> to change the nodes in the flows. A backup file will be written.
+        The data in the <i>Input</i> field has to be an array of objects (nodes data).
     </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

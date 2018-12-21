@@ -1,0 +1,57 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-omniture-insertion', {
+        category: 'VISEO LOG',
+        color: '#3FADB5',
+        defaults: {
+            name: { value: "" },
+            application: { type: "node-omniture-config" },
+            data: { value: "" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "analytics.png",
+        align: "right",
+        paletteLabel: "to Omniture",
+        label: function() { return this.name || 'Omniture Log'; },
+        oneditprepare: function() {
+            $("#node-input-data").typedInput({ default: 'msg', types: ['msg'], type: 'msg'})
+        },
+        oneditsave: function() {}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-omniture-insertion">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-application"><i class="fa fa-globe"></i> Application</label>
+        <input type="text" id="node-input-application">
+    </div>
+    <div class="form-row">
+        <label for="node-input-data"><i class="fa fa-bars"></i> Data</label>
+        <input type="text" id="node-input-data" style="width:70%;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-omniture-insertion">
+
+    <p>Inserts data into a Adobe Analytics/Omniture application. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Application<span class="property-type">config</span></dt>
+        <dd>the application information</dd>
+        <dt>Data <span class="property-type">object</span></dt>
+        <dd>the data to send</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/AdobeDocs/analytics-1.4-apis/blob/master/docs/data-insertion-api/index.md">Adobe Analytics</a> - the documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

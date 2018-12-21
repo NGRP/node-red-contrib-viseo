@@ -9,48 +9,38 @@ const helper     = require('node-red-viseo-helper');
 module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
+
+        let node = this;
+        let conf = RED.nodes.getNode(config.config);
+        node.status({fill:"red", shape:"ring", text: 'Missing credentials'});
         
-        this.config = RED.nodes.getNode(config.config);
-        var node = this;
+        if (!conf || !conf.credentials) return;
+        if (conf.way === "key") {
+            this.endpoint  = "https://" + (conf.location || "westus") + ".api.cognitive.microsoft.com/luis/v2.0/apps/" + conf.credentials.appId;
+            this.endpoint += "?subscription-key=" + conf.credentials.subKey + (conf.verbose ? "&verbose=" + conf.verbose : "") 
+            this.endpoint += (conf.staging ? "&staging=" + conf.staging : "") + "&q=";
+        }
+        else this.endpoint = conf.credentials.endpoint;
+
+        if (this.endpoint) node.status({});
         this.on('input', (data)  => { try { input(node, data, config) } catch (ex){ node.warn(ex) }});
-    }   
+    }
     RED.nodes.registerType("ms-luis", register, {});
 }
 
 
 async function input(node, data, config) {
-    
-    if (!config.config){
-        return node.status({fill:"red", shape:"ring", text: 'Missing credential'});
-    }
 
     // Get parameters
-    let way = node.config.way || "key";
-    let cred = node.config.credentials;  
-    let text = config.text || "payload";
+    let url = node.endpoint;  
+    let text  = config.text || "payload";
     let output = config.intent || "payload";
-
-    // Credentials
-    if (way === "key" && (!cred.appId || !cred.subKey)) {
-        return node.status({fill:"red", shape:"ring", text: 'Missing credential'});
-    }
-    else if (way === "endpoint" && !cred.endpoint) {
-        return node.status({fill:"red", shape:"ring", text: 'Missing credential'});
-    }
-
-    let host = node.config.host.replace(/^https?:\/\//ig, '') || "";
-        host = "https://" + host.replace(/^www/ig, '');
-        host = host.replace(/\/$/ig, '');
-
 
     // Input
     if (config.textType !== 'str') {
         let loc = (config.textType === 'global') ? node.context().global : data;
         text = helper.getByString(loc, text);
     }
-
-    // Process
-    let url = (way === "key") ? host + "/luis/v2.0/apps/" + cred.appId + "?subscription-key=" + cred.subKey + "&q="  : cred.endpoint;
 
     try {
         let response = await request({

@@ -15,8 +15,8 @@
         outputs: 1,
         icon: "google.svg",
         align: "left",
-        paletteLabel: 'Places',
-        label: function() { return this.name || "Google Places"; },
+        paletteLabel: 'Maps',
+        label: function() { return this.name || "Google Maps"; },
         oneditprepare: function() {
 
             var parameters = this.parameters,
@@ -218,8 +218,21 @@
 
 <script type="text/x-red" data-help-name="google-places">
 
-    <section class="help-section">
-    
-        </section>
+    <p>Get informations from a place with Google Maps. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>API key <span class="property-type">config</span></dt>
+        <dd>key from Google</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/googlemaps/google-maps-services-js">Google Maps</a> - the github repository</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>

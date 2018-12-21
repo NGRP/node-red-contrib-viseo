@@ -21,6 +21,10 @@ module.exports = function (RED) {
 async function input(node, data, config) {
   
   let token = config.token;
+  if (config.tokenType !== 'str') {
+    let loc = (config.tokenType === 'global') ? node.context().global : data;
+    token = helper.getByString(loc, token);
+  }
   if (!token) return node.error("Missing token");
   
   let action = config.action || 'set';

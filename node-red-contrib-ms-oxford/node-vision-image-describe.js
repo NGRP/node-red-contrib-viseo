@@ -10,20 +10,30 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.visionkey = RED.nodes.getNode(config.visionkey);
+
+        node.status({fill:"red", shape:"ring", text: 'Missing credential'});
+        this.visioncreds = RED.nodes.getCredentials(config.visionkey);
+
+        if (this.visioncreds) node.status({});
+
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("vision-image-describe", register, {});
 }
 
 async function input (node, data, config) {
-    let visionkey = node.visionkey,
+    let visioncreds = node.visioncreds,
         features = config.features,
         celebrities = config.celebrities,
         landmarks = config.landmarks;
 
+    let visionkey, visionregion;
+
     // Keys
-    try {           visionkey = visionkey.key || undefined; }
+    try { 
+        visionkey = visioncreds.key || undefined;
+        visionregion = visioncreds.region || "westus";
+    }
     catch(err) {    return node.error("ERROR: MS Vision API key is required to get celebrities information."); }
 
     // Image
@@ -47,16 +57,16 @@ async function input (node, data, config) {
     
     // Process
     try {
-        let infos = JSON.parse( await getInfo( visionkey, image, parameters,  celebrities, landmarks));
+        let infos = JSON.parse( await getInfo( visionkey, visionregion, image, parameters,  celebrities, landmarks));
         data.payload = infos;
         return node.send(data);
     }
     catch(err) { return node.error(err); }
 }
 
-async function getInfo (apiKey, image, parameters, celebrities, landmarks) {
+async function getInfo (apiKey, apiRegion, image, parameters, celebrities, landmarks) {
 
-    let url = 'https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?';
+    let url = 'https://' + apiRegion + '.api.cognitive.microsoft.com/vision/v1.0/analyze?';
 
     if (parameters.length > 0) {
         url += 'visualFeatures=';
@@ -82,10 +92,8 @@ async function getInfo (apiKey, image, parameters, celebrities, landmarks) {
         }
     };
 
-    if (typeof image === 'string') {
-        if (image.indexOf('http') != -1) req.body =  JSON.stringify({'url': image });
-        else req.body = fs.readFileSync(image);
-    }   else req.headers['Content-type'] = 'application/octet-stream';
+    if (typeof image === 'string') req.body =  JSON.stringify({'url': image });
+    else req.headers['Content-type'] = 'application/octet-stream';
 
     return request(req);
 }

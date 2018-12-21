@@ -42,8 +42,8 @@
         },
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: "MS Image: Describe",
-        label: function() { return this.name || "Image description"; }
+        paletteLabel: "Computer Vision",
+        label: function() { return this.name || "Computer Vision"; }
     });
 </script>
 
@@ -103,23 +103,20 @@
 </script>
 
 <script type="text/x-red" data-help-name="vision-image-describe">
-    <p>This node uses the Microsoft Cognitive Services Vision API to get informations about an image. </p>
+    <p>Query the Microsoft Cognitive Services Computer Vision API to get informations about an image. </p>
 
-    <h2>Main properties</h2>
-    <p>
-        <li><b>Image</b> location: Where to get the image. It can be a buffer (in a 'msg' or 'global' field) or an url (directly by chosing 'str' or in a field of 'msg' or 'global'). 
-        <li><b>Options</b> checkboxes: Informations to get from the image. 
-        <li><b>Key</b> values: A key for the Vision API is required for the process.
-    </p>
-    <p>
-        <li><b>OUT[0]:</b> Returns an object in the msg.payload field with the informations.
-    </p>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Image <span class="property-type">string/buffer</span></dt>
+        <dd>the image location or the image buffer</dd>
+        <dt>Key <span class="property-type">config</span></dt>
+        <dd>credentials for Computer Vision API from Azure portal</dd>
+    </dl>
 
-    <h2>Getting help</h2>
-    <p>
-        <li><b>Microsoft Services Cognitives Services:</b> <a>https://azure.microsoft.com/fr-fr/services/cognitive-services/</a>
-        <li><b>VISEO GitHub (details for this node):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-oxford</a>
-        <li><b>VISEO GitHub (main informations):</b> <a>https://github.com/NGRP/node-red-contrib-viseo/</a>
-    </p>
-
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/home">Computer Vision</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

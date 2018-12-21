@@ -1,0 +1,36 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-token',{
+        category: 'config',
+        defaults: {
+            name:         { value: undefined }
+        },
+        credentials: {
+            token:        { type: "text" }
+        },
+        label: function() {
+            return this.name || "Facebook page acess token";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="facebook-token">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-token"><i class="icon-tag"></i> Page Token</label>
+        <input type="text" id="node-config-input-token" placeholder="Page access token">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="facebook-token">
+    <p>Facebook page token.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/">Facebook Messenger Platform</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

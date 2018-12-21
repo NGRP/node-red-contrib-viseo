@@ -2,8 +2,11 @@
     RED.nodes.registerType('ms-config',{
         category: 'config',
         defaults: {
-            name:           { value: undefined },
-            key:            { value: undefined },
+            name: { value: undefined }
+        },
+        credentials: {
+            key:     { type: "text" },
+            region:  { value: "westus"}
         },
         label: function() {
             return this.name || "Microsoft API config";
@@ -17,7 +20,30 @@
         <input type="text" id="node-config-input-name" placeholder="">
     </div>
     <div class="form-row">
+        <label for="node-config-input-region"><i class="fa fa-globe"></i> Region</label>
+        <input type="text" id="node-config-input-region" placeholder="westus">
+    </div>
+    <div class="form-row">
         <label for="node-config-input-key"><i class="fa fa-lock"></i> Key</label>
         <input type="text" id="node-config-input-key" placeholder="00000000-0000-0000-0000-000000000000">
     </div>
+</script>
+
+<script type="text/x-red" data-help-name="ms-config">
+
+    <p>Uses the given key and region to connect to a Microsoft Cognitive service.</p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Key <span class="property-type">string</span></dt>
+        <dd>key given in Azure for the wanted service</dd>
+        <dt>Region <span class="property-type">string</span></dt>
+        <dd>Azure region for the service</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

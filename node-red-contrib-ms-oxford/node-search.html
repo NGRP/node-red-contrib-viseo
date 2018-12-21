@@ -1,0 +1,205 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-cs-search',{
+        category: 'VISEO_REST',
+        color: '#3FADB5',
+        defaults: { 
+            name:        { value: undefined },
+            key:         { value: undefined, required: true, type: 'ms-config'},
+            api:         { value: 'search'},
+            output:      { value: 'payload' },
+            parameters:  { value: [] },
+            q:          { value: undefined},
+            qType:      { value: 'str' },
+            mkt:          { value: undefined},
+            mktType:      { value: 'str' },
+            count:          { value: undefined},
+            countType:      { value: 'str' },
+            freshness:          { value: undefined},
+            freshnessType:      { value: 'str' },
+            responseFilter:          { value: undefined},
+            responseFilterType:      { value: 'str' },
+            since:          { value: undefined},
+            sinceType:      { value: 'str' },
+            sortBy:          { value: undefined},
+            sortByType:      { value: 'str' },
+            safeSearch:          { value: undefined},
+            safeSearchType:      { value: 'str' },
+            textDecorations:          { value: undefined},
+            textDecorationsType:      { value: 'str' },
+            textFormat:          { value: undefined},
+            textFormatType:      { value: 'str' }
+        },
+        inputs:  1,
+        outputs: 2,
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: 'Search',
+        label: function() { return this.name || "Search"; },
+        outputLabels: ["stdout", "stderr"],
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types:['str'], type: 'str' });
+            $("#node-input-output").typedInput({ default: 'msg', types:['msg'], type: 'msg' });
+
+            $("#node-input-q").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-qType") });
+            $("#node-input-mkt").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-mktType") });
+            $("#node-input-count").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-countType") });
+            $("#node-input-freshness").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-freshnessType") });
+            $("#node-input-responseFilter").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-responseFilterType") });
+            $("#node-input-since").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-sinceType") });
+            $("#node-input-sortBy").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-sortByType") });
+            $("#node-input-safeSearch").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-safeSearchType") });
+            $("#node-input-textDecorations").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-textDecorationsType") });
+            $("#node-input-textFormat").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-textFormatType") });
+
+            $("#node-input-api").change( function() {
+                $(".parameters").hide();
+                let request = $("#node-input-api").val() || "search";
+                $("." + request).show();
+                $(".parameters:visible").find('input[type=text]').typedInput('show');
+
+            })
+        },
+        oneditsave: function () { 
+            let parameters = [];
+            $(".parameters:visible").find('input[type=text]').each( function(i, elt) {
+                parameters.push(elt.id.split('-').pop());
+            })
+            this.parameters = parameters;
+        },
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-cs-search">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Speech API settings </b>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-key"><i class="fa fa-lock"></i> API key</label>
+        <input type="text" id="node-input-key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-api"><i class="fa fa-navicon"></i> API</label>
+        <select id="node-input-api" style="width:70%;">
+            <option value="search">Bing Web Search</option>
+            <option value="news">Bing News Search</option>
+            <option value="customsearch" disabled>Bing Custom Search</option>
+            <option value="visualsearch" disabled>Bing Visual Search</option>
+            <option value="entities" disabled>Bing Entity Search</option>
+            <option value="videos" disabled>Bing Video Search</option>
+            <option value="images" disabled>Bing Image Search</option>
+            <option value="suggestions" disabled>Bing Autosuggest</option>
+        </select>
+    </div>
+
+    <br>
+    <b>Request parameters </b>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-q"><i class="fa fa-sign-in"></i> Query</label>
+        <input type="text" id="node-input-q" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-qType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row parameters search news">
+        <label for="node-input-mkt" style="margin-left:15px; width: 85px; color:#848484"> Lang. code</label>
+        <input type="text" id="node-input-mkt" style="width: 70%" placeholder="en-US">
+        <input type="hidden" id="node-input-mktType">
+    </div>
+
+    <div class="form-row parameters search news">
+        <label for="node-input-count" style="margin-left:15px; width: 85px; color:#848484"> Count</label>
+        <input type="text" id="node-input-count" style="width: 70%" placeholder="10">
+        <input type="hidden" id="node-input-countType">
+    </div>
+
+    <div class="form-row parameters search news">
+        <label for="node-input-freshness" style="margin-left:15px; width: 85px; color:#848484"> Freshness</label>
+        <input type="text" id="node-input-freshness" style="width: 70%" placeholder="">
+        <input type="hidden" id="node-input-freshnessType">
+    </div>
+
+    <div class="form-row parameters search">
+        <label for="node-input-responseFilter" style="margin-left:15px; width: 85px; color:#848484"> Filter</label>
+        <input type="text" id="node-input-responseFilter" style="width: 70%" placeholder="">
+        <input type="hidden" id="node-input-responseFilterType">
+    </div>
+
+    <div class="form-row parameters news">
+        <label for="node-input-since" style="margin-left:15px; width: 85px; color:#848484"> Since</label>
+        <input type="text" id="node-input-since" style="width: 70%" placeholder="">
+        <input type="hidden" id="node-input-sinceType">
+    </div>
+
+    <div class="form-row parameters news">
+        <label for="node-input-sortBy" style="margin-left:15px; width: 85px; color:#848484"> Sort by</label>
+        <input type="text" id="node-input-sortBy" style="width: 70%" placeholder="">
+        <input type="hidden" id="node-input-sortByType">
+    </div>
+
+    <div class="form-row parameters search news">
+        <label for="node-input-safeSearch" style="margin-left:15px; width: 85px; color:#848484"> Safe search</label>
+        <input type="text" id="node-input-safeSearch" style="width: 70%" placeholder="Moderate">
+        <input type="hidden" id="node-input-safeSearchType">
+    </div>
+    
+    <div class="form-row parameters search news">
+        <label for="node-input-textDecorations" style="margin-left:15px; width: 85px; color:#848484"> Text deco.</label>
+        <input type="text" id="node-input-textDecorations" style="width: 70%" placeholder="false">
+        <input type="hidden" id="node-input-textDecorationsType">
+    </div>
+
+    <div class="form-row parameters search news">
+        <label for="node-input-textFormat" style="margin-left:15px; width: 85px; color:#848484"> Text format</label>
+        <input type="text" id="node-input-textFormat" style="width: 70%" placeholder="Raw">
+        <input type="hidden" id="node-input-textFormatType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>  
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ms-cs-search">
+
+    <p>Query the Microsoft Cognitive Services Bing Search API. </p>
+    
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>API key <span class="property-type">config</span></dt>
+        <dd>key for the Bing Speech API</dd>
+        <dt>Query <span class="property-type">string</span></dt>
+        <dd>text to search</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/en-us/rest/api/cognitiveservices/bing-web-api-v7-reference">Bing Web Search API</a> - reference</li>
+        <li><a href="https://docs.microsoft.com/en-us/rest/api/cognitiveservices/bing-news-api-v7-reference">Bing News Search API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

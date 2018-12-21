@@ -56,7 +56,23 @@
 </script>
 
 <script type="text/x-red" data-help-name="ms-luis">
-    <p>New Version !</p>
-    <p>Query Microsoft LUIS API with the given payload. Best intent is stored in intent property.</p>
-    <p>There is full room for improvements.</p>
+
+    <p>Query Microsoft LUIS API to perform NLU. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>App config <span class="property-type">config</span></dt>
+        <dd>credentials for LUIS</dd>
+        <dt>Text <span class="property-type">string</span></dt>
+        <dd>text to analyze</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/fr-fr/azure/cognitive-services/luis/">LUIS</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

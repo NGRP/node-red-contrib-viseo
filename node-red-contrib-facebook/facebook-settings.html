@@ -1,0 +1,343 @@
+<script type="text/javascript">
+
+    function reloadMenu(data) {
+        $("#fb-settings-tabs li").remove();
+        $(".fb-settings-panel").remove();
+
+        let nbMenus = data.length;
+        let size = 70/nbMenus;
+
+        for (let i=0; i<=nbMenus; i++) {
+            if (i === nbMenus) $("#fb-settings-tabs").append('<li class="fb-settings-tab" style="width: 40px;"> <a href="#addtab" class="red-ui-tab-label"><span class="bidiAware" dir=""><i class="fa fa-plus"></i></span></a></li>')
+            else addTabContent(i, size,  data[i]);
+        }
+    }
+
+    function addTabContent(i, size, data) {
+
+        // Tabs
+        var liclass = (i===0) ? 'fb-settings-tab active' : 'fb-settings-tab';
+        var listyle = (i===0) ? { "margin-left" : "20px", "width": size + '%' } : {"width": size + '%' };
+        var livalue = (i===0) ? 'default' :  data.language;
+        var liaspan = '<a href="#tab' + i + '" class="red-ui-tab-label"><span class="bidiAware"> '+ livalue +'</span></a>'
+        var li = $('<li/>').addClass(liclass).css(listyle).append(liaspan).appendTo("#fb-settings-tabs")
+        
+        // Inputs
+        var mainclass = (i===0) ? 'fb-settings-panel' : 'fb-settings-panel hide';
+        var buttclass = (i===0) ? 'editor-button disabled' : 'editor-button copy-menu';
+        var langcss = (i===0) ? {"position": "absolute", "left": "0px", "right": "0px"} :  {"position": "absolute", "left": "0px", "right": "40px"}
+        var langInp3 = $('<input/>').attr({'id': 'language-' + i, 'type': 'text', 'placeholder':"fr_FR"}).css({'width': '100%'}).addClass('data-language').val(livalue).prop("disabled", (i===0));
+        var langInp2 = $('<div/>').css(langcss).append(langInp3)
+        var langInp1 = $('<div/>').css({ "display": "inline-block", "position": "relative", "width": "70%", "height": "23px" }).append(langInp2)
+        var infoInp =  $('<textarea/>').attr({'id': 'greetings-' + i, 'type': 'text', "rows":"3"}).addClass("data-greetings").css({'width':'70%'}).val(data.greetings)
+        var menuInp =  $('<a/>').attr({'href': '#', 'id': 'menu-' + i}).addClass(buttclass).html("<span>Copy default menu</span>");
+
+        if (i !== 0) {
+            $('<a/>').attr('id', "delete-" + i).addClass("delete-locale editor-button").css({ "position": "absolute", "right": "0px", "top": "0px"}).append('<i class="fa fa-trash"></i>').appendTo(langInp1)
+        }
+
+        var formlang = $('<div/>').addClass("form-row")
+            .append('<label><i class="fa fa-globe"></i> Locale</label>')
+            .append(langInp1);
+        var forminfo = $('<div/>').addClass("form-row")
+            .append('<label><i class="fa fa-info"></i> Greetings</label>')
+            .append(infoInp);
+        var formmenu = $('<div/>').addClass("form-row")
+            .append('<label><i class="fa fa-bars"></i> Menu</label>')
+            .append(menuInp);
+        var contmenu = $('<div/>').addClass("form-row").css({"width":"95%", "margin-left": "10px"})
+            .append('<ol class="data-menu" id="menu-container-' + i + '"></ol>');
+
+        var mainDiv = $('<div/>').addClass(mainclass).attr('id', "fb-settings-tab" + i)
+            .append(formlang).append(forminfo).append(formmenu).append(contmenu).appendTo("#tab-content")
+            
+        // TypedInput
+        $("#language-" + i).typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+        // Menus
+        $("#menu-container-" + i).css('min-height','300px').editableList({
+            addItem: function ( row, index, item ) {
+                var level  = item.level  || 0;
+                    level  = Number(level);
+                var label  = item.label  || '';
+                var action = item.action || 'postback';
+                var value  = item.value  || '';
+
+                var ecart = level*5;
+                var width = (80 - ecart) / 3;
+                var nb = 'margin-left:' + level*15 + 'px;';
+                    nb += (level === 0) ? 'background-color: #eee' : '';
+
+                $('<a/>').attr({'href': '#', 'id': 'lvl-minus-' + index})
+                    .addClass('lvl-minus editor-button editor-button-small' + (level === 0 ? ' disabled' : ''))
+                    .html('<i class="fa fa-arrow-left"></i>')
+                    .css({"margin-right":"5px", "margin-left": String(ecart) + "%"})
+                    .appendTo(row);
+
+                var levelField =  $('<input/>',  { class:"property-btn-level",  type:"hidden", style:"width:11%; margin: auto 5px;", value: level}).appendTo(row);
+                var labelField =  $('<input/>',  { class:"property-btn-label",  type:"text",   style:"width:" + width + "%; margin-right:5px;", value: label, placeholder:"Label"}).appendTo(row);
+                var actionField = $('<select/>', { class:"property-btn-action", type:"text",   style:"width:" + width + "%; margin-right:5px;"}).appendTo(row);
+                    actionField.append($("<option></option>").val("postback").text("Post Back"));
+                    actionField.append($("<option></option>").val("web_url").text("Web URL"));
+                    actionField.append($("<option></option>").val("web_url_compact").text("Compact URL"));
+                    actionField.append($("<option></option>").val("nested").text("Nested menu"));
+                var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:" + width + "%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                    actionField.val(action).change();
+
+                $('<a/>').attr({'href': '#', 'id': 'lvl-plus-' + index})
+                    .addClass('lvl-plus editor-button editor-button-small')
+                    .html('<i class="fa fa-arrow-right"></i>')
+                    .appendTo(row);
+            },
+            sortable: true,
+            removable: true
+        });
+
+        if (!data.menu) return;
+        for (let item of data.menu) $("#menu-container-" + i).editableList('addItem', item);
+    }
+
+    function getMenuData() {
+        let data = [];
+
+        $('.fb-settings-panel').each(function( index ) {
+            let language = $(this).find('.data-language').val();
+            let greetings = $(this).find('.data-greetings').val();
+            let menu = [];
+
+            $(this).find('.data-menu').editableList('items').each(function( index, item ) {
+                let obj = {
+                    level:  $(item).find('.property-btn-level').val(),
+                    label:  $(item).find('.property-btn-label').val(),
+                    action: $(item).find('.property-btn-action').val(),
+                    value:  $(item).find('.property-btn-value').val()
+                }
+                if (obj.label) menu.push(obj)
+            })
+
+            if (language) {
+                data.push({
+                    "language": language,
+                    "greetings": greetings,
+                    "menu":     menu
+                })
+            }
+        })
+
+        return data;
+    }
+
+    RED.nodes.registerType('facebook-settings',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:       { value: undefined },
+            pageToken:  { value: "",  type: 'facebook-token' },
+            getstarted: { value: "getstarted"},
+            menus:      { value: [{
+                "language": "default",
+                "greetings": "",
+                "menu": [{ level: 0, label: "", action: "postback", value: ""}]
+            }]}
+        },
+        inputs:  0,
+        outputs: 0,
+        icon: "facebook.svg",  align: "left",
+        button: { onclick: function() {
+            var node = this;
+            $.ajax({
+                url: "facebook-settings/"+this.id,
+                type:"POST",
+                success: function(resp) { RED.notify("Successfully Updated", "success"); },
+                error: function(jqXHR,textStatus,errorThrown) {
+                    if (jqXHR.status == 404) {
+                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.not-deployed")}),"error");
+                    } else if (jqXHR.status == 500) {
+                        RED.notify(node._("common.notification.error",{message:node._("inject.errors.failed")}),"error");
+                    } else if (jqXHR.status == 0) {
+                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.no-response")}),"error");
+                    } else {
+                        RED.notify(node._("common.notification.error",{message:node._("common.notification.errors.unexpected",{status:jqXHR.status,message:textStatus})}),"error");
+                    }
+                }
+            });
+        }},
+        oneditprepare: function () {
+            $("#node-input-getstarted").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            reloadMenu(this.menus);
+        },
+        oneditsave: function() {
+            this.menus = getMenuData();
+        },
+        paletteLabel: "Settings",
+        label: function() { return this.name || "Settings"; }
+    });
+
+
+
+    $(document).ready(function() {
+        // Toggle TabPane
+        $(document).on('click', '#fb-settings-tabs .red-ui-tab-label', function(){
+            $('.fb-settings-panel').addClass('hide');
+            $('.fb-settings-tab').removeClass('active');
+            var $this = $(this);
+            var href =  $this.attr('href');
+
+            if (href === "#addtab") {
+                let data = getMenuData();
+                data.push({
+                    "language": "fr_FR",
+                    "greetings": "",
+                    "menu": [{ level: 0, label: "", action: "postback", value: ""}]
+                })
+                reloadMenu(data)
+            }
+            else {
+                var panelId = '#fb-settings-' + href.substring(1);
+                $(panelId).removeClass('hide');
+                var nb = href[href.length-1];
+                $("#language-" + nb).typedInput('show');
+                $this.parent('.fb-settings-tab').addClass('active');
+            }
+        })
+
+        // Delete a locale
+        $(document).on('click', ".delete-locale", function() {
+            let nb = this.id.replace(/delete-/i, '');
+            let data = getMenuData();
+            let locale = $('#fb-settings-tab' + nb).find('.data-language').val();
+            if (!locale) return;
+
+            let newData = [];
+            for (let item of data) if (item.language !== locale) newData.push(item);
+            reloadMenu(newData)
+        });
+
+        // Change tab title
+        $(document).on('change', ".data-language", function() {
+            let val = $(this).val();
+            if (!val) return;
+
+            let nb = this.id.replace(/language-/i, '')
+            let sa = $("[href$='#tab" + nb + "']").find('span').text(val);
+        });
+
+        // Change menu button property
+        $(document).on('change', ".property-btn-action", function() {
+            let val = $(this).val();
+            if (!val) return;
+            $(this).parent().find("input").attr('disabled', false)
+            if (val === "nested") $(this).parent().find(".property-btn-value").val('').attr('disabled', true);
+        })
+
+        // Copy menu 
+        $(document).on('click', ".copy-menu", function() {
+            let nb = this.id.replace(/menu-/i, '');
+            let data = getMenuData();
+            data[Number(nb)].menu = data[0].menu;
+            reloadMenu(data);
+        });
+
+        // Change level
+        $(document).on('click', ".lvl-plus, .lvl-minus", function() {
+            
+            let localeval = $(this).parents('.fb-settings-panel').find(".data-language").val();
+            let container = $(this).parents('.data-menu');
+            let levelFiel = $(this).parent().find('.property-btn-level')
+            let oldLevel = levelFiel.val();
+            
+            if ($(this).attr('class').match(/plus/)) levelFiel.val(String(Number(oldLevel) + 1))
+            else {
+                if (oldLevel <= 0) return;
+                levelFiel.val(String(Number(oldLevel) - 1))
+            }
+
+            let menu = [];
+            container.editableList('items').each(function( index, item ) {
+                let obj = {
+                    level:  $(item).find('.property-btn-level').val(),
+                    label:  $(item).find('.property-btn-label').val(),
+                    action: $(item).find('.property-btn-action').val(),
+                    value:  $(item).find('.property-btn-value').val()
+                }
+                menu.push(obj)
+            })
+
+            container.editableList('empty');
+            for (let item of menu) container.editableList('addItem', item);
+            
+        })
+    });
+</script>
+
+<style>
+    textarea {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        min-height: 60px;
+        max-width: 100%;
+        width:70%;
+        resize: vertical;
+    }
+    .red-ui-editableList-border.red-ui-editableList-container {
+        overflow-x: hidden;
+        resize: vertical;
+    }
+</style>
+
+<script type="text/x-red" data-template-name="facebook-settings">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Facebook Messenger settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-pageToken"><i class="fa fa-lock"></i> Page token</label>
+        <input type="text" id="node-input-pageToken" placeholder="" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-getstarted"><i class="fa fa-play"></i> Start event</label>
+        <input type="text" id="node-input-getstarted" placeholder="" style="width:70%;">
+    </div>
+
+    <br>
+    <b>Facebook Messenger locales</b>
+
+    <br><br>
+    <div class="red-ui-tabs" style="margin-bottom: 10px; min-width:480px;">
+        <div>
+            <ul id="fb-settings-tabs" style="width:95%;"></ul>
+        </div>
+    </div>
+
+    <div id="tab-content">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="facebook-settings">
+    <p>Configures greeting message and menu of the Messenger bot.</p>
+
+    <h3>Details</h3>
+    <p>For each locale, or at least the <i>default</i> one, you can change the greeting message and the menu.
+    In the menu, a <i>Post Back</i> will send the <code>value</code> in the flow, a <i>Web URL</i> will open the <code>value</code> url in a navigator and a <i>Compact URL</i> in a webview. 
+    You can add nested menus: a nested menu is composed of all the shifted lines under a line with <i>Nested Value</i> selected.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Page token <span class="property-type">config</span></dt>
+        <dd>bot's Facebook page token</dd>
+        <dt>Start event <span class="property-type">string</span></dt>
+        <dd>first message in the flow when the user clicks "start" button.</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/discovery/welcome-screen">Facebook Messenger Platform</a> - welcome screen</li>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/send-messages/persistent-menu">Facebook Messenger Platform</a> - persistent menu</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

@@ -1,0 +1,113 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-server',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            name:       { value: undefined },
+            pageToken:  { value: "",  type: 'facebook-token' }
+        },
+        credentials: {
+            verifyToken: { type: "text" }
+        },
+        inputs:  0,
+        outputs: 1,
+        icon: "facebook.svg",  align: "left",
+        paletteLabel: "Messenger",
+        label: function() { return this.name || "Messenger"; },
+        oneditprepare: function() {
+            $("#node-input-verifyToken").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        }
+    });
+
+</script>
+
+
+<style>
+    .button-small {
+        height: 20px;
+        line-height: 18px;
+        font-size: 10px;
+        border-radius: 2px;
+        padding: 0 5px;
+        user-select: none;
+        box-sizing: border-box;
+        display: inline-block;
+        color: #888 !important;
+        background: #fff;
+        border: 1px solid #ccc;
+        text-align: center;
+        margin: 0;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .button-small:enabled:hover {
+        color: #666 !important;
+        background: #ddd;
+    }
+    button:disabled,
+    button.button-small[disabled] {
+        cursor: auto;
+    }
+    h5.subsection { 
+        color: #888; 
+        width: 66%;
+        margin-left: 104px;
+    }
+    h5.subsection span { 
+        margin-left:30px;
+        padding: 0 10px 0 10px; 
+        background-color: white;
+    }
+</style>
+
+<script type="text/x-red" data-template-name="facebook-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <br>
+    <b>Facebook Messenger settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-pageToken"><i class="fa fa-lock"></i> Page token</label>
+        <input type="text" id="node-input-pageToken" placeholder="" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-verifToken"><i class="fa fa-lock"></i> Verify token</label>
+        <input type="text" id="node-input-verifyToken" placeholder="" style="width:70%;">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="facebook-server">
+
+    <p>[<b>Bot server</b>] Connects to a Facebook Messenger application. </p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>Details</h3>
+    <p>This node uses the <code>/facebook-server</code> route to connect with Messenger.</p>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Page token <span class="property-type">config</span></dt>
+        <dd>bot's Facebook page token</dd>
+        <dt>Verify token <span class="property-type">config</span></dt>
+        <dd>random token that you may copy/paste in Facebook developers application</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/">Facebook Messenger Platform</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

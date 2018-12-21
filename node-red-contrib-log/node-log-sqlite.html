@@ -5,7 +5,7 @@
         defaults: { 
             name:     { value: undefined },
             database: { value: undefined },
-            cmd:      { value: undefined },
+            cmd:      { value: "INSERT INTO" },
             table:    { value: undefined },
             where:    { value: undefined },
             log:      { value: undefined },
@@ -15,7 +15,14 @@
         icon: "log.svg",
         align: "right",
         paletteLabel: 'to Database',
-        label: function() { return this.name || "to Database"; }
+        label: function() { return this.name || "to Database"; },
+        oneditprepare: function() {
+            $("#node-input-database").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-table").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-where").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-log").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+        },
+        oneditsave: function(){}
     });
 </script>
 
@@ -24,13 +31,14 @@
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+
     <div class="form-row">
-        <label for="node-input-database"><i class="icon-tag"></i> Database</label>
-        <input type="text" id="node-input-database" placeholder="{cwd}/data/sqlite.db">
+        <label for="node-input-database"><i class="fa fa-database"></i> Database</label>
+        <input type="text" id="node-input-database" style="width:70%;" placeholder="{cwd}/data/sqlite.db">
     </div>
     <div class="form-row">
-        <label for="node-input-cmd"><i class="icon-tag"></i> Database</label>
-        <select id="node-input-cmd">
+        <label for="node-input-cmd"></label>
+        <select id="node-input-cmd" style="width:70%;">
             <option value="INSERT INTO">INSERT INTO</option>
             <option value="INSERT OR IGNORE INTO">INSERT OR IGNORE INTO</option>
             <option value="UPDATE OR IGNORE">UPDATE OR IGNORE</option>
@@ -38,18 +46,23 @@
     </div>
     <div class="form-row">
         <label for="node-input-table"><i class="icon-tag"></i> Table</label>
-        <input type="text" id="node-input-table" placeholder="">
+        <input type="text" id="node-input-table" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-input-where"><i class="icon-tag"></i> Where</label>
-        <input type="text" id="node-input-where" placeholder="">
+        <input type="text" id="node-input-where" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-input-log"><i class="icon-tag"></i> Event Log</label>
-        <input type="text" id="node-input-log" placeholder="payload">
+        <input type="text" id="node-input-log" style="width:70%;" placeholder="payload">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="log-sqlite">
+    <p>[<i>Not used anymore</i>]</p>
 
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

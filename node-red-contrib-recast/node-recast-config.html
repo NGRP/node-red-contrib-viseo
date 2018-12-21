@@ -10,6 +10,10 @@
         },
         label: function() {
             return this.name || "Recast config";
+        },
+        oneditprepare: function() {
+            $("#node-config-input-lang").typedInput({  default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-token").typedInput({  default: 'str', types: ['str'], type:'str' });
         }
     });
 </script>
@@ -29,4 +33,12 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="node-recast-config"></script>
+<script type="text/x-red" data-help-name="node-recast-config">
+    <p>Credentials for Recast NLP API. </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/RecastAI/SDK-NodeJs#readme">Recast.ai</a> - the github repository</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

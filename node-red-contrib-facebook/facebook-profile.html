@@ -1,0 +1,77 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-profile',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:       { value: undefined },
+            pageToken:  { value: undefined, type: 'facebook-token'},
+            field:      { value: 'user'},
+            fieldType:   { value: 'msg'},
+            source:      { value: 'message.source'},
+            sourceType:  { value: 'msg'}
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "facebook.svg",  align: "left",
+        paletteLabel: "Profile",
+        label: function() { return this.name || "Profile"; },
+        oneditprepare: function () {
+            $("#node-input-field").typedInput({  default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-source").typedInput({ default: 'msg', types: ['msg','str'], typeField: $("#node-input-sourceType") });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="facebook-profile">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Facebook Messenger settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-pageToken"><i class="fa fa-lock"></i> Page token</label>
+        <input type="text" id="node-input-pageToken" placeholder="">
+    </div>
+
+    <br>
+    <b>Facebook Messenger inputs </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-field"><i class="fa fa-user"></i> User field</label>
+        <input type="text" id="node-input-field" placeholder="user" style="width:70%;">
+        <input type="hidden" id="node-input-fieldType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-source"><i class="fa fa-user"></i> Source field</label>
+        <input type="text" id="node-input-source" placeholder="message.source" style="width:70%;">
+        <input type="hidden" id="node-input-sourceType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="facebook-profile">
+    <p>Improves user profile with Facebook Graph.</p>
+
+    <h3>Details</h3>
+    <p>A call to Facebook Graph every 4 hours to update the user information. The received data is put in the given <i>User field</i>. 
+        If the source (<i>Source field</i>) is different from "facebook" or "messenger", then this node do nothing.</p>
+
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>User field <span class="property-type">string</span></dt>
+        <dd>where to store the received data</dd>
+        <dt>Source field <span class="property-type">string</span></dt>
+        <dd>where to check the source </dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/messenger-platform/identity/user-profile">Facebook Messenger Platform</a> - user profile documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

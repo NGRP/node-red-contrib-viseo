@@ -1,0 +1,52 @@
+<script type="text/javascript">
+    RED.nodes.registerType('dialogflow-server',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: { 
+            name: { value: undefined }
+        },
+        inputs:  0,
+        outputs: 1,
+        icon: "google.svg",
+        align: "left",
+        paletteLabel: 'Dialogflow',
+        label: function() { return this.name || "Dialogflow"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        },
+        oneditsave: function(){}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="dialogflow-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="dialogflow-server">
+    <p>[<b>Bot server</b>] Connects to a Dialogflow V2 agent, such as a Google Home application. </p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>Details</h3>
+    <p>This node uses the <code>/dialogflow-server</code> route to connect with Dialogflow.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://dialogflow.com/">Dialoglfow console</a> - create and test Dialogflow agents</li>
+        <li><a href="https://actions-on-google.github.io/actions-on-google-nodejs/globals.html">Dialoglfow reference</a></li>
+        <li><a href="https://developers.google.com/actions/reference/nodejs/lib-v1-migration">Dialoglfow documentation</a></li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

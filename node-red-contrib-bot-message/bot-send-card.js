@@ -24,7 +24,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.repeat = (data)  => { input(node, data, config, data.reply) };
+        this.on('input', (data)  => { input(node, data, config, null)  });
     }
     RED.nodes.registerType("send-card", register, {});
 
@@ -110,20 +111,20 @@ const getButtons = (locale, config, data) => {
     return buttons;
 }
 
-const input = (node, data, config) => {
+const input = (node, data, config, reply) => {
     let convId = botmgr.getConvId(data)
 
     // Prepare the prompt
     if (config.prompt){
         botmgr.delayCallback(convId, (prompt) => {
             data.prompt = prompt
+            node.warn({ prompt: data})
             sendData(node, data, config)
         })
-
     }
 
     // Retrieve replies
-    let replies = buildReply(node, data, config);
+    let replies = reply || buildReply(node, data, config);
 
     if (!replies){ 
         sendData(node, data, config); 
@@ -132,6 +133,7 @@ const input = (node, data, config) => {
     
     // Emit reply message
     data.reply = replies;
+    data._replyid = node.id;
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
         helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
@@ -143,38 +145,51 @@ const input = (node, data, config) => {
 
 const buildReply = (node, data, config) => {
     let locale = botmgr.getLocale(data);
-
-    // Prepare speech
-    let speech = config.speechText ? marshall(locale, config.speechText, data, '') : config.speech;
-
     let reply = {
         "type"      : config.sendType,
-        "speech"    : speech,
         "prompt"    : config.prompt,
         "receipt"   : data._receipt
     };
 
+    // Simple event message
+    if (config.sendType === 'event'){
+        let event = { name : config.eventName  }
+        let value = config.eventValue;
+        if (!config.eventValueType || config.eventValueType === 'str'){
+            event.value = marshall(locale, value,  data, '');
+        }
+        else if (config.eventValueType === 'msg') {
+            event.value = helper.getByString(data, value);
+        }
+        else if (config.eventValueType === 'global') {
+            event.value = helper.getByString(node.context().global, value);
+        }
+        else if (config.eventValueType === 'json') {
+            event.value = JSON.parse(value);
+        }
+        reply.event = event;
+        return [ reply ]
+    }
+
+    // Prepare speech
+    reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
     delete data._receipt;
 
     // Simple text message
     if (config.sendType === 'text'){
-
         let text = marshall(locale, config.text, data, '');
-
         if (config.random){
             let txt = text.split('\n');
             text = txt[Math.round(Math.random() * (txt.length-1))]
         }
 
         reply.text = text;
-
+        if (reply.speech === undefined) reply.speech = text;
         return [ reply ]
-
     }
 
     // Simple media message
     if (config.sendType === 'media'){
-
         let media = config.media;
         if (!config.mediaType) media = marshall(locale, media,  data, '');
         else if (config.mediaType !== 'str') {
@@ -182,9 +197,9 @@ const buildReply = (node, data, config) => {
             media = helper.getByString(loc, media);
         }
 
-        reply.media = media
+        reply.media = media;
+        if (reply.speech === undefined) reply.speech = "";
         return [ reply ]
-
     }
 
     // Card "signin" message
@@ -209,7 +224,8 @@ const buildReply = (node, data, config) => {
         reply.title = signintitle;
         reply.url   = signinurl;
 
-         return [ reply ]
+        if (reply.speech === undefined) reply.speech = reply.text;
+        return [ reply ]
     }
 
 
@@ -226,6 +242,7 @@ const buildReply = (node, data, config) => {
             let txt = reply.quicktext.split('\n');
             reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
         }
+        if (reply.speech === undefined) reply.speech = reply.quicktext;
     } 
     else if (config.sendType === 'card') {
 
@@ -247,6 +264,7 @@ const buildReply = (node, data, config) => {
         reply.subtitle = marshall(locale, config.subtitle,  data, '');
         reply.subtext =  marshall(locale, config.subtext,   data, '');
         reply.attach =   attach;
+        if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
     }
     
     // Forward data without sending anything
@@ -270,7 +288,6 @@ const buildReply = (node, data, config) => {
 
     return carousel.length > 0 ? carousel : [ reply ];
 }
-
 
 const sendData = (node, data, config) => {
 

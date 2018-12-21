@@ -40,7 +40,7 @@
         outputs: 1,
         icon: "google.svg",
         align: "left",
-        paletteLabel: 'GSpeech',
+        paletteLabel: 'Speech',
         label: function() { return this.name || "Google Speech"; },
         oneditprepare: function() {
             if (!this.api) this.api = "stt";
@@ -207,95 +207,68 @@
 </script>
 
 <script type="text/x-red" data-help-name="google-speech-text">
-    <section class="help-section">
- <p>
-    Visit <a href=" https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig">this page</a> for more information about Speech-To-Text API.<br>
-    Visit <a href="https://cloud.google.com/text-to-speech/docs/reference/rest/v1beta1/text/synthesize">this page</a> for more information about Text-To-Speech API.
- </p>
 
- <h3>Speech to Text</h3>
- <ol> 
-     <h4>Input</h4>
-     <p>
-         The input should be a Google Cloud Storage URI that points to a file, audio bytes (base64-encoded string), or a path to a file.
-     </p>
-     <h4>Type</h4>
-     <p>
-         Input type.
-     </p>
-     <h4>Encoding</h4>
-     <p>
-         (enum) Possible values are: 'ENCODING_UNSPECIFIED', 'LINEAR16', 'FLAC', 'MULAW', 'AMR', 'AMR_WB', 'OGG_OPUS' or 'SPEEX_WITH_HEADER_BYTE'.
-     </p>
-     <h4>Sample rate</h4>
-     <p>
-        (number) Sample rate in Hertz of the audio data sent, in the range [8000-48000], where 16000 is optimal.
-     </p>
-     <h4>Language code</h4>
-     <p>
-         (string) The language (and optionally also the region) of the voice expressed as a BCP-47 language tag, e.g. "en-US".
-     </p>
-     <h4>Max alternatives</h4>
-     <p>
-         (number) Maximum number of recognition hypotheses to be returned, in the range [0-30].
-     </p>
-     <h4>Profanity filter</h4>
-     <p>
-        (boolean) If set to true, the server will attempt to filter out profanities, replacing all but the initial character in each filtered word with asterisks, e.g. "f***".
-     </p>
-     <h4>Speech contexts</h4>
-     <p>
-        (array of { "phrases": [ string ] } objects) A means to provide context to assist the speech recognition.
-     </p>
-     <h4>Word time offsets</h4>
-     <p>
-         (boolean) If true, the top result includes a list of words and the start and end time offsets (timestamps) for those words.
-     </p>
- </ol> 
+    <p>Processes Speech to Text (STT) or Text to Speech (TTS) with Google services.</p>
 
- <h3>Text to Speech</h3>
- <ol> 
-     <h4>Input</h4>
-     <p>
-         The input should be either a text or a SSML element. The node will detect SSML with the presence of '<speak>'. 
-     </p>
-     <h4>Voices</h4>
-     <p>
-         Check if you want to get all the available voices (for the given language code) in the response. 
-     </p>
-     <h4>Encoding</h4>
-     <p>
-         (enum) Possible values are: 'AUDIO_ENCODING_UNSPECIFIED', 'LINEAR16', 'MP3' or 'OGG_OPUS'.
-     </p>
-     <h4>Speaking rate</h4>
-     <p>
-         (number) Speaking rate/speed, in the range [0.25, 4.0], where 1.0 is the normal native speed, 2.0 is twice as fast, 0.5 is half as fast.
-     </p>
-     <h4>Pitch</h4>
-     <p>
-        (number) Speaking pitch, in the range [-20.0, 20.0], where 20 means increase 20 semitones and -20 means decrease 20 semitones from the original pitch.
-     </p>
-     <h4>Volume gain</h4>
-     <p>
-        (number) Volume gain (in dB) of the normal native volume supported by the specific voice, in the range [-96.0, 16.0].
-     </p>
-     <h4>Sample rate</h4>
-     <p>
-        (number) The synthesis sample rate (in hertz) for this audio.
-     </p>
-     <h4>Language code</h4>
-     <p>
-         (string) The language (and optionally also the region) of the voice expressed as a BCP-47 language tag, e.g. "en-US".
-     </p>
-     <h4>Voice name</h4>
-     <p>
-         (string) The name of the voice.
-     </p>
-     <h4>Voice gender</h4>
-     <p>
-        (enum) Possible values are: 'SSML_VOICE_GENDER_UNSPECIFIED', 'MALE', 'FEMALE' or 'NEUTRAL'.
-     </p>
- </ol> 
-</section>
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Credentials <span class="property-type">config</span></dt>
+        <dd>informations from a Google Service Account</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p><b>TTS</b> needs at least the voice information. The ouput will be an object containing an audio buffer. </p>
+    <p>TTS properties</p>
+    <dl class="message-properties">
+        <dt>Input<span class="property-type">string</span></dt>
+        <dd>should be either a text or a SSML element. The node will detect SSML with the presence of '<speak>'</dd>
+        <dt>Voices</dt>
+        <dd>check if you want to get all the available voices (for the given language code) in the response</dd>
+        <dt>Encoding<span class="property-type">string</span></dt>
+        <dd>possible values are 'AUDIO_ENCODING_UNSPECIFIED', 'LINEAR16', 'MP3' or 'OGG_OPUS'</dd>
+        <dt>Speaking rate<span class="property-type">number</span></dt>
+        <dd>rate/speed, in the range [0.25, 4.0], where 1.0 is the normal native speed, 2.0 is twice as fast, 0.5 is half as fast</dd>
+        <dt>Pitch <span class="property-type">number</span></dt>
+        <dd>speaking pitch, in the range [-20.0, 20.0], where 20 means increase 20 semitones and -20 means decrease 20 semitones from the original pitch</dd>
+        <dt>Volume gain <span class="property-type">number</span></dt>
+        <dd>volume gain (in dB) of the normal native volume supported by the specific voice, in the range [-96.0, 16.0]</dd>
+        <dt>Sample rate <span class="property-type">number</span></dt>
+        <dd>the synthesis sample rate (in hertz) for this audio</dd>
+        <dt>Language code <span class="property-type">string</span></dt>
+        <dd>the language (and optionally also the region) of the voice expressed as a BCP-47 language tag, e.g. "en-US"</dd>
+        <dt>Voice name <span class="property-type">string</span></dt>
+        <dd>the name of the voice</dd>
+        <dt>Voice gender <span class="property-type">string</span></dt>
+        <dd>possible values are 'SSML_VOICE_GENDER_UNSPECIFIED', 'MALE', 'FEMALE' or 'NEUTRAL'</dd>
+    </dl> 
+    <p><b>STT</b> needs at least a rate and a language code. The required <i>Input</i> depends on the given type: a Google Cloud Storage URI that points to a file, audio bytes (base64-encoded string), or a path to a file</p>
+    <p>STT properties</p>
+    <dl class="message-properties">
+        <dt>Input<span class="property-type">string</span></dt>
+        <dd>should be a Google Cloud Storage URI that points to a file, audio bytes (base64-encoded string), or a path to a file</dd>
+        <dt>Type<span class="property-type">string</span></dt>
+        <dd>the corresponding input type</dd>
+        <dt>Encoding<span class="property-type">string</span></dt>
+        <dd>possible values are 'ENCODING_UNSPECIFIED', 'LINEAR16', 'FLAC', 'MULAW', 'AMR', 'AMR_WB', 'OGG_OPUS' or 'SPEEX_WITH_HEADER_BYTE'</dd>
+        <dt>Sample rate <span class="property-type">number</span></dt>
+        <dd>sample rate in Hertz of the audio data sent, in the range [8000-48000], where 16000 is optimal</dd>
+        <dt>Language code <span class="property-type">string</span></dt>
+        <dd>the language (and optionally also the region) of the voice expressed as a BCP-47 language tag, e.g. "en-US"</dd>
+        <dt>Max alternatives <span class="property-type">number</span></dt>
+        <dd>maximum number of recognition hypotheses to be returned, in the range [0-30]</dd>
+        <dt>Profanity filter <span class="property-type">boolean</span></dt>
+        <dd>if set to true, the server will attempt to filter out profanities, replacing all but the initial character in each filtered word with asterisks, e.g. "f***"</dd>
+        <dt>Speech contexts <span class="property-type">array</span></dt>
+        <dd>a means to provide context to assist the speech recognition - array of { "phrases": [ string ] } objects</dd>
+        <dt>Word time offsets <span class="property-type">boolean</span></dt>
+        <dd>if true, the top result includes a list of words and the start and end time offsets (timestamps) for those words</dd>
+    </dl> 
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig">Speech-To-Text</a> - documentation</li>
+        <li><a href="https://cloud.google.com/text-to-speech/docs/reference/rest/v1beta1/text/synthesize">Text-To-Speech</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
 </script>

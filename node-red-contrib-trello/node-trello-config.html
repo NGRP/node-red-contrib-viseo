@@ -10,6 +10,11 @@
         },
         label: function() {
             return this.name || "Trello API config";
+        },
+        oneditprepare: function() {
+            $("#node-config-input-name").typedInput({ default: 'str', types: ['str'], type: "str" });
+            $("#node-config-input-key").typedInput({ default: 'str', types: ['str'], type: "str" });
+            $("#node-config-input-token").typedInput({ default: 'str', types: ['str'], type: "str" });
         }
     });
 </script>
@@ -17,38 +22,34 @@
 <script type="text/x-red" data-template-name="trello-config">
     <div class="form-row">
         <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="">
+        <input type="text" id="node-config-input-name" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-config-input-key"><i class="fa fa-lock"></i> Key</label>
-        <input type="text" id="node-config-input-key" placeholder="">
+        <label for="node-config-input-key"><i class="fa fa-lock"></i> ID</label>
+        <input type="text" id="node-config-input-key" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-config-input-key"><i class="fa fa-lock"></i> Token</label>
-        <input type="text" id="node-config-input-token" placeholder="">
+        <label for="node-config-input-token"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-config-input-token" style="width:70%;" placeholder="">
     </div>
 </script>
 
+<script type="text/x-red" data-help-name="trello-config">
+    <p>Configuration to access Trello API.</p>
 
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>ID <span class="property-type">string</span></dt>
+        <dd>User ID or key, available <a href="https://trello.com/app-key" target="_new">here</a>.</dd>
+        <dt>Token <span class="property-type">string</span></dt>
+        <dd>A token (see <a href="https://developers.trello.com/page/authorization" target="_new">Authorization</a>, or generate one).</dd>
+    </dl>
 
-<script type="text/javascript">
-    RED.nodes.registerType('trello-list-id',{
-        category: 'config',
-        defaults: {
-            name: { value: undefined },
-            item: { value: undefined },
-        },
-        label: function() { return this.name || "Trello List"; }
-    });
-</script>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.trello.com/">Trello API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
-<script type="text/x-red" data-template-name="trello-list-id">
-    <div class="form-row">
-        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
-        <input type="text" id="node-config-input-name" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-item"><i class="icon-tag"></i> Id</label>
-        <input type="text" id="node-config-input-item" placeholder="">
-    </div>
 </script>

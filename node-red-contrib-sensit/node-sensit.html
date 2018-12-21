@@ -15,7 +15,14 @@
         icon: "cloud.svg",
         align: "left",
         paletteLabel: "Sensit",
-        label: function() { return this.name || "Sensit"; }
+        label: function() { return this.name || "Sensit"; },
+        oneditprepare: function() {
+            $("#node-input-token").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-device").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-sensor").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-startdate").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-enddate").typedInput({ default: 'str', types: ['str'], type: 'str' });
+        },
     });
 </script>
 
@@ -25,27 +32,32 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
-        <label for="node-input-token"><i class="icon-tag"></i> Token</label>
-        <input type="text" id="node-input-token" placeholder="">
+        <label for="node-input-token"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-input-token" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-input-device"><i class="icon-tag"></i> Device Id</label>
-        <input type="text" id="node-input-device" placeholder="">
+        <label for="node-input-device"><i class="fa fa-bolt"></i> Device Id</label>
+        <input type="text" id="node-input-device" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
-        <label for="node-input-sensor"><i class="icon-tag"></i> Sensor Id</label>
-        <input type="text" id="node-input-sensor" placeholder="">
+        <label for="node-input-sensor"><i class="fa fa-microchip"></i> Sensor Id</label>
+        <input type="text" id="node-input-sensor" style="width:70%;" placeholder="">
     </div>
 	<div class="form-row">
-        <label for="node-input-startdate"><i class="icon-tag"></i> Date after (optional)</label>
-        <input type="text" id="node-input-startdate" placeholder="Format 2017-01-17T06:03Z">
+        <label for="node-input-startdate"><i class="fa fa-calendar"></i> Date after</label>
+        <input type="text" id="node-input-startdate" style="width:70%;" placeholder="Format 2017-01-17T06:03Z">
     </div>
 	<div class="form-row">
-        <label for="node-input-enddate"><i class="icon-tag"></i> Date before (optional)</label>
-        <input type="text" id="node-input-enddate" placeholder="Format 2017-01-17T06:03Z">
+        <label for="node-input-enddate"><i class="fa fa-calendar"></i> Date before</label>
+        <input type="text" id="node-input-enddate" style="width:70%;" placeholder="Format 2017-01-17T06:03Z">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="sensit">
     <p>Query Sensit (Sigfox) API</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 </script>

@@ -1,0 +1,88 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-log-events',{
+        category: 'VISEO_LOG',
+        color: '#3FADB5',
+        defaults: { 
+            name:       { value: undefined },
+            userId:     { value: 'user.id' },
+            userIdType: { value: 'msg' },
+            log:        { value: undefined },
+            logType:    { value: 'msg' }
+        },
+        credentials: {
+            pageId:     { type: "text" },
+            appId:      { type: "text" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "facebook.svg",
+        align: "right",
+        paletteLabel: 'to Analytics',
+        label: function() { return this.name || "to Analytics"; },
+        oneditprepare: function () {
+            $("#node-input-pageId").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-appId").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+            $("#node-input-userId").typedInput({ default: 'msg', types: ['msg','str'], typeField: $("#node-input-userIdType") });
+            $("#node-input-log").typedInput({ default: 'msg', types: ['msg','str','json'], typeField: $("#node-input-logType") });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="facebook-log-events">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Facebook Messenger settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-pageId"><i class="fa fa-globe"></i> Page ID</label>
+        <input type="text" id="node-input-pageId" placeholder="" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-appId"><i class="fa fa-globe"></i> App ID</label>
+        <input type="text" id="node-input-appId" placeholder="" style="width:70%;">
+    </div>
+
+    <br>
+    <b>Facebook Messenger inputs</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-userId"><i class="fa fa-user"></i> User ID</label>
+        <input type="text" id="node-input-userId" placeholder="user.id" style="width:70%;">
+        <input type="hidden" id="node-input-userIdType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-log"><i class="fa fa-bars"></i> Event Log</label>
+        <input type="text" id="node-input-log" placeholder="payload" style="width:70%;">
+        <input type="hidden" id="node-input-logType">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="facebook-log-events">
+    <p>Send log data to Facebook Analytics.</p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Page ID <span class="property-type">string</span></dt>
+        <dd>Facebook page ID</dd>
+        <dt>App ID <span class="property-type">string</span></dt>
+        <dd>Facebook developers application ID</dd>
+        <dt>User ID <span class="property-type">string</span></dt>
+        <dd>where to get the user ID</dd>
+        <dt>Event log <span class="property-type">object</span></dt>
+        <dd>object with data (keys and values) to log</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.facebook.com/docs/analytics/quickstart-list/bots-for-messenger">Facebook Analytics</a> - quickstart for bots</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

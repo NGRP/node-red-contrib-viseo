@@ -1,6 +1,6 @@
 # Node-RED
 
-A Node-RED node to search keys or values in complex objects.
+Searches keys or values in complex objects.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
@@ -37,9 +37,13 @@ Please report unacceptable behavior to any of the project's core team.
 
 This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
+- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
-
+- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
+- Klervi Menoret [@klervix](https://twitter.com/klervix)
+- To-Thi Hoang 
 
 ## Copyright and license
 
-Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2012-2019 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.

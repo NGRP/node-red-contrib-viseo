@@ -5,6 +5,8 @@ const restify = require('restify');
 const builder = require('botbuilder');
 
 let bot;
+let verbose = CONFIG.server.verbose;
+
 const route = (callback, options, server) => {
     let opt = options || {};
 
@@ -24,7 +26,13 @@ const route = (callback, options, server) => {
         mscfg.appPassword = CONFIG.microsoft.bot.appPassword
     }
 
-    let connector = new builder.ChatConnector(mscfg);
+    let connector = new builder.ChatConnector(mscfg); 
+    /*
+    connector.getAccessToken((err, accessToken) => {
+        console.log('AccessToken',err, accessToken)
+    })*/
+    
+    
     server.post('/api/v1/messages', connector.listen());
     bot = bindConnector(connector, options);
 
@@ -32,7 +40,6 @@ const route = (callback, options, server) => {
 };
 
 const bindConnector = exports.bindConnector = (connector, options) => {
-
     let bot = new builder.UniversalBot(connector, {
         persistUserData: false,
         persistConversationData: false,
@@ -51,8 +58,16 @@ const bindConnector = exports.bindConnector = (connector, options) => {
     bot.use(builder.Middleware.dialogVersion({ version: 1.0, resetCommand: /^reset/i }));
 
     // Logging Middleware
-    bot.on('incoming', (msg) => { info("Message incoming:" + JSON.stringify(msg) ); })
-    bot.on('send',     (msg) => { info("Message outgoing:" + JSON.stringify(msg)); })
+    if (verbose) {
+        bot.on('incoming', (msg) => { 
+            if (!msg.address || !msg.address.serviceUrl) return;
+            info("Message incoming:" + JSON.stringify(msg) );
+        });
+        bot.on('send',     (msg) => { 
+            if (!msg.address || !msg.address.serviceUrl) return;
+            info("Message outgoing:" + JSON.stringify(msg));
+        });
+    }
     bot.on('error',    (err) => { console.log("Message error:", err); }) 
 
     return bot;
@@ -60,10 +75,11 @@ const bindConnector = exports.bindConnector = (connector, options) => {
 
 let server;
 const createServer = (callback, options, RED) => {
+
     let opt = options    || {};
     let srv = opt.port ? opt : CONFIG.server;
     if (!srv || !srv.port){
-        console.log('Missing server configuration, fallback on Node-RED server')
+        if (verbose) info('Missing server configuration, fallback on Node-RED server')
         return callback(undefined, RED.httpNode); 
     }
 
@@ -88,11 +104,11 @@ const createServer = (callback, options, RED) => {
 
     // Start listening on port
     server.listen(opt.port || CONFIG.server.port, ()  => {
-        info(server.name + ' listening to ' + server.url);
+        if (verbose) info('Server "' + server.name + '" listening to ' + server.url);
 
         // Serve static files
         let root = process.cwd() + '/webapp/';
-        info("Serve static files on "+ root);
+        if (verbose) info("Serve static files on "+ root);
         server.get(/\/static\/?.*/, restify.serveStatic({
             directory: root,
             default: 'index.html',
@@ -112,6 +128,7 @@ exports.start = (callback, options, RED) => {
 
 exports.stop  = () => {
     if (undefined == server) return;
-    info('closing HTTP server');
+
+    if (verbose) info('Closing HTTP server');
     server.close();
 }

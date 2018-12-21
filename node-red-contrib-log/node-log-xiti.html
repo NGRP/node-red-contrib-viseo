@@ -5,14 +5,21 @@
         defaults: { 
             name:    { value: undefined },
             siteId:  { value: undefined },
-            pageId:  { value: undefined }
+            pageId:  { value: undefined },
+            siteIdType: { value: 'msg' },
+            pageIdType: { value: 'msg' }
         },
         inputs:  1,
         outputs: 1,
         icon: "chart.svg",
         align: "right",
         paletteLabel: 'to XiTi',
-        label: function() { return this.name || "to XiTi"; }
+        label: function() { return this.name || "to XiTi"; },
+        oneditprepare: function() {
+            $("#node-input-siteId").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-siteIdType")  });
+            $("#node-input-pageId").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-pageIdType")  });
+        },
+        oneditsave: function(){}
     });
 </script>
 
@@ -23,20 +30,22 @@
     </div>
     <div class="form-row">
         <label for="node-input-siteId"><i class="icon-tag"></i> Site Id</label>
-        <input type="text" id="node-input-siteId" placeholder="XiTi Site Id">
+        <input type="text" id="node-input-siteId" style="width:70%;" placeholder="XiTi Site Id">
+        <input type="hidden" id="node-input-siteIdType">
     </div>
     <div class="form-row">
         <label for="node-input-pageId"><i class="icon-tag"></i> Page Id</label>
-        <input type="text" id="node-input-pageId" placeholder="A Page Flag">
+        <input type="text" id="node-input-pageId" style="width:70%;" placeholder="A Page Flag">
+        <input type="hidden" id="node-input-pageIdType">
     </div>
 </script>
 
 <script type="text/x-red" data-help-name="log-xiti">
-    Send log data to XiTi
+    <p>[<i>Not tested yet</i>] Sends log data to XiTi</p>
 
-    <h3>input</h3>
-    A string object to log. It is defined in pageId field
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
 
-    <h3>Output</h3>
-    The previous Input data
 </script>

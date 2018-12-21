@@ -1,6 +1,6 @@
 # Node-RED
 
-A node to connect to [WeChat](http://wechat.com/) messaging app.
+A **bot server** node to connect to a WeChat account.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies.
 
@@ -41,7 +41,7 @@ This project is a creation of [VISEO](http://www.viseo.com) Technology.
 - Klervi Menoret [@klervix](https://twitter.com/klervix)
 - To-Thi Hoang 
 
-
 ## Copyright and license
 
-Copyright 2016-2017 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com) under the Apache 2.0 license.
+Copyright 2012-2019 [SARAH](http://sarah.encausse.net) under the Apache 2.0 license.

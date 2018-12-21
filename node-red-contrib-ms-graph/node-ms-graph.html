@@ -33,7 +33,7 @@
         outputs: 1,
         icon: "microsoft.svg",
         align: "left",
-        paletteLabel: 'MS Graph',
+        paletteLabel: 'Graph',
         label: function() { 
             if (this.name !== undefined && this.name !== "") return this.name;
             else return "Graph " + this.action;
@@ -55,6 +55,7 @@
 
                 let value = $(this).val();
                 if (value === "auth")  $(".auth").show();
+                if (value === "unauth")  $(".unauth").show();
                 if (value.match(/user|rooms/))   $(".api").show();
                 if (value.match(/password/))  {
                     $(".password").show();
@@ -92,6 +93,7 @@
         <label for="node-input-action"><i class="fa fa-navicon"></i> Action</label>
         <select id="node-input-action" style="width:70%;">
             <option value="auth">Get auth URL</option>
+            <option value="unauth">Get end session URL</option>
             <option value="token-code">Get token with code</option>
             <option value="token-password">Get token with username/password</option>
             <option value="token-code-refresh">Get token with code refresh</option>
@@ -116,13 +118,13 @@
         <input type="hidden" id="node-input-passwordType">
     </div>
 
-    <div class="form-row auth code">
+    <div class="form-row auth unauth code">
         <label for="node-input-redirect" style="margin-left:15px; width: 85px; color:#848484"> Redirect</label>
         <input type="text" id="node-input-redirect" style="width:70%;">
         <input type="hidden" id="node-input-redirectType">
     </div>
 
-    <div class="form-row auth code">
+    <div class="form-row auth unauth code">
         <label for="node-input-state" style="margin-left:15px; width: 85px; color:#848484"> State</label>
         <input type="text" id="node-input-state" style="width:70%;">
         <input type="hidden" id="node-input-stateType">
@@ -140,7 +142,7 @@
         <input type="hidden" id="node-input-refreshType">
     </div>
 
-    <div class="form-row auth password code">
+    <div class="form-row auth unauth password code">
         <label for="node-input-authority" style="margin-left:15px; width: 85px; color:#848484"> Authority</label>
         <input type="text" id="node-input-authority" style="width:70%;" placeholder="https://login.microsoftonline.com/foo.com">
         <input type="hidden" id="node-input-authorityType">
@@ -175,18 +177,36 @@
 </style>
 
 <script type="text/x-red" data-help-name="ms-graph">
-    Handle various step for OAuth2 Authentication with Microsoft Graph.
-    <h2>Fields</h2>
+
+    <p>Handles various step for OAuth2 Authentication with Microsoft Graph.</p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Config <span class="property-type">config</span></dt>
+        <dd>credentials for Microsoft Graph</dd>
+        <dt>Redirect <span class="property-type">string</span></dt>
+        <dd>the redirect URL after validation (must be httpS)</dd>
+        <dt>Scope <span class="property-type">string</span></dt>
+        <dd>the authorized credentials separated with comas (see references)</dd>
+        <dt>State <span class="property-type">string</span></dt>
+        <dd>some data to stick with the request</dd>
+        <dt>Authority <span class="property-type">string</span></dt>
+        <dd>the main URL to call with the tenant, ex: <i>https://login.microsoftonline.com/{tenant}</i></dd>
+        <dt>Code <span class="property-type">string</span></dt>
+        <dd>code or property to retrieve or store it</dd>
+        <dt>Refresh <span class="property-type">string</span></dt>
+        <dd>refresh token or property to retrieve or store it</dd>
+        <dt>Access <span class="property-type">string</span></dt>
+        <dd>access token or property to retrieve or store it</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
     <ul>
-        <li><b>name:</b> can be used to override the default name of the node.</li>
-        <li><b>appId:</b> the microsoft application id</li>
-        <li><b>appSecret:</b> the microsoft application secret</li>
-        <li><b>redirect:</b> the redirect URL after validation (MUST be httpS)</li>
-        <li><b>scope:</b> the authorized credential</li> https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference separated with comas
-        <li><b>state:</b> some data to stick with the request</li>
-        <li><b>url:</b> property to store the generated URL)</li>
-        <li><b>code:</b> code or property to retrieve or store it</li>
-        <li><b>refresh:</b> refresh token or property to retrieve or store it</li>
-        <li><b>access:</b> access token or property to retrieve or store it</li>
+        <li><a href="https://docs.microsoft.com/en-us/graph/overview">Microsoft Graph</a> - overview</li>
+        <li><a href="https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference">Microsoft Graph</a> - permissions</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
 </script>

@@ -10,8 +10,11 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.facekey = RED.nodes.getNode(config.facekey);
-        this.visionkey = RED.nodes.getNode(config.visionkey);
+
+        node.status({fill:"red", shape:"ring", text: 'Missing credential'});
+        this.facecreds = RED.nodes.getCredentials(config.facekey);
+        if (this.facecreds) node.status({});
+        
         this.on('input', (data)  => { input(node, data, config)  });
     }
     RED.nodes.registerType("vision-image-faces", register, {});
@@ -19,120 +22,98 @@ module.exports = function(RED) {
 
 async function input(node, data, config){
 
-    let getceleb = config.celeb,
-        faceid = config.faceid,
-        landmarks = config.landmarks,
-        attributes = config.attributes,
-        facekey = node.facekey,
-        visionkey = node.visionkey;
+    let facecreds = node.facecreds;
+    let facekey, faceregion, visionkey, visionregion;
+    let params = config.parameters;
+    let action = config.action;
+    let api = config.request.split('_');
 
     // Keys
-    try { facekey =  facekey.key; }
-    catch(err) { return node.error("ERROR: MS Face API key is required to get celebrities information."); }
-
-    if (getceleb === true) {
-        try { visionkey = visionkey.key || undefined; }
-        catch(err) { return node.error("ERROR: MS Vision API key is required to get celebrities information."); }
-    } 
-
-    // Image
-    let imageType = config.imageType || 'msg',
-        image = config.image || 'message.attachments[0].contentUrl';
-
-    if (imageType !== 'str') {
-        let loc = (imageType === 'global') ? node.context().global : data;
-        try         { image = helper.getByString(loc, image); }
-        catch(err)  { return node.error('ERROR: Can not find the image.'); }
+    try { 
+        facekey = facecreds.key;
+        faceregion = facecreds.region || "westus";
+    }
+    catch(err) { 
+        return node.error("Missing credentials");
     }
 
     // Parameters
-    let PROPERTIES = ['age', 'gender', 'smile', 'facialHair', 'headPose', 'glasses', 'emotion', 'hair', 'makeup', 'accessories', 'occlusion', 'blur', 'exposure', 'noise' ];
-
-    let parameters = [];
-    if (attributes) parameters = PROPERTIES;
-    else {
-        for (let item of PROPERTIES) if (config[item]) parameters.push(item);
-    }
-
-    // Process
-    try { 
-        persons = JSON.parse( await getPersons( facekey, image, faceid, landmarks, parameters));
-    
-        if (getceleb === true) {
-            let celebrities = JSON.parse( await getCeleb(visionkey, image)); 
-                celebrities = celebrities.result.celebrities;
-
-            for (person of persons) { person.celebrity = { name: 'unknown'}};
-                
-            if ((celebrities !== undefined) && (celebrities.length > 0)) {
-                for (let celebrity of celebrities) {
-                    if (celebrity.confidence > 0.4) {
-                        let celebName = celebrity.name.toLowerCase();
-                        let celebArray = celebName.split(/(\s+)/);
-                            celebName = "";                   
-                        for (word of celebArray) celebName += word[0].toUpperCase() + word.substring(1);
-                        
-                        for (person of persons) {
-                            if ((person.faceRectangle.top -10 < celebrity.faceRectangle.top && person.faceRectangle.top +10 > celebrity.faceRectangle.top) &&
-                                (person.faceRectangle.left -10 < celebrity.faceRectangle.left && person.faceRectangle.left +10 > celebrity.faceRectangle.left))
-                            {
-                                person.celebrity = { name: celebName, confidence: celebrity.confidence};
-                            }
-                        }
-                    }   
-                }
-            }
-        }  
-        data.payload = persons;
-        return node.send(data);
-    }
-    catch(err) { return node.error(err); }
-}
-
-async function getCeleb (apiKey, image) {
-    let req = {
-        uri: 'https://westus.api.cognitive.microsoft.com/vision/v1.0/models/celebrities/analyze',
-        method: 'POST',
-        body: image,
-        headers: {  
-            'Content-type' : 'application/json',
-            'Ocp-Apim-Subscription-Key': apiKey
+    let parameters = {};
+    let endUrl = api[1];
+    for (let par of params) {
+        let value = (config[par + 'Type'] === "str") ? config[par] : helper.getByString(data, config[par]);
+        if (value) {
+            let label = par[0].toLowerCase() + par.substring(1);
+            parameters[label] = value;
         }
-    };
-
-    if (typeof image === 'string') {
-        if (image.indexOf('http') != -1) req.body =  JSON.stringify({'url': image });
-        else req.body = fs.readFileSync(image);
-    }   else req.headers['Content-type'] = 'application/octet-stream';
-
-    return request(req);
-}
-
-async function getPersons (apiKey, image, faceid, landmarks, parameters) {
-
-    let url = 'https://westus.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=';
-    url += (faceid) ? 'true' : 'false';
-    url += (landmarks) ? '&returnFaceLandmarks=true' : '&returnFaceLandmarks=false';
-    
-    if (parameters.length > 0) {
-        url += '&returnFaceAttributes=';
-        for (let attribute of parameters) url += (attribute + ',');
-        url = url.substring(0, url.length - 1);
     }
+
+    endUrl = endUrl.replace(/{faceListId}/, function(a) {
+        let value = parameters.faceListId;
+        delete parameters.faceListId;
+        return value;
+    })
+    endUrl = endUrl.replace(/{personGroupId}/, function(a) {
+        let value = parameters.personGroupId;
+        delete parameters.personGroupId;
+        return value;
+    })
+    endUrl = endUrl.replace(/{personId}/, function(a) {
+        let value = parameters.personId;
+        delete parameters.personId;
+        return value;
+    })
+    endUrl = endUrl.replace(/{persistedFaceId}/, function(a) {
+        let value = parameters.persistedFaceId;
+        delete parameters.persistedFaceId;
+        return value;
+    })
 
     let req = {
-        uri: url,
-        method: 'POST',
-        body: image,
+        method: api[0].toUpperCase(),
+        uri: 'https://' + faceregion + '.api.cognitive.microsoft.com/face/v1.0/' + endUrl,
         headers: { 
-            'Ocp-Apim-Subscription-Key': apiKey,
-            'Content-Type': 'application/json' }
+            'Ocp-Apim-Subscription-Key': facekey
+        }
     }
 
-    if (typeof image === 'string') {
-        if (image.indexOf('http') != -1) req.body =  JSON.stringify({'url': image });
-        else req.body = fs.readFileSync(image);
-    }   else req.headers['Content-type'] = 'application/octet-stream';
 
-    return request(req);
+    if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") {
+        if (parameters.image) {
+            if (typeof parameters.image === 'string') req.body =  JSON.stringify({'url': parameters.image });
+            else {
+                req.headers['Content-Type'] = 'application/octet-stream';
+                req.body = parameters.image;
+            }
+            delete parameters.image;
+            req.uri += buildEndUrl(parameters);
+        } 
+        else {
+            req.json = true;
+            req.body = parameters;
+        }
+    }
+
+    request(req)
+    .then( function (result) {
+        if (typeof result === "string" && (result[0] === '{' || result[0] === '[')) result = JSON.parse(result);
+        helper.setByString(data, config.output || "payload", result);
+        return node.send(data);
+    })
+    .catch( function (err) { 
+        node.warn(req)
+        return node.error(err); 
+    });
+    
+}
+
+function buildEndUrl(parameters) {
+    let url = "";
+    let keys = Object.keys(parameters);
+
+    for (let i=0; i<keys.length; i++) {
+        if (i===0) url += '?' + keys[0] + '=' + parameters[keys[0]];
+        else url += '&' + keys[i] + '=' + parameters[keys[i]];
+    }
+    return url;
 }

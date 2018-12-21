@@ -1,0 +1,187 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-speech-text',{
+        category: 'VISEO_SPEECH',
+        color: '#3FADB5',
+        defaults: { 
+            name:        { value: undefined },
+            key:         { value: undefined, required: true, type: 'ms-config'},
+            api:         { value: 'stt'},
+            input:       { value: undefined },
+            inputType:   { value: 'msg'},
+            output:      { value: 'payload' },
+            token:          { value: 'msg'},
+            tokenType:      { value: undefined },
+            language:       { value: undefined },
+            languageType:   { value: 'str'},
+            contentType:        { value: undefined },
+            contentTypeType:    { value: 'str'},
+            region:             { value: undefined },
+            regionType:         { value: 'str'},
+            userAgent:          { value: undefined },
+            userAgentType:      { value: 'str'},
+            outputFormat:       { value: undefined },
+            outputFormatType:   { value: 'str'}
+        },
+        inputs:  1,
+        outputs: 2,
+        icon: "microsoft.svg",
+        align: "left",
+        paletteLabel: 'Speech',
+        label: function() { return this.name || "Speech"; },
+        outputLabels: ["standard output", "error output"],
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types:['str'], type: 'str' });
+            $("#node-input-output").typedInput({ default: 'msg', types:['msg'], type: 'msg' });
+            $("#node-input-input").typedInput({ default: 'msg', types: ['msg', 'str'], typeField: $("#node-input-inputType") });
+            $("#node-input-token").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-tokenType") });
+            $("#node-input-language").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-languageType") });
+            $("#node-input-contentType").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-contentTypeType") });
+            $("#node-input-region").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-regionType") });
+            $("#node-input-userAgent").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-userAgentType") });
+            $("#node-input-outputFormat").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-outputFormatType") });
+
+            $("#node-input-api").change( function() {
+                $(".stt, .tts").hide();
+                let $inputs = $("." + ($(this).val() || 'tts'));
+                $inputs.show();
+                $inputs.find('input[type=text]').typedInput('show');
+            })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-speech-text">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Speech API settings </b>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-key"><i class="fa fa-lock"></i> API key</label>
+        <input type="text" id="node-input-key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-api"><i class="fa fa-navicon"></i> API</label>
+        <select id="node-input-api" style="width:70%;">
+            <option value="tts">Text to speech</option>
+            <option value="stt">Speech to text</option>
+            <option value="cstt" disabled>Custom speech to text</option>
+        </select>
+    </div>
+
+    <br>
+    <b>Request parameters </b>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-token" style="margin-left:15px; width: 85px; color:#848484"> Token</label>
+        <input type="text" id="node-input-token" style="width: 70%" placeholder="Leave empty to get a new one">
+        <input type="hidden" id="node-input-tokenType">
+    </div>
+
+    <div class="form-row stt">
+        <label for="node-input-language" style="margin-left:15px; width: 85px; color:#848484"> Language</label>
+        <input type="text" id="node-input-language" style="width: 70%" placeholder="fr-FR">
+        <input type="hidden" id="node-input-languageType">
+    </div>
+    <div class="form-row stt">
+        <label for="node-input-contentType" style="margin-left:15px; width: 85px; color:#848484"> ContentType</label>
+        <input type="text" id="node-input-contentType" style="width: 70%" placeholder="audio/wav; codec=audio/pcm; samplerate=16000">
+        <input type="hidden" id="node-input-contentTypeType">
+    </div>
+
+    <div class="form-row tts">
+        <label for="node-input-region" style="margin-left:15px; width: 85px; color:#848484"> Region</label>
+        <input type="text" id="node-input-region" style="width: 70%" placeholder="westus">
+        <input type="hidden" id="node-input-regionType">
+    </div>
+
+    <div class="form-row tts">
+        <label for="node-input-userAgent" style="margin-left:15px; width: 85px; color:#848484"> User-Agent</label>
+        <input type="text" id="node-input-userAgent" style="width: 70%" placeholder="">
+        <input type="hidden" id="node-input-userAgentType">
+    </div>
+
+    <div class="form-row tts">
+        <label for="node-input-outputFormat" style="margin-left:15px; width: 85px; color:#848484"> Format</label>
+        <input type="text" id="node-input-outputFormat" style="width: 70%" placeholder="ssml-16khz-16bit-mono-tts">
+        <input type="hidden" id="node-input-outputFormatType">
+    </div>
+
+    <div style="margin-left: 15px; margin-right: 0px; width: 85px; height: 1px; background-color: lightgrey; display:inline-block;"></div><!--
+    --><div style="margin-left: 0px;  margin-right: 0px; width: 70%;  height: 1px; background-color: lightgrey; display:inline-block;"></div>
+    <br><br>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>  
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="ms-speech-text">
+
+    <p>Processes Speech to Text (STT) or Text to Speech (TTS) with Microsoft Cognitive services.</p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>API key <span class="property-type">config</span></dt>
+        <dd>key from Azure Portal for Microsoft Speech or Bing Speech</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p>For <b>TTS</b>, the ouput will be an object containing an audio buffer. </p>
+    <p>TTS properties</p>
+    <dl class="message-properties">
+        <dt>Input<span class="property-type">string</span></dt>
+        <dd>should be a SSML tag string</dd>
+        <dt>Token<span class="property-type">string</span></dt>
+        <dd>an access token, leave empty to get a new one</dd>
+        <dt>Region<span class="property-type">string</span></dt>
+        <dd>the region specified in the Azure Portal</dd>
+        <dt>User-Agent<span class="property-type">string</span></dt>
+        <dd>the service label</dd>
+        <dt>Format<span class="property-type">string</span></dt>
+        <dd>output audio format, such as <i>riff-16khz-16bit-mono-pcm</i></dd>
+    </dl>
+    <p>For <b>STT</b>, the ouput will be an object containing the text. </p>
+    <p>STT properties</p>
+    <dl class="message-properties">
+        <dt>Input<span class="property-type">string</span></dt>
+        <dd>should be an audio buffer</dd>
+        <dt>Token<span class="property-type">string</span></dt>
+        <dd>an access token, leave empty to get a new one</dd>
+        <dt>Language<span class="property-type">string</span></dt>
+        <dd>the language code, such as <i>fr-FR</i></dd>
+        <dt>ContentType<span class="property-type">string</span></dt>
+        <dd>the input format, such as <i>audio/wav; codec=audio/pcm; samplerate=16000</i></dd>
+    </dl>
+    
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/en-us/azure/cognitive-services/speech/api-reference-rest/bingvoiceoutput">Speech</a> - documentation</li>
+        <li><a href="https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/rest-apis#speech-to-text">Speech</a> - STT documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>
