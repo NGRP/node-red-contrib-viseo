@@ -24,7 +24,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        start(RED, node, config);
+        this.repeat = (data)  => { input(node, data, config, data.reply) };
         this.on('input', (data)  => { input(node, data, config, null)  });
     }
     RED.nodes.registerType("send-card", register, {});
@@ -34,28 +34,6 @@ module.exports = function(RED) {
         return;
     }
 }
-
-let REPEAT_HANDLER = {};
-const start = (RED, node, config) => {
-
-    REPEAT_HANDLER[node.id] = (n, d, c) => {
-        try { 
-            if (!d || !d._replyid || !d.reply) return;
-            if (d._replyid === node.id) {
-                let reply = d.reply;
-                delete d.reply;
-                input(node, d, config, reply);
-            }
-        } 
-        catch (ex){ 
-            console.log(ex);
-        }
-    };
-
-    helper.listenEvent('repeat', REPEAT_HANDLER[node.id]);
-};
-
-
 
 const buttonsStack = {
     push: function(data, buttons) {
