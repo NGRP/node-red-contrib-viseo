@@ -31,29 +31,42 @@ function input (node, data, config) {
         save = config.save || '_sheet';
 
     if (config.sheetType !== 'str') {
-        let loc = (config.sheetType === 'global') ? node.context().global : data;
-        spreadsheetId = helper.getByString(loc, spreadsheetId);
+        spreadsheetId = getFromType(config.sheetType, spreadsheetId);
     }
     if (config.rangeType !== 'str') {
-        let loc = (config.rangeType === 'global') ? node.context().global : data;
-        range = helper.getByString(loc, range);
+        range = getFromType(config.rangeType, range);
+  
     }
 
     let saveField = range.replace(/[!: ]/g, "_");
 
-    let saveContainer = (config.saveType === 'global') ? node.context().global : data;
-    saveLoc = helper.getByString(saveContainer, save, {});
-    helper.setByString(saveContainer, save, saveLoc);
+    let saveLoc = getFromType(config.saveType, save) || {};
+    setFromType(config.saveType, save, saveLoc);
 
-    let outloc =  (config.outputType === 'global') ? node.context().global : data;
     let parameters = { spreadsheetId, range };
     let method = config.method || 'append';
+
+
+    function getFromType(type, key) {
+        if(type === "global") {
+            return node.context().global.get(key);
+        } else {
+            return helper.getByString(data, key);
+        }
+    }
+
+    function setFromType(type, key, value) {
+        if(type === "global") {
+            return node.context().global.set(key, value);
+        } else {
+            return helper.setByString(data, key, value);
+        }
+    }
 
     function querySet() {
 
         // Get input fields
-        let loc =  (config.inputType === 'global') ? node.context().global : data;
-        let rows = helper.getByString(loc, config.input || "payload");
+        let rows = getFromType(config.inputType, config.input || "payload");
 
         if (!rows || rows.length < 1) {
             node.error("Input object is empty");
@@ -160,9 +173,9 @@ function input (node, data, config) {
 
             if (!config.output){ return node.send([ data, undefined ]); }
 
-            if (response.updates){ helper.setByString(outloc, config.output || "payload", response) } 
+            if (response.updates){ setFromType(config.outputType, config.output || "payload", response); }
             else if (response.values){  
-                if (!fields) { helper.setByString(outloc, config.output || "payload", response.values) }
+                if (!fields) { setFromType(config.outputType, config.output || "payload", response.values); }
                 else {
                     let rows   = response.values
                     let values = []
@@ -172,7 +185,7 @@ function input (node, data, config) {
                             helper.setByString(obj, fields[i], row[i])
                         }
                     }
-                    helper.setByString(outloc, config.output || "payload", values);
+                    setFromType(config.outputType, config.output || "payload", values);
                 }
             }
             node.send([ data, undefined ]);
@@ -187,7 +200,7 @@ function input (node, data, config) {
                 return node.send([ undefined, data ]);
             }
             if (action === "clear") {
-                helper.setByString(outloc, config.output || "payload", response);
+                setFromType(config.outputType, config.output || "payload", response);
                 helper.setByString(saveLoc, saveField, undefined);
                 return node.send([ data, undefined ]);
             }
@@ -203,7 +216,7 @@ function input (node, data, config) {
             for (let ob of saveArray) response.push(Array.from(ob));
 
             if (!config.line && !config.column) {
-                helper.setByString(outloc, config.output || "payload", response);
+                setFromType(config.outputType, config.output || "payload", response);
                 return node.send([ data, undefined ]);
             }
             if (config.line && config.column) {
@@ -221,7 +234,7 @@ function input (node, data, config) {
                     }
                     objet[item] = newl;
                 }
-                helper.setByString(outloc, config.output || "payload", objet);
+                setFromType(config.outputType, config.output || "payload", objet);
                 return node.send([ data, undefined ]);
             }
             if ((config.column && config.direction === "column") || 
@@ -231,7 +244,7 @@ function input (node, data, config) {
                         objet[obj.shift()] = obj;
                     }
 
-                    helper.setByString(outloc, config.output || "payload", objet);
+                    setFromType(config.outputType, config.output || "payload", objet);
                     return node.send([ data, undefined ]);
             }
             else {
@@ -246,7 +259,7 @@ function input (node, data, config) {
                     array.push(newl);
                 }
 
-                helper.setByString(outloc, config.output || "payload", array);
+                setFromType(config.outputType, config.output || "payload", array);
                 return node.send([ data, undefined ]);
             }
         }
@@ -259,7 +272,7 @@ function input (node, data, config) {
                 return node.send([ undefined, data ]);
             }
             if (!response.values) {
-                helper.setByString(outloc, config.output || "payload", "");
+                setFromType(config.outputType, config.output || "payload", "");
                 return node.send([ data, undefined ]);
             }
 
@@ -268,7 +281,7 @@ function input (node, data, config) {
             helper.setByString(saveLoc, saveField, result);
 
             if (!config.line && !config.column) {
-                helper.setByString(outloc, config.output || "payload", response.values);
+                setFromType(config.outputType, config.output || "payload", response.values);
                 return node.send([ data, undefined ]);
             }
             if (config.line && config.column) {
@@ -286,7 +299,7 @@ function input (node, data, config) {
                     }
                     objet[item] = newl;
                 }
-                helper.setByString(outloc, config.output || "payload", objet);
+                setFromType(config.outputType, config.output || "payload", objet);
                 return node.send([ data, undefined ]);
             }
             if ((config.column && response.majorDimension === "COLUMNS") || 
@@ -296,7 +309,7 @@ function input (node, data, config) {
                         objet[obj.shift()] = obj;
                     }
 
-                    helper.setByString(outloc, config.output || "payload", objet);
+                    setFromType(config.outputType, config.output || "payload", objet);
                     return node.send([ data, undefined ]);
             }
             else {
@@ -311,7 +324,7 @@ function input (node, data, config) {
                     array.push(newl);
                 }
 
-                helper.setByString(outloc, config.output || "payload", array);
+                setFromType(config.outputType, config.output || "payload", array);
                 return node.send([ data, undefined ]);
             }
         });
@@ -322,12 +335,10 @@ function input (node, data, config) {
             cell_c = config.cell_c;
 
         if (config.cell_lType !== 'str') {
-            let loc = (config.cell_lType === 'global') ? node.context().global : data;
-            cell_l = helper.getByString(loc, cell_l);
+            cell_l = getFromType(config.cell_lType, loc, cell_l);
         }
         if (config.cell_cType !== 'str') {
-            let loc = (config.cell_cType === 'global') ? node.context().global : data;
-            cell_c = helper.getByString(loc, cell_c);
+            cell_c = getFromType(config.cell_cType, loc, cell_c);
         }
 
         if (!cell_l || !cell_c) {
@@ -350,8 +361,8 @@ function input (node, data, config) {
             let c = column_labels.indexOf(cell_c),
                 l = line_labels.indexOf(cell_l);
 
-            if (c === -1 || l === -1 || !response[l][c]) helper.setByString(outloc, config.output || "payload", "Not found");
-            else helper.setByString(outloc, config.output || "payload", response[l][c]);
+            if (c === -1 || l === -1 || !response[l][c]) setFromType(config.outputType, config.output || "payload", "Not found");
+            else setFromType(config.outputType, config.output || "payload", response[l][c]);
             return node.send([ data, undefined ]);
         }
 
@@ -362,7 +373,7 @@ function input (node, data, config) {
             }
 
             if (!response.values) {
-                helper.setByString(outloc, config.output || "payload", "");
+                setFromType(config.outputType, config.output || "payload", "");
                 return node.send([ data, undefined ]);
             }
 
@@ -385,9 +396,9 @@ function input (node, data, config) {
             let c = column_labels.indexOf(cell_c),
                 l = line_labels.indexOf(cell_l);
 
-            if (c === -1 || l === -1 || !result[l][c]) helper.setByString(outloc, config.output || "payload", "Not found");
+            if (c === -1 || l === -1 || !result[l][c]) setFromType(config.outputType, config.output || "payload", "Not found");
 
-            else helper.setByString(outloc, config.output || "payload", result[l][c]);
+            else setFromType(config.outputType, config.output || "payload", result[l][c]);
             return node.send([ data, undefined ]);
         });
     }
