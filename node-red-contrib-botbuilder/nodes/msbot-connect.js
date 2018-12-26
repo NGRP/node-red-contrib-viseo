@@ -30,6 +30,13 @@ module.exports = function(RED) {
             config.port = parseInt(config.port);
         }
 
+        if (config.resetCommand) {
+            let lastSlash = config.resetCommand.lastIndexOf('/');
+            let pattern = config.resetCommand.slice(1, lastSlash);
+            let flags = config.resetCommand.slice(lastSlash + 1);
+            config.resetCommand = new RegExp(pattern, flags);
+        }
+
         globalTypingDelay = config.delay || DEFAULT_TYPING_DELAY;
         
         config.appId = node.credentials.appId;
