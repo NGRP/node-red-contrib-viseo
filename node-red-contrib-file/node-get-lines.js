@@ -36,9 +36,16 @@ const input = (node, data, config) => {
     filepath = path.normalize(filepath);
 
     let myarray = new Array();
+    
+    let readStream = fs.createReadStream(filepath);
+
+    readStream.on('error', function(err) {
+        node.err(err);
+        return node.send(data);
+    })
 
     readline.createInterface({
-        input: fs.createReadStream(filepath) 
+        input: readStream
     })
     .each(function(line) {
         if (split) line = line.split(split);
