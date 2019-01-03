@@ -113,10 +113,20 @@ const reply = (bot, node, data, config) => {
     if (!address || address.carrier !== 'botbuilder') return false;
 
     // Building the message
-    let message = getMessage(node, address, data.reply, timestamp == undefined);
-    if (!message) return false;
+    let message;
 
-    message.address(address);
+    if (data.customReply) {
+        message = data.customReply;
+        message.address = address;                                             
+        message.data = {
+            type: message.type
+        };
+    } else {
+        message = getMessage(node, address, data.reply, timestamp == undefined);
+        if (!message) return false;
+
+        message.address(address);
+    }
 
     let customTyping = (callback) => {
        try {

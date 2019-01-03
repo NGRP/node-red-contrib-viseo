@@ -1,0 +1,70 @@
+<script type="text/javascript">
+  RED.nodes.registerType('send-custom-message',{
+      category: 'VISEO_BOT',
+      color: '#3FADB5',
+      defaults: {
+          name:         { value: undefined },
+          delay:        { value: 0 },
+          content:      { value: "payload" },
+          prompt:       { value: undefined },
+          promptText:   { value: "prompt.text" },
+          promptTextType:   { value: "msg" },
+      },
+      inputs:  1, 
+      outputs: 1,
+      icon: "card.svg",
+      oneditprepare: function () {
+          // Typed Input
+          $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+          $("#node-input-content").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+          $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+          // Prompt and speech : show and hide fields
+          $("#node-input-prompt").change( function() {
+              if ($(this).is(":checked")) {
+                  $("#prompt").show();
+                  $("#node-input-promptText").typedInput('show');
+              }
+              else $("#prompt").hide();
+          }).change();
+      },
+      oneditsave: function(){
+          this.delay  = $('#node-input-delay').val()  || 0;
+          this.outputs = 1 ;
+      },
+      label: function() {
+          return this.name || "send-custom-message";
+      },
+      align: "left",
+      paletteLabel: "Custom message",
+      labelStyle: "bot-card-name"
+  });
+</script>
+
+<script type="text/x-red" data-template-name="send-custom-message">
+  <div class="form-row">
+      <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+      <label for="node-input-content"><i class="fa fa-pencil-square-o"></i> Content</label>
+      <input type="text" id="node-input-content" placeholder="payload">
+  </div>
+  <div class="form-row promptable">
+      <br>
+      <label for="node-input-prompt"><i class="fa fa-sign-in"></i> Prompt</label>
+      <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-prompt"> <span>Require a user input/answer</span>
+  </div>
+  <div class="form-row" id="prompt">
+      <label for="node-input-promptText"></label>
+      <input type="text" id="node-input-promptText" style="width: 80%;" placeholder="prompt.text">
+  </div>
+  <div class="form-row">
+      <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+      <input type="number" min="0" id="node-input-delay" placeholder="0" style="width:100px;">
+      <p style="display: inline-block;"> ms</p>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="send-custom-message">
+  <p>A node to send a custom message already formated with the Microsoft bot builder format</p>
+</script>
