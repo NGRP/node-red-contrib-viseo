@@ -17,6 +17,7 @@
             name:          { value: undefined },
             project:       { value: undefined },
             port:          { value: undefined },
+            resetCommand:  { value: "/^reset/i" },
             delay:         { value: undefined }
         },
         credentials: {
@@ -33,6 +34,7 @@
             $("#node-input-port").typedInput({        default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appId").typedInput({       default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appPassword").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-resetCommand").typedInput({default: 're',  types: ['re'],  type: 're' });
             $("#node-input-delay").typedInput({       default: 'num', types: ['num'], type: 'num' });
 
             $("#node-input-delay").change(function(e) {
@@ -74,6 +76,11 @@
         <input type="text" id="node-input-appPassword" style="width:70%;">
     </div>
     <br>
+    <div class="form-row">
+        <label for="node-input-resetCommand"><i class="fa fa-gear"></i> Reset Command</label>
+        <input type="text" id="node-input-resetCommand" style="width:70%;">
+    </div>
+    <br>
     <b>Global message settings </b>
     <div class="form-row">
         <br>
@@ -107,6 +114,8 @@
         <dd>the Azure application ID</dd>
         <dt>AppPass <span class="property-type">string</span></dt>
         <dd>the Azure application password</dd>
+        <dt>Reset Command <span class="property-type">regex</span></dt>
+        <dd>the regular expression used to identify a reset conversation command. If empty, default is /^reset/i</dd>
         <dt>Delay<span class="property-type">number</span></dt>
         <dd>the global delay for your messages. If empty, default is 2000ms. (Minimum 200ms)</dd>
     </dl>

@@ -34,7 +34,7 @@ const route = (callback, options, server) => {
     
     
     server.post('/api/v1/messages', connector.listen());
-    bot = bindConnector(connector, options);
+    bot = bindConnector(connector, opt);
 
     callback(undefined, bot);
 };
@@ -53,6 +53,14 @@ const bindConnector = exports.bindConnector = (connector, options) => {
     
     // Put bot as a global variable
     // global.botbuilder = bot;
+
+    // Anytime the major version is incremented any existing conversations will be restarted.
+    bot.use(builder.Middleware.dialogVersion(
+        {
+            version: 1.0,
+            resetCommand: options.resetCommand || /^reset/i
+        }
+    ));
 
     // Logging Middleware
     if (verbose) {
