@@ -428,7 +428,7 @@ const sendData = (node, data, config) => {
                 let rgxp = new RegExp(button.regexp || '^'+buttonValue+'$', 'i');
                 let testValue = data.prompt.text
 
-                if(button.unaccentuate) {
+                if (button.unaccentuate) {
                     testValue = testValue.replace(new RegExp(/\s/g),"");
                     testValue = testValue.replace(new RegExp(/[Ã Ã¡Ã¢Ã£Ã¤Ã¥]/g),"a");
                     testValue = testValue.replace(new RegExp(/Ã¦/g),"ae");
@@ -475,7 +475,7 @@ const sendData = (node, data, config) => {
             }
         }
 
-        if(acceptValue === false) {
+        if (acceptValue === false) {
             //if we get here, it means that the prompted text doesn't match any button and wasn't expected
             helper.emitAsyncEvent('prompt', node, data, config, (data) => {
                 helper.emitAsyncEvent('prompt-unexpected', node, data, config, (data) => {
@@ -501,7 +501,7 @@ const sendData = (node, data, config) => {
  * @param {*} separator The parameter used as a section separator. Each line of text is finally a container, with title containers non-clickable and item container clickable.
  */
 const buildAdaptiveCardJson = function(whole, body, separator) {
-        /**Original text is:
+/**Original text is:
  **Memory**:
  - 1. Item memory 1
  **Storage**:
@@ -543,7 +543,10 @@ part is:  with index: 0
    - 1. Item Standard 1 with index: 4
  line is: Standard**: with index: 0
  line is:   - 1. Item Standard 1 with index: 1
-        */
+*/
+
+       //TODO refactor
+
        whole.split(' '+ separator).forEach((part, index) => {
         if (index === 0) {
             // begins with title directly
