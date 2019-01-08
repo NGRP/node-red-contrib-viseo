@@ -296,18 +296,14 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         reply.actions = [];
         tmp = textToShow.substring(attrIndex);
 
-    //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
+        //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
         reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": []}});
         buildAdaptiveCardJson(tmp, reply.actions[0].card.body, separator);
         
     } else {
         // otherwise show all the text
-
         //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
         buildAdaptiveCardJson(textToShow, reply.body, separator);
-        // AAAAAAAAAAAAAAAAA Maybe this
-        //buildAdaptiveCardJson(tmp, reply.actions[0].card.body, '**');
-        
     }
 };
 
@@ -549,9 +545,10 @@ part is:  with index: 0
  line is:   - 1. Item Standard 1 with index: 1
         */
        whole.split(' '+ separator).forEach((part, index) => {
-        if (index === 0) { 
-          if (part.startsWith(' '+ separator, 0)) { // begins with title directly
-              body.push({
+        if (index === 0) {
+            // begins with title directly
+            if (part.startsWith(' '+ separator, 0)) { 
+                body.push({
                   "type": "Container",
                   "items": [
                       {
@@ -562,10 +559,11 @@ part is:  with index: 0
                       }	
                   ]
               });
-          } else { // Otherwise, begin with attributes belong to last title
-          part.split('\n').forEach((line, i) => {
-                          let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                          body.push({
+            } else { 
+                // Otherwise, begin with attributes belong to last title
+                part.split('\n').forEach((line, i) => {
+                    let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                    body.push({
                               "type": "Container",
                               "items": [
                                   {
@@ -580,13 +578,13 @@ part is:  with index: 0
                                   "title": "cool link",
                                   "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
                               }
-                              });
-          });
+                            });
+                        });
           }
         } else {
-          part.split('\n').forEach((line, i) => {
-                  if (i === 0) {
-                          body.push({
+            part.split('\n').forEach((line, i) => {
+                if (i === 0) {
+                    body.push({
                       "type": "Container",
                       "items": [
                           {
@@ -596,9 +594,9 @@ part is:  with index: 0
                               "text": separator + line // memory
                           }
                       ]});
-                  } else {
-                          let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                          body.push({
+                } else {
+                    let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                    body.push({
                               "type": "Container",
                               "items": [
                                   {
@@ -613,10 +611,11 @@ part is:  with index: 0
                                   "title": "cool link",
                                   "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
                               }
-                              });
-                  }
-          });
-        }
-      });
+                            });
+                }
+        });
     }
+});
+
+}
 

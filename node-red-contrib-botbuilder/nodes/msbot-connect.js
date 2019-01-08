@@ -188,7 +188,7 @@ const getSession  = (data) => {
 
 const getMessage = (node, address, replies, isPush) => {
     let msg = new builder.Message();
-
+    
     // The message will be a carousel
     if (replies.length > 1) {
         msg.attachmentLayout(builder.AttachmentLayout.carousel)
@@ -206,6 +206,7 @@ const getMessage = (node, address, replies, isPush) => {
 
         //let card = getHeroCard(reply);
         let card;
+        console.log("\n Reply type is " + reply.type);
 
         if (reply.type === "AdaptiveCard") {
             card = getAdaptiveCard(reply);
