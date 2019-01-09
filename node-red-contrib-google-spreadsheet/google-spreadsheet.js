@@ -39,7 +39,7 @@ function input (node, data, config) {
         range = helper.getByString(loc, range);
     }
 
-    let saveField = range.replace(/[!: ]/g, "_");
+    let saveField = range.replace(/[!:'" ]/g, "_");
 
     let saveContainer = (config.saveType === 'global') ? node.context().global : data;
     saveLoc = helper.getByString(saveContainer, save, {});
