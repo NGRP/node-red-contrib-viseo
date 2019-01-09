@@ -6,6 +6,7 @@ const CARRIER = "GoogleHome"
 //  NODE-RED
 // --------------------------------------------------------------------------
 
+
 module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
@@ -27,7 +28,13 @@ const start = (RED, node, config) => {
 
     // Start HTTP Route
     let uri = '/dialogflow-server/';
-    app.fallback(conv => { return receive(conv, node, config); });
+    app.fallback(conv => { 
+        return new Promise(function(resolve, reject) {
+            receive(conv, node, config, resolve, reject);
+        }); 
+    });
+
+
     RED.httpNode.post(uri, app);
 
     // Add listener to reply
@@ -78,11 +85,10 @@ const getMessageContext = (message) => {
 //  RECEIVE
 // ------------------------------------------
 
-const receive = (conv, node, config) => {
+const receive = (conv, node, config, resolve, reject) => {
     // node.warn({ "RECEIVED" : conv});
 
     if (!conv || !conv.request) {
-        console.log({error: 'Empty request received', content: conv});
         node.warn({error: 'Empty request received', content: conv});
         return;
     }
@@ -99,7 +105,9 @@ const receive = (conv, node, config) => {
     data.user.accessToken = data.message.request.user.accessToken;
 
     let context = getMessageContext(data.message)
-        context.conv = conv
+    context.conv = conv;
+    context.resolve = resolve;
+    context.reject = reject;
 
     if (conv.request.inputs[0].arguments !== undefined && 
         conv.request.inputs[0].arguments.length > 0) {
@@ -113,7 +121,6 @@ const receive = (conv, node, config) => {
     // Handle Prompt
     let convId  = botmgr.getConvId(data)
     if (botmgr.hasDelayedCallback(convId, data.message)) {
-        'has delay callback'; 
         return;
     }
 
@@ -185,6 +192,10 @@ const reply = (node, data, config) => {
                                   : getMessageContext(data.message)
         let conv = context.conv;
 
+
+        let resolve = context.resolve;
+        let reject = context.reject;
+
         // Building the message
         let message = getMessage(data.reply);
 
@@ -194,10 +205,14 @@ const reply = (node, data, config) => {
         if (message.expectUserResponse === false) conv.close(message.data[0]);
         else for (let m of message.data) conv.ask(m);
     
+        
         // Trap the event in order to continue
         helper.fireAsyncCallback(data);
 
-    } catch(ex){ node.warn(ex) }
+        resolve();
+
+    } catch(ex){ node.warn(ex); }
+
 }
 
 // ------------------------------------------
