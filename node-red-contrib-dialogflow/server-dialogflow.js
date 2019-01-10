@@ -198,7 +198,7 @@ const reply = (node, data, config) => {
         // Building the message
         let message = getMessage(data.reply);
 
-        node.warn({ REPLY: message, receive: data.message, rep: data.reply})
+        // node.warn({ REPLY: message, receive: data.message, rep: data.reply})
 
         if (!message || message.data.length === 0) return false;
         let endMsg = message.data.pop();
@@ -414,7 +414,6 @@ const getMessage = exports.getMessage = (replies) => {
         // Image
         if (reply.type === 'media') {
             msg.data.push(new Image({ url: helper.absURL(reply.media), alt: '[image]'}));
-            console.log( msg.data)
             continue;
         }
 
