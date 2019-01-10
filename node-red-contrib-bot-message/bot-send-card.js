@@ -11,7 +11,7 @@ const marshall = (locale, str, data, def) => {
     str = i18n.translate(locale, str);
     str = mustache.render(str, data);
     str = helper.resolve(str, data, def);
-    
+
     return str;
 }
 
@@ -57,7 +57,7 @@ const getButtons = (locale, config, data) => {
         buttons = JSON.parse(JSON.stringify(config.quickreplies));
     } else if (config.sendType === 'card'){
         buttons = JSON.parse(JSON.stringify(config.buttons));
-    } 
+    }
 
     if (!buttons || buttons.length <= 0) {
         return [];
@@ -118,6 +118,7 @@ const input = (node, data, config, reply) => {
     if (config.prompt){
         botmgr.delayCallback(convId, (prompt) => {
             data.prompt = prompt
+            node.warn({ prompt: data})
             sendData(node, data, config)
         })
     }
@@ -140,61 +141,19 @@ const input = (node, data, config, reply) => {
         }
         sendData(node, newData, config);
     });
-};
+}
 
-const buildReplyText = (locale, data, config, reply) => {
-    let text = marshall(locale, config.text, data, '');
-    if (config.random){
-        let txt = text.split('\n');
-        text = txt[Math.round(Math.random() * (txt.length-1))]
-    }
+const buildReply = (node, data, config) => {
+    let locale = botmgr.getLocale(data);
+    let reply = {
+        "type"      : config.sendType,
+        "prompt"    : config.prompt,
+        "receipt"   : data._receipt
+    };
 
-    reply.text = text;
-    if (reply.speech === undefined) reply.speech = text;
-    return [ reply ]
-};
-
-const buildReplyMedia = (locale, data, config, reply) => {
-    let media = config.media;
-    if (!config.mediaType) media = marshall(locale, media,  data, '');
-    else if (config.mediaType !== 'str') {
-        let loc = (config.mediaType === 'global') ? node.context().global : data;
-        media = helper.getByString(loc, media);
-    }
-
-    reply.media = media;
-    if (reply.speech === undefined) reply.speech = "";
-    return [ reply ]
-};
-
-const buildReplySignin = (locale, data, config, reply) => {
-    
-    let signintitle = config.signintitle;
-    let signinurl = config.signinurl;
-
-    if (!config.signintitleType) signintitle = marshall(locale, signintitle,  data, '');
-    else if (config.signintitleType !== 'str') {
-        let loc = (config.signintitleType === 'global') ? node.context().global : data;
-        signintitle = helper.getByString(loc, signintitle);
-    }
-
-    if (!config.signinurlType) signinurl = marshall(locale, signinurl,  data, '');
-    else if (config.signinurlType !== 'str') {
-        let loc = (config.signinurlType === 'global') ? node.context().global : data;
-        signinurl = helper.getByString(loc, signinurl);
-    }
-
-    reply.text  = marshall(locale, config.signintext,  data, '');
-    reply.title = signintitle;
-    reply.url   = signinurl;
-
-    if (reply.speech === undefined) reply.speech = reply.text;
-    return [ reply ]
-};
-
-const buildReplyEvent = (locale, data, config, reply) => {
-    debugger;
-    let event = { name : config.eventName  }
+    // Simple event message
+    if (config.sendType === 'event'){
+        let event = { name : config.eventName  }
         let value = config.eventValue;
         if (!config.eventValueType || config.eventValueType === 'str'){
             event.value = marshall(locale, value,  data, '');
@@ -209,31 +168,365 @@ const buildReplyEvent = (locale, data, config, reply) => {
             event.value = JSON.parse(value);
         }
         reply.event = event;
-        return [ reply ]
-};
-
-const buildReplyCard = (locale, data, config, reply) => {
-    let title = config.title;
-    let attach = config.attach;
-    if (!config.titleType) title = marshall(locale, title,  data, '');
-    else if (config.titleType !== 'str') {
-        let loc = (config.titleType === 'global') ? node.context().global : data;
-        title = helper.getByString(loc, title);
+    }
+    else { // Prepare speech
+        reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
+        delete data._receipt;
     }
 
-    if (!config.attachType) attach = marshall(locale, attach,  data, '');
-    else if (config.attachType !== 'str') {
-        let loc = (config.attachType === 'global') ? node.context().global : data;
-        attach = helper.getByString(loc, attach);
+    // Simple text message
+    if (config.sendType === 'text'){
+        let text = marshall(locale, config.text, data, '');
+        if (config.random){
+            let txt = text.split('\n');
+            text = txt[Math.round(Math.random() * (txt.length-1))]
+        }
+
+        reply.text = text;
+        if (reply.speech === undefined) reply.speech = text;
     }
-    reply.title =    title;
-    reply.subtitle = marshall(locale, config.subtitle,  data, '');
-    reply.subtext =  marshall(locale, config.subtext,   data, '');
-    reply.attach =   attach;
-    if (reply.speech === undefined) 
-        reply.speech = reply.subtitle || reply.subtext;
-    return reply;
-};
+
+    // Simple media message
+    if (config.sendType === 'media'){
+        let media = config.media;
+        if (!config.mediaType) media = marshall(locale, media,  data, '');
+        else if (config.mediaType !== 'str') {
+            let loc = (config.mediaType === 'global') ? node.context().global : data;
+            media = helper.getByString(loc, media);
+        }
+
+        reply.media = media;
+        if (reply.speech === undefined) reply.speech = "";
+    }
+
+    // Card "signin" message
+    if (config.sendType === 'signin'){
+
+        let signintitle = config.signintitle;
+        let signinurl = config.signinurl;
+
+        if (!config.signintitleType) signintitle = marshall(locale, signintitle,  data, '');
+        else if (config.signintitleType !== 'str') {
+            let loc = (config.signintitleType === 'global') ? node.context().global : data;
+            signintitle = helper.getByString(loc, signintitle);
+        }
+
+        if (!config.signinurlType) signinurl = marshall(locale, signinurl,  data, '');
+        else if (config.signinurlType !== 'str') {
+            let loc = (config.signinurlType === 'global') ? node.context().global : data;
+            signinurl = helper.getByString(loc, signinurl);
+        }
+
+        reply.text  = marshall(locale, config.signintext,  data, '');
+        reply.title = signintitle;
+        reply.url   = signinurl;
+
+        if (reply.speech === undefined) reply.speech = reply.text;
+    }
+    
+    // Other card message
+    if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard') {
+    
+        let buttons = getButtons(locale, config, data);
+        buttonsStack.push(data, buttons);
+        reply.buttons = buttons;
+
+        if (config.sendType === 'quick') {
+            reply.quicktext = marshall(locale, config.quicktext, data, '');
+            if (config.random){
+                let txt = reply.quicktext.split('\n');
+                reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+            }
+            if (reply.speech === undefined) reply.speech = reply.quicktext;
+        } 
+        else if (config.sendType === 'card') {
+
+            let title = config.title;
+            let attach = config.attach;
+
+            if (!config.titleType) title = marshall(locale, title,  data, '');
+            else if (config.titleType !== 'str') {
+                let loc = (config.titleType === 'global') ? node.context().global : data;
+                title = helper.getByString(loc, title);
+            }
+            if (!config.attachType) attach = marshall(locale, attach,  data, '');
+            else if (config.attachType !== 'str') {
+                let loc = (config.attachType === 'global') ? node.context().global : data;
+                attach = helper.getByString(loc, attach);
+            }
+            
+            reply.title =    title;
+            reply.subtitle = marshall(locale, config.subtitle,  data, '');
+            reply.subtext =  marshall(locale, config.subtext,   data, '');
+            reply.attach =   attach;
+            if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
+        }
+        else if (config.sendType === 'adaptiveCard') {
+            buildReplyAdaptiveCard(locale, data, config, reply);
+
+        }
+    }
+    
+    // Forward data without sending anything
+    let context = botmgr.getContext(data);
+    if (config.carousel){
+        let carousel = context.carousel = context.carousel || [];
+        carousel.push(reply);
+        return;    
+    }
+    
+    // Handle carousel
+    let carousel = context.carousel = context.carousel || [];
+    if (carousel.length > 0){
+        carousel.push(reply)
+        context.carousel = []; // clean
+    }
+
+    if (!config.prompt) {
+        buttonsStack.popAll(data);
+    } //else, buttons popped on prompt
+
+    return carousel.length > 0 ? carousel : [ reply ];
+}
+
+const sendData = (node, data, config) => {
+
+    let out  = new Array(parseInt(config.outputs || 1));
+    let promptText = undefined;
+
+    if (config.promptText) {
+        promptText = helper.resolve(config.promptText, data, undefined);
+    }
+
+    let _continue = (data) => {
+        // 3. REPEAT: the latest output
+        if (config.repeat && config.repeat > 0){
+            data._tmp = data._tmp || {}
+            let cpt = data._tmp['rpt_'+node.id] || 0
+            let rpt = parseInt(config.repeat)
+
+            data._tmp['rpt_'+node.id] = cpt + 1;
+            if (cpt >= rpt){
+                out[out.length -1] = data;
+                return node.send(out);        
+            }
+        }
+
+        // 4. DEFAULT: the first output
+        out[0] = data;
+        return node.send(out);
+    }
+
+
+    if (config.prompt) {
+
+        // 1. BUTTONS: the middle outputs
+        let buttons = buttonsStack.popAll(data);
+
+        config.promptText = promptText;
+
+        let acceptValue = false;
+        
+        if (buttons && buttons.length > 0) {
+
+            for (let i = 0 ; i < buttons.length ; i++){
+                let button = buttons[i]; 
+                let buttonValue = (button.value || '').replace(new RegExp(/\:/g),"\\:")
+                let rgxp = new RegExp(button.regexp || '^'+buttonValue+'$', 'i');
+                let testValue = data.prompt.text
+
+                if(button.unaccentuate) {
+                    testValue = testValue.replace(new RegExp(/\s/g),"");
+                    testValue = testValue.replace(new RegExp(/[àáâãäå]/g),"a");
+                    testValue = testValue.replace(new RegExp(/æ/g),"ae");
+                    testValue = testValue.replace(new RegExp(/ç/g),"c");
+                    testValue = testValue.replace(new RegExp(/[èéêë]/g),"e");
+                    testValue = testValue.replace(new RegExp(/[ìíîï]/g),"i");
+                    testValue = testValue.replace(new RegExp(/ñ/g),"n");                
+                    testValue = testValue.replace(new RegExp(/[òóôõö]/g),"o");
+                    testValue = testValue.replace(new RegExp(/œ/g),"oe");
+                    testValue = testValue.replace(new RegExp(/[ùúûü]/g),"u");
+                    testValue = testValue.replace(new RegExp(/[ýÿ]/g),"y");
+                }
+
+                if (!rgxp.test(testValue)) {
+                    rgxp = new RegExp('^'+buttonValue+'$', 'i');
+                    if (!rgxp.test(testValue)) {
+                        continue;
+                    }
+                }
+
+                acceptValue = true;
+
+                if (promptText){ 
+                    helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) });
+                } else {
+                    helper.setByString(data, "prompt.text", button.value, (ex) => { node.warn(ex) });
+                }
+
+                if (config.btnOutput || config.quickOutput){ 
+                    out[i+1] = data;
+                    // Even if the button match, emit a prompt event for logs, etc ...
+                    helper.emitAsyncEvent('prompt', node, data, config, (data) => { 
+                        node.send(out);
+                    });
+                    return 
+                } 
+            }
+        } else {
+
+            acceptValue = true;
+
+            if (promptText) { 
+                helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
+            }
+        }
+
+        if(acceptValue === false) {
+            //if we get here, it means that the prompted text doesn't match any button and wasn't expected
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {
+                helper.emitAsyncEvent('prompt-unexpected', node, data, config, (data) => {
+                    _continue(data);
+                });
+            });
+
+        } else {
+            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
+                _continue(data); 
+            });
+        }
+
+    } else {
+        _continue(data);
+    }
+}
+
+/**
+ * Takes the "whole" text and builds a "body" for the adaptive card.
+ * @param {*} whole The whole text to process
+ * @param {*} body The parameter in which to put the processed text, see adaptive card documentation
+ * @param {*} separator The parameter used as a section separator. Each line of text is finally a container, with title containers non-clickable and item container clickable.
+ */
+const buildAdaptiveCardJson = function(whole, body, separator) {
+    /**Original text is:
+     **Memory**:
+     - 1. Item memory 1
+     **Storage**:
+      - 1. Item storage 1
+      - 2. Item storage 2
+     **Note**:
+      - 1. Item Note 1
+     **Standard**:
+      - 1. Item Standard 1
+    -----------------------------------------       
+    
+    part is:  with index: 0
+     line is:  with index: 0
+     ---------------
+     part is: Memory**:
+      - 1. Item memory 1
+      with index: 1
+     line is: Memory**: with index: 0
+     line is:  - 1. Item memory 1 with index: 1
+     line is:  with index: 2
+     ---------------
+     part is: Storage**:
+       - 1. Item storage 1
+       - 2. Item storage 2
+      with index: 2
+     line is: Storage**: with index: 0
+     line is:   - 1. Item storage 1 with index: 1
+     line is:   - 2. Item storage 2 with index: 2
+     line is:  with index: 3
+     ---------------
+     part is: Note**:
+       - 1. Item Note 1
+      with index: 3
+     line is: Note**: with index: 0
+     line is:   - 1. Item Note 1 with index: 1
+     line is:  with index: 2
+     ---------------
+     part is: Standard**:
+       - 1. Item Standard 1 with index: 4
+     line is: Standard**: with index: 0
+     line is:   - 1. Item Standard 1 with index: 1
+    */
+    
+           //TODO refactor
+    
+           whole.split(' '+ separator).forEach((part, index) => {
+            if (index === 0) {
+                // begins with title directly
+                if (part.startsWith(' '+ separator, 0)) { 
+                    body.push({
+                      "type": "Container",
+                      "items": [
+                          {
+                              "type": "TextBlock",
+                              "wrap": true,
+                              "size": "default",
+                              "text": part //  here is what I found...
+                          }	
+                      ]
+                  });
+                } else { 
+                    // Otherwise, begin with attributes belong to last title
+                    part.split('\n').forEach((line, i) => {
+                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                        body.push({
+                                  "type": "Container",
+                                  "items": [
+                                      {
+                                          "type": "TextBlock",
+                                          "wrap": true,
+                                          "size": "default",
+                                          "text": line						
+                                      }
+                                  ],
+                                  "selectAction": {
+                                      "type": "Action.Submit",
+                                      "title": "cool link",
+                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+                                  }
+                                });
+                            });
+              }
+            } else {
+                part.split('\n').forEach((line, i) => {
+                    if (i === 0) {
+                        body.push({
+                          "type": "Container",
+                          "items": [
+                              {
+                                  "type": "TextBlock",
+                                  "wrap": true,
+                                  "size": "default",
+                                  "text": separator + line // memory
+                              }
+                          ]});
+                    } else {
+                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                        body.push({
+                                  "type": "Container",
+                                  "items": [
+                                      {
+                                          "type": "TextBlock",
+                                          "wrap": true,
+                                          "size": "default",
+                                          "text": line						
+                                      }
+                                  ],
+                                  "selectAction": {
+                                      "type": "Action.Submit",
+                                      "title": "cool link",
+                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+                                  }
+                                });
+                    }
+            });
+        }
+    });
+}
 
 const buildReplyAdaptiveCard = (locale, data, config, reply) => {
     //--- same as card
@@ -306,319 +599,7 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
         buildAdaptiveCardJson(textToShow, reply.body, separator);
     }
-};
-
-const buildReply = (node, data, config) => {
-    let locale = botmgr.getLocale(data);
-
-    // Prepare speech
-    let speech = config.speechText ? marshall(locale, config.speechText, data, '') : config.speech;
-    let reply = {
-        "type"      : config.sendType,
-        "speech"    : speech,
-        "prompt"    : config.prompt,
-        "receipt"   : data._receipt
-    };
-    delete data._receipt;
-
-    // Simple text message
-    if (config.sendType === 'text'){
-          return buildReplyText(locale, data, config, reply);
-    }
-
-    // Simple media message
-    if (config.sendType === 'media'){
-         return buildReplyMedia(locale, data, config, reply);
-    }
-
-    // Card "signin" message
-    if (config.sendType === 'signin'){
-        return buildReplySignin(locale, data, config, reply);
-    }
-
-    // Simple event message
-    if (config.sendType === 'event'){
-       return buildReplyEvent(locale, data, config, reply);
-    }
-
-    // Other card message
-    let buttons = getButtons(locale, config, data);
-    buttonsStack.push(data, buttons);
-    reply.buttons = buttons;
-
-    // Quick replies
-    if (config.sendType === 'quick') {
-        reply.quicktext = marshall(locale, config.quicktext, data, '');
-        if (config.random){
-            let txt = reply.quicktext.split('\n');
-            reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
-        }
-    } 
-    else if (config.sendType === 'card') {
-         reply = buildReplyCard(locale, data, config, reply);
-    }
-    else if (config.sendType === 'adaptiveCard') {
-        buildReplyAdaptiveCard(locale, data, config, reply);
-    }
-
-    // Forward data without sending anything
-    let context = botmgr.getContext(data);
-    if (config.carousel){
-        let carousel = context.carousel = context.carousel || [];
-        carousel.push(reply);
-        return;    
-    }
-    
-    // Handle carousel
-    let carousel = context.carousel = context.carousel || [];
-    if (carousel.length > 0){
-        carousel.push(reply)
-        context.carousel = []; // clean
-    }
-
-    if (!config.prompt) {
-        buttonsStack.popAll(data);
-    } //else, buttons popped on prompt
-    return carousel.length > 0 ? carousel : [ reply ];
-};
-
-const sendData = (node, data, config) => {
-
-    let out  = new Array(parseInt(config.outputs || 1));
-    let promptText = undefined;
-
-    if (config.promptText) {
-        promptText = helper.resolve(config.promptText, data, undefined);
-    }
-
-    let _continue = (data) => {
-        // 3. REPEAT: the latest output
-        if (config.repeat && config.repeat > 0){
-            data._tmp = data._tmp || {}
-            let cpt = data._tmp['rpt_'+node.id] || 0
-            let rpt = parseInt(config.repeat)
-
-            data._tmp['rpt_'+node.id] = cpt + 1;
-            if (cpt >= rpt){
-                out[out.length -1] = data;
-                return node.send(out);        
-            }
-        }
-
-        // 4. DEFAULT: the first output
-        out[0] = data;
-        return node.send(out);
-    }
-
-
-    if (config.prompt) {
-
-        // 1. BUTTONS: the middle outputs
-        let buttons = buttonsStack.popAll(data);
-
-        config.promptText = promptText;
-
-        let acceptValue = false;
-        
-        if (buttons && buttons.length > 0) {
-
-            for (let i = 0 ; i < buttons.length ; i++){
-                let button = buttons[i]; 
-                let buttonValue = (button.value || '').replace(new RegExp(/\:/g),"\\:")
-                let rgxp = new RegExp(button.regexp || '^'+buttonValue+'$', 'i');
-                let testValue = data.prompt.text
-
-                if (button.unaccentuate) {
-                    testValue = testValue.replace(new RegExp(/\s/g),"");
-                    testValue = testValue.replace(new RegExp(/[Ã Ã¡Ã¢Ã£Ã¤Ã¥]/g),"a");
-                    testValue = testValue.replace(new RegExp(/Ã¦/g),"ae");
-                    testValue = testValue.replace(new RegExp(/Ã§/g),"c");
-                    testValue = testValue.replace(new RegExp(/[Ã¨Ã©ÃªÃ«]/g),"e");
-                    testValue = testValue.replace(new RegExp(/[Ã¬Ã­Ã®Ã¯]/g),"i");
-                    testValue = testValue.replace(new RegExp(/Ã±/g),"n");                
-                    testValue = testValue.replace(new RegExp(/[Ã²Ã³Ã´ÃµÃ¶]/g),"o");
-                    testValue = testValue.replace(new RegExp(/Å“/g),"oe");
-                    testValue = testValue.replace(new RegExp(/[Ã¹ÃºÃ»Ã¼]/g),"u");
-                    testValue = testValue.replace(new RegExp(/[Ã½Ã¿]/g),"y");
-                }
-
-                if (!rgxp.test(testValue)) {
-                    rgxp = new RegExp('^'+buttonValue+'$', 'i');
-                    if (!rgxp.test(testValue)) {
-                        continue;
-                    }
-                }
-
-                acceptValue = true;
-
-                if (promptText){ 
-                    helper.setByString(data, promptText, button.value, (ex) => { node.warn(ex) });
-                } else {
-                    helper.setByString(data, "prompt.text", button.value, (ex) => { node.warn(ex) });
-                }
-
-                if (config.btnOutput || config.quickOutput){ 
-                    out[i+1] = data;
-                    // Even if the button match, emit a prompt event for logs, etc ...
-                    helper.emitAsyncEvent('prompt', node, data, config, (data) => { 
-                        node.send(out);
-                    });
-                    return 
-                } 
-            }
-        } else {
-
-            acceptValue = true;
-
-            if (promptText) { 
-                helper.setByString(data, promptText, data.prompt.text, (ex) => { node.warn(ex) });
-            }
-        }
-
-        if (acceptValue === false) {
-            //if we get here, it means that the prompted text doesn't match any button and wasn't expected
-            helper.emitAsyncEvent('prompt', node, data, config, (data) => {
-                helper.emitAsyncEvent('prompt-unexpected', node, data, config, (data) => {
-                    _continue(data);
-                });
-            });
-
-        } else {
-            helper.emitAsyncEvent('prompt', node, data, config, (data) => {  
-                _continue(data); 
-            });
-        }
-
-    } else {
-        _continue(data);
-    }
-};  
-
-/**
- * Takes the "whole" text and builds a "body" for the adaptive card.
- * @param {*} whole The whole text to process
- * @param {*} body The parameter in which to put the processed text, see adaptive card documentation
- * @param {*} separator The parameter used as a section separator. Each line of text is finally a container, with title containers non-clickable and item container clickable.
- */
-const buildAdaptiveCardJson = function(whole, body, separator) {
-/**Original text is:
- **Memory**:
- - 1. Item memory 1
- **Storage**:
-  - 1. Item storage 1
-  - 2. Item storage 2
- **Note**:
-  - 1. Item Note 1
- **Standard**:
-  - 1. Item Standard 1
------------------------------------------       
-
-part is:  with index: 0
- line is:  with index: 0
- ---------------
- part is: Memory**:
-  - 1. Item memory 1
-  with index: 1
- line is: Memory**: with index: 0
- line is:  - 1. Item memory 1 with index: 1
- line is:  with index: 2
- ---------------
- part is: Storage**:
-   - 1. Item storage 1
-   - 2. Item storage 2
-  with index: 2
- line is: Storage**: with index: 0
- line is:   - 1. Item storage 1 with index: 1
- line is:   - 2. Item storage 2 with index: 2
- line is:  with index: 3
- ---------------
- part is: Note**:
-   - 1. Item Note 1
-  with index: 3
- line is: Note**: with index: 0
- line is:   - 1. Item Note 1 with index: 1
- line is:  with index: 2
- ---------------
- part is: Standard**:
-   - 1. Item Standard 1 with index: 4
- line is: Standard**: with index: 0
- line is:   - 1. Item Standard 1 with index: 1
-*/
-
-       //TODO refactor
-
-       whole.split(' '+ separator).forEach((part, index) => {
-        if (index === 0) {
-            // begins with title directly
-            if (part.startsWith(' '+ separator, 0)) { 
-                body.push({
-                  "type": "Container",
-                  "items": [
-                      {
-                          "type": "TextBlock",
-                          "wrap": true,
-                          "size": "default",
-                          "text": part //  here is what I found...
-                      }	
-                  ]
-              });
-            } else { 
-                // Otherwise, begin with attributes belong to last title
-                part.split('\n').forEach((line, i) => {
-                    let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                    body.push({
-                              "type": "Container",
-                              "items": [
-                                  {
-                                      "type": "TextBlock",
-                                      "wrap": true,
-                                      "size": "default",
-                                      "text": line						
-                                  }
-                              ],
-                              "selectAction": {
-                                  "type": "Action.Submit",
-                                  "title": "cool link",
-                                  "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
-                              }
-                            });
-                        });
-          }
-        } else {
-            part.split('\n').forEach((line, i) => {
-                if (i === 0) {
-                    body.push({
-                      "type": "Container",
-                      "items": [
-                          {
-                              "type": "TextBlock",
-                              "wrap": true,
-                              "size": "default",
-                              "text": separator + line // memory
-                          }
-                      ]});
-                } else {
-                    let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                    body.push({
-                              "type": "Container",
-                              "items": [
-                                  {
-                                      "type": "TextBlock",
-                                      "wrap": true,
-                                      "size": "default",
-                                      "text": line						
-                                  }
-                              ],
-                              "selectAction": {
-                                  "type": "Action.Submit",
-                                  "title": "cool link",
-                                  "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
-                              }
-                            });
-                }
-        });
-    }
-});
-
 }
+
+
 

@@ -416,18 +416,17 @@
         labelStyle: "bot-card-name",
         label: function() {
             if (this.name) return this.name;
-            if (this.sendType === "text" || this.sendType === "quick")  {
+            if (this.carousel === true) return "Card";
+            if (this.sendType === "text" || this.sendType === "quick")  { 
                 if (this.text) {
                     if (this.text.length <= 20) return "Send: \"" + this.text + "\"";
                     else return "Send: \"" + this.text.substring(0,17) + '...\"';
                 }
                 else return "Send: \"\"";
             }
-            if (this.sendType === "card"  || type === 'adaptiveCard')  {
-                if (this.carousel === true) return "Card";
-                else return "Send card";
-            }
-            if (this.sendType === "media")  return "Send media";
+            if (this.sendType === "card")   return "Send card";
+            if (this.sendType === "adaptiveCard")  return "Send card"; 
+            if (this.sendType === "media")  return "Send media"; 
             if (this.sendType === "signin") return "Send signin";
             if (this.sendType === "event")  return "Send event";
             else return "Send Card";
@@ -539,7 +538,7 @@
 
         <br>
         <b>Message</b>
-        <div class="form-row promptable">
+        <div class="form-row">
             <br>
             <label for="node-input-prompt"><i class="fa fa-sign-in"></i> Prompt</label>
             <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-prompt"> <span>Require a user input/answer</span>
@@ -548,6 +547,11 @@
         <div class="form-row" id="prompt">
             <label for="node-input-promptText"></label>
             <input type="text" id="node-input-promptText" style="width: 80%;" placeholder="prompt.text">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-carousel"><i class="fa fa-th"></i> Carousel</label>
+            <input type="checkbox" id="node-input-carousel" style="width: auto; vertical-align:top;"> <span>Do not send message, add to the next card</span>
         </div>
 
         <div class="form-row section-type section-card">
@@ -618,10 +622,6 @@
         </section>
 
         <section class="section-type section-card">
-            <div class="form-row">
-                <label for="node-input-carousel"><i class="fa fa-th"></i> Carousel</label>
-                <input type="checkbox" id="node-input-carousel" style="width: auto; vertical-align:top; margin-left:20px;"> <span>Do not send message, add to the next card</span>
-            </div>
             <div class="form-row">
                 <label for="node-input-title"><i class="fa fa-pencil-square-o"></i> Title</label>
                 <input type="text" id="node-input-title" style="width:80%;">
