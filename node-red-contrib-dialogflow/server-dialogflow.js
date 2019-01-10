@@ -102,6 +102,8 @@ const receive = (conv, node, config, resolve, reject) => {
         source:     CARRIER
     })
 
+    data.user.id = data.user.id || data.user._id;
+    delete  data.user._id;
     data.user.accessToken = data.message.request.user.accessToken;
 
     let context = getMessageContext(data.message)
