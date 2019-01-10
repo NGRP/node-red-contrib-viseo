@@ -168,12 +168,11 @@ const buildReply = (node, data, config) => {
             event.value = JSON.parse(value);
         }
         reply.event = event;
-        return [ reply ]
     }
-
-    // Prepare speech
-    reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
-    delete data._receipt;
+    else { // Prepare speech
+        reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
+        delete data._receipt;
+    }
 
     // Simple text message
     if (config.sendType === 'text'){
@@ -185,7 +184,6 @@ const buildReply = (node, data, config) => {
 
         reply.text = text;
         if (reply.speech === undefined) reply.speech = text;
-        return [ reply ]
     }
 
     // Simple media message
@@ -199,7 +197,6 @@ const buildReply = (node, data, config) => {
 
         reply.media = media;
         if (reply.speech === undefined) reply.speech = "";
-        return [ reply ]
     }
 
     // Card "signin" message
@@ -225,46 +222,45 @@ const buildReply = (node, data, config) => {
         reply.url   = signinurl;
 
         if (reply.speech === undefined) reply.speech = reply.text;
-        return [ reply ]
     }
-
-
+    
     // Other card message
-    let buttons = getButtons(locale, config, data);
-    buttonsStack.push(data, buttons);
-    reply.buttons = buttons;
+    if (config.sendType === 'quick' || config.sendType === 'card') {
+    
+        let buttons = getButtons(locale, config, data);
+        buttonsStack.push(data, buttons);
+        reply.buttons = buttons;
 
+        if (config.sendType === 'quick') {
+            reply.quicktext = marshall(locale, config.quicktext, data, '');
+            if (config.random){
+                let txt = reply.quicktext.split('\n');
+                reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+            }
+            if (reply.speech === undefined) reply.speech = reply.quicktext;
+        } 
+        else {
 
-    // Quick replies
-    if (config.sendType === 'quick') {
-        reply.quicktext = marshall(locale, config.quicktext, data, '');
-        if (config.random){
-            let txt = reply.quicktext.split('\n');
-            reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+            let title = config.title;
+            let attach = config.attach;
+
+            if (!config.titleType) title = marshall(locale, title,  data, '');
+            else if (config.titleType !== 'str') {
+                let loc = (config.titleType === 'global') ? node.context().global : data;
+                title = helper.getByString(loc, title);
+            }
+            if (!config.attachType) attach = marshall(locale, attach,  data, '');
+            else if (config.attachType !== 'str') {
+                let loc = (config.attachType === 'global') ? node.context().global : data;
+                attach = helper.getByString(loc, attach);
+            }
+            
+            reply.title =    title;
+            reply.subtitle = marshall(locale, config.subtitle,  data, '');
+            reply.subtext =  marshall(locale, config.subtext,   data, '');
+            reply.attach =   attach;
+            if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
         }
-        if (reply.speech === undefined) reply.speech = reply.quicktext;
-    } 
-    else if (config.sendType === 'card') {
-
-        let title = config.title;
-        let attach = config.attach;
-
-        if (!config.titleType) title = marshall(locale, title,  data, '');
-        else if (config.titleType !== 'str') {
-            let loc = (config.titleType === 'global') ? node.context().global : data;
-            title = helper.getByString(loc, title);
-        }
-        if (!config.attachType) attach = marshall(locale, attach,  data, '');
-        else if (config.attachType !== 'str') {
-            let loc = (config.attachType === 'global') ? node.context().global : data;
-            attach = helper.getByString(loc, attach);
-        }
-        
-        reply.title =    title;
-        reply.subtitle = marshall(locale, config.subtitle,  data, '');
-        reply.subtext =  marshall(locale, config.subtext,   data, '');
-        reply.attach =   attach;
-        if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
     }
     
     // Forward data without sending anything
