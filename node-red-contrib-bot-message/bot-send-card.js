@@ -11,7 +11,7 @@ const marshall = (locale, str, data, def) => {
     str = i18n.translate(locale, str);
     str = mustache.render(str, data);
     str = helper.resolve(str, data, def);
-    
+
     return str;
 }
 
@@ -24,7 +24,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.repeat = (data)  => { input(node, data, config, data.reply) };
+        this.on('input', (data)  => { input(node, data, config, null)  });
     }
     RED.nodes.registerType("send-card", register, {});
 
@@ -110,20 +111,20 @@ const getButtons = (locale, config, data) => {
     return buttons;
 }
 
-const input = (node, data, config) => {
+const input = (node, data, config, reply) => {
     let convId = botmgr.getConvId(data)
 
     // Prepare the prompt
     if (config.prompt){
         botmgr.delayCallback(convId, (prompt) => {
             data.prompt = prompt
+            node.warn({ prompt: data})
             sendData(node, data, config)
         })
-
     }
 
     // Retrieve replies
-    let replies = buildReply(node, data, config);
+    let replies = reply || buildReply(node, data, config);
 
     if (!replies){ 
         sendData(node, data, config); 
@@ -132,6 +133,7 @@ const input = (node, data, config) => {
     
     // Emit reply message
     data.reply = replies;
+    data._replyid = node.id;
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
         helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
@@ -150,7 +152,6 @@ const buildReplyText = (locale, data, config, reply) => {
 
     reply.text = text;
     if (reply.speech === undefined) reply.speech = text;
-    return [ reply ]
 };
 
 const buildReplyMedia = (locale, data, config, reply) => {
@@ -163,11 +164,9 @@ const buildReplyMedia = (locale, data, config, reply) => {
 
     reply.media = media;
     if (reply.speech === undefined) reply.speech = "";
-    return [ reply ]
 };
 
 const buildReplySignin = (locale, data, config, reply) => {
-    
     let signintitle = config.signintitle;
     let signinurl = config.signinurl;
 
@@ -188,27 +187,24 @@ const buildReplySignin = (locale, data, config, reply) => {
     reply.url   = signinurl;
 
     if (reply.speech === undefined) reply.speech = reply.text;
-    return [ reply ]
 };
 
 const buildReplyEvent = (locale, data, config, reply) => {
-    debugger;
     let event = { name : config.eventName  }
-        let value = config.eventValue;
-        if (!config.eventValueType || config.eventValueType === 'str'){
-            event.value = marshall(locale, value,  data, '');
-        }
-        else if (config.eventValueType === 'msg') {
-            event.value = helper.getByString(data, value);
-        }
-        else if (config.eventValueType === 'global') {
-            event.value = helper.getByString(node.context().global, value);
-        }
-        else if (config.eventValueType === 'json') {
-            event.value = JSON.parse(value);
-        }
-        reply.event = event;
-        return [ reply ]
+    let value = config.eventValue;
+    if (!config.eventValueType || config.eventValueType === 'str'){
+        event.value = marshall(locale, value,  data, '');
+    }
+    else if (config.eventValueType === 'msg') {
+        event.value = helper.getByString(data, value);
+    }
+    else if (config.eventValueType === 'global') {
+        event.value = helper.getByString(node.context().global, value);
+    }
+    else if (config.eventValueType === 'json') {
+        event.value = JSON.parse(value);
+    }
+    reply.event = event;
 };
 
 const buildReplyCard = (locale, data, config, reply) => {
@@ -231,7 +227,6 @@ const buildReplyCard = (locale, data, config, reply) => {
     reply.attach =   attach;
     if (reply.speech === undefined) 
         reply.speech = reply.subtitle || reply.subtext;
-    return reply;
 };
 
 const buildReplyAdaptiveCard = (locale, data, config, reply) => {
@@ -309,55 +304,56 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
 
 const buildReply = (node, data, config) => {
     let locale = botmgr.getLocale(data);
-
-    // Prepare speech
-    let speech = config.speechText ? marshall(locale, config.speechText, data, '') : config.speech;
     let reply = {
         "type"      : config.sendType,
-        "speech"    : speech,
         "prompt"    : config.prompt,
         "receipt"   : data._receipt
     };
-    delete data._receipt;
+
+    // Simple event message
+    if (config.sendType === 'event'){
+        buildReplyEvent(locale, data, config, reply);
+    } else {
+        reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
+        delete data._receipt;
+    }
 
     // Simple text message
     if (config.sendType === 'text'){
-          return buildReplyText(locale, data, config, reply);
+        buildReplyText(locale, data, config, reply);
     }
 
     // Simple media message
     if (config.sendType === 'media'){
-         return buildReplyMedia(locale, data, config, reply);
+        buildReplyMedia(locale, data, config, reply);
     }
 
     // Card "signin" message
     if (config.sendType === 'signin'){
-        return buildReplySignin(locale, data, config, reply);
-    }
-
-    // Simple event message
-    if (config.sendType === 'event'){
-       return buildReplyEvent(locale, data, config, reply);
+        buildReplySignin(locale, data, config, reply);
     }
 
     // Other card message
-    let buttons = getButtons(locale, config, data);
-    buttonsStack.push(data, buttons);
-    reply.buttons = buttons;
+    if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard')  {
+        let buttons = getButtons(locale, config, data);
+        buttonsStack.push(data, buttons);
+        reply.buttons = buttons;
 
-    // Quick replies
-    if (config.sendType === 'quick') {
-        reply.quicktext = marshall(locale, config.quicktext, data, '');
-        if (config.random){
-            let txt = reply.quicktext.split('\n');
-            reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+        // Quick replies
+        if (config.sendType === 'quick') {
+            reply.quicktext = marshall(locale, config.quicktext, data, '');
+            if (config.random){
+                let txt = reply.quicktext.split('\n');
+                reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+            }
+            if (reply.speech === undefined) reply.speech = reply.quicktext;
+        } 
+        else if (config.sendType === 'card') {
+            buildReplyCard(locale, data, config, reply);
         }
-    } 
-    else if (config.sendType === 'card') {
-         reply = buildReplyCard(locale, data, config, reply);
-    }
-    else if (config.sendType === 'adaptiveCard') {
-        buildReplyAdaptiveCard(locale, data, config, reply);
+        else if (config.sendType === 'adaptiveCard') {
+            buildReplyAdaptiveCard(locale, data, config, reply);
+        }
     }
 
     // Forward data without sending anything
@@ -380,7 +376,6 @@ const buildReply = (node, data, config) => {
     } //else, buttons popped on prompt
     return carousel.length > 0 ? carousel : [ reply ];
 };
-
 
 const sendData = (node, data, config) => {
 
@@ -428,18 +423,18 @@ const sendData = (node, data, config) => {
                 let rgxp = new RegExp(button.regexp || '^'+buttonValue+'$', 'i');
                 let testValue = data.prompt.text
 
-                if (button.unaccentuate) {
+                if(button.unaccentuate) {
                     testValue = testValue.replace(new RegExp(/\s/g),"");
-                    testValue = testValue.replace(new RegExp(/[Ã Ã¡Ã¢Ã£Ã¤Ã¥]/g),"a");
-                    testValue = testValue.replace(new RegExp(/Ã¦/g),"ae");
-                    testValue = testValue.replace(new RegExp(/Ã§/g),"c");
-                    testValue = testValue.replace(new RegExp(/[Ã¨Ã©ÃªÃ«]/g),"e");
-                    testValue = testValue.replace(new RegExp(/[Ã¬Ã­Ã®Ã¯]/g),"i");
-                    testValue = testValue.replace(new RegExp(/Ã±/g),"n");                
-                    testValue = testValue.replace(new RegExp(/[Ã²Ã³Ã´ÃµÃ¶]/g),"o");
-                    testValue = testValue.replace(new RegExp(/Å“/g),"oe");
-                    testValue = testValue.replace(new RegExp(/[Ã¹ÃºÃ»Ã¼]/g),"u");
-                    testValue = testValue.replace(new RegExp(/[Ã½Ã¿]/g),"y");
+                    testValue = testValue.replace(new RegExp(/[àáâãäå]/g),"a");
+                    testValue = testValue.replace(new RegExp(/æ/g),"ae");
+                    testValue = testValue.replace(new RegExp(/ç/g),"c");
+                    testValue = testValue.replace(new RegExp(/[èéêë]/g),"e");
+                    testValue = testValue.replace(new RegExp(/[ìíîï]/g),"i");
+                    testValue = testValue.replace(new RegExp(/ñ/g),"n");                
+                    testValue = testValue.replace(new RegExp(/[òóôõö]/g),"o");
+                    testValue = testValue.replace(new RegExp(/œ/g),"oe");
+                    testValue = testValue.replace(new RegExp(/[ùúûü]/g),"u");
+                    testValue = testValue.replace(new RegExp(/[ýÿ]/g),"y");
                 }
 
                 if (!rgxp.test(testValue)) {
@@ -475,7 +470,7 @@ const sendData = (node, data, config) => {
             }
         }
 
-        if (acceptValue === false) {
+        if(acceptValue === false) {
             //if we get here, it means that the prompted text doesn't match any button and wasn't expected
             helper.emitAsyncEvent('prompt', node, data, config, (data) => {
                 helper.emitAsyncEvent('prompt-unexpected', node, data, config, (data) => {
@@ -492,7 +487,7 @@ const sendData = (node, data, config) => {
     } else {
         _continue(data);
     }
-};  
+}
 
 /**
  * Takes the "whole" text and builds a "body" for the adaptive card.
@@ -501,92 +496,56 @@ const sendData = (node, data, config) => {
  * @param {*} separator The parameter used as a section separator. Each line of text is finally a container, with title containers non-clickable and item container clickable.
  */
 const buildAdaptiveCardJson = function(whole, body, separator) {
-/**Original text is:
- **Memory**:
- - 1. Item memory 1
- **Storage**:
-  - 1. Item storage 1
-  - 2. Item storage 2
- **Note**:
-  - 1. Item Note 1
- **Standard**:
-  - 1. Item Standard 1
------------------------------------------       
-
-part is:  with index: 0
- line is:  with index: 0
- ---------------
- part is: Memory**:
-  - 1. Item memory 1
-  with index: 1
- line is: Memory**: with index: 0
- line is:  - 1. Item memory 1 with index: 1
- line is:  with index: 2
- ---------------
- part is: Storage**:
-   - 1. Item storage 1
-   - 2. Item storage 2
-  with index: 2
- line is: Storage**: with index: 0
- line is:   - 1. Item storage 1 with index: 1
- line is:   - 2. Item storage 2 with index: 2
- line is:  with index: 3
- ---------------
- part is: Note**:
-   - 1. Item Note 1
-  with index: 3
- line is: Note**: with index: 0
- line is:   - 1. Item Note 1 with index: 1
- line is:  with index: 2
- ---------------
- part is: Standard**:
-   - 1. Item Standard 1 with index: 4
- line is: Standard**: with index: 0
- line is:   - 1. Item Standard 1 with index: 1
-*/
-
-       //TODO refactor
-
-       whole.split(' '+ separator).forEach((part, index) => {
-        if (index === 0) {
-            // begins with title directly
-            if (part.startsWith(' '+ separator, 0)) { 
-                body.push({
-                  "type": "Container",
-                  "items": [
-                      {
-                          "type": "TextBlock",
-                          "wrap": true,
-                          "size": "default",
-                          "text": part //  here is what I found...
-                      }	
-                  ]
-              });
-            } else { 
-                // Otherwise, begin with attributes belong to last title
-                part.split('\n').forEach((line, i) => {
-                    let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                    body.push({
-                              "type": "Container",
-                              "items": [
-                                  {
-                                      "type": "TextBlock",
-                                      "wrap": true,
-                                      "size": "default",
-                                      "text": line						
-                                  }
-                              ],
-                              "selectAction": {
-                                  "type": "Action.Submit",
-                                  "title": "cool link",
-                                  "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
-                              }
-                            });
-                        });
-          }
-        } else {
-            part.split('\n').forEach((line, i) => {
-                if (i === 0) {
+    /**Original text is:
+     **Memory**:
+     - 1. Item memory 1
+     **Storage**:
+      - 1. Item storage 1
+      - 2. Item storage 2
+     **Note**:
+      - 1. Item Note 1
+     **Standard**:
+      - 1. Item Standard 1
+    -----------------------------------------       
+    
+    part is:  with index: 0
+     line is:  with index: 0
+     ---------------
+     part is: Memory**:
+      - 1. Item memory 1
+      with index: 1
+     line is: Memory**: with index: 0
+     line is:  - 1. Item memory 1 with index: 1
+     line is:  with index: 2
+     ---------------
+     part is: Storage**:
+       - 1. Item storage 1
+       - 2. Item storage 2
+      with index: 2
+     line is: Storage**: with index: 0
+     line is:   - 1. Item storage 1 with index: 1
+     line is:   - 2. Item storage 2 with index: 2
+     line is:  with index: 3
+     ---------------
+     part is: Note**:
+       - 1. Item Note 1
+      with index: 3
+     line is: Note**: with index: 0
+     line is:   - 1. Item Note 1 with index: 1
+     line is:  with index: 2
+     ---------------
+     part is: Standard**:
+       - 1. Item Standard 1 with index: 4
+     line is: Standard**: with index: 0
+     line is:   - 1. Item Standard 1 with index: 1
+    */
+    
+           //TODO refactor
+    
+           whole.split(' '+ separator).forEach((part, index) => {
+            if (index === 0) {
+                // begins with title directly
+                if (part.startsWith(' '+ separator, 0)) { 
                     body.push({
                       "type": "Container",
                       "items": [
@@ -594,31 +553,65 @@ part is:  with index: 0
                               "type": "TextBlock",
                               "wrap": true,
                               "size": "default",
-                              "text": separator + line // memory
-                          }
-                      ]});
-                } else {
-                    let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                    body.push({
-                              "type": "Container",
-                              "items": [
-                                  {
-                                      "type": "TextBlock",
-                                      "wrap": true,
-                                      "size": "default",
-                                      "text": line						
+                              "text": part //  here is what I found...
+                          }	
+                      ]
+                  });
+                } else { 
+                    // Otherwise, begin with attributes belong to last title
+                    part.split('\n').forEach((line, i) => {
+                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                        body.push({
+                                  "type": "Container",
+                                  "items": [
+                                      {
+                                          "type": "TextBlock",
+                                          "wrap": true,
+                                          "size": "default",
+                                          "text": line						
+                                      }
+                                  ],
+                                  "selectAction": {
+                                      "type": "Action.Submit",
+                                      "title": "cool link",
+                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
                                   }
-                              ],
-                              "selectAction": {
-                                  "type": "Action.Submit",
-                                  "title": "cool link",
-                                  "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
-                              }
+                                });
                             });
-                }
-        });
-    }
-});
-
+              }
+            } else {
+                part.split('\n').forEach((line, i) => {
+                    if (i === 0) {
+                        body.push({
+                          "type": "Container",
+                          "items": [
+                              {
+                                  "type": "TextBlock",
+                                  "wrap": true,
+                                  "size": "default",
+                                  "text": separator + line // memory
+                              }
+                          ]});
+                    } else {
+                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                        body.push({
+                                  "type": "Container",
+                                  "items": [
+                                      {
+                                          "type": "TextBlock",
+                                          "wrap": true,
+                                          "size": "default",
+                                          "text": line						
+                                      }
+                                  ],
+                                  "selectAction": {
+                                      "type": "Action.Submit",
+                                      "title": "cool link",
+                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+                                  }
+                                });
+                    }
+            });
+        }
+    });   
 }
-
