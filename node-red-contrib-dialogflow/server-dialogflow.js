@@ -6,6 +6,7 @@ const CARRIER = "GoogleHome"
 //  NODE-RED
 // --------------------------------------------------------------------------
 
+
 module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
@@ -27,7 +28,13 @@ const start = (RED, node, config) => {
 
     // Start HTTP Route
     let uri = '/dialogflow-server/';
-    app.fallback(conv => { return receive(conv, node, config); });
+    app.fallback(conv => { 
+        return new Promise(function(resolve, reject) {
+            receive(conv, node, config, resolve, reject);
+        }); 
+    });
+
+
     RED.httpNode.post(uri, app);
 
     // Add listener to reply
@@ -78,11 +85,10 @@ const getMessageContext = (message) => {
 //  RECEIVE
 // ------------------------------------------
 
-const receive = (conv, node, config) => {
+const receive = (conv, node, config, resolve, reject) => {
     // node.warn({ "RECEIVED" : conv});
 
     if (!conv || !conv.request) {
-        console.log({error: 'Empty request received', content: conv});
         node.warn({error: 'Empty request received', content: conv});
         return;
     }
@@ -96,10 +102,14 @@ const receive = (conv, node, config) => {
         source:     CARRIER
     })
 
+    data.user.id = data.user.id || data.user._id;
+    delete  data.user._id;
     data.user.accessToken = data.message.request.user.accessToken;
 
     let context = getMessageContext(data.message)
-        context.conv = conv
+    context.conv = conv;
+    context.resolve = resolve;
+    context.reject = reject;
 
     if (conv.request.inputs[0].arguments !== undefined && 
         conv.request.inputs[0].arguments.length > 0) {
@@ -113,7 +123,6 @@ const receive = (conv, node, config) => {
     // Handle Prompt
     let convId  = botmgr.getConvId(data)
     if (botmgr.hasDelayedCallback(convId, data.message)) {
-        'has delay callback'; 
         return;
     }
 
@@ -185,19 +194,28 @@ const reply = (node, data, config) => {
                                   : getMessageContext(data.message)
         let conv = context.conv;
 
+        let resolve = context.resolve;
+        let reject = context.reject;
+
         // Building the message
         let message = getMessage(data.reply);
 
-        node.warn({ REPLY: message, receive: data.message, rep: data.reply})
+        // node.warn({ REPLY: message, receive: data.message, rep: data.reply})
 
         if (!message || message.data.length === 0) return false;
-        if (message.expectUserResponse === false) conv.close(message.data[0]);
-        else for (let m of message.data) conv.ask(m);
-    
+        let endMsg = message.data.pop();
+        for (let m of message.data) conv.ask(m);
+
+        if (message.expectUserResponse === false) conv.close(endMsg);
+        else conv.ask(endMsg);
+        
         // Trap the event in order to continue
         helper.fireAsyncCallback(data);
 
-    } catch(ex){ node.warn(ex) }
+        resolve();
+
+    } catch(ex){ node.warn(ex); }
+
 }
 
 // ------------------------------------------
@@ -214,212 +232,251 @@ const getMessage = exports.getMessage = (replies) => {
     if (!replies) return;
     let msg = { expectUserResponse : false, data : [] }
 
-    // Carousel of cards
-    if (replies.length > 1){
+    // Test if carousel
+    let items = [];
+    for (let i=0; i<replies.length; i++) {
+        let reply = replies[i];
 
-        let items = [];
-        for (let i=0; i<replies.length; i++) {
-            if (i==0) {
-                let text = replies[i].subtitle || replies[i].title;
-                let speech = replies[i].speech || text ;
-                msg.data.push(new SimpleResponse({speech: speech, text: text }))
-                continue;
-            }
+        if (i==0) {
+            if (reply.type !== "card" && reply.type !== "text" && reply.type !== "quick") break;
+            let text   = reply.text || reply.quicktext || reply.subtitle || reply.title;
+            let speech = reply.speech || text;
+            
+            msg.data.push(new SimpleResponse({speech: speech, text: text }))
 
-            let item = { 
-                title: replies[i].title, 
-                description: replies[i].subtitle || '', 
-                optionInfo: { key: replies[i].title, synonyms: [] }
-            };
+            // Quick replies
+            if (reply.type === 'quick'){
 
-            if (replies[i].prompt) msg.expectUserResponse = true;
-            if (replies[i].attach) {
-                item.image = new Image({ 
-                    url: helper.absURL(replies[i].attach), 
-                    alt: replies[i].subtitle || replies[i].title
-                })
-            }
-            if (replies[i].buttons) {
-                let button = replies[i].buttons[0];
-                if ("string" === typeof button) item.optionInfo.key = button ;
-                else {
-                    item.optionInfo.key = button.value
-                    item.optionInfo.synonyms.push(button.title)
+                let suggestions = []
+                for (let button of reply.buttons){
+
+                    if (button.action && button.action === 'askLocation') {
+                        msg.data = [new Permission({context: text || '', permissions: "DEVICE_PRECISE_LOCATION" })];
+                        continue;
+                    } 
+                    if (button.action && button.action === 'askIdentity') {
+                        msg.data = [new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] })];
+                        continue;
+                    }
+
+                    if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
+                    else suggestions.push(button.title);
                 }
+
+                msg.data.push(new Suggestions(suggestions));
             }
 
-            items.push(item) ;
+            continue;
+        }
+        else if (reply.type !== "card") {
+            items = [];
+            break;
         }
 
+        let item = { 
+            title: reply.title, 
+            description: reply.subtitle || '', 
+            optionInfo: { key: reply.title, synonyms: [] }
+        };
+
+        if (reply.prompt) msg.expectUserResponse = true;
+        if (reply.attach) {
+            item.image = new Image({ 
+                url: helper.absURL(reply.attach), 
+                alt: reply.subtitle || reply.title
+            })
+        }
+        if (reply.buttons) {
+            let button = reply.buttons[0];
+            if ("string" === typeof button) item.optionInfo.key = button ;
+            else {
+                item.optionInfo.key = button.value
+                item.optionInfo.synonyms.push(button.title)
+            }
+        }
+
+        items.push(item) ;
+    }
+
+    if (items.length > 1) {
         msg.data.push(new Carousel({ imageDisplayOptions: 'DEFAULT', items: items }));
         return msg;
     }
+    else msg.data = [];
 
-    let reply = replies[0];
-    if (reply.prompt) msg.expectUserResponse = true;
+    for (let i=0; i<replies.length; i++) {
 
-    // Signin
-    if (reply.type === 'signin'){
-        msg.data = [new SignIn()];
-        return msg;
-    }
+        // Not only cards
+        let reply = replies[i];
+        if (reply.prompt) msg.expectUserResponse = true;
 
-    // Transaction
-    if (reply.type === "transaction") {
-        if (reply.intent == "confirm") {
+        // Signin
+        if (reply.type === 'signin'){
+            msg.data.push(new SignIn());
+            continue;
+        }
 
-            let items = []
-            let totalPrice = 0
+        // Transaction
+        if (reply.type === "transaction") {
+            if (reply.intent == "confirm") {
 
-            for (let item of reply.orderItems) {
-                let units = String(Math.trunc(price));
-                let nanos = String(price).replace(/.*\./, '');
-                    nanos = (nanos + '000000000').substring(0,9);
-                    nanos = (price < 0) ? Number('-' + nanos) : Number(nanos);
+                let items = []
+                let totalPrice = 0
 
-                items.push({
-                    name: item.name,
-                    id: item.name.toLowerCase().replace(/\s/g, '_'),
-                    price: { 
-                        amount: { currencyCode: 'EUR', units: units, nanos: nanos }, 
-                        type: 'ESTIMATE'
-                    },
-                    quantity: 1,
-                    type: 'REGULAR',
-                    image: {
-                        url: item.imageUrl,
-                        accessibilityText: item.name
-                    },
-                    subLines: [{note: item.description}]
-                })
+                for (let item of reply.orderItems) {
+                    let units = String(Math.trunc(price));
+                    let nanos = String(price).replace(/.*\./, '');
+                        nanos = (nanos + '000000000').substring(0,9);
+                        nanos = (price < 0) ? Number('-' + nanos) : Number(nanos);
 
-                totalPrice += item.price
-            }
-
-            let units = String(Math.trunc(totalPrice));
-            let nanos = String(totalPrice).replace(/.*\./, '');
-                nanos = (nanos + '000000000').substring(0,9);
-                nanos = (totalPrice < 0) ? Number('-' + nanos) : Number(nanos);
-
-            let options = {
-                proposedOrder: {
-                    id: reply.orderId,
-                    cart: {
-                        merchant: {
-                            id: reply.merchant.toLowerCase().replace(/\s/g, '_'),
-                            name: reply.merchant
+                    items.push({
+                        name: item.name,
+                        id: item.name.toLowerCase().replace(/\s/g, '_'),
+                        price: { 
+                            amount: { currencyCode: 'EUR', units: units, nanos: nanos }, 
+                            type: 'ESTIMATE'
                         },
-                        linesItem: items
-                    },
-                    totalPrice: {
-                        amount: { currencyCode: 'EUR', units: units, nanos: nanos }, 
-                        type: 'ESTIMATE'
+                        quantity: 1,
+                        type: 'REGULAR',
+                        image: {
+                            url: item.imageUrl,
+                            accessibilityText: item.name
+                        },
+                        subLines: [{note: item.description}]
+                    })
+
+                    totalPrice += item.price
+                }
+
+                let units = String(Math.trunc(totalPrice));
+                let nanos = String(totalPrice).replace(/.*\./, '');
+                    nanos = (nanos + '000000000').substring(0,9);
+                    nanos = (totalPrice < 0) ? Number('-' + nanos) : Number(nanos);
+
+                let options = {
+                    proposedOrder: {
+                        id: reply.orderId,
+                        cart: {
+                            merchant: {
+                                id: reply.merchant.toLowerCase().replace(/\s/g, '_'),
+                                name: reply.merchant
+                            },
+                            linesItem: items
+                        },
+                        totalPrice: {
+                            amount: { currencyCode: 'EUR', units: units, nanos: nanos }, 
+                            type: 'ESTIMATE'
+                        }
                     }
                 }
-            }
 
-            if (totalPrice > 0) {
-                options.paymentOptions = {
-                    actionProvidedOptions: {
-                        type: 'ON_FULFILLMENT',
-                        displayName: "Règlement en magasin"
+                if (totalPrice > 0) {
+                    options.paymentOptions = {
+                        actionProvidedOptions: {
+                            type: 'ON_FULFILLMENT',
+                            displayName: "Règlement en magasin"
+                        }
                     }
                 }
-            }
 
-            msg.data = [new TransactionDecision(options)];
-            return msg;
+                msg.data.push(new TransactionDecision(options));
+                continue;
 
-        } 
-        
-        if (reply.intent == "requirement_check") {
-            msg.data = [new TransactionRequirements()];
-            return msg;
-        }
-    }
-
-    // Receipt
-    if (reply.receipt !== undefined) {
-
-        let orderUpdateObject = {
-            actionOrderId: reply.receipt.orderId, 
-            orderState: { 
-                label: reply.receipt.orderStateNam, 
-                state: reply.receipt.orderState
-            },
-            infoExtension: {},
-            orderManagementActions: [],
-            updateTime: new Date().toISOString()
-        };
-
-        orderUpdateObject.infoExtension['RECEIPT'] = { userVisibleOrderId: reply.receipt.orderId };
-
-        for (let action of reply.receipt.orderActions) {
-            orderUpdateObject.orderManagementActions.push({button: {openUrlAction: {url: action.url}, title: action.title}, type: action.type})
-        }
-
-        msg.data.push(new OrderUpdate(orderUpdateObject));
-    }
-
-    // Card
-    if (reply.type === "card" || reply.type === 'media') {
-        let options = { 
-            buttons: [],
-            subtitle: reply.subtitle,
-            text: reply.text || reply.quicktext,
-            title: reply.title
-        }
-
-        if (reply.media || reply.attach) {
-            options.image = { url: (reply.media ? helper.absURL(reply.media) : helper.absURL(reply.attach)), accessibilityText: item.title }
-            options.imageDisplayOptions = 'CROPPED';
-        }
-
-        if (reply.buttons) {
-            for (let btn of reply.buttons){
-                
-                if (btn.action !== 'openUrl') continue;
-                options.buttons.push(new Button({ title: btn.title, openUrlAction: { url: helper.absURL(btn.value)}}));
+            } 
+            
+            if (reply.intent == "requirement_check") {
+                msg.data.push(TransactionRequirements());
+                continue;
             }
         }
-        
-        msg.data.push(new BasicCard(options));
-        return msg;
-    }
 
-    // Simple text and quick replies
-    if (reply.type === 'text' || reply.type === 'quick') {
-        let text = reply.text || reply.quicktext;
-        if (!text && reply.title) text = reply.title + ' ' + (reply.subtitle || '');
-        let speech = reply.speech || text;
-        
-        msg.data.push(new SimpleResponse({speech: speech, text: text }))
+        // Receipt
+        if (reply.receipt !== undefined) {
 
-        // Quick replies
-        if (reply.type === 'quick'){
+            let orderUpdateObject = {
+                actionOrderId: reply.receipt.orderId, 
+                orderState: { 
+                    label: reply.receipt.orderStateNam, 
+                    state: reply.receipt.orderState
+                },
+                infoExtension: {},
+                orderManagementActions: [],
+                updateTime: new Date().toISOString()
+            };
 
-            let suggestions = []
-            for (let button of reply.buttons){
+            orderUpdateObject.infoExtension['RECEIPT'] = { userVisibleOrderId: reply.receipt.orderId };
 
-                if (button.action && button.action === 'askLocation') {
-                    msg.data = [new Permission({context: text || '', permissions: "DEVICE_PRECISE_LOCATION" })];
-                    return msg;
-                } 
-                if (button.action && button.action === 'askIdentity') {
-                    msg.data = [new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] })];
-                    return msg;
+            for (let action of reply.receipt.orderActions) {
+                orderUpdateObject.orderManagementActions.push({button: {openUrlAction: {url: action.url}, title: action.title}, type: action.type})
+            }
+
+            msg.data.push(new OrderUpdate(orderUpdateObject));
+        }
+
+        // Image
+        if (reply.type === 'media') {
+            msg.data.push(new Image({ url: helper.absURL(reply.media), alt: '[image]'}));
+            continue;
+        }
+
+        // Card
+        if (reply.type === "card") {
+            let options = { 
+                buttons: [],
+                subtitle: reply.subtitle,
+                text: reply.text || reply.quicktext,
+                title: reply.title
+            }
+
+            if (reply.media || reply.attach) {
+                options.image = { url: helper.absURL(reply.attach), accessibilityText: reply.title || "[image]" }
+                options.imageDisplayOptions = 'CROPPED';
+            }
+
+            if (reply.buttons) {
+                for (let btn of reply.buttons){
+                    
+                    if (btn.action !== 'openUrl') continue;
+                    options.buttons.push(new Button({ title: btn.title, openUrlAction: { url: helper.absURL(btn.value)}}));
+                }
+            }
+            
+            msg.data.push(new BasicCard(options));
+            continue;
+        }
+
+        // Simple text and quick replies
+        if (reply.type === 'text' || reply.type === 'quick') {
+            let text = reply.text || reply.quicktext;
+            if (!text && reply.title) text = reply.title + ' ' + (reply.subtitle || '');
+            let speech = reply.speech || text;
+            
+            msg.data.push(new SimpleResponse({speech: speech, text: text }))
+
+            // Quick replies
+            if (reply.type === 'quick'){
+
+                let suggestions = []
+                for (let button of reply.buttons){
+
+                    if (button.action && button.action === 'askLocation') {
+                        msg.data = [new Permission({context: text || '', permissions: "DEVICE_PRECISE_LOCATION" })];
+                        continue;
+                    } 
+                    if (button.action && button.action === 'askIdentity') {
+                        msg.data = [new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] })];
+                        continue;
+                    }
+
+                    if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
+                    else suggestions.push(button.title);
                 }
 
-                if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
-                else suggestions.push(button.title);
+                msg.data.push(new Suggestions(suggestions));
             }
-
-            msg.data.push(new Suggestions(suggestions));
+            continue;
         }
-        return msg;
     }
-
-
 
     return msg;
 }

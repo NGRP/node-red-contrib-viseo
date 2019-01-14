@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-bot-message",
-    "version"       : "0.1.16",
+    "version"       : "0.1.19",
     "description"   : "VISEO Bot Maker - Sends messages to the user",
     "dependencies"  : {
         "mustache"                   : "^2.3.0",
@@ -16,11 +16,13 @@
     "node-red" : {
         "nodes": {
             "send-card":    "bot-send-card.js",
+            "repeat-card":  "bot-repeat-card.js",
             "profile":      "bot-profile.js",
             "bot-event":    "bot-event.js",
             "bot-continue": "bot-continue.js",
             "bot-wrapper":  "bot-wrapper.js",
-            "node-bot-transaction": "bot-transaction.js"
+            "node-bot-transaction": "bot-transaction.js",
+            "send-custom-message": "bot-send-custom-message.js"
         }
     },
   "devDependencies": {

@@ -30,6 +30,13 @@ module.exports = function(RED) {
             config.port = parseInt(config.port);
         }
 
+        if (config.resetCommand) {
+            let lastSlash = config.resetCommand.lastIndexOf('/');
+            let pattern = config.resetCommand.slice(1, lastSlash);
+            let flags = config.resetCommand.slice(lastSlash + 1);
+            config.resetCommand = new RegExp(pattern, flags);
+        }
+
         globalTypingDelay = config.delay || DEFAULT_TYPING_DELAY;
         
         config.appId = node.credentials.appId;
@@ -106,10 +113,20 @@ const reply = (bot, node, data, config) => {
     if (!address || address.carrier !== 'botbuilder') return false;
 
     // Building the message
-    let message = getMessage(node, address, data.reply, timestamp == undefined);
-    if (!message) return false;
+    let message;
 
-    message.address(address);
+    if (data.customReply) {
+        message = data.customReply;
+        message.address = address;                                             
+        message.data = {
+            type: message.type
+        };
+    } else {
+        message = getMessage(node, address, data.reply, timestamp == undefined);
+        if (!message) return false;
+
+        message.address(address);
+    }
 
     let customTyping = (callback) => {
        try {

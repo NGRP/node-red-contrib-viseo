@@ -321,6 +321,7 @@ const buildReply = (node, data, config) => {
     // Simple text message
     if (config.sendType === 'text'){
         buildReplyText(locale, data, config, reply);
+
     }
 
     // Simple media message
@@ -335,6 +336,7 @@ const buildReply = (node, data, config) => {
 
     // Other card message
     if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard')  {
+
         let buttons = getButtons(locale, config, data);
         buttonsStack.push(data, buttons);
         reply.buttons = buttons;
@@ -353,6 +355,7 @@ const buildReply = (node, data, config) => {
         }
         else if (config.sendType === 'adaptiveCard') {
             buildReplyAdaptiveCard(locale, data, config, reply);
+
         }
     }
 
