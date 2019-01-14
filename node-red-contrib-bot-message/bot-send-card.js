@@ -600,6 +600,3 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         buildAdaptiveCardJson(textToShow, reply.body, separator);
     }
 }
-
-
-
