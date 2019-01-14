@@ -93,32 +93,19 @@ const receive = (conv, node, config, resolve, reject) => {
         return;
     }
 
-    let data = botmgr.buildMessageFlow({ message : conv }, {
-        userLocale: 'message.request.user.locale',
-        userId:     'message.request.user.userId', 
+    let data = botmgr.buildMessageFlow({ message : JSON.parse(JSON.stringify(conv)) }, {
+        userLocale: 'message.user.locale',
+        userId:     'message.user._id', 
         convId:     'message.request.conversation.conversationId',
-        payload:    'message.request.inputs[0].rawInputs[0].query',
-        inputType:  'message.request.inputs[0].rawInputs[0].inputType',
+        payload:    'message.input.raw',
+        inputType:  'message.input.type',
         source:     CARRIER
     })
-
-    data.user.id = data.user.id || data.user._id;
-    delete  data.user._id;
-    data.user.accessToken = data.message.request.user.accessToken;
 
     let context = getMessageContext(data.message)
     context.conv = conv;
     context.resolve = resolve;
     context.reject = reject;
-
-    if (conv.request.inputs[0].arguments !== undefined && 
-        conv.request.inputs[0].arguments.length > 0) {
-        data.message.text = conv.request.inputs[0].arguments[0].textValue;
-    }
-    else if (conv.request.inputs[0].rawInputs !== undefined && 
-        conv.request.inputs[0].rawInputs.length > 0) {
-        data.message.text = conv.request.inputs[0].rawInputs[0].query;
-    }
 
     // Handle Prompt
     let convId  = botmgr.getConvId(data)
@@ -200,7 +187,7 @@ const reply = (node, data, config) => {
         // Building the message
         let message = getMessage(data.reply);
 
-        // node.warn({ REPLY: message, receive: data.message, rep: data.reply})
+        //node.warn({ REPLY: message, receive: data.message, rep: data.reply})
 
         if (!message || message.data.length === 0) return false;
         let endMsg = message.data.pop();
