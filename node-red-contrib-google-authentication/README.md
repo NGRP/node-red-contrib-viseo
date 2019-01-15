@@ -9,8 +9,10 @@ Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-google-speech
+npm install node-red-contrib-viseo-google-authentication
 ```
+
+And use [wizard](https://console.developers.google.com/flows/enableapi?apiid=sheets.googleapis.com&pli=1) to create or select a project in the Google Developers Console and automatically turn on the API.
 
 ## Getting Help
 
