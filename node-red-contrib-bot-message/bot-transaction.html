@@ -26,22 +26,23 @@
 
         oneditprepare: function() {
 
-
             $('#node-input-intent').change(function() {
 
-                $('.row-for-transaction, .row-after-transaction').hide()
-                $('.form-row').find('input[type="text"]').typedInput('show');
+                $('.row-for-transaction, .row-after-transaction').hide();
 
                 switch($(this).val()) {
                     case 'confirm':
-                        $('.row-for-transaction').show();
+                        $('.row-for-transaction').show()
+                            .find('.form-row input[type="text"]').typedInput('show');
                         break;
 
                     case 'receipt':
-                        $('.row-after-transaction').show();
+                        $('.row-after-transaction').show()
+                            .find('.form-row input[type="text"]').typedInput('show');
                         break;
                 }
             }).val(this.intent);
+            
 
             $('#node-input-name').typedInput({ default: 'str', types: ['str'], type:'str' });
             $('#node-input-merchant').typedInput({ default: 'str', types: ['str'], type:'str' });
@@ -51,6 +52,8 @@
             $('#node-input-orderActions').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderActionsType") });
             $('#node-input-orderId').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderIdType") });
             $('#node-input-carrierId').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-carrierIdType") });
+
+
         }
     });
 </script>
