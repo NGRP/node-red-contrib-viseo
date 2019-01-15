@@ -12,7 +12,7 @@ Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 npm install node-red-contrib-viseo-google-authentication
 ```
 
-And use [wizard](https://console.developers.google.com/flows/enableapi?apiid=sheets.googleapis.com&pli=1) to create or select a project in the Google Developers Console and automatically turn on the API.
+And follow the [guide](https://developers.google.com/sheets/api/quickstart/nodejs) to get the required credential via create or select a project in the Google Developers Console.
 
 ## Getting Help
 
