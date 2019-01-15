@@ -44,7 +44,10 @@
                 $(".stt, .tts").hide();
                 let $inputs = $("." + ($(this).val() || 'tts'));
                 $inputs.show();
-                $inputs.find('input[type=text]').typedInput('show');
+                $inputs.find('label').each( function(i, b) {
+                    let _id = $(b).attr('for');
+                     $('#' + _id).typedInput('show');
+                })
             })
         }
     });
