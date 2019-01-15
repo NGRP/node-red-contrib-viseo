@@ -223,6 +223,10 @@ const buildReply = (node, data, config) => {
 
         if (reply.speech === undefined) reply.speech = reply.text;
     }
+
+    if(config.sendType === 'confirm') {
+        reply.text = marshall(locale, config.confirmtext,  data, '');
+    }
     
     // Other card message
     if (config.sendType === 'quick' || config.sendType === 'card') {

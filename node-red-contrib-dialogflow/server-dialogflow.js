@@ -21,7 +21,7 @@ module.exports = function(RED) {
 let LISTENERS_REPLY = {};
 let LISTENERS_PROMPT = {};
 
-const {dialogflow, SimpleResponse, Carousel, SignIn, TransactionDecision, TransactionRequirements, OrderUpdate, Button, BasicCard, Permission, Suggestions, Image} = require('actions-on-google');
+const {dialogflow, SimpleResponse, Carousel, SignIn, TransactionDecision, TransactionRequirements, OrderUpdate, Button, BasicCard, Permission, Suggestions, Image, Confirmation} = require('actions-on-google');
 let app = dialogflow();
 
 const start = (RED, node, config) => {  
@@ -301,6 +301,11 @@ const getMessage = exports.getMessage = (replies) => {
         if (reply.type === 'signin'){
             msg.data.push(new SignIn());
             continue;
+        }
+
+        if (reply.type === 'confirm'){
+            let text = reply.text;
+            msg.data.push(new Confirmation(text));
         }
 
         // Transaction
