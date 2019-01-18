@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-viseo-google-speech",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "VISEO Bot Maker - Google Speech TTS/STT",
     "dependencies": {
         "node-red-contrib-viseo-google-authentication": "~0.0",
