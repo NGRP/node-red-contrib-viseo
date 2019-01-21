@@ -56,6 +56,8 @@
             signinurl:    { value: undefined },
             signinurlType:    { value: "str" },
 
+            confirmtext : {value: undefined },
+
             shcardtext:      { value: undefined },
             shcardtitle:     { value: undefined },
             shcardtitleType:     { value: "str" },
@@ -139,8 +141,12 @@
                 $('.section-type, .section-share').addClass('hide');
                 $('.section-'+type).removeClass('hide');
 
-                if (type === "event") $('.section-titles').addClass('hide');
-                else $('.section-titles').removeClass('hide');
+                if (type === "event") {
+                    $('.section-titles').addClass('hide');
+                }
+                else {
+                    $('.section-titles').removeClass('hide');
+                }
 
                 if (type === "card") {
                     displaySharedCard()
@@ -562,6 +568,7 @@
                 <option value="card">Card</option>
                 <option value="signin">SignIn</option>
                 <option value="event">Event</option>
+                <option value="confirm">Confirm</option>
             </select>
         </div>
         <br>
@@ -625,7 +632,14 @@
                 <input type="text" id="node-input-signinurl" placeholder="https://url.to/auth" style="width:80%;">
                 <input type="hidden" id="node-input-signinurlType">
             </div>
-        </section>       
+        </section>  
+
+        <section class="section-type section-confirm">
+            <div class="form-row">
+                <label for="node-input-confirmtext"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-confirmtext" rows="4" placeholder="Text to send"></textarea>
+            </div>
+        </section>     
 
         <section class="section-type section-text section-quick">
             <div class="form-row">
