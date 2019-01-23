@@ -13,12 +13,9 @@
             objectIdType:      { value: 'msg'},
             objectObject:      { value: undefined},
             objectObjectType:  { value: 'msg'},
-            querySelect:       { value: undefined},
+            querySelect:       { value: ''},
             querySelectType:   { value: 'msg'},
-            queryWhere:        { value: undefined},
-            queryWhereType:    { value: 'msg'},
-            queryEquals:       { value: undefined},
-            queryEqualsType:   { value: 'msg'}
+            queryWhere:        { value: undefined}
         },
         inputs:  1, 
         outputs: 1,
@@ -49,17 +46,19 @@
             if (!this.objectIdType) this.objectIdType = 'msg';
             if (!this.objectObjectType) this.objectIdType = 'msg';
             if (!this.querySelectType) this.querySelectType = 'msg';
-            if (!this.queryWhereType) this.queryWhereType = 'msg';
-            if (!this.queryEqualsType) this.queryEqualsType = 'msg';
 
             $("#node-input-objectLabel").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectLabelType") });
             $("#node-input-objectId").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-objectIdType") });
             $("#node-input-objectObject").typedInput({ default: 'msg', types: ['msg','json','global'], typeField: $("#node-input-objectObjectType") });
             $("#node-input-querySelect").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-querySelectType") });
-            $("#node-input-queryWhere").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-queryWhereType") });
-            $("#node-input-queryEquals").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-queryEqualsType") });
 
-            $("#node-input-action").change( function() {
+
+            $("#node-input-object").change( function() {
+                $(".actionLabel").hide();
+                if ($(this).val() === "else") $(".actionLabel").show();
+            });
+
+            $("#node-input-action").change(function() {
                 $(".query").hide();
                 $(".actionId").hide();
                 $(".actionObject").hide();
@@ -67,15 +66,90 @@
                 let value = $(this).val();
                 if (value === "get" || value === "patch" || value === "delete") $(".actionId").show();
                 if (value === "post" || value === "patch") $(".actionObject").show();
-                if (value === "query") $(".query").show();
+                if (value === "query") {
+                    $(".query").show();
+                    $('.input-field').typedInput('show');
+                    $('.input-value').typedInput('show');
+                }
             });
 
-            $("#node-input-object").change( function() {
-                $(".actionLabel").hide();
-                if ($(this).val() === "else") $(".actionLabel").show();
+            $('#node-queryWhere-conditions').editableList({
+
+                addItem: function(row, index, data) {
+
+
+                    var field = data.field || '';
+                    var fieldType = data.fieldType || '';
+                    var comp = data.comp || '';
+                    var value = data.value || '';
+                    var valueType = data.valueType || 'str';
+
+                    var html = '<input type="text" name="field['+index+']" placeholder="field" class="input-field" style="width:40%" value="'+field+'"/>\
+                        <input type="hidden" name="fieldType['+index+']" id="node-input-queryWhere-fieldType-'+index+'"/>&nbsp;\
+                        <select name="comp['+index+']" style="width:10%"> \
+                            <option value="lt" '+(comp === 'lt' ? 'selected' : '')+'><</option>\
+                            <option value="lte"'+(comp === 'lte' ? 'selected' : '')+'><=</option>\
+                            <option value="eq"'+(comp === 'eq' ? 'selected' : '')+'>=</option>\
+                            <option value="gte"'+(comp === 'gte' ? 'selected' : '')+'>>=</option>\
+                            <option value="gt"'+(comp === 'gt' ? 'selected' : '')+'>></option>\
+                        </select>&nbsp;\
+                        <input type="text" name="value['+index+']" placeholder="value" class="input-value" style="width:40%" value="'+value+'"/>\
+                        <input type="hidden" id="node-input-queryWhere-valueType-'+index+'" name="valueType['+index+']"/>';
+                    
+
+                    $row = $(row);
+                    $row.html(html)
+
+
+                    $row.find('.input-field').typedInput({ default: 'str', types: ['str', 'msg', 'global'], typeField: $('#node-input-queryWhere-fieldType-'+index)}).typedInput('type', fieldType);
+                    $row.find('.input-value').typedInput({ default: 'str', types: ['num', 'str', {value: 'datetime', label:'date'}, 'msg', 'global'], typeField: $("#node-input-queryWhere-valueType-"+index) }).typedInput('type', valueType);
+                    
+                    if($('#node-queryWhere-conditions li').length > 1) {
+                        $('#node-queryWhere-help').show();
+                    }
+
+
+                },
+                removable: true
             });
+
+
+            let wheres = [];
+
+            if(this.queryWhere) {
+
+                let savedWheres = JSON.parse(this.queryWhere)
+
+                let regex = /([A-Za-z]+)\[([0-9]+)\]/
+                
+                for(let object of savedWheres) {
+                    let parseResult = object.name.match(regex)
+
+                    if(parseResult.length === 0) {
+                        continue;
+                    }
+
+                    if (wheres[parseResult[2]] === undefined) {
+                        wheres[parseResult[2]] = {}
+                    }
+                    wheres[parseResult[2]][parseResult[1]] = object.value
+
+                }
+
+                for(let where of wheres) {    
+                    $('#node-queryWhere-conditions').editableList('addItem', where);
+                }
+
+            } else {
+                $('#node-queryWhere-conditions').editableList('addItem', {});
+            }
+
         },
-        oneditsave: function() {}
+        oneditsave: function() {
+
+            $('#node-input-queryWhere').val(JSON.stringify($('#dialog-form').serializeArray()))
+
+        }
     });
 </script>
 
@@ -142,13 +216,9 @@
     </div>
     <div class="form-row query">
         <label for="node-input-queryWhere"><i class="fa fa-tasks"></i> Where</label>
-        <input type="text" id="node-input-queryWhere" style="display:inline-block; width:70%;">
-        <input type="hidden" id="node-input-queryWhereType">
-    </div>
-    <div class="form-row query">
-        <label for="node-input-queryEquals" style="display:inline-block; margin-left: 100px;  width:10%; text-align:center;">=</label>
-        <input type="text" id="node-input-queryEquals" style="display:inline-block; width:60%;">
-        <input type="hidden" id="node-input-queryEqualsType">
+        <input type="hidden" id="node-input-queryWhere">
+        <ol id="node-queryWhere-conditions"></ol>
+        <div id="node-queryWhere-help" class="alert alert-info" style="display:none;margin-top:8px"><p><b>Where</b> conditions are cumulated with the <b>AND</b> operator.</p></div>
     </div>
 
 </script>
@@ -177,7 +247,7 @@
     <p><i>Get</i> returns an object according to its ID and <i>Delete</i> removes it.</p>
     <p><i>New</i> takes a JSON object with data in order to create an object in Salesforce. Read the documentation to get more info about the required field. </p>
     <p><i>Updates</i> needs an ID to select an object, and a JSON object to apply the changes.</p>
-    <p><i>Query</i> needs fields of the object to select (separated with ','), a field of the object to check, and a value (=).</p>
+    <p><i>Query</i> needs fields of the object to select (separated with ',') and a series of conditions to match. If there are several conditions they will be cumulated with the AND operator.</p>
     <p><b>Notes:</b> You can send a <i>Get</i> request on an object with a empty ID field to get the object description. You also can
          specify your own object by selecting "Else" as the object, and by typing its API label in the "Object" filed.</p>
 
