@@ -18,7 +18,8 @@
             queryWhere:        { value: undefined}
         },
         inputs:  1, 
-        outputs: 1,
+        outputs: 2,
+        outputLabels: ["Success", "Error"],
         icon: "salesforce.png",
         align: "left",
         paletteLabel: "Salesforce",
@@ -233,6 +234,12 @@
             <dl class="message-properties">
                 <dt>payload <span class="property-type">object</span></dt>
                 <dd>the request response, and a "token" field to keep it</dd>
+            </dl>
+        </li>
+        <li>Error output
+            <dl class="message-properties">
+                <dt>error <span class="property-type">string</span></dt>
+                <dd>An error message of what occured</dd>
             </dl>
         </li>
     </ol>

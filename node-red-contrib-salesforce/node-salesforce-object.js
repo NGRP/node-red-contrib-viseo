@@ -53,8 +53,9 @@ const input = async (node, data, config) => {
         [ querySelect, queryWhere ] = prepareQuery(node, data, config)
 
         if(!queryWhere) {
-            node.error("Request not sent because of invalid Where clause.")
-            return;
+            data.error = "Request not sent because of invalid Where clause."
+            node.error(data.error)
+            return node.send([undefined, data]);
         }
     } else if(["GET", "PATCH", "POST", "DELETE"]) {
         [ objectId, objectObject ] = prepareRequest(data, config)
@@ -78,7 +79,7 @@ const run = async (node, data, action, objectId, objectObject, object, querySele
         let json = await processRequest(action, node.config.token, node.config.credentials.instance, node.config.version, objectId, objectObject, object, querySelect, queryWhere);
         data.payload = JSON.parse(json);
 
-        return node.send(data);
+        return node.send([data, undefined]);
     }
     catch (err) {
 
@@ -87,11 +88,12 @@ const run = async (node, data, action, objectId, objectObject, object, querySele
             run(node, data, action, objectId, objectObject, object, querySelect, queryWhere)
             
         } else { 
-
+            data.error = err.message;
             if (String(err).match(/Unexpected end of JSON input/)) {
-                return node.send(data);
+                return node.send([undefined, data]);
             } else {
-                return node.error(err);
+                node.error(err);
+                node.send([undefined, data]);
             }
         }
     }
@@ -123,7 +125,7 @@ const prepareQuery = (node, data, config) => {
         let wheres = []
         let regex = /([A-Za-z]+)\[([0-9]+)\]/
                 
-        for(let object of JSON.parse(config.queryWhere)) {console.log(object)
+        for(let object of JSON.parse(config.queryWhere)) {
             let parseResult = object.name.match(regex)
 
             if(parseResult.length === 0) {
