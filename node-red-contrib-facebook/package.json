@@ -1,20 +1,24 @@
 {
-    "name"          : "node-red-contrib-viseo-facebook",
-    "version"       : "0.0.4",
-    "description"   : "A set of facebook utilies for Node-RED",
-    "dependencies"  : {
-        "node-red-viseo-helper"      : "~0.1",
-        "request"                    : "^2.76.0"
+    "name": "node-red-contrib-viseo-facebook",
+    "version": "0.0.5",
+    "description": "A set of facebook utilies for Node-RED",
+    "dependencies": {
+        "node-red-viseo-helper": "~0.1",
+        "request": "^2.76.0"
     },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-facebook"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-facebook"
     },
     "license": "Apache-2.0",
-    "keywords": [ "viseo", "sarah", "node-red" ],
-    "node-red" : {
+    "keywords": [
+        "viseo",
+        "sarah",
+        "node-red"
+    ],
+    "node-red": {
         "nodes": {
-            "facebook-config":   "facebook-config.js",
+            "facebook-config": "facebook-config.js",
             "facebook-handover": "facebook-handover.js",
             "facebook-takeover": "facebook-takeover.js"
         }
