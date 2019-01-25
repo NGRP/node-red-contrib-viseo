@@ -24,12 +24,7 @@ module.exports = function(RED) {
 const input = (node, data, config) => {
 
     // Input
-    let input = config.input || 'payload';
-    if (config.inputType.match(/global|msg/)) {
-        let loc = (config.inputType === 'global') ? node.context().global : data;
-        input = helper.getByString(loc, input);
-    }
-    if (config.inputType === 'json') input = JSON.parse(input);
+    let input = helper.getContextValue(RED, node, data, config.input || 'payload', config.inputType);
 
     if (!node.auth) {
         console.log("node.auth was false");
