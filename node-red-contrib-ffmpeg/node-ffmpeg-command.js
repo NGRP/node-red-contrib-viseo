@@ -13,7 +13,7 @@ module.exports = function(RED) {
         this.activeProcesses = {};
         let node = this;
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
         this.on('close', () => { close(node) });
     }
     RED.nodes.registerType("ffmpeg-command", register, {});
@@ -23,7 +23,7 @@ function cleanup (node, p) {
     node.activeProcesses[p].kill();
 }
 
-async function input (node, msg, config) {
+async function input (RED, node, msg, config) {
 
     if (!ffmpegPath) {
         try {
@@ -40,13 +40,9 @@ async function input (node, msg, config) {
         }
     }
 
-    let command = config.cmd,
-        useSpawn = (config.spawn === "true") ? true : false;
+    let useSpawn = (config.spawn === "true") ? true : false;
 
-    if (config.cmdType !== "str") {
-        let loc = (config.cmdType === 'global') ? node.context().global : msg;
-        command = helper.getByString(loc, command);
-    }
+    let command = helper.getContextValue(RED, node, data, config.cmd, config.cmdType);
     command = command.replace(/^ffmpeg(\.exe)+ /g, '');
     command = 'ffmpeg ' + command;
 
