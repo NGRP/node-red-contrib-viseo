@@ -16,12 +16,12 @@ module.exports = function(RED) {
             node.status({});
         }
 
-        this.on('input', (data)  => { input(node, data, config) });
+        this.on('input', (data)  => { input(RED, node, data, config) });
     }
     RED.nodes.registerType("google-speech-text", register, {});
 }
 
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
 
     // Input
     let input = helper.getContextValue(RED, node, data, config.input || 'payload', config.inputType);
