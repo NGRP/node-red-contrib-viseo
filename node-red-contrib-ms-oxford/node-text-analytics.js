@@ -25,7 +25,7 @@ const input = (RED, node, data, config) => {
 
     let output = config.output || "payload",
         api = config.api || "keyPhrases",
-        endpoint = config.endpoint || "https://westeurope.api.cognitive.microsoft.com/text/analytics/v2.0", 
+        endpoint = config.endpoint || "https://westeurope.api.cognitive.microsoft.com/text/analytics/v2.0";
 
     // 0. Errors handling
     if (!config.creds || !config.creds.key) {

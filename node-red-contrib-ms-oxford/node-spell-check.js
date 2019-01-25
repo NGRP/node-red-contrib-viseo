@@ -26,7 +26,7 @@ const input = (RED, node, data, config) => {
     let input = config.input || "payload",
         output = config.output || "payload",
         api = config.api || "get",
-        endpoint = config.endpoint || "https://api.cognitive.microsoft.com/bing/v7.0/spellcheck", 
+        endpoint = config.endpoint || "https://api.cognitive.microsoft.com/bing/v7.0/spellcheck";
 
     // 0. Errors handling
     if (!config.creds || !config.creds.key) {
