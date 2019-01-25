@@ -24,8 +24,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        this.repeat = (data)  => { input(node, data, config, data.reply) };
-        this.on('input', (data)  => { input(node, data, config, null)  });
+        this.repeat = (data)  => { input(RED, node, data, config, data.reply) };
+        this.on('input', (data)  => { input(RED, node, data, config, null)  });
     }
     RED.nodes.registerType("send-card", register, {});
 
@@ -49,7 +49,7 @@ const buttonsStack = {
     }
 };
 
-const getButtons = (locale, config, data) => {
+const getButtons = (RED, locale, config, data) => {
     if (data.buttons) return data.buttons
     
     let buttons = [];
@@ -67,20 +67,16 @@ const getButtons = (locale, config, data) => {
             button.action = marshall(locale, button.action, data, '');
 
             let shcardtitle =  helper.getContextValue(RED, node, data, config.shcardtitle, config.shcardtitleType || 'str');
-                shcardtitle = marshall(locale, shcardtitle,  data, '');
             let shcardimage =  helper.getContextValue(RED, node, data, config.shcardimage, config.shcardimageType || 'str');
-                shcardimage = marshall(locale, shcardimage,  data, '');
             let shcardurl =  helper.getContextValue(RED, node, data, config.shcardurl, config.shcardurlType || 'str');
-                shcardurl = marshall(locale, shcardurl,  data, '');
             let shcardbutton =  helper.getContextValue(RED, node, data, config.shcardbutton, config.shcardbuttonType || 'str');
-                shcardbutton = marshall(locale, shcardbutton,  data, '');
 
             button.sharedCard = {
-                title:  shcardtitle,
+                title:  marshall(locale, shcardtitle,  data, ''),
                 text:   marshall(locale, config.shcardtext,   data, ''),
-                media:  shcardimage,
-                button: shcardbutton,
-                url:    shcardurl
+                media:  marshall(locale, shcardimage,  data, ''),
+                button: marshall(locale, shcardbutton,  data, ''),
+                url:    marshall(locale, shcardurl,  data, '')
             }
             continue;
         }
@@ -95,7 +91,7 @@ const getButtons = (locale, config, data) => {
     return buttons;
 }
 
-const input = (node, data, config, reply) => {
+const input = (RED, node, data, config, reply) => {
     let convId = botmgr.getConvId(data)
 
     // Prepare the prompt
@@ -108,7 +104,7 @@ const input = (node, data, config, reply) => {
     }
 
     // Retrieve replies
-    let replies = reply || buildReply(node, data, config);
+    let replies = reply || buildReply(RED, node, data, config);
 
     if (!replies){ 
         sendData(node, data, config); 
@@ -127,7 +123,7 @@ const input = (node, data, config, reply) => {
     });
 }
 
-const buildReply = (node, data, config) => {
+const buildReply = (RED, node, data, config) => {
     let locale = botmgr.getLocale(data);
     let reply = {
         "type"      : config.sendType,
@@ -137,27 +133,18 @@ const buildReply = (node, data, config) => {
 
     // Simple event message
     if (config.sendType === 'event'){
-        let event = { name : config.eventName  }
-        let value = config.eventValue;
-        if (!config.eventValueType || config.eventValueType === 'str'){
-            event.value = marshall(locale, value,  data, '');
-        }
-        else if (config.eventValueType === 'msg') {
-            event.value = helper.getByString(data, value);
-        }
-        else if (config.eventValueType === 'global') {
-            event.value = helper.getByString(node.context().global, value);
-        }
-        else if (config.eventValueType === 'json') {
-            event.value = JSON.parse(value);
+        
+        let value = helper.getContextValue(RED, node, data, config.eventValue, config.eventValueType || 'str');
+        let event = { 
+            name: config.eventName,
+            value: marshall(locale, value,  data, '')
         }
         reply.event = event;
-        return [ reply ]
     }
-
-    // Prepare speech
-    reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
-    delete data._receipt;
+    else { // Prepare speech
+        reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
+        delete data._receipt;
+    }
 
     // Simple text message
     if (config.sendType === 'text'){
@@ -169,7 +156,6 @@ const buildReply = (node, data, config) => {
 
         reply.text = text;
         if (reply.speech === undefined) reply.speech = text;
-        return [ reply ]
     }
 
     // Simple media message
@@ -178,11 +164,11 @@ const buildReply = (node, data, config) => {
         reply.media = marshall(locale, media,  data, '');
 
         if (reply.speech === undefined) reply.speech = "";
-        return [ reply ]
     }
 
     // Card "signin" message
     if (config.sendType === 'signin'){
+
 
         let signintitle = helper.getContextValue(RED, node, data, config.signintitle, config.signintitleType || 'str');
         let signinurl = helper.getContextValue(RED, node, data, config.signinurl, config.signinurlType || 'str');
@@ -192,35 +178,38 @@ const buildReply = (node, data, config) => {
         reply.url   = marshall(locale, signinurl,  data, '');
 
         if (reply.speech === undefined) reply.speech = reply.text;
-        return [ reply ]
     }
 
-
+    if(config.sendType === 'confirm') {
+        reply.text = marshall(locale, config.confirmtext,  data, '');
+    }
+    
     // Other card message
-    let buttons = getButtons(locale, config, data);
-    buttonsStack.push(data, buttons);
-    reply.buttons = buttons;
+    if (config.sendType === 'quick' || config.sendType === 'card') {
+    
+        let buttons = getButtons(RED, locale, config, data);
+        buttonsStack.push(data, buttons);
+        reply.buttons = buttons;
 
+        if (config.sendType === 'quick') {
+            reply.quicktext = marshall(locale, config.quicktext, data, '');
+            if (config.random){
+                let txt = reply.quicktext.split('\n');
+                reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+            }
+            if (reply.speech === undefined) reply.speech = reply.quicktext;
+        } 
+        else {
 
-    // Quick replies
-    if (config.sendType === 'quick') {
-        reply.quicktext = marshall(locale, config.quicktext, data, '');
-        if (config.random){
-            let txt = reply.quicktext.split('\n');
-            reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+            let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
+            let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
+            
+            reply.title =    marshall(locale, title,  data, '');
+            reply.subtitle = marshall(locale, config.subtitle,  data, '');
+            reply.subtext =  marshall(locale, config.subtext,   data, '');
+            reply.attach =   marshall(locale, attach,  data, '');
+            if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
         }
-        if (reply.speech === undefined) reply.speech = reply.quicktext;
-    } 
-    else if (config.sendType === 'card') {
-
-        let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
-        let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
-        
-        reply.title =    marshall(locale, title,  data, '');
-        reply.subtitle = marshall(locale, config.subtitle,  data, '');
-        reply.subtext =  marshall(locale, config.subtext,   data, '');
-        reply.attach =   marshall(locale, attach,  data, '');
-        if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
     }
     
     // Forward data without sending anything
@@ -355,4 +344,4 @@ const sendData = (node, data, config) => {
     } else {
         _continue(data);
     }
-}
+}   
