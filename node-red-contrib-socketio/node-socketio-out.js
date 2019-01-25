@@ -18,17 +18,8 @@ module.exports = function(RED) {
 const input = (node, data, config) => {
     let SOCKETS = node.context().global.get("sockets");
 
-    let path = config.path,
-        value = config.value;
-
-    if (config.pathType !== 'str') {
-        let loc = (config.pathType === 'global') ? node.context().global : data;
-        path = helper.getByString(loc, path);
-    }
-    if (config.valueType !== 'str') {
-        let loc = (config.valueType === 'global') ? node.context().global : data;
-        value = helper.getByString(loc, value);
-    }
+    let path =  helper.getContextValue(RED, node, data, config.path, config.pathType);
+    let value = helper.getContextValue(RED, node, data, config.value, config.valueType);
 
     if (data.socket){
         SOCKETS[data.socket].emit(path, value);

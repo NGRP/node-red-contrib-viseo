@@ -2,7 +2,6 @@ const helper = require('node-red-viseo-helper')
 const botmgr = require('node-red-viseo-bot-manager')
 const CARRIER = "socketServer"
 
-
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
@@ -73,16 +72,17 @@ const startServer = (node, config) => {
     let namespace = config.namespace || 'assistant';
 
     io.on('connection', function(socket){
+        msgs = [];
         SOCKETS.push(socket);
         socket.emit(namespace, { event: '[Socket server] Socket connected' });
         socket.on(namespace, function(data){ receive(node, config, socket, data)});
-        socket.on('disconnect', function(reason) { console.log("[Socket server] Socket disconnected: " + reason) })
-        socket.on('error', function(error) { console.log("[Socket server] Socket error: " + error) })
+        socket.on('disconnect', function(reason) { console.log("[Socket server] Socket disconnected: ", reason) })
+        socket.on('error',      function(error)  { console.log("[Socket server] Socket error: ", error) })
     });
-    io.on('connect_error',    function (error) { console.log("[Socket server] Socket error: connect_error - " + error) })
-    io.on('connect_timeout',  function (error) { console.log("[Socket server] Socket error: connect_timeout - " + error) })
-    io.on('reconnect_error',  function (error) { console.log("[Socket server] Socket error: reconnect_error - " + error) })
-    io.on('reconnect_failed', function (error) { console.log("[Socket server] Socket error: reconnect_failed - " + error) })
+    io.on('connect_error',    function (error) { console.log("[Socket server] Socket error: connect_error - ", error) })
+    io.on('connect_timeout',  function (error) { console.log("[Socket server] Socket error: connect_timeout - ", error) })
+    io.on('reconnect_error',  function (error) { console.log("[Socket server] Socket error: reconnect_error - ", error) })
+    io.on('reconnect_failed', function (error) { console.log("[Socket server] Socket error: reconnect_failed - ", error) })
 
     // Add listener to reply
     let listenerReply = LISTENERS_REPLY[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
@@ -96,7 +96,8 @@ const startServer = (node, config) => {
 }        
 
 const stop = (node, done) => {
-    
+
+    msgs = [];
     let listenerReply = LISTENERS_REPLY[node.id]
     helper.removeListener('reply', listenerReply)
 
@@ -127,13 +128,10 @@ function receive(node, config, socket, message) {
 
     if (data.message.type === "event") {
         if (data.message.content === "cmd-next") {
-            node.warn({'next': data.message})
             return helper.emitEvent('endSound', node);
         }
     }
     else {
-        node.warn({'received': data.message})
-
         // Handle Prompt
         let convId  = botmgr.getConvId(data)
         if (botmgr.hasDelayedCallback(convId, data.message)) return;
@@ -172,8 +170,8 @@ const endSound = (node) => {
     if (msgs.length < 1) return;
 
     // Get the last message and send it in the flow
-    
     let data =  msgs.shift();
+
     helper.fireAsyncCallback(data);
 }
 
@@ -195,7 +193,6 @@ const reply = (node, data, config) => {
 
         // Emit the message
         let convId  = botmgr.getConvId(data);
-        node.warn({'reply': message, 'convId': convId})
         io.to(convId).emit(namespace, { message: message });
 
         // Keep it to send it in the flow later
