@@ -11,7 +11,7 @@ module.exports = function(RED) {
         let node = this;
 
         start(RED, node, config);
-        this.on('input', (data) => { input(node, data, config);});
+        this.on('input', (data) => { input(RED, node, data, config);});
         this.on('close', (done) => { stop(done); });
     }
     RED.nodes.registerType("google-places", register, {});
@@ -33,14 +33,12 @@ function start(RED, node, config) {
     
 }
 
-function input (node, data, config) {
+function input (RED, node, data, config) {
 
     let action  = config.action  || "search",
         request = config.request || "textsearch",
         output  = config.output  || "payload",
         param   = config.parameters;
-
-    let outloc = (config.outputType === 'global') ? node.context().global : data;
         
     let parameters = {},
         keys = Object.keys(param);
@@ -65,7 +63,7 @@ function input (node, data, config) {
             return node.send(data);
         }
 
-        helper.setByString(outloc, output, response.json);
+        helper.setByString(data, output, response.json);
         return node.send(data);
     }
 

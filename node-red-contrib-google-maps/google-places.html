@@ -8,7 +8,6 @@
             action:     { value: 'search' },
             request:    { value: 'textsearch' },
             output:     { value: undefined, required: false },
-            outputType: { value: 'msg'},
             parameters: { value: {} }
         },
         inputs:  1,
@@ -24,8 +23,8 @@
 
 
 
-            $("#node-input-name").typedInput({    default: "str",  types: ["str"],  type:"str" });
-            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+            $("#node-input-name").typedInput({    default: "str",  types: ["str"], type:"str" });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg'], type:"msg"  });
 
             $("#node-input-action").change(updActions);
             $("#node-input-request").change(updFields);
@@ -199,7 +198,6 @@
     <div class="form-row request">
         <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-output" style = "width:70%;">
-        <input type="hidden" id="node-input-outputType">
     </div>
 
     <br>
