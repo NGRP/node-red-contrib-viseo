@@ -161,8 +161,12 @@
                          request === "get_persongroups") { $(".start, .top").show(); }
 
                 if  ($(".parameters:visible").find('input').length === 0) $("#bars").hide();
-                else $(".parameters:visible").find('input[type=text]').typedInput('show');
-
+                else {
+                    $(".parameters:visible").find('label').each(function(a,b) {
+                        let _id = $(b).attr('for');
+                        $('#' + _id).typedInput('show');
+                    })
+                }
             }
         },
         oneditsave: function () { 

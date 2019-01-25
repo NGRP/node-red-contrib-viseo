@@ -55,14 +55,18 @@
                 $(".parameters").hide();
                 let request = $("#node-input-api").val() || "search";
                 $("." + request).show();
-                $(".parameters:visible").find('input[type=text]').typedInput('show');
+                $(".parameters:visible").find('label').each( function(i, b) {
+                    let _id = $(b).attr('for');
+                    $('#' + _id).typedInput('show');
+                })
 
             })
         },
         oneditsave: function () { 
             let parameters = [];
-            $(".parameters:visible").find('input[type=text]').each( function(i, elt) {
-                parameters.push(elt.id.split('-').pop());
+            $(".parameters:visible").find('label').each( function(i, b) {
+                let _id = $(b).attr('for');
+                parameters.push(_id.split('-').pop());
             })
             this.parameters = parameters;
         },
