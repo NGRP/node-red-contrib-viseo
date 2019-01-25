@@ -10,13 +10,13 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("loop-management", register, {});
 }
 
 let CONF = {};
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
 
     const loopKey = 'loop' + node.id.replace('.', '_');
 
@@ -36,20 +36,15 @@ const input = (node, data, config) => {
     if (scope !== 'global') confObject = _tmp[loopKey] || {};
 
 
-    // 2. PREMIER PASSAGE : init object
+    // 2. FIRST ITERATION : init object
     if (JSON.stringify(confObject) === '{}') {
 
-        // 2.1. INFOS
-        let inputType = config.inputType || 'msg',
-            inputObject = config.input || 'payload';
+        // 2.1. Get input 
 
-        // 2.2. INPUT : inputObject
-        let loc = (inputType === 'global') ? node.context().global : data;
-        inputObject = helper.getByString(loc, inputObject);
-
+        let inputObject = helper.getContextValue(RED, node, data, config.input || 'payload', config.inputType || 'msg');
         if (inputObject === undefined || typeof inputObject !== 'object') return node.error("Main object : incorrect value");
 
-        // 2.3. Init configuration : object or array
+        // 2.2. Init configuration : object or array
         if (inputObject.length !== undefined) confObject = {'array':inputObject, 'count':0};
         else {
             confObject = {'properties':[], 'values':[], 'count':0};
@@ -65,8 +60,7 @@ const input = (node, data, config) => {
 
     // 3. OUTPUT : outputObject
     let outputType = config.outputType || 'msg',
-        outputObject = config.output || 'payload',
-        loc = (outputType === 'global') ? node.context().global : data,    
+        outputObject = config.output || 'payload',  
         behavior = config.behavior || 'after';
 
     // 4. BEHAVIOR
@@ -81,7 +75,8 @@ const input = (node, data, config) => {
             delete (scope === 'user' ? data.user._tmp : data._tmp)
             _tmp[loopKey] = undefined; 
         }
-        helper.setByString(loc, outputObject, outObject);      
+
+        helper.setContextValue(RED, node, data, outputObject, outObject, outputType);
         returnedValue = [undefined,data];
     }
 
@@ -91,7 +86,8 @@ const input = (node, data, config) => {
             delete (scope === 'user' ? data.user._tmp : data._tmp)
             _tmp[loopKey] = undefined; 
         }
-        helper.setByString(loc, outputObject, undefined);
+
+        helper.setContextValue(RED, node, data, outputObject, undefined, outputType);
         returnedValue = [undefined,data];
     }
 
@@ -99,8 +95,7 @@ const input = (node, data, config) => {
         // 4.2. Increment
         (scope === 'global') ? CONF = confObject : _tmp[loopKey] = confObject;
         let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};
-
-        helper.setByString(loc, outputObject, outObject);
+        helper.setContextValue(RED, node, data, outputObject, outObject, outputType);
         returnedValue = [data, undefined];
     }
 
