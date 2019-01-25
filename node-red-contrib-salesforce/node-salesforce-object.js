@@ -49,7 +49,14 @@ const input = async (node, data, config) => {
     }
 
     if(action === "QUERY") {
-        [ querySelect, queryWhere ] = prepareQuery(data, config)
+
+        [ querySelect, queryWhere ] = prepareQuery(node, data, config)
+
+        if(!queryWhere) {
+            data.error = "Request not sent because of invalid Where clause."
+            node.error(data.error)
+            return node.send([undefined, data]);
+        }
     } else if(["GET", "PATCH", "POST", "DELETE"]) {
         [ objectId, objectObject ] = prepareRequest(data, config)
     }
@@ -72,7 +79,7 @@ const run = async (node, data, action, objectId, objectObject, object, querySele
         let json = await processRequest(action, node.config.token, node.config.credentials.instance, node.config.version, objectId, objectObject, object, querySelect, queryWhere);
         data.payload = JSON.parse(json);
 
-        return node.send(data);
+        return node.send([data, undefined]);
     }
     catch (err) {
 
@@ -81,49 +88,124 @@ const run = async (node, data, action, objectId, objectObject, object, querySele
             run(node, data, action, objectId, objectObject, object, querySelect, queryWhere)
             
         } else { 
-
+            data.error = err.message;
             if (String(err).match(/Unexpected end of JSON input/)) {
-                return node.send(data);
+                return node.send([undefined, data]);
             } else {
-                return node.error(err);
+                node.error(err);
+                node.send([undefined, data]);
             }
         }
     }
 }
 
-const prepareQuery = (data, config) => {
+const prepareQuery = (node, data, config) => {
 
     let querySelect = config.querySelect,
-        queryWhere = config.queryWhere,
-        queryEquals = config.queryEquals;
+        queryWhereArray = [],
+        queryWhere;
 
 
     // Get query info
-    let querySelectType = config.querySelectType,
-        queryWhereType = config.queryWhereType,
-        queryEqualsType = config.queryEqualsType;
+    let querySelectType = config.querySelectType;
 
 
     if (querySelectType !== 'str') {
         let loc = (querySelectType === 'global') ? node.context().global : data;
-        querySelect = helper.getByString(loc, querySelect);
+        querySelect = helper.getByString(loc, querySelect, '');
     }
     querySelect = querySelect.replace(/ /g,'');
     querySelect = querySelect.replace(/,/g,'+,+');
 
 
-    if(queryWhere) {
+    if(config.queryWhere) {
 
-        if (queryWhereType !== 'str') {
-            let loc = (queryWhereType === 'global') ? node.context().global : data;
-            queryWhere = helper.getByString(loc, queryWhere);
-        }
-        if (queryEqualsType !== 'str') {
-            let loc = (queryEqualsType === 'global') ? node.context().global : data;
-            queryEquals = helper.getByString(loc, queryEquals);
+        let error = false
+
+        let wheres = []
+        let regex = /([A-Za-z]+)\[([0-9]+)\]/
+                
+        for(let object of JSON.parse(config.queryWhere)) {
+            let parseResult = object.name.match(regex)
+
+            if(parseResult.length === 0) {
+                continue;
+            }
+
+            if (wheres[parseResult[2]] === undefined) {
+                wheres[parseResult[2]] = {}
+            }
+            wheres[parseResult[2]][parseResult[1]] = object.value
+
         }
 
-        queryWhere += "+=+'" + queryEquals + "'";
+        wheres:
+        for(let where of wheres) {
+
+            let value = where.value
+            let field = where.field
+            let comp = '='
+
+            switch (where.comp) {
+                case 'lt':
+                    comp = '<';
+                    break;
+                case 'lte':
+                    comp = '<=';
+                    break;
+                case 'eq':
+                    comp = '=';
+                    break;
+                case 'gte':
+                    comp = '>=';
+                    break;
+                case 'gt':
+                    comp = '>';
+                    break;
+            }
+
+            switch(where.fieldType) {
+                case 'msg':
+                    field = helper.getByString(data, field);
+                    break;
+                case 'global':
+                    field = node.context().global.get(field);
+                    break;
+            }
+
+            switch(where.valueType) {
+                case 'msg':
+                    value = helper.getByString(data, value);
+                    break;
+                case 'global':
+                    value = node.context().global.get(value);
+                    break;
+                case 'datetime':
+                    if(/[0-9]{4}\-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z/.test(value) == false) {
+                        node.error("Date expected format is 'YYYY-MM-DDTHH:MM:SSZ' UTC (ex: '2019-01-23T09:00:00Z')");
+                        error = true
+                        break wheres;
+                    }
+                    break;
+            }
+            if(where.valueType !== 'datetime') {
+                value = "'"+value+"'";
+            }
+
+            if(field == undefined) {
+                node.error("field '"+where.field+"' is undefined.");
+                error = true;
+                break;
+            }
+
+            queryWhereArray.push(field+'+'+comp+'+'+value);
+        }
+
+        
+        if(!error) {
+            queryWhere = queryWhereArray.join('+AND+')
+        }
+
     }
 
     return [ querySelect, queryWhere ]
