@@ -19,42 +19,27 @@ module.exports = function (RED) {
         }
 
         let node = this;
-        this.on('input', (data)  => { input(node, data, config); });
+        this.on('input', (data)  => { input(RED, node, data, config); });
     }
     RED.nodes.registerType('dialogflow', register, {});
 };
 
-async function input (node, data, config) {
-
+async function input (RED, node, data, config) {
 
     let version = config.version || "v1",
-        action = config.action || "query",
-        output = config.intent || "payload",
-        outLoc = (config.intentType === 'global') ? node.context().global : data;
+        action  = config.action  || "query",
+        output  = config.intent  || "payload";
 
     // ----> MANAGE INTENTS AND ENTITIES
 
     if (action === "manage") {
 
-        let selaction =  config.selaction  || "get",
-            itemid =     config.itemid,
-            object =     config.object;
-
+        let selaction =  config.selaction  || "get";
+        let itemid = helper.getContextValue(RED, node, data, config.itemid, config.itemidType); 
+        let object = helper.getContextValue(RED, node, data, config.object, config.objectType); 
         let actionitem = selaction.match(/add|upd/i) ? config.actionitemaddupd : config['actionitem' + selaction];
 
-        if (config.itemidType !== 'str') {
-            let loc = (config.itemidType === 'global') ? node.context().global : data;
-            itemid = helper.getByString(loc, itemid); }
-        if (config.objectType !== 'json') {
-            let loc = (config.objectType === 'global') ? node.context().global : data;
-            object = helper.getByString(loc, object); }
-        else {
-            try   { object = JSON.parse(object); }
-            catch (err) { return node.error(err); }
-        } 
-
         // VERSION 2
-
         if (version === "v2") {  // VERSION 2
             try {
                 config.tokenv2.authenticate((client, token) => {
@@ -104,7 +89,7 @@ async function input (node, data, config) {
 
                     request(req)
                     .then( function (result) {
-                        helper.setByString(outLoc, output, JSON.parse(result));
+                        helper.setByString(data, output, result);
                         return node.send([data, undefined]);
                     })
                     .catch( function (err) {
@@ -121,7 +106,7 @@ async function input (node, data, config) {
         else {                  // VERSION 1
             try {
                 let result = await manageRequest(config.tokenv1.devtoken, actionitem, selaction, itemid, object);
-                helper.setByString(outLoc, output, JSON.parse(result));
+                helper.setByString(data, output, result);
                 return node.send([data, undefined]);
             }
             catch(err) {
@@ -132,21 +117,9 @@ async function input (node, data, config) {
     }
 
     else {
-        // ----> QUERY : DETECT AN INTENT
-
-        let session =  config.session  || "user.id",
-            language = config.language || "en",
-            text =     config.text     || "payload";
-
-        if (config.languageType !== 'str') {
-            let loc = (config.languageType === 'global') ? node.context().global : data;
-            language = helper.getByString(loc, language); }
-        if (config.sessionType !== 'str') {
-            let loc = (config.sessionType === 'global') ? node.context().global : data;
-            session = helper.getByString(loc, session); }
-        if (config.textType !== 'str') {
-            let loc = (config.textType === 'global') ? node.context().global : data;
-            text = helper.getByString(loc, text); }
+        let session  = helper.getContextValue(RED, node, data, config.session || "user.id", config.sessionType);
+        let language = helper.getContextValue(RED, node, data, config.language || "en", config.languageType);
+        let text     = helper.getContextValue(RED, node, data, config.text || "payload", config.textType);
 
         if (version === "v2") {  // VERSION 2
             try {
@@ -175,7 +148,18 @@ async function input (node, data, config) {
 
                     request(req)
                     .then( function (result) {
-                        helper.setByString(outLoc, output, JSON.parse(result));
+
+                        result = JSON.parse(result);
+                        let formattedResponse = {
+                            query: result.queryResult.queryText ,
+                            intent: result.queryResult.action || result.queryResult.intent.displayName,
+                            score: result.queryResult.intentDetectionConfidence,
+                            entities: result.queryResult.parameters,
+                            source: "dialogflow",
+                            completeResponse: result
+                        }
+
+                        helper.setByString(data, output, formattedResponse);
                         return node.send([data, undefined]);
                     })
                     .catch( function (err) {
@@ -193,12 +177,22 @@ async function input (node, data, config) {
         }
         else {                   // VERSION 1 
 
-            let key =   config.tokenv1.clienttoken,
-            token = config.tokenv1.devtoken;
+            let key =   config.tokenv1.clienttoken;
 
             try {
                 let result = await queryRequest(key, session, text, language);
-                helper.setByString(outLoc, output, JSON.parse(result));
+                    result = JSON.parse(result);
+
+                let formattedResponse = {
+                    query: result.result.resolvedQuery,
+                    intent: (result.result.action) ? result.result.action : result.result.metadata.intentName,
+                    score: result.result.score,
+                    entities: result.result.parameters,
+                    source: "dialogflow",
+                    completeResponse: result
+                }
+
+                helper.setByString(data, output, formattedResponse);
                 return node.send([data, undefined]);
             } 
             catch (err) { 

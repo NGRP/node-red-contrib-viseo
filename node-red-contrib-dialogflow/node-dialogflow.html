@@ -13,7 +13,6 @@
             text:               { value: "payload" },
             textType:           { value: "msg" },
             intent:             { value: "payload" },
-            intentType:         { value: "msg" },
             action:             { value: "query" },
             actionitemaddupd:   { value: "entities-single" },
             actionitemget:      { value: "entities-single" },
@@ -36,10 +35,10 @@
             $("#node-input-session").typedInput({   default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-sessionType")  });
             $("#node-input-language").typedInput({  default: 'str', types: ['msg','str','global'],  typeField: $("#node-input-languageType") });
             $("#node-input-text").typedInput({      default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-textType")     });
-            $("#node-input-intent").typedInput({    default: 'msg', types: ['msg','global'],        typeField: $("#node-input-intentType")   });
             $("#node-input-itemid").typedInput({    default: 'msg', types: ['msg','str','global'],  typeField: $("#node-input-itemidType")   });
             $("#node-input-object").typedInput({    default: 'msg', types: ['msg','global','json'], typeField: $("#node-input-objectType")   });
-
+            $("#node-input-intent").typedInput({    default: 'msg', types: ['msg'], type: 'msg'   });
+            
             // Change
             $("#node-input-version").change(function() {
                 $("#display_v1").hide();
@@ -212,7 +211,6 @@
     <div class="form-row">
         <label for="node-input-intent"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-intent" style="width:70%;" placeholder="payload">
-        <input type="hidden" id="node-input-intentType">
     </div>
 </script>
 
