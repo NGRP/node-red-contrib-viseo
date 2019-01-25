@@ -66,30 +66,14 @@ const getButtons = (locale, config, data) => {
         if (button.action === "share") {
             button.action = marshall(locale, button.action, data, '');
 
-            let shcardtitle = config.shcardtitle;
-            if (!config.shcardtitleType) shcardtitle = marshall(locale, shcardtitle,  data, '');
-            else if (config.shcardtitleType !== 'str') {
-                let loc = (config.shcardtitleType === 'global') ? node.context().global : data;
-                shcardtitle = helper.getByString(loc, shcardtitle);
-            }
-            let shcardimage = config.shcardimage;
-            if (!config.shcardimageType) shcardimage = marshall(locale, shcardimage,  data, '');
-            else if (config.shcardimageType !== 'str') {
-                let loc = (config.shcardimageType === 'global') ? node.context().global : data;
-                shcardimage = helper.getByString(loc, shcardimage);
-            }
-            let shcardurl = config.shcardurl;
-            if (!config.shcardurlType) shcardurl = marshall(locale, shcardurl,  data, '');
-            else if (config.shcardurlType !== 'str') {
-                let loc = (config.shcardurlType === 'global') ? node.context().global : data;
-                shcardurl = helper.getByString(loc, shcardurl);
-            }
-            let shcardbutton = config.shcardbutton;
-            if (!config.shcardbuttonType) shcardbutton = marshall(locale, shcardbutton,  data, '');
-            else if (config.shcardbuttonType !== 'str') {
-                let loc = (config.shcardbuttonType === 'global') ? node.context().global : data;
-                shcardbutton = helper.getByString(loc, shcardbutton);
-            }
+            let shcardtitle =  helper.getContextValue(RED, node, data, config.shcardtitle, config.shcardtitleType || 'str');
+                shcardtitle = marshall(locale, shcardtitle,  data, '');
+            let shcardimage =  helper.getContextValue(RED, node, data, config.shcardimage, config.shcardimageType || 'str');
+                shcardimage = marshall(locale, shcardimage,  data, '');
+            let shcardurl =  helper.getContextValue(RED, node, data, config.shcardurl, config.shcardurlType || 'str');
+                shcardurl = marshall(locale, shcardurl,  data, '');
+            let shcardbutton =  helper.getContextValue(RED, node, data, config.shcardbutton, config.shcardbuttonType || 'str');
+                shcardbutton = marshall(locale, shcardbutton,  data, '');
 
             button.sharedCard = {
                 title:  shcardtitle,
@@ -190,14 +174,9 @@ const buildReply = (node, data, config) => {
 
     // Simple media message
     if (config.sendType === 'media'){
-        let media = config.media;
-        if (!config.mediaType) media = marshall(locale, media,  data, '');
-        else if (config.mediaType !== 'str') {
-            let loc = (config.mediaType === 'global') ? node.context().global : data;
-            media = helper.getByString(loc, media);
-        }
+        let media = helper.getContextValue(RED, node, data, config.media, config.mediaType || 'str');
+        reply.media = marshall(locale, media,  data, '');
 
-        reply.media = media;
         if (reply.speech === undefined) reply.speech = "";
         return [ reply ]
     }
@@ -205,24 +184,12 @@ const buildReply = (node, data, config) => {
     // Card "signin" message
     if (config.sendType === 'signin'){
 
-        let signintitle = config.signintitle;
-        let signinurl = config.signinurl;
-
-        if (!config.signintitleType) signintitle = marshall(locale, signintitle,  data, '');
-        else if (config.signintitleType !== 'str') {
-            let loc = (config.signintitleType === 'global') ? node.context().global : data;
-            signintitle = helper.getByString(loc, signintitle);
-        }
-
-        if (!config.signinurlType) signinurl = marshall(locale, signinurl,  data, '');
-        else if (config.signinurlType !== 'str') {
-            let loc = (config.signinurlType === 'global') ? node.context().global : data;
-            signinurl = helper.getByString(loc, signinurl);
-        }
+        let signintitle = helper.getContextValue(RED, node, data, config.signintitle, config.signintitleType || 'str');
+        let signinurl = helper.getContextValue(RED, node, data, config.signinurl, config.signinurlType || 'str');
 
         reply.text  = marshall(locale, config.signintext,  data, '');
-        reply.title = signintitle;
-        reply.url   = signinurl;
+        reply.title = marshall(locale, signintitle,  data, '');
+        reply.url   = marshall(locale, signinurl,  data, '');
 
         if (reply.speech === undefined) reply.speech = reply.text;
         return [ reply ]
@@ -246,24 +213,13 @@ const buildReply = (node, data, config) => {
     } 
     else if (config.sendType === 'card') {
 
-        let title = config.title;
-        let attach = config.attach;
-
-        if (!config.titleType) title = marshall(locale, title,  data, '');
-        else if (config.titleType !== 'str') {
-            let loc = (config.titleType === 'global') ? node.context().global : data;
-            title = helper.getByString(loc, title);
-        }
-        if (!config.attachType) attach = marshall(locale, attach,  data, '');
-        else if (config.attachType !== 'str') {
-            let loc = (config.attachType === 'global') ? node.context().global : data;
-            attach = helper.getByString(loc, attach);
-        }
+        let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
+        let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
         
-        reply.title =    title;
+        reply.title =    marshall(locale, title,  data, '');
         reply.subtitle = marshall(locale, config.subtitle,  data, '');
         reply.subtext =  marshall(locale, config.subtext,   data, '');
-        reply.attach =   attach;
+        reply.attach =   marshall(locale, attach,  data, '');
         if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
     }
     
@@ -399,4 +355,4 @@ const sendData = (node, data, config) => {
     } else {
         _continue(data);
     }
-}   
+}
