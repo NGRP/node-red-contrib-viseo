@@ -10,12 +10,12 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("socketio-out", register, {});
 }
 
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
     let SOCKETS = node.context().global.get("sockets");
 
     let path =  helper.getContextValue(RED, node, data, config.path, config.pathType);
