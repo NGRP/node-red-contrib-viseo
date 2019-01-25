@@ -19,8 +19,8 @@ module.exports = function (RED) {
             node.status({});
         }
     
-        start(node, config, RED);
-        this.on('input', (data)  => { input(node, config, data); });
+        start(config);
+        this.on('input', (data)  => { input(RED, node, config, data); });
         this.on('close', (done) => { stop(node, config, done) });
     }
     RED.nodes.registerType('aws-lex', register, {});
@@ -28,13 +28,13 @@ module.exports = function (RED) {
 
 let _AWS = {};
 
-function start(node, config, RED) {
+function start(config) {
     if (!config.token || _AWS[config.token]) return;
     if (!config.creds || !config.creds.accessKeyId || !config.creds.secretAccessKey) return;
     _AWS[config.token] = new AWS.LexRuntime(config.creds);
 }
 
-function input (node, config, data) {
+function input (RED, node, config, data) {
 
     let lexruntime = _AWS[config.token];
     if (!config.botname || !config.botalias || !lexruntime ) {
@@ -47,10 +47,8 @@ function input (node, config, data) {
 
     config.creds.region = config.creds.region || "us-east-1";
     let action = config.action || "postText";
-    let input = config.input   || "payload";
-    let userid = config.userid || "user.id";
-    let requestA = config.requestA;
-    let sessionA = config.sessionA;
+    let input = helper.getContextValue(RED, node, data, config.input || "payload", config.inputType);
+    let userid = helper.getContextValue(RED, node, data, config.userid || "user.id", config.useridType);
 
     let parameters = {
         botName: config.botname,
@@ -58,36 +56,8 @@ function input (node, config, data) {
         userId: userid
     }
 
-    if (config.inputType !== 'str') {
-        let loc = (config.inputType === 'global') ? node.context().global : data;
-        input = helper.getByString(loc, input);
-    }
-    if (config.useridType !== 'str') {
-        let loc = (config.useridType === 'global') ? node.context().global : data;
-        parameters.userId = helper.getByString(loc, parameters.userId);
-    }
-    if (requestA) {
-        if (config.requestAType.match(/msg|global/)) {
-            let loc = (config.requestAType === 'global') ? node.context().global : data;
-            requestA = helper.getByString(loc, requestA);
-        }
-        if (typeof requestA === 'string' && (config.requestAType === 'json' || 
-        requestA[0] === '{' || requestA[0] === '[')) { 
-            requestA = JSON.parse(requestA);
-        }
-        parameters.requestAttributes = requestA;
-    }
-    if (sessionA) {
-        if (config.sessionAType.match(/msg|global/)) {
-            let loc = (config.sessionAType === 'global') ? node.context().global : data;
-            sessionA = helper.getByString(loc, sessionA);
-        }
-        if (typeof sessionA === 'string' && (config.sessionAType === 'json' || 
-        sessionA[0] === '{' || sessionA[0] === '[')) { 
-            sessionA = JSON.parse(sessionA);
-        }
-        parameters.sessionAttributes = sessionA;
-    }
+    if (config.requestA) parameters.requestAttributes = helper.getContextValue(RED, node, data, config.requestA, config.requestAType);
+    if (config.sessionA) parameters.sessionAttributes = helper.getContextValue(RED, node, data, config.sessionA, config.requestAType);
 
     if (action === "postText") {
         parameters.inputText = input;
@@ -98,7 +68,16 @@ function input (node, config, data) {
                 return node.send(data);
             }
 
-            helper.setByString(data, config.output || "payload" , res);
+            let formattedResponse = {
+                query: input ,
+                intent: (res.dialogState === "ElicitIntent") ? "ElicitIntent" : res.intentName,
+                score: null,
+                entities: res.slots,
+                source: "lex",
+                completeResponse: res
+            }
+
+            helper.setByString(data, config.output || "payload" , formattedResponse);
             return node.send(data);
         });
     }
@@ -106,15 +85,7 @@ function input (node, config, data) {
     else {
 
         parameters.inputStream = input;
-        parameters.contentType = config.content;
-
-        if (config.contentType.match(/msg|global/)) {
-            let loc = (config.contentType === 'global') ? node.context().global : data;
-            parameters.contentType = helper.getByString(loc, parameters.contentType);
-        }
-        else if (!config.content) {
-            parameters.contentType = config.contentType;
-        }
+        parameters.contentType = (config.contentType) ? helper.getContextValue(RED, node, data, config.content, config.contentType) : parameters.contentType = config.contentType;y
         
         lexruntime.postContent(parameters, function (err, res) {
             if (err) {
@@ -123,7 +94,22 @@ function input (node, config, data) {
                 return node.send(data);
             }
 
-            helper.setByString(data, config.output || "payload" , res);
+            let query = res.inputTranscript;
+            if (!query) {
+                if (config.contentType === 'str' || config.contentType === "text/plain; charset=utf-8") query = input;
+                if (res.dialogState !== "ElicitIntent" && res.dialogState !== "Failed") query = input;
+            }
+            
+            let formattedResponse = {
+                query: query,
+                intent: res.intentName || res.dialogState,
+                score: null,
+                entities: res.slots,
+                source: "lex",
+                completeResponse: res
+            }
+
+            helper.setByString(data, config.output || "payload" , formattedResponse);
             return node.send(data);
         });
     }
