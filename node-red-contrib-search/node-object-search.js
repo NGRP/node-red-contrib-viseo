@@ -8,37 +8,22 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("object-search", register, {});
 }
 
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
     let process = config.process,
-        search = config.search,
-        location = config.location,
-        output = config.output,
         deep = config.deep;
 
-    let searchType = config.searchType,
-        locationType = config.locationType,
-        outputType = config.outputType;
-
-    if (searchType === 'msg' || searchType === 'global') {
-        let loc = (searchType === 'global') ? node.context().global : data;
-        search = helper.getByString(loc, search);
-    }
-    else if (searchType === 'num') search = Number(search);
-
-    let loc = (locationType === 'global') ? node.context().global : data;
-    location = helper.getByString(loc, location);
+    let search = helper.getContextValue(RED, node, data, config.search, config.searchType);
+    let location = helper.getContextValue(RED, node, data, config.location, config.locationType);
 
     if (location === null || location === undefined || typeof location !== 'object') return node.error("Unfound object");
 
     let foundObject = searchValue(location, search, process, deep);
-
-    loc = (outputType === 'global') ? node.context().global : data;
-    helper.setByString(loc, output, foundObject);
+    helper.setContextValue(RED, node, data, config.output, foundObject, config.outputType);
 
     return node.send(data);
 
