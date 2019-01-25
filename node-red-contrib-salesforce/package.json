@@ -1,6 +1,6 @@
 {
 	"name": "node-red-contrib-viseo-salesforce",
-	"version": "0.1.7",
+	"version": "0.2.0-alpha.1",
 	"description": "VISEO Bot Maker - Salesforce object API",
 	"dependencies": {
 		"request": "^2.76.0",

@@ -14,7 +14,7 @@ module.exports = function(RED) {
         let node = this;
         node.config = RED.nodes.getNode(config.sfConfig);
         
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("salesforce-object", register, {});
 }
@@ -33,7 +33,7 @@ const start = (node, config) => {
 }
 
 
-const input = async (node, data, config) => {
+const input = async (RED, node, data, config) => {
 
     // Get values
     // Process research
@@ -50,7 +50,7 @@ const input = async (node, data, config) => {
 
     if(action === "QUERY") {
 
-        [ querySelect, queryWhere ] = prepareQuery(node, data, config)
+        [ querySelect, queryWhere ] = prepareQuery(RED, node, data, config)
 
         if(!queryWhere) {
             data.error = "Request not sent because of invalid Where clause."
@@ -58,7 +58,7 @@ const input = async (node, data, config) => {
             return node.send([undefined, data]);
         }
     } else if(["GET", "PATCH", "POST", "DELETE"]) {
-        [ objectId, objectObject ] = prepareRequest(data, config)
+        [ objectId, objectObject ] = prepareRequest(RED, data, config)
     }
 
 
@@ -99,26 +99,18 @@ const run = async (node, data, action, objectId, objectObject, object, querySele
     }
 }
 
-const prepareQuery = (node, data, config) => {
+const prepareQuery = (RED, node, data, config) => {
 
-    let querySelect = config.querySelect,
-        queryWhereArray = [],
+    let queryWhereArray = [],
         queryWhere;
 
-
     // Get query info
-    let querySelectType = config.querySelectType;
-
-
-    if (querySelectType !== 'str') {
-        let loc = (querySelectType === 'global') ? node.context().global : data;
-        querySelect = helper.getByString(loc, querySelect, '');
-    }
+    let querySelect = helper.getContextValue(RED, node, data, config.querySelect, config.querySelectType);
     querySelect = querySelect.replace(/ /g,'');
     querySelect = querySelect.replace(/,/g,'+,+');
 
 
-    if(config.queryWhere) {
+    if (config.queryWhere) {
 
         let error = false
 
@@ -211,27 +203,11 @@ const prepareQuery = (node, data, config) => {
     return [ querySelect, queryWhere ]
 }
 
-const prepareRequest = (data, config) => { 
+const prepareRequest = (RED, data, config) => { 
 
-    
-    let objectId = config.objectId,
-        objectLabel = config.objectLabel,
-        objectObject = config.objectObject;
-
-    let objectIdType = config.objectIdType,
-        objectObjectType = config.objectObjectType;
-
-    // Get other info    
-
-    if (objectIdType !== 'str') {
-        let loc = (objectIdType === 'global') ? node.context().global : data;
-        objectId = helper.getByString(loc, config.objectId);
-    }
-    if (objectObjectType !== 'json') {
-        let loc = (objectObjectType === 'global') ? node.context().global : data;
-        objectObject = helper.getByString(loc, config.objectObject);
-    }
-    else objectObject = JSON.parse(objectObject);
+    // let objectLabel = config.objectLabel;
+    let objectId = helper.getContextValue(RED, node, data, config.objectId, config.objectIdType);
+    let objectObject = helper.getContextValue(RED, node, data, config.objectObject, config.objectObjectType);
 
     return [ objectId, objectObject ]
 }
