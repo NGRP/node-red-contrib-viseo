@@ -20,35 +20,19 @@ module.exports = function(RED) {
 }
 
 async function input(RED, node, data, config) {
-    let process = config.process || "get-nodes",
-        property = config.property,
-        output = config.output;
 
-    let outloc  = (config.outputType === 'global') ? node.context().global : data;
-
-    if (config.propertyType !== 'str') {
-        let loc = (config.propertyType === 'global') ? node.context().global : data;
-        property = helper.getByString(loc, property);
-    }
+    let process = config.process || "get-nodes";
+    let property = helper.getContextValue(RED, node, data, config.property, config.propertyType);
 
     if (process === "get-nodes") {
-        let value = config.value;
-
-        if (config.valueType !== 'str') {
-            let loc = (config.valueType === 'global') ? node.context().global : data;
-            value = helper.getByString(loc, value);
-        } 
-        else if (config.valueType === 'num')  value = Number(value);
-        else if (config.valueType === 'bool') value = (value === "true") ? true : false;
-
+        let value = helper.getContextValue(RED, node, data, config.value, config.valueType);
         let results = new Array();
 
         RED.nodes.eachNode(function(node) {
             if (!property || !value) results.push(node);
             else if (node[property] === value) results.push(node);
         })
-
-        helper.setByString(outloc, output, results);
+        helper.setContextValue(RED, node, data, config.output, results, config.outputType);
         return node.send(data);
     }
 
@@ -59,14 +43,14 @@ async function input(RED, node, data, config) {
             results.push(node);
         })
 
-        helper.setByString(outloc, output, results);
+        helper.setContextValue(RED, node, data, config.output, results, config.outputType);
         return node.send(data);
     }
 
     else if (process === "auth") {
         if (!config.creds || !config.creds.credentials) {
             node.warn("Missing credentials");
-            helper.setByString(outloc, output, "400");
+            helper.setContextValue(RED, node, data, config.output, "400", config.outputType);
         }
         let url = config.creds.credentials.url,
             username = config.creds.credentials.username,
@@ -76,7 +60,7 @@ async function input(RED, node, data, config) {
         if (config.creds.passwordType === 'msg') password = helper.getByString(data, password);
         if (!url || !username || !password) {
             node.warn("Missing credentials");
-            helper.setByString(outloc, output, "400");
+            helper.setContextValue(RED, node, data, config.output, "400", config.outputType);
         }
         if (url.match(/\/$/)) url = url.substring(0, url.length -1);
 
@@ -84,18 +68,15 @@ async function input(RED, node, data, config) {
             let result = await auth(url, username, password);
             let token = JSON.parse(result).access_token;
 
-            if (config.creds.tokenType !== 'str') {
-                let loc = (config.creds.tokenType === 'global') ? node.context().global : data;
-                helper.setByString(loc, config.creds.credentials.token, token);
-            }
+            helper.setContextValue(RED, node, data, config.creds.credentials.token, token, config.creds.tokenType);
+            helper.setContextValue(RED, node, data, config.output, token, config.outputType);
 
-            helper.setByString(outloc, output, token);
             return node.send(data);
         }
         catch(err) {
             if (err.statusCode) {
                 node.warn("Not authorized");
-                helper.setByString(outloc, output, err.statusCode);
+                helper.setContextValue(RED, node, data, config.output, err.statusCode, config.outputType);
                 return node.send(data);
             }
             return node.error(err); 
@@ -114,18 +95,14 @@ async function input(RED, node, data, config) {
         if (url.match(/\/$/)) url = url.substring(0, url.length -1);
 
         if (token) {
-
-            if (config.creds.tokenType !== 'str') {
-                let loc = (config.creds.tokenType === 'global') ? node.context().global : data;
-                token = helper.getByString(loc, token);
-            }
+            token = helper.getContextValue(RED, node, data, token, config.creds.tokenType);
 
             try {
                 var fs = require('fs');
                 var json = JSON.parse(fs.readFileSync(flows, 'utf8'));
                 let result = await postFlows(token, json, url);
 
-                helper.setByString(outloc, output, json);
+                helper.setContextValue(RED, node, data, config.output, json, config.outputType);
                 return node.send(data);
             }
             catch(err) {
@@ -144,17 +121,14 @@ async function input(RED, node, data, config) {
         try {
             let result = await auth(url, username, password);
             let token = JSON.parse(result).access_token;
-
-            if (config.creds.tokenType !== 'str') {
-                let loc = (config.creds.tokenType === 'global') ? node.context().global : data;
-                helper.setByString(loc, config.creds.credentials.token, token);
-            }
+            
+            helper.setContextValue(RED, node, data, config.creds.credentials.token, token, config.creds.tokenType);
 
             var fs = require('fs');
             var json = JSON.parse(fs.readFileSync(flows, 'utf8'));
     
             result = await postFlows(token, json, url);
-            helper.setByString(outloc, output, json);
+            helper.setContextValue(RED, node, data, config.output, json, config.outputType);
             return node.send(data);
         }
         catch(err) {
@@ -164,8 +138,7 @@ async function input(RED, node, data, config) {
 
     else {
 
-        let loc = (config.inputType === 'global') ? node.context().global : data;
-        let input = helper.getByString(loc, config.input);
+        let input = helper.getContextValue(RED, node, data, config.input, config.inputType);
 
         if (!config.creds || !config.creds.credentials) return node.warn("Missing credentials");
         if (typeof input !== 'object' || input.length === "undefined") {
@@ -186,11 +159,7 @@ async function input(RED, node, data, config) {
         for (let n of input) if (n.id) myNodes.push(n.id);
 
         if (token) {
-
-            if (config.creds.tokenType !== 'str') {
-                let loc = (config.creds.tokenType === 'global') ? node.context().global : data;
-                token = helper.getByString(loc, token);
-            }
+            token = helper.getContextValue(RED, node, data, token, config.creds.tokenType);
 
             try {
                 let result = await getFlows(token, url);
@@ -209,7 +178,9 @@ async function input(RED, node, data, config) {
                 }
         
                 result = await postFlows(token, oldNodes, url);
-                helper.setByString(outloc, output, {updatedNodes: myNodes });
+                helper.setContextValue(RED, node, data, config.output, {updatedNodes: myNodes }, config.outputType);
+
+
                 return node.send(data);
             }
             catch(err) {
@@ -229,12 +200,8 @@ async function input(RED, node, data, config) {
             let result = await auth(url, username, password);
             let token = JSON.parse(result).access_token;
 
-            if (config.creds.tokenType !== 'str') {
-                let loc = (config.creds.tokenType === 'global') ? node.context().global : data;
-                helper.setByString(loc, config.creds.credentials.token, token);
-            }
-
-                result = await getFlows(token, url);
+            helper.setContextValue(RED, node, data, config.creds.credentials.token, token, config.creds.tokenType);
+            result = await getFlows(token, url);
             let oldNodes = JSON.parse(result);
 
             if (flows) {
@@ -250,7 +217,7 @@ async function input(RED, node, data, config) {
             }
     
             result = await postFlows(token, oldNodes, url);
-            helper.setByString(outloc, output, {updatedNodes: myNodes });
+            helper.setContextValue(RED, node, data, config.output, {updatedNodes: myNodes }, config.outputType);            
             return node.send(data);
         }
         catch(err) {

@@ -10,34 +10,21 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("inbenta-request", register, {});
 }
 
-async function input (node, data, config) {
+async function input (RED, node, data, config) {
 
     // Get values
-    let ibConfig = config.ibConfig,
-        action = config.action,
-        ibConfigType = config.ibConfigType;
-    
-    if (ibConfigType !== 'str') {
-        let loc = (ibConfigType === 'global') ? node.context().global : data;
-        ibConfig = helper.getByString(loc, ibConfig);
-    }
+    let ibConfig = helper.getContextValue(RED, node, data, config.ibConfig, config.ibConfigType);
     if (!ibConfig.match(/^https:\/\//i)) return node.error("URL should begin with 'https://'");
     else ibConfig = ibConfig.replace(/\/+$/, "");
 
+    let action = config.action;
     if (action === "search") {
-        let question = config.question,
-            questionType = config.questionType;
-
-        if (questionType !== 'str') {
-            let loc = (questionType === 'global') ? node.context().global : data;
-            question = helper.getByString(loc, question);
-        }
-
+        let question = helper.getContextValue(RED, node, data, config.question, config.questionType);
         try {
             let json = await searchRequest(ibConfig + "/?action=search&q=" + question);
             data.payload = JSON.parse(json);
@@ -47,14 +34,7 @@ async function input (node, data, config) {
     }
 
     else if (action === "click") {
-        let objectId = config.objectId,
-            objectIdType = config.objectIdType;
-
-        if (objectIdType !== 'str') {
-            let loc = (objectIdType === 'global') ? node.context().global : data;
-            objectId = helper.getByString(loc, objectId);
-        }
-        
+        let objectId = helper.getContextValue(RED, node, data, config.objectId, config.objectIdType);       
         try {
             let json = await searchRequest(ibConfig + "/?idata=" + objectId + "&action=click");
             data.payload = JSON.parse(json);
@@ -64,19 +44,8 @@ async function input (node, data, config) {
     }
 
     else if (action === "rate") {
-        let rating = config.objectRating,
-            comment = config.objectComment,
-            ratingType = config.objectRatingType,
-            commentType = config.objectCommentType;
-
-        if (ratingType !== 'str') {
-            let loc = (ratingType === 'global') ? node.context().global : data;
-            rating = helper.getByString(loc, rating);
-        }
-        if (commentType !== 'str') {
-            let loc = (commentType === 'global') ? node.context().global : data;
-            comment = helper.getByString(loc, comment);
-        }
+        let rating = helper.getContextValue(RED, node, data, config.objectRating, config.objectRatingType); 
+        let comment = helper.getContextValue(RED, node, data, config.objectComment, config.objectCommentType);
         if (comment === undefined || typeof comment !== 'string') comment = '';
         
         try {
