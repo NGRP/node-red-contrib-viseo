@@ -37,14 +37,7 @@ async function input (node, data, config) {
     catch(err) {    return node.error("ERROR: MS Vision API key is required to get celebrities information."); }
 
     // Image
-    let imageType = config.imageT || 'msg',
-    image = config.image || 'message.attachments[0].contentUrl';
-
-    if (imageType !== 'str') {
-        let loc = (imageType === 'global') ? node.context().global : data;
-        try         { image = helper.getByString(loc, image); }
-        catch(err)  { return node.error('ERROR: Can not find the image.'); }
-    }
+    let image = helper.getContextValue(RED, node, data, config.image || 'message.attachments[0].contentUrl', config.imageT || 'msg');
 
     // Parameters
     let PROPERTIES = ['Categories', 'Tags', 'Description', 'Faces', 'ImageType', 'Color', 'Adult'];

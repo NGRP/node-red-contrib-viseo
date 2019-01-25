@@ -10,7 +10,6 @@
             key: { value: undefined, required: true, type: 'ms-config'},
             api: { value: "keyPhrases" },
             inputType: { value: "msg" },
-            outputType: { value: "msg" },
             endpointType: { value: "str" }
         },
         inputs:  1,
@@ -21,7 +20,7 @@
         label: function() { return this.name || "Text Analytics"; },
         oneditprepare: function() {
             $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global','json'], typeField: $("#node-input-inputType")  });
-            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg'], type: 'msg' });
             $("#node-input-endpoint").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-endpointType")  });
         }
     });
@@ -53,7 +52,6 @@
     <div class="form-row">
         <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
-        <input type="hidden" id="node-input-outputType">
     </div>
 
     <br>

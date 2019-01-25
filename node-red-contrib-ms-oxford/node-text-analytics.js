@@ -16,18 +16,16 @@ module.exports = function(RED) {
         config.creds = RED.nodes.getCredentials(config.key);
         if (config.creds && config.creds.key) node.status({});
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("ms-text-analytics", register, {});
 }
 
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
 
-    let input = config.input || "payload",
-        output = config.output || "payload",
+    let output = config.output || "payload",
         api = config.api || "keyPhrases",
         endpoint = config.endpoint || "https://westeurope.api.cognitive.microsoft.com/text/analytics/v2.0", 
-        outputLoc = (config.outputType === 'global') ? node.context().global : data;
 
     // 0. Errors handling
     if (!config.creds || !config.creds.key) {
@@ -35,19 +33,10 @@ const input = (node, data, config) => {
     }
 
     // 1. Get fields
-    if (config.inputType !== 'json') {
-        let loc = (config.inputType === 'global') ? node.context().global : data;
-        input = helper.getByString(loc, input);
-    }
-    input = (typeof input === "object") ? input : JSON.parse(input);
-    if (typeof input !== "object") return node.error("Input must be an object");
-
-    if (config.endpointType !== 'str') {
-        let loc = (config.endpointType === 'global') ? node.context().global : data;
-        endpoint = helper.getByString(loc, endpoint);
-    }
+    let input = helper.getContextValue(RED, node, data, config.input || "payload", config.inputType);
+    
+    endpoint = helper.getContextValue(RED, node, data, endpoint, config.endpointType);
     endpoint = endpoint.replace(/\/$/, '');
-
 
     let req = {
         url: endpoint + '/' + api,
@@ -62,7 +51,7 @@ const input = (node, data, config) => {
     // 2. Send request
     request(req, (err, response, body) => {
         if (err) return node.error(err);
-        helper.setByString(outputLoc, output, body);
+        helper.setByString(data, output, body);
         return node.send(data);
     });
 }

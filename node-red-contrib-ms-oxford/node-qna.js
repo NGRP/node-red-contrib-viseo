@@ -14,7 +14,7 @@ module.exports = function(RED) {
 
         config.endpointKey = this.credentials.endpointKey;
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("ms-qna", register, { 
         credentials: {
@@ -23,28 +23,13 @@ module.exports = function(RED) {
     });
 }
 
-async function input (node, data, config) {
+async function input (RED, node, data, config) {
 
-    let host = config.host,
-        knowledgeBaseId = config.knowledgeBaseId,
-        question = config.question,
-        output = config.output,
-        endpointKey = config.endpointKey;
-
-    if (config.hostType !== 'str') {
-        let loc = (config.hostType === 'global') ? node.context().global : data;
-        host = helper.getByString(loc, host); }
-    if (config.knowledgeType !== 'str') {
-        let loc = (config.knowledgeType === 'global') ? node.context().global : data;
-        knowledgeBaseId = helper.getByString(loc, knowledgeBaseId); }
-    if (config.endpointKeyType !== 'str') {
-        let loc = (config.endpointKeyType === 'global') ? node.context().global : data;
-        endpointKey = helper.getByString(loc, endpointKey); }
-    if (config.questionType !== 'str') {
-        let loc = (config.questionType === 'global') ? node.context().global : data;
-        question = helper.getByString(loc, question); }
-
-    let questionLoc = (config.outputType === 'global') ? node.context().global : data;
+    let host = helper.getContextValue(RED, node, data, config.host, config.hostType);
+    let knowledgeBaseId = helper.getContextValue(RED, node, data, config.knowledgeBaseId, config.knowledgeType);
+    let question = helper.getContextValue(RED, node, data, config.question, config.questionType);
+    let endpointKey = helper.getContextValue(RED, node, data, config.endpointKey, config.endpointKeyType);
+    let output = output = config.output;
 
     if (host === undefined || knowledgeBaseId === undefined ||endpointKey === undefined) {
         return node.status({
@@ -59,7 +44,7 @@ async function input (node, data, config) {
             json = JSON.parse(json);
 
         const entities = new Entities();
-        helper.setByString(questionLoc, output, entities.decode(json.answers[0].answer));
+        helper.setByString(data, output, entities.decode(json.answers[0].answer));
         return node.send(data);
     }
     catch (err) {

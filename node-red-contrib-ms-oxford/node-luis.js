@@ -23,33 +23,42 @@ module.exports = function(RED) {
         else this.endpoint = conf.credentials.endpoint;
 
         if (this.endpoint) node.status({});
-        this.on('input', (data)  => { try { input(node, data, config) } catch (ex){ node.warn(ex) }});
+        this.on('input', (data)  => { try { input(RED, node, data, config) } catch (ex){ node.warn(ex) }});
     }
     RED.nodes.registerType("ms-luis", register, {});
 }
 
 
-async function input(node, data, config) {
+async function input(RED, node, data, config) {
 
     // Get parameters
     let url = node.endpoint;  
-    let text  = config.text || "payload";
     let output = config.intent || "payload";
-
-    // Input
-    if (config.textType !== 'str') {
-        let loc = (config.textType === 'global') ? node.context().global : data;
-        text = helper.getByString(loc, text);
-    }
-
+    let text = helper.getContextValue(RED, node, data, config.text || "payload", config.textType);
+    
     try {
         let response = await request({
             uri: url + encodeURIComponent(text),
             method: 'GET'
         });
 
-        let outLoc = (config.intentType === 'global') ? node.context().global : data;
-        helper.setByString(outLoc, output, JSON.parse(response));
+        response = JSON.parse(response);
+
+        let formattedResponse = {
+            query: response.query,
+            intent: response.topScoringIntent.intent,
+            score: response.topScoringIntent.score,
+            entities: {},
+            source: "luis",
+            completeResponse: response
+        }
+
+        for (let e of response.entities) {
+            if (!e.type) continue;
+            formattedResponse.entities[e.type] = e.entity;
+        }
+        
+        helper.setByString(data, output, formattedResponse);
         return node.send(data);
     }
     catch(err) { 

@@ -11,8 +11,7 @@
             endpointKeyType:    { value: "str" },
             question:           { value: "payload" },
             questionType:       { value: "msg" },
-            output:             { value: "payload" },
-            outputType:         { value: "msg" }
+            output:             { value: "payload" }
         },
         credentials: {
             endpointKey:        { type: "text" }
@@ -33,7 +32,7 @@
             $("#node-input-knowledgeBaseId").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-knowledgeType") });
             $("#node-input-endpointKey").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-endpointKeyType") });
             $("#node-input-question").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-questionType") });
-            $("#node-input-output").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-outputType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
         }
     });
 </script>
@@ -76,7 +75,6 @@
     <div class="form-row">
         <label for="node-input-output"><i class="fa fa-tasks"></i> Output</label>
         <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
-        <input type="hidden" id="node-input-outputType">
     </div>
    
 </script>

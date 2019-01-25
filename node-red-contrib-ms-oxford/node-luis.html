@@ -7,8 +7,7 @@
             config:       { value: undefined, type: "ms-luis-config" }, 
             text:         { value: "payload" },
             textType:     { value: "msg" },
-            intent:       { value: "payload" },
-            intentType:   { value: "msg" }
+            intent:       { value: "payload" }
         },
         inputs: 1,
         outputs:1,
@@ -19,7 +18,7 @@
             if (!this.textType) this.textType = 'msg';
             if (!this.intentType) this.intentType = 'msg';
             $("#node-input-text").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-textType") });
-            $("#node-input-intent").typedInput({ default: 'msg', types: ['msg','global'], typeField: $("#node-input-intentType") });
+            $("#node-input-intent").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
         }
     });
 </script>
@@ -51,7 +50,6 @@
     <div class="form-row">
         <label for="node-input-intent"><i class="fa fa-tasks"></i> Output</label>
         <input type="text" id="node-input-intent" style="width:70%;" placeholder="payload">
-        <input type="hidden" id="node-input-intentType">
     </div>
 </script>
 

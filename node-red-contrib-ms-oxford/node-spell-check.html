@@ -14,7 +14,6 @@
             mkt: { value: "en-us" },
             mode: {value: "proof"},
             inputType: { value: "msg" },
-            outputType: { value: "msg" },
             endpointType: { value: "str" },
             preContextTextType: { value: "str" },
             postContextTextType: { value: "str" },
@@ -28,11 +27,11 @@
         label: function() { return this.name || "Spell Check"; },
         oneditprepare: function() {
             $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global', 'str'], typeField: $("#node-input-inputType")  });
-            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg','global'], typeField: $("#node-input-outputType")  });
             $("#node-input-endpoint").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-endpointType")  });
             $("#node-input-preContextText").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-preContextTextType")  });
             $("#node-input-postContextText").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-postContextTextType")  });
             $("#node-input-mkt").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-mktType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg'], type: 'msg' });
 
             $("#node-input-api").change(function () {
                 $(".get-method").hide();
@@ -73,7 +72,6 @@
     <div class="form-row">
         <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
         <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
-        <input type="hidden" id="node-input-outputType">
     </div>
 
     <br>
