@@ -13,48 +13,24 @@ module.exports = function (RED) {
     node.status({fill:"red", shape:"ring", text: 'Missing credential'});
     if (config.token) node.status({});
   
-    this.on('input', (data) => { input(node, data, config) });
+    this.on('input', (data) => { input(RED, node, data, config) });
   }
   RED.nodes.registerType("ms-graph-excel", register, {});
 }
 
-async function input(node, data, config) {
+async function input(RED, node, data, config) {
   
-  let token = config.token;
-  if (config.tokenType !== 'str') {
-    let loc = (config.tokenType === 'global') ? node.context().global : data;
-    token = helper.getByString(loc, token);
-  }
+  let token = helper.getContextValue(RED, node, data, config.token, config.tokenType);
   if (!token) return node.error("Missing token");
   
   let action = config.action || 'set';
   let method = config.method || 'append';
-  let outLoc =  (config.outputType === 'global') ? node.context().global : data;
 
-  let saveLoc = "";
   let cells = [];
-
-  let workbook = config.workbook;
-  let worksheet = config.worksheet;
-  let session = config.session;
-  let range = config.range;
-
-  if (config.sessionType !== 'str') {
-    let loc = (config.sessionType === 'global') ? node.context().global : data;
-    session = helper.getByString(loc, session);
-  }
-  if (config.workbookType !== 'str') {
-    let loc = (config.workbookType === 'global') ? node.context().global : data;
-    workbook = helper.getByString(loc, workbook);
-  }
-  if (config.worksheetType !== 'str') {
-    let loc = (config.worksheetType === 'global') ? node.context().global : data;
-    worksheet = helper.getByString(loc, worksheet);
-  }
-  if (range && config.rangeType !== 'str') {
-      let loc = (config.rangeType === 'global') ? node.context().global : data;
-      range = helper.getByString(loc, range);
-  }
+  let session =  helper.getContextValue(RED, node, data, config.session, config.sessionType);
+  let workbook =  helper.getContextValue(RED, node, data, config.workbook, config.workbookType);
+  let worksheet =  helper.getContextValue(RED, node, data, config.worksheet, config.worksheetType);
+  let range =  helper.getContextValue(RED, node, data, config.range, config.rangeType);
 
   let parameters = {
     workbook:  'https://graph.microsoft.com/v1.0/me/drive/root:/' + workbook + ':/workbook',
@@ -66,11 +42,10 @@ async function input(node, data, config) {
 
   try  {
     if (action === "get" || action === "cell") {
-
+     
       // Get all data
       if (config.save) {
-        saveLoc = (config.savelocType === 'global') ? node.context().global : data;
-        cells = helper.getByString(saveLoc, config.saveloc || '_sheet');
+        cells =  helper.getContextValue(RED, node, data, config.saveloc || '_sheet', config.savelocType);
       }
       if (!cells || typeof cells !== "object" || cells.length <= 0) {
 
@@ -81,16 +56,18 @@ async function input(node, data, config) {
         
         let res = await getRange(parameters);
             res = JSON.parse(res).values;
-        if (config.save) helper.setByString(saveLoc, config.saveloc || '_sheet', res);
+        if (config.save) {
+          helper.setContextValue(RED, node, data, config.saveloc || '_sheet', res, config.savelocType);
+        }
         cells = [];
         for (let ob of res) cells.push(Array.from(ob));
       }
 
       // Get final data
-      let res = (action === "cell") ? getCell(node, cells, config) : getData(node, cells, config);
+      let res = (action === "cell") ? getCell(RED, node, cells, config) : getData(node, cells, config);
       
       if (res.error) throw (res.error);
-      helper.setByString(outLoc, config.output || "payload", { "result": res, "session": parameters.session});
+      helper.setContextValue(RED, node, data, config.output || "payload", { "result": res, "session": parameters.session}, config.outputType);
       return node.send(data);
     }
 
@@ -104,28 +81,28 @@ async function input(node, data, config) {
       let res = await clearRange(parameters);
 
       if (action === "clear") {
-        helper.setByString(outLoc, config.output || "payload", { "result": 200, "session": parameters.session});
+        helper.setContextValue(RED, node, data, config.output || "payload", { "result": 200, "session": parameters.session}, config.outputType);
         return node.send(data);
       }
     }
     if (action === "set") {
       parameters.method = method;
 
-      let res = getInput(node, data, config, parameters);
+      let res = getInput(RED, node, data, config, parameters);
       if (res.error) throw (res.error);
 
       parameters.values = res.values;
       parameters.range = res.range;
       
       res = await setData(parameters);
-      helper.setByString(outLoc, config.output || "payload", { "result": 200, "session": parameters.session});
+      helper.setContextValue(RED, node, data, config.output || "payload", { "result": 200, "session": parameters.session}, config.outputType);
       return node.send(data);
     }
 
   }
   catch(ex) {
     node.warn(ex);
-    helper.setByString(outLoc, config.output || "payload", { "error": ex, "session": parameters.session});
+    helper.setContextValue(RED, node, data, config.output || "payload", { "error": ex, "session": parameters.session}, config.outputType);
     return node.send(data);
   }
 
@@ -165,18 +142,9 @@ function getRange(parameters) {
 
 
 
-function getCell(node, cells, config) {
-    let cell_l = config.cell_l,
-    cell_c = config.cell_c;
-
-  if (config.cell_lType !== 'str') {
-    let loc = (config.cell_lType === 'global') ? node.context().global : data;
-    cell_l = helper.getByString(loc, cell_l);
-  }
-  if (config.cell_cType !== 'str') {
-    let loc = (config.cell_cType === 'global') ? node.context().global : data;
-    cell_c = helper.getByString(loc, cell_c);
-  }
+function getCell(RED, node, cells, config) {
+    let cell_l = helper.getContextValue(RED, node, data, config.cell_l, cell_lType);
+    let cell_c = helper.getContextValue(RED, node, data, config.cell_c, cell_cType);
 
   if (!cell_l || !cell_c) {
     return {"error": "Cannot find line and column labels"};
@@ -271,10 +239,9 @@ function setData(parameters) {
 
 }
 
-function getInput(node, data, config, parameters) {
+function getInput(RED, node, data, config, parameters) {
  // Get input fields
- let loc =  (config.inputType === 'global') ? node.context().global : data;
- let rows = helper.getByString(loc, config.input || "payload");
+ let rows = helper.getContextValue(RED, node, data, config.input || "payload", config.inputType);
  let method = parameters.method;
  let result = {values: [], range: parameters.range}
 

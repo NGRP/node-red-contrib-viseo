@@ -15,7 +15,7 @@ module.exports = function (RED) {
     config.password = this.credentials.password;
     config.config = RED.nodes.getCredentials(config.config);
     let node = this;
-    this.on('input', (data) => { input(node, data, config) });
+    this.on('input', (data) => { input(RED, node, data, config) });
   }
   RED.nodes.registerType("ms-graph", register, {
       credentials : {
@@ -26,37 +26,15 @@ module.exports = function (RED) {
   });
 }
 
-async function input(node, data, config) {
+async function input(RED, node, data, config) {
   
-  let action = config.action,
-      redirect = config.redirect,
-      scope = config.scope,
-      state = config.state,
-      authority = config.authority,
-      output = config.output || "payload",
-      outLoc = (config.outputType === 'global') ? node.context().global : data;
-
-  if (config.redirectType !== 'str') {
-    let loc = (config.redirectType === 'global') ? node.context().global : data;
-    redirect = helper.getByString(loc, redirect);
-  }
-
-  if (config.stateType !== 'str') {
-    let loc = (config.stateType === 'global') ? node.context().global : data;
-    state = helper.getByString(loc, state);
-  }
-
-  if (config.scopeType !== 'str') {
-    let loc = (config.scopeType === 'global') ? node.context().global : data;
-    scope = helper.getByString(loc, scope);
-  }
-
-  if (config.authorityType !== 'str') {
-    let loc = (config.authorityType === 'global') ? node.context().global : data;
-    authority = helper.getByString(loc, authority);
-  }
-
-
+  let action = config.action;
+  let output = config.output || "payload";
+  
+  let redirect = helper.getContextValue(RED, node, data, config.redirect, config.redirectType);
+  let state = helper.getContextValue(RED, node, data, config.state, config.stateType);
+  let scope = helper.getContextValue(RED, node, data, config.scope, config.scopeType);
+  let authority = helper.getContextValue(RED, node, data, config.authority, config.authorityType);
 
   scope = scope || 'User.Read';
   scope = scope.toLowerCase().replace(/,/g,' ');
@@ -76,75 +54,57 @@ async function input(node, data, config) {
   if (action === "auth") {
     let url = getAuthUrl(credentials);
     if (!url) node.error("Information missing");
-    helper.setByString(outLoc, output, url);
+    helper.setContextValue(RED, node, data, output, url, config.outputType);
     return node.send(data);
   }
 
   if (action === "unauth") {
     let url = getUnauthUrl(credentials);
     if (!url) node.error("Information missing");
-    helper.setByString(outLoc, output, url);
+    helper.setContextValue(RED, node, data, output, url, config.outputType);
     return node.send(data);
   }
 
   if (action === "token-code") {
-    let code = config.code;
-    if (config.codeType !== 'str') {
-      let loc = (config.codeType === 'global') ? node.context().global : data;
-      code = helper.getByString(loc, code);
-    }
+    let code = helper.getContextValue(RED, node, data, config.code, config.codeType);
     if (!code) return node.error("Code missing");
 
     try { 
       let json = await getTokenFromCode(credentials, code);
-      helper.setByString(outLoc, output, JSON.parse(json));
+      helper.setContextValue(RED, node, data, output, JSON.parse(json), config.outputType);
       return node.send(data);
     }
     catch (err) {
       node.error(err);
-      helper.setByString(outLoc, output, "ERROR");
+      helper.setContextValue(RED, node, data, output, "ERROR", config.outputType);
       return node.send(data);
     }
   }
 
   if (action === "token-password") {
-    let username = config.username;
-    let password = config.password;
-
-    if (config.usernameType !== 'str') {
-      let loc = (config.usernameType === 'global') ? node.context().global : data;
-      username = helper.getByString(loc, username);
-    }
-  
-    if (config.passwordType !== 'str') {
-      let loc = (config.passwordType === 'global') ? node.context().global : data;
-      password = helper.getByString(loc, password);
-    }
+    let username = helper.getContextValue(RED, node, data, config.username, config.usernameType);
+    let password = helper.getContextValue(RED, node, data, config.password, config.passwordType);
     if (!username || !password) return node.error("Credentials missing");
 
     try { 
       let json = await getTokenFromPass(credentials, username, password);
-      helper.setByString(outLoc, output, JSON.parse(json));
+      helper.setContextValue(RED, node, data, output, JSON.parse(json), config.outputType);
       return node.send(data);
     }
     catch (err) {
       node.error(err);
-      helper.setByString(outLoc, output, "ERROR");
+      helper.setContextValue(RED, node, data, output,  "ERROR", config.outputType);
       return node.send(data);
     }
   }
 
   if (action === "token-code-refresh") {
-    let refresh = config.refresh;
-    if (config.refreshType !== 'str') {
-      let loc = (config.refreshType === 'global') ? node.context().global : data;
-      refresh = helper.getByString(loc, refresh);
-    }
+    let refresh = helper.getContextValue(RED, node, data, config.refresh, config.refreshType);
     if (!refresh) node.error("Refresh missing");
 
     try { 
       let json = await getTokenFromRefresh(credentials, refresh);
-      helper.setByString(outLoc, output, JSON.parse(json));
+      helper.setContextValue(RED, node, data, output, JSON.parse(json), config.outputType);
       return node.send(data);
     }
     catch (err) {
@@ -153,64 +113,36 @@ async function input(node, data, config) {
   }
 
   if (action === "user") {
-    let token = config.token;
-    if (config.tokenType !== 'str') {
-      let loc = (config.tokenType === 'global') ? node.context().global : data;
-      token = helper.getByString(loc, token);
-    }
+    let token = helper.getContextValue(RED, node, data, config.token, config.tokenType);
     if (!token) return node.error("Token missing");
 
     try { 
       let json = await getUser(token);
-      helper.setByString(outLoc, output, JSON.parse(json));
+      helper.setContextValue(RED, node, data, output, JSON.parse(json), config.outputType);
       return node.send(data);
     }
     catch (err) {
       node.error(err);
-      helper.setByString(outLoc, output, "ERROR");
+      helper.setContextValue(RED, node, data, output,  "ERROR", config.outputType);
       return node.send(data);
     }
   }
 
   if (action === "rooms") {
-    let token = config.token;
-    if (config.tokenType !== 'str') {
-      let loc = (config.tokenType === 'global') ? node.context().global : data;
-      token = helper.getByString(loc, token);
-    }
+    let token = helper.getContextValue(RED, node, data, config.token, config.tokenType);
     if (!token) return node.error("Token missing");
 
     try { 
       let json = await getRooms(token);
-      helper.setByString(outLoc, output, JSON.parse(json));
+      helper.setContextValue(RED, node, data, output, JSON.parse(json), config.outputType);
       return node.send(data);
     }
     catch (err) {
       node.error(err);
-      helper.setByString(outLoc, output, "ERROR");
+      helper.setContextValue(RED, node, data, output,  "ERROR", config.outputType);
       return node.send(data);
     }
   }
-
-  //let token = JSON.parse(key).access_token;
-
-  // Retrieve Refresh Token then set back Access Token
-  /*if (config.refresh) {
-    let refresh = helper.getByString(data, config.refresh)
-    if (refresh) {
-      getTokenFromRefreshToken(credentials, refresh, (err, accessToken) => {
-        if (err) return node.warn(err);
-        helper.setByString(data, config.access, accessToken);
-        node.send(data);
-      });
-      return;
-    }
-  }
-
-  // Build Authentication URL
-  let url = getAuthUrl(credentials);
-  helper.setByString(data, config.url || 'payload', url);
-  node.send(data);*/
 }
 
 // --------------------------------------------------------------------------
@@ -280,7 +212,6 @@ async function getTokenFromRefresh(CREDENTIALS, refresh) {
       }
     };
   
-    console.log(req);
     return request(req);
   }
 
@@ -295,7 +226,6 @@ async function getUser(access) {
       }
     };
   
-    console.log(req);
     return request(req);
   }
 
@@ -310,6 +240,5 @@ async function getUser(access) {
         }
       };
     
-      console.log(req);
       return request(req);
     }
