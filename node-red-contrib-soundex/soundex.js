@@ -21,7 +21,7 @@ module.exports = function(RED) {
         var node = this;
 
         start(node, config);
-        this.on('input', (data)  => { input(node, data, config) });
+        this.on('input', (data)  => { input(RED, node, data, config) });
         this.on('close', (cb)    => { stop(node, cb, config)    });
     }
     RED.nodes.registerType("soundex", register, {});
@@ -47,25 +47,15 @@ const start = (node, config) => {
     })
 }
 
-const input = (node, data, config) => { 
-    let confidence = config.confidence,
-        text = config.text,
-        output = config.output;
+const input = (RED, node, data, config) => { 
 
-    if (config.confidenceType !== 'num') {
-        let loc = (config.confidenceType === 'global') ? node.context().global : data;
-        confidence = helper.getByString(loc, confidence); }
-    confidence = parseFloat(config.confidence) ;
-
-    if (config.textType !== 'str') {
-        let loc = (config.textType === 'global') ? node.context().global : data;
-        text = helper.getByString(loc, text); }
-
-    let intentLoc = (config.outputType === 'global') ? node.context().global : data;
+    let confidence = helper.getContextValue(RED, node, data, config.confidence, config.confidenceType);
+    // confidence = parseFloat(confidence) ;
+    let text = helper.getContextValue(RED, node, data, config.text, config.textType);
 
     find(confidence, text, (err, score, match, sdx) => {
         if (err) return node.warn(err);
-        helper.setByString(intentLoc, output, {"match" : match, "score": score, "sdx" : sdx});
+        helper.setContextValue(RED, node, data, config.output, {"match" : match, "score": score, "sdx" : sdx}, config.outputType);
         node.send(data);
     })
     
