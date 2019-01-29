@@ -126,6 +126,9 @@ const reply = (bot, node, data, config) => {
         if (!message) return false;
 
         message.address(address);
+        
+        //Printing the metadatas
+        if(data.value) message.data.value = data.value;
     }
 
     let customTyping = (callback) => {
