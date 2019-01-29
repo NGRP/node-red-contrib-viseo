@@ -72,6 +72,8 @@
             attachAdaptiveCard:       { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: "**"},
+            value :             {value : undefined},
+            valueType : { value : "str"}
         },
         inputs:  1,
         outputs: 1,
@@ -103,6 +105,7 @@
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
+            $("#node-input-value").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json','bin','date','jsonata','env'] ,typeField: $("#node-input-valueType")});
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -792,7 +795,14 @@
                 <input type="hidden" id="node-input-shcardurlType">
             </div>
         </section>
-
+        <br/>
+        <br/>
+        <b>Meta datas</b><br/>
+        <div class="form-row">
+                <label for="node-input-value"><i class="fas fa-database"></i> Metadata</label>
+                <input type="text" id="node-input-value" style="width:80%;">
+                <input type="hidden" id="node-input-valueType">
+        </div>
     </div>
 </script>
 
