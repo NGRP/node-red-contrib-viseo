@@ -36,6 +36,10 @@ function start(node, config, RED) {
 
 function input (node, config, data) {
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     let lexruntime = _AWS[config.token];
     if (!config.botname || !config.botalias || !lexruntime ) {
         let err = (!config.botname || !config.botalias) ? "Missing bot information" : "Missing credentials";

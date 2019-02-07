@@ -23,6 +23,10 @@ module.exports = function(RED) {
 
 const input = (node, data, config) => {
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     // Input
     let input = config.input || 'payload';
     if (config.inputType.match(/global|msg/)) {

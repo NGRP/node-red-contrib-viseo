@@ -33,6 +33,10 @@ function start(node, config, RED) {
 
 function input(node, config, data){
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     let rekognition = _AWS[config.key];
     if (!rekognition) {
         helper.setByString(data, config.output || "payload" , { error: "Missing credentials" });

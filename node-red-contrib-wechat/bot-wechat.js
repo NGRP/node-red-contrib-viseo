@@ -62,6 +62,11 @@ const start = (RED, node, config) => {
 // ------------------------------------------
 
 function middleware (node, config) {
+
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+    
     let token = config.credentials.token;
     let now = Date.now();
 

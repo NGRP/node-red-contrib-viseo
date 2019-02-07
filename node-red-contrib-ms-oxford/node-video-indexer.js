@@ -21,6 +21,11 @@ module.exports = function(RED) {
 }
 
 async function input (node, data, config) {
+
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+    
     let key    = config.key,
         action = config.action || "Search",
         body   = config.body,

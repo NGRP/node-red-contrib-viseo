@@ -80,6 +80,11 @@ const getMessageContext = (message) => {
 // ------------------------------------------
 
 const receive = (node, config, req, res) => { 
+
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     let json = req.body;
 
     if (json.request === undefined) {
@@ -145,7 +150,7 @@ const prompt = (node, data, config) => {
         data.prompt.message.text = json.request.intent.slots.Text.value;
     }
     if (data.prompt.request.type === "LaunchRequest")       data.prompt.message.text = "START CONVERSATION";
-    if (data.prompt.request.type === "SessionEndedRequest")data.prompt.message.text = "END CONVERSATION";
+    if (data.prompt.request.type === "SessionEndedRequest") data.prompt.message.text = "END CONVERSATION";
 
     next();
 }

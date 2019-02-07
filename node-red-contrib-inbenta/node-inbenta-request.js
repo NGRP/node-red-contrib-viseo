@@ -17,6 +17,10 @@ module.exports = function(RED) {
 
 async function input (node, data, config) {
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     // Get values
     let ibConfig = config.ibConfig,
         action = config.action,

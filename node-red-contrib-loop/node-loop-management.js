@@ -81,6 +81,11 @@ const input = (node, data, config) => {
             delete (scope === 'user' ? data.user._tmp : data._tmp)
             _tmp[loopKey] = undefined; 
         }
+
+        // Log activity
+        try { setTimeout(function() { helper.trackActivities(node)},0); }
+        catch(err) { console.log(err); }
+
         helper.setByString(loc, outputObject, outObject);      
         returnedValue = [undefined,data];
     }
@@ -91,6 +96,11 @@ const input = (node, data, config) => {
             delete (scope === 'user' ? data.user._tmp : data._tmp)
             _tmp[loopKey] = undefined; 
         }
+
+         // Log activity
+         try { setTimeout(function() { helper.trackActivities(node)},0); }
+         catch(err) { console.log(err); }
+
         helper.setByString(loc, outputObject, undefined);
         returnedValue = [undefined,data];
     }
