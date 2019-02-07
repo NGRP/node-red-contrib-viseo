@@ -25,10 +25,6 @@ module.exports = function(RED) {
 
 function input (node, data, config) {
 
-    // Log activity
-    try { setTimeout(function() { helper.trackActivities(node)},0); }
-    catch(err) { console.log(err); }
-
     let action = config.action || 'set',
         spreadsheetId = config.sheet,
         range = config.range,

@@ -10,6 +10,7 @@ const CARRIER = "socketServer"
 let Server = require('socket.io');
 let serverConfig = '';
 let LISTENERS_REPLY = {};
+let LISTENERS_PROMPT = {};
 let LISTENERS_END = {};
 let SOCKETS = [];
 let io;
@@ -87,6 +88,9 @@ const startServer = (node, config) => {
     let listenerReply = LISTENERS_REPLY[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
     helper.listenEvent('reply', listenerReply)
 
+    let listenerPrompt = LISTENERS_PROMPT[node.id] = (srcNode, data, srcConfig) => { prompt(node, data, config) }
+    helper.listenEvent('prompt', listenerPrompt)
+
     let listenerEnd = LISTENERS_END[node.id] = (node) => { endSound(node) }
     helper.listenEvent('endSound', listenerEnd)
 }        
@@ -95,6 +99,9 @@ const stop = (node, done) => {
     
     let listenerReply = LISTENERS_REPLY[node.id]
     helper.removeListener('reply', listenerReply)
+
+    let listenerPrompt = LISTENERS_PROMPT[node.id]
+    helper.removeListener('prompt', listenerPrompt)
 
     let listenerEnd = LISTENERS_END[node.id]
     helper.removeListener('endSound', listenerEnd)
@@ -106,10 +113,6 @@ const stop = (node, done) => {
 // ------------------------------------------
 
 function receive(node, config, socket, message) {
-
-      // Log activity
-    try { setTimeout(function() { helper.trackActivities(node)},0); }
-    catch(err) { console.log(err); }
 
     message.socket = socket.id
 
@@ -139,6 +142,25 @@ function receive(node, config, socket, message) {
     // Trigger received message
     helper.emitEvent('received', node, data, config);
     node.send(data);
+}
+
+
+// ------------------------------------------
+// PROMPT
+// ------------------------------------------
+
+const prompt = (node, data, config) => {
+    const next = function() {
+        if (helper.countListeners('prompt') === 1) {
+            helper.fireAsyncCallback(data);
+        }
+    }
+
+    // Assume we send the message to the current user address
+    let address = botmgr.getUserAddress(data)
+    if (!address || address.carrier !== CARRIER) return next();
+
+    next();
 }
 
 let msgs = [];

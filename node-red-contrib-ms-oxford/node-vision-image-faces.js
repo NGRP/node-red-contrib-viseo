@@ -22,10 +22,6 @@ module.exports = function(RED) {
 
 async function input(node, data, config){
 
-    // Log activity
-    try { setTimeout(function() { helper.trackActivities(node)},0); }
-    catch(err) { console.log(err); }
-
     let facecreds = node.facecreds;
     let facekey, faceregion, visionkey, visionregion;
     let params = config.parameters;

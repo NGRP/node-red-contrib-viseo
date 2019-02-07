@@ -31,10 +31,6 @@ module.exports = function(RED) {
 
 async function input(node, data, config) {
 
-    // Log activity
-    try { setTimeout(function() { helper.trackActivities(node)},0); }
-    catch(err) { console.log(err); }
-
     // Get parameters
     let url = node.endpoint;  
     let text  = config.text || "payload";

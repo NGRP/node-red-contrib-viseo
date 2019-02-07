@@ -86,10 +86,7 @@ const getMessageContext = (message) => {
 // ------------------------------------------
 
 const receive = (conv, node, config, resolve, reject) => {
-    
-    // Log activity
-    try { setTimeout(function() { helper.trackActivities(node)},0); }
-    catch(err) { console.log(err); }
+    // node.warn({ "RECEIVED" : conv});
 
     if (!conv || !conv.request) {
         node.warn({error: 'Empty request received', content: conv});
@@ -127,6 +124,8 @@ const receive = (conv, node, config, resolve, reject) => {
 // ------------------------------------------
 
 const prompt = (node, data, config) => {
+    // node.warn({ "PROMPT" : data});
+
     const next = function() {
         if (helper.countListeners('prompt') === 1) {
             helper.fireAsyncCallback(data);

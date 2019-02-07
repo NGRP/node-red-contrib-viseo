@@ -72,11 +72,7 @@ const start = (node, config, RED) => {
         node.status({fill:"green", shape:"dot", text:"connected"});
 
         msbot.bindDialogs(bot, (err, data, type) => {
-            
             helper.emitEvent(type, node, data, config);
-            // Log activity
-            try { setTimeout(function() { helper.trackActivities(node)},0); }
-            catch(err) { console.log(err); }
             if (type === 'received') { return node.send(data) }
         });
 

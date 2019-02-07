@@ -112,12 +112,7 @@ const getButtons = (locale, config, data) => {
 }
 
 const input = (node, data, config, reply) => {
-
-    // Log activity
-    try { setTimeout(function() { helper.trackActivities(node)},0); }
-    catch(err) { console.log(err); }
-
-    let convId = botmgr.getConvId(data);
+    let convId = botmgr.getConvId(data)
 
     // Prepare the prompt
     if (config.prompt){
