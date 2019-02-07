@@ -56,7 +56,7 @@
                 let value = $(this).val();
                 if (value === "auth")  $(".auth").show();
                 if (value === "unauth")  $(".unauth").show();
-                if (value.match(/user|rooms/))   $(".api").show();
+                if (value.match(/user|rooms|photo/))   $(".api").show();
                 if (value.match(/password/))  {
                     $(".password").show();
                 }
@@ -98,6 +98,7 @@
             <option value="token-password">Get token with username/password</option>
             <option value="token-code-refresh">Get token with code refresh</option>
             <option value="user">Get user information</option>
+            <option value="photo">Get user photo</option>
             <option value="rooms">Get rooms</option>
         </select>
     </div>

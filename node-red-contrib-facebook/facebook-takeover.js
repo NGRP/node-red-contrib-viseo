@@ -42,6 +42,7 @@ const input = (node, data, config) => {
         function(err, response, body) {
             if (err) {
                 node.error(err)
+                data.error = err.message;
                 node.send([undefined, data]);
             }
 
@@ -50,6 +51,7 @@ const input = (node, data, config) => {
                 else node.error(body.error);
             } catch (ex) {
                 node.error(ex)
+                data.error = ex.message;
             }
 
             node.send([undefined, data]);

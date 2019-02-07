@@ -38,7 +38,7 @@ function input (node, data, config) {
   
     }
 
-    let saveField = range.replace(/[!: ]/g, "_");
+    let saveField = range.replace(/[!:'" ]/g, "_");
 
     let saveLoc = getFromType(config.saveType, save) || {};
     setFromType(config.saveType, save, saveLoc);

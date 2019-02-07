@@ -1,5 +1,4 @@
 const helper = require('node-red-viseo-helper');
-const OAuth = require('oauth');
 const request = require('request-promise');
 const uuidv4 = require('uuid/v4');
 
@@ -128,6 +127,26 @@ async function input(RED, node, data, config) {
     }
   }
 
+  if (action === "photo") {
+    let token = config.token;
+    if (config.tokenType !== 'str') {
+      let loc = (config.tokenType === 'global') ? node.context().global : data;
+      token = helper.getByString(loc, token);
+    }
+    if (!token) return node.error("Token missing");
+
+    try { 
+      let picture = await getUserPhoto(token);
+      helper.setByString(outLoc, output, picture);
+      return node.send(data);
+    }
+    catch (err) {
+      node.error(err);
+      helper.setByString(outLoc, output, "ERROR");
+      return node.send(data);
+    }
+  }
+
   if (action === "rooms") {
     let token = helper.getContextValue(RED, node, data, config.token, config.tokenType);
     if (!token) return node.error("Token missing");
@@ -219,7 +238,7 @@ async function getUser(access) {
   
     let req = {
       method: "GET",
-      uri:  "https://graph.microsoft.com/v1.0/me",
+      uri:  "https://graph.microsoft.com/v1.0/me/",
       headers: {
         "Authorization": "Bearer " + access,
         "Content-Type": "application/json"
@@ -227,6 +246,35 @@ async function getUser(access) {
     };
   
     return request(req);
+  }
+
+  async function getUserPhoto(access) {
+    let result = {};
+    let buffer = {
+      method: "GET",
+      encoding: null,
+      uri:  "https://graph.microsoft.com/v1.0/me/photo/$value",
+      headers: {
+        "Authorization": "Bearer " + access,
+        "Content-Type": "application/json"
+      }
+    };
+
+    let metadata = {
+      method: "GET",
+      uri:  "https://graph.microsoft.com/v1.0/me/photo",
+      headers: {
+        "Authorization": "Bearer " + access,
+        "Content-Type": "application/json"
+      }
+    };
+
+    result.buffer = await request(buffer);
+    result.buffer = Buffer.from(result.buffer);
+    result.metadata = await request(metadata);
+    result.metadata = JSON.parse(result.metadata);
+
+    return result;
   }
 
   async function getRooms(access) {
