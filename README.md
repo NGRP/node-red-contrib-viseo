@@ -1,21 +1,56 @@
-# Node-RED: VISEO
 
-This project contains a set of Node-RED nodes OpenSourced by [VISEO](http://www.viseo.com/) to build Conversational Assistant. 
-- It is architectured on top of [Microsoft Bot Framework](https://dev.botframework.com/) in order to connect to multiple channels. 
-- New channels like WeChat, Google Home, Amazon Echo are also in the roadmap.
+<h3 align="center">- Node-RED open-source nodes -</h3>
+<h1 align="center">
+  <a href="https://bot.viseo.io">
+    <img src="https://v1zo.viseo.io/static/ban2.png" alt="VISEO Bot Maker" width="100%">
+  </a>
+  <a href="https://bot.viseo.io/"><img src="https://v1zo.viseo.io/static/web.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://v1zo.viseo.io/static/doc.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/mail.png" alt="VISEO Bot Maker" width="120"></a>
+</h1>
 
-![Framework](https://github.com/NGRP/node-red-contrib-viseo/blob/master/doc/framework.png?raw=true)
+<p align="center"><i>
+  This project contains a set of Node-RED nodes open-sourced by </i><b><a href="http://www.viseo.com/">VISEO</a></b><i> to build smart applications and conversational assistants.</i>
+</p>
+<br>
+ 
+ 
+ ## About VISEO Bot Maker
+ ### Features
 
-This project is also the v5 and full re-engineering of a SmartHome Assistant named [SARAH](http://sarah.encausse.net) (build in 2012).
+<br>
 
-- A roadmap is available on [GitHub Project](https://github.com/NGRP/node-red-contrib-viseo/projects/1)
-- A documentation is available on [GitHub Wiki: Getting Started](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started)
+VISEO Bot Maker is a framework built on top of Node-RED. This is also the full re-engineering V5 of the smart-home assistant [SARAH](http://sarah.encausse.net), architectured by [@jpencausse](https://twitter.com/jpencausse) in 2012.
 
-[VISEO](http://www.viseo.com/) is not a Software Editor but a Consulting Company (1300 people). Since 2016, everybody wants to build it's own bot. We believe that the key is to **focus on User Exprience** because technologies are not mature. That's why 
-- we choose Node-RED platform to let developpers switch between pieces of NLP, Computer Vision, etc ...
+<br>
+<img src="https://v1zo.viseo.io/static/archi.png" alt="VISEO Bot Maker channels" width="100%">
+<br>
+
+Different **bot Servers** nodes act as adapters between the flow and text or voice channels, allowing your program to behave independently of the channel. 
+
+As Node-RED is a graphical programming tool, it makes easy for both developers and administrators to create complete conversationnal flows and to connect to multiple channels.
+
+
+
+### Development
+
+
+
+The roadmap is available on [this GitHub Project](https://github.com/NGRP/node-red-contrib-viseo/projects/1).
+
+Note that [VISEO](http://www.viseo.com/) is not a Software Editor but a Consulting Company (1300 people). Since 2016, everybody wants to build its own bot. We believe that the key is to **focus on User Exprience** because technologies are not mature. That's why:
+- we chose Node-RED platform to let developpers switch between pieces of NLP, Computer Vision, etc ...
 - we open-sourced our work to share the state of the art between our customers
 
 **If you are** a company **looking for experts** to build a project of textual and/or vocal conversationnal assistant, feel free to contact us: **contact [at] viseo [dot] io**
+
+
+
+---
+
+## Getting started
+
+A documentation is available on [this GitHub Wiki](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started)
 
 ## Getting Help
 
