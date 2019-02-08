@@ -23,6 +23,13 @@ module.exports = function(RED) {
     RED.nodes.registerType("log-line", register, {})
 }
 
+encapsulate = function(strToEncapsulate) {
+    if (!strToEncapsulate) {
+      return "";
+    }
+  	return strToEncapsulate.replace(/"/g, '""');
+}
+
 const input = (node, data, config) => {
     
     // Ensure output path
@@ -36,27 +43,28 @@ const input = (node, data, config) => {
     for (let temp of config.template) {
         switch(temp.typed) {
             case 'date':
-                logstr += String(Date.now()) + separate;
+                logstr += '"' + encapsulate(String(Date.now())) + '"' + separate;
                 break;
             case 'option_date':
-                logstr += (new Date()).toISOString() + separate;
+                logstr += '"' + encapsulate((new Date()).toISOString()) + '"' + separate;
                 break;
             case 'option_carr':
-                logstr += data.user.address.carrier + separate;
+                logstr += '"' + encapsulate(data.user.address.carrier) + '"' + separate;
                 break;
             case 'option_conv':
-                logstr += data.user.address.conversation.id + separate;
+                logstr += '"' + encapsulate(data.user.address.conversation.id) + '"' + separate;
                 break;
             case 'option_userid':
-                logstr += data.user.id + separate;
+                logstr += '"' + encapsulate(data.user.id) + '"' + separate;
                 break;
             case 'option_userna':
-                logstr += data.user.name + separate;
+                logstr += '"' + encapsulate(data.user.name) + '"' + separate;
                 break;
             case 'str':
                 let cont = config.content[nb];
-                logstr += (cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value;
-                logstr += separate ;
+                logstr += '"';
+                logstr += encapsulate((cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value);
+                logstr += '"' + separate ;
                 nb++;
         }
     }
