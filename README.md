@@ -53,11 +53,7 @@ Note that [VISEO](http://www.viseo.com/) is not a Software Editor but a Consulti
 
 A documentation is available on [this GitHub Wiki](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started).
 
-All framework modules are installed with NPM. 
-Custom private modules should be deployed in a `node-red-contrib` directory. 
-(The project template already contains this directory)
 
-Update `nodesDir` property of [Node-RED configuration](https://nodered.org/docs/configuration) to use absolue path to the `node-red-contrib` folder as a module repository.
 
 ### Getting Help
 
