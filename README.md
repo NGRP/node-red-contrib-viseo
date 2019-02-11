@@ -4,9 +4,9 @@
   <a href="https://bot.viseo.io">
     <img src="https://v1zo.viseo.io/static/ban2.png" alt="VISEO Bot Maker" width="100%">
   </a>
-  <a href="https://bot.viseo.io/"><img src="https://v1zo.viseo.io/static/web.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://v1zo.viseo.io/static/doc.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/mail.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://bot.viseo.io/"><img src="https://v1zo.viseo.io/static/web2.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://v1zo.viseo.io/static/doc2.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/mail2.png" alt="VISEO Bot Maker" width="120"></a>
 </h1>
 
 <p align="center"><i>
