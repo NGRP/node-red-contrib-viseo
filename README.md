@@ -48,32 +48,32 @@ Note that [VISEO](http://www.viseo.com/) is not a Software Editor but a Consulti
 
 ---
 
-## Getting started
-
-A documentation is available on [this GitHub Wiki](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started)
-
-## Getting Help
-
-For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
-- Your message is a question / discussion
-- The module or node name
-
 ## Developers
+### Getting started
+
+A documentation is available on [this GitHub Wiki](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started).
 
 All framework modules are installed with NPM. 
 Custom private modules should be deployed in a `node-red-contrib` directory. 
 (The project template already contains this directory)
 
-
 Update `nodesDir` property of [Node-RED configuration](https://nodered.org/docs/configuration) to use absolue path to the `node-red-contrib` folder as a module repository.
 
-## Contributing
+### Getting Help
+
+For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
+- Your message is a question / discussion
+- The module or node name
+
+### Contributing
 
 Before raising a pull-request, please read our contributing guide.
 
 This project adheres to the Contributor Covenant 1.4. By participating, 
 you are expected to uphold this code. 
 Please report unacceptable behavior to any of the project's core team.
+
+--- 
 
 ## Copyright and license
 
