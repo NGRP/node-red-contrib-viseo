@@ -29,7 +29,7 @@
 VISEO Bot Maker is a framework built on top of Node-RED. This is also the full re-engineering V5 of the smart-home assistant [SARAH](http://sarah.encausse.net), architectured by [@jpencausse](https://twitter.com/jpencausse) in 2012.
 
 <br>
-<img src="https://v1zo.viseo.io/static/archi.png" alt="VISEO Bot Maker channels" width="100%">
+<img src="https://v1zo.viseo.io/static/archi.jpg" alt="VISEO Bot Maker channels" width="100%">
 <br>
 
 Different **bot Servers** nodes act as adapters between the flow and text or voice channels, allowing your program to behave independently of the channel. 
