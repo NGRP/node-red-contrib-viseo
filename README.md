@@ -40,9 +40,9 @@ As Node-RED is a graphical programming tool, it makes easy for both developers a
 
 The roadmap is available on [this GitHub Project](https://github.com/NGRP/node-red-contrib-viseo/projects/1).
 
-Note that [VISEO](http://www.viseo.com/) is not a Software Editor but a Consulting Company (1300 people). Since 2016, everybody wants to build its own bot. We believe that the key is to **focus on User Exprience** because technologies are not mature. That's why:
-- we chose Node-RED platform to let developpers switch between pieces of NLP, Computer Vision, etc ...
-- we open-sourced our work to share the state of the art between our customers
+[VISEO](http://www.viseo.com/) is not a Software Editor but a Consulting Company. As technologies are not mature, we have made the choice of **focusing on User Exprience** and making our code and tools available to everyone. Note that:
+- we selected Node-RED platform to let managers and developers easily switch between modules (NLP, Computer Vision, etc.)
+- we open-sourced this project to share our state-of-the-art work to and between our customers
 
 <a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/voice2.png" alt="Contact us at contact(at)viseo(.)io"/></a>
 
@@ -54,25 +54,21 @@ Note that [VISEO](http://www.viseo.com/) is not a Software Editor but a Consulti
 A documentation is available on [this GitHub Wiki](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started).
 
 
-
 ### Getting Help
 
-For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
-- Your message is a question / discussion
-- The module or node name
+For bug reports, feature requests, further help or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues). In order to label your issue with the `question` tag, please specify:
+- if your message is a question / discussion
+- the module or the node name
+
 
 ### Contributing
 
-Before raising a pull-request, please read our contributing guide.
-
-This project adheres to the Contributor Covenant 1.4. By participating, 
-you are expected to uphold this code. 
-Please report unacceptable behavior to any of the project's core team.
+This project adheres to the Contributor Covenant 1.4. Before raising a pull-request, please read [this code of conduct](https://www.contributor-covenant.org/). By participating, you are expected to uphold this code. Please report unacceptable behavior to any of the project's core team.
 
 --- 
 
 ## Copyright and license
 
-Icons are made by [Freepik](http://www.freepik.com) from [Flaticon](http://www.flaticon.com) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
+Icons are from [Freepik](http://www.freepik.com) or from [Flaticon](http://www.flaticon.com), licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
 
-Copyright 2016-2017 [VISEO](http://www.viseo.com/) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com/) under the Apache 2.0 license.
