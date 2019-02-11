@@ -18,13 +18,10 @@
 </p>
 
 ---
-
  
  
- ## About VISEO Bot Maker
- ### Features
-
-<br>
+## About VISEO Bot Maker
+### Features
 
 VISEO Bot Maker is a framework built on top of Node-RED. This is also the full re-engineering V5 of the smart-home assistant [SARAH](http://sarah.encausse.net), architectured by [@jpencausse](https://twitter.com/jpencausse) in 2012.
 
@@ -41,15 +38,13 @@ As Node-RED is a graphical programming tool, it makes easy for both developers a
 ### Development
 
 
-
 The roadmap is available on [this GitHub Project](https://github.com/NGRP/node-red-contrib-viseo/projects/1).
 
 Note that [VISEO](http://www.viseo.com/) is not a Software Editor but a Consulting Company (1300 people). Since 2016, everybody wants to build its own bot. We believe that the key is to **focus on User Exprience** because technologies are not mature. That's why:
 - we chose Node-RED platform to let developpers switch between pieces of NLP, Computer Vision, etc ...
 - we open-sourced our work to share the state of the art between our customers
 
-
-![Contact us at contact(at)viseo(.)io](https://v1zo.viseo.io/static/voice2.png)
+<a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/voice2.png" alt="Contact us at contact(at)viseo(.)io"/></a>
 
 ---
 
