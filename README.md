@@ -1,5 +1,7 @@
 
 <h3 align="center">- Node-RED open-source nodes -</h3>
+
+
 <h1 align="center">
   <a href="https://bot.viseo.io">
     <img src="https://v1zo.viseo.io/static/ban2.png" alt="VISEO Bot Maker" width="100%">
@@ -9,10 +11,14 @@
   <a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/mail2.png" alt="VISEO Bot Maker" width="120"></a>
 </h1>
 
-<p align="center"><i>
-  This project contains a set of Node-RED nodes open-sourced by </i><b><a href="http://www.viseo.com/">VISEO</a></b><i> to build smart applications and conversational assistants.</i>
+<p align="center">
+  <i>
+  This project contains a set of Node-RED nodes open-sourced by </i><b><a href="http://www.viseo.com/">VISEO</a></b><i> to build smart applications and conversational assistants.
+  </i>
 </p>
-<br>
+
+---
+
  
  
  ## About VISEO Bot Maker
