@@ -48,8 +48,9 @@ Note that [VISEO](http://www.viseo.com/) is not a Software Editor but a Consulti
 - we chose Node-RED platform to let developpers switch between pieces of NLP, Computer Vision, etc ...
 - we open-sourced our work to share the state of the art between our customers
 
-**If you are** a company **looking for experts** to build a project of textual and/or vocal conversationnal assistant, feel free to contact us: **contact [at] viseo [dot] io**
-
+<br>
+<img src="https://v1zo.viseo.io/static/voice.png" alt="VISEO Bot Maker channels" width="100%">
+<br>
 
 
 ---
