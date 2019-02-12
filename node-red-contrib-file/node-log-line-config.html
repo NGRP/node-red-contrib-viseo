@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('log-line-config',{ 
+    RED.nodes.registerType('log-line-config',{
         category: 'config',
         defaults: {
             name:      { value: undefined },
@@ -39,7 +39,7 @@
                 addItem: function ( row, index, data ) {
 
                     var item = data.item,
-                        field = '', 
+                        field = '',
                         typed = 'str',
                         disabled = (index === 0) ? true : false;
 
@@ -65,7 +65,7 @@
                 if ($(this).val() !== "") $("#keep").show();
             })
 
-            for (var i=0; i<this.fields.length; i++) {      
+            for (var i=0; i<this.fields.length; i++) {
                 var infos = this.fields[i];
                 $("#node-config-input-fieldscontainer").editableList('addItem', { item: infos, i:i });
             }
@@ -111,7 +111,7 @@
 
     <div class="form-row">
         <label for="node-config-input-encapsulate"><i class="fa fa-sign-in"></i> Prompt</label>
-        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-config-input-encapsulate"> <span>Encapsulated</span>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-config-input-encapsulate"> <span>Encapsulated between ""</span>
         <br>
     </div>
 
@@ -144,7 +144,7 @@
         <dd>data separator in lines such ad ' / ' or '-'.</dd>
     </dl>
     <p>
-        At the end of the <i>Path</i>, it is possible to precise a date. This will create a log file every day. 
+        At the end of the <i>Path</i>, it is possible to precise a date. This will create a log file every day.
         You also can chose to delete old files. For example, keeping 7 files will delete all the file older than a week.
     </p>
     <p>
