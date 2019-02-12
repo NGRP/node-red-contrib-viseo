@@ -15,6 +15,7 @@ module.exports = function(RED) {
         config.template = conf.fields;
         config.separate = conf.separator;
         config.sepatype = conf.separatyp;
+        config.encapsulate = conf.encapsulate;
         config.endFileName = conf.add;
         config.keepFiles = conf.keep;
         let node = this;
@@ -23,9 +24,49 @@ module.exports = function(RED) {
     RED.nodes.registerType("log-line", register, {})
 }
 
-encapsulate = function(strToEncapsulate) {
-    if (!strToEncapsulate) {
-      return "";
+buildLogstr = function(shouldEncapsulate, config, logstr, separate, data, nb) {
+    var encapsulateStr = '';
+    if (shouldEncapsulate === true) {
+        encapsulateStr = '"';
+    }
+
+    for (let temp of config.template) {
+        switch(temp.typed) {
+          case 'date':
+              logstr += encapsulateStr + encapsulate(shouldEncapsulate, String(Date.now())) + encapsulateStr + separate;
+              break;
+          case 'option_date':
+              logstr += encapsulateStr + encapsulate(shouldEncapsulate, (new Date()).toISOString()) + encapsulateStr + separate;
+              break;
+          case 'option_carr':
+              logstr += encapsulateStr + encapsulate(shouldEncapsulate, data.user.address.carrier) + encapsulateStr + separate;
+              break;
+          case 'option_conv':
+              logstr += encapsulateStr + encapsulate(shouldEncapsulate, data.user.address.conversation.id) + encapsulateStr + separate;
+              break;
+          case 'option_userid':
+              logstr += encapsulateStr + encapsulate(shouldEncapsulate, data.user.id) + encapsulateStr + separate;
+              break;
+          case 'option_userna':
+              logstr += encapsulateStr + encapsulate(shouldEncapsulate, data.user.name) + encapsulateStr + separate;
+              break;
+          case 'str':
+              let cont = config.content[nb];
+              logstr += encapsulateStr;
+              logstr += encapsulate(shouldEncapsulate, (cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value);
+              logstr += encapsulateStr + separate ;
+              nb++;
+        }
+    }
+
+    return logstr;
+}
+
+encapsulate = function(shouldEncapsulate, strToEncapsulate) {
+    if (shouldEncapsulate === false) {
+        return strToEncapsulate;
+    } else if (!strToEncapsulate) {
+        return "";
     }
   	return strToEncapsulate.replace(/"/g, '""');
 }
@@ -38,36 +79,10 @@ const input = (node, data, config) => {
 
     let separate = (config.sepatype === 'str') ? config.separate : ' ',
         logstr = "",
-        nb = 0;
+        nb = 0,
+        shouldEncapsulate = config.encapsulate;
 
-    for (let temp of config.template) {
-        switch(temp.typed) {
-            case 'date':
-                logstr += '"' + encapsulate(String(Date.now())) + '"' + separate;
-                break;
-            case 'option_date':
-                logstr += '"' + encapsulate((new Date()).toISOString()) + '"' + separate;
-                break;
-            case 'option_carr':
-                logstr += '"' + encapsulate(data.user.address.carrier) + '"' + separate;
-                break;
-            case 'option_conv':
-                logstr += '"' + encapsulate(data.user.address.conversation.id) + '"' + separate;
-                break;
-            case 'option_userid':
-                logstr += '"' + encapsulate(data.user.id) + '"' + separate;
-                break;
-            case 'option_userna':
-                logstr += '"' + encapsulate(data.user.name) + '"' + separate;
-                break;
-            case 'str':
-                let cont = config.content[nb];
-                logstr += '"';
-                logstr += encapsulate((cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value);
-                logstr += '"' + separate ;
-                nb++;
-        }
-    }
+    logstr = buildLogstr(shouldEncapsulate, config, logstr, separate, data, nb);
 
     var fPath = logpath;
     if (config.endFileName) {

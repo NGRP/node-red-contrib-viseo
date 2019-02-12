@@ -5,6 +5,7 @@
             name:      { value: undefined },
             fields:    { value: [{  field: '', typed: 'str'}]},
             separator: { value: ' '},
+            encapsulate: { value: true },
             separatyp: { value: 'separator_def'},
             add:       { value: ""},
             keep:      { value: ""}
@@ -25,6 +26,12 @@
             var optionSepara = {value:"separator_def", label:"space",         hasValue:false};
 
             $("#node-config-input-separator").typedInput({  default: 'str', types: ['str', optionSepara],  typeField: "#node-config-input-separatyp"});
+
+            $("node-config-input-encapsulate").change( function() {
+                if ($(this).is(":checked")) config.encapsulate = true;
+                else config.encapsulate = false;
+            });
+
             $("#node-config-input-name").typedInput({  default: 'str', types: ['str'],  type: 'str'});
             $("#node-config-input-path").typedInput({  default: 'str', types: ['str'],  type: 'str'});
 
@@ -100,6 +107,12 @@
         <p style=" margin-left: 105px; margin-right: 10px; display:inline-block;">Keep </p>
         <input type="number" min="0" id="node-config-input-keep" style="width:10%; display:inline-block;">
         <p style="display:inline-block; margin-left: 5px;">old log file(s) (leave empty to keep all of them).</p>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-encapsulate"><i class="fa fa-sign-in"></i> Prompt</label>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-config-input-encapsulate"> <span>Encapsulated</span>
+        <br>
     </div>
 
     <br>

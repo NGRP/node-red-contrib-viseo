@@ -5,6 +5,7 @@ module.exports = function(RED) {
         this.fields = config.fields;
         this.separator = config.separator;
         this.separatyp = config.separatyp;
+        this.encapsulate = config.encapsulate;
         this.add = config.add;
         this.keep = config.keep;
     }
