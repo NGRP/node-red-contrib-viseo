@@ -3,7 +3,7 @@
 
 
 <h1 align="center">
-  <a href="https://bot.viseo.io">
+  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Home">
     <img src="https://v1zo.viseo.io/static/ban2.png" alt="VISEO Bot Maker" width="100%">
   </a>
   <a href="https://bot.viseo.io/"><img src="https://v1zo.viseo.io/static/web2.png" alt="VISEO Bot Maker" width="120"></a>
@@ -49,7 +49,7 @@ The roadmap is available on [this GitHub Project](https://github.com/NGRP/node-r
 ---
 
 ## Developers
-### Getting started
+### Getting Started
 
 A documentation is available on [this GitHub Wiki](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started).
 
