@@ -17,6 +17,7 @@ module.exports = function(RED) {
         config.sepatype = conf.separatyp;
         config.endFileName = conf.add;
         config.keepFiles = conf.keep;
+        config.escape = conf.escape;
         let node = this;
         this.on('input', (data)  => { input(node, data, config)  })
     }
@@ -29,36 +30,42 @@ const input = (node, data, config) => {
     let logpath = path.normalize(config.path);
     helper.mkpathsync(path.dirname(logpath));
 
-    let separate = (config.sepatype === 'str') ? config.separate : ' ',
-        logstr = "",
-        nb = 0;
+    function escape(strLine) {
+        if (!config.escape) return String(strLine);
+        return ('"' + String(strLine).replace(/"/g, '""') + '"');
+    }
+
+    let separate = (config.sepatype === 'str') ? config.separate : ' ';
+    let logstr = "";
+    let nb = 0;
 
     for (let temp of config.template) {
+        let tempString = "";
         switch(temp.typed) {
             case 'date':
-                logstr += String(Date.now()) + separate;
+                tempString = Date.now();
                 break;
             case 'option_date':
-                logstr += (new Date()).toISOString() + separate;
+                tempString = (new Date()).toISOString();
                 break;
             case 'option_carr':
-                logstr += data.user.address.carrier + separate;
+                tempString = data.user.address.carrier;
                 break;
             case 'option_conv':
-                logstr += data.user.address.conversation.id + separate;
+                tempString = data.user.address.conversation.id;
                 break;
             case 'option_userid':
-                logstr += data.user.id + separate;
+                tempString = data.user.id;
                 break;
             case 'option_userna':
-                logstr += data.user.name + separate;
+                tempString = data.user.name;
                 break;
             case 'str':
                 let cont = config.content[nb];
-                logstr += (cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value;
-                logstr += separate ;
+                tempString = (cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value;
                 nb++;
         }
+        logstr += escape(tempString) + separate;
     }
 
     var fPath = logpath;
@@ -77,8 +84,6 @@ const input = (node, data, config) => {
     // Delete old files if needed
     if (config.endFileName && config.keepFiles) {
         var folder = path.dirname(logpath);
-        var files = [];
-
         fs.readdir(folder, function(err, items) {
             if (err) {
                 node.warn("Can not delete old files.");
