@@ -142,6 +142,10 @@ const prepareQuery = (node, data, config) => {
         wheres:
         for(let where of wheres) {
 
+            if(!where) {
+                continue;
+            }
+
             let value = where.value
             let field = where.field
             let comp = '='

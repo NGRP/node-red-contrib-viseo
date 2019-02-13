@@ -133,11 +133,16 @@
                     if (wheres[parseResult[2]] === undefined) {
                         wheres[parseResult[2]] = {}
                     }
+
+
                     wheres[parseResult[2]][parseResult[1]] = object.value
 
                 }
 
-                for(let where of wheres) {    
+                for(let where of wheres) {   
+                    if(!where) {
+                        continue;
+                    }
                     $('#node-queryWhere-conditions').editableList('addItem', where);
                 }
 
