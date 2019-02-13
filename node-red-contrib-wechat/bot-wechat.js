@@ -62,9 +62,11 @@ const start = (RED, node, config) => {
 // ------------------------------------------
 
 function middleware (node, config) {
-    let token = config.credentials.token;
-    let now = Date.now();
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
 
+    let token = config.credentials.token;
     return wechat (token, function(req, res, next) {
 
         let data = botmgr.buildMessageFlow({ message : req.weixin }, {

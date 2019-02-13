@@ -17,6 +17,10 @@ module.exports = function(RED) {
 
 async function input (RED, node, data, config) {
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     // Get values
     let ibConfig = helper.getContextValue(RED, node, data, config.ibConfig, config.ibConfigType);
     if (!ibConfig.match(/^https:\/\//i)) return node.error("URL should begin with 'https://'");

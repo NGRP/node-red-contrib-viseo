@@ -1,9 +1,10 @@
 {
     "name"          : "node-red-contrib-viseo-socketio",
-    "version"       : "0.2.0-alpha.2",
+    "version"       : "0.2.0-alpha.3",
     "description"   : "VISEO Bot Maker - SocketIO",
     "dependencies"  : { 
-        "socket.io" : "~2.1"
+        "socket.io" : "~2.1",
+        "node-red-viseo-helper" : "~0.2"
     },
     "repository" : {
         "type":"git",

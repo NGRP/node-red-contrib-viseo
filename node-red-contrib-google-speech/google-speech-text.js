@@ -23,6 +23,10 @@ module.exports = function(RED) {
 
 const input = (RED, node, data, config) => {
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     // Input
     let input = helper.getContextValue(RED, node, data, config.input || 'payload', config.inputType);
 

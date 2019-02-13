@@ -1,5 +1,4 @@
 const request = require('request-promise');
-const extend  = require('extend');
 const helper  = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------
@@ -21,6 +20,10 @@ module.exports = function(RED) {
 }
 
 async function input(node, data, config){
+
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
 
     let facecreds = node.facecreds;
     let facekey, faceregion, visionkey, visionregion;

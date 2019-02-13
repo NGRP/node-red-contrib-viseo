@@ -26,6 +26,10 @@ module.exports = function (RED) {
 
 async function input (RED, node, data, config) {
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     let version = config.version || "v1",
         action  = config.action  || "query",
         output  = config.intent  || "payload";

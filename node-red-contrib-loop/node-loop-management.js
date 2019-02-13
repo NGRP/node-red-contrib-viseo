@@ -76,6 +76,9 @@ const input = (RED, node, data, config) => {
             _tmp[loopKey] = undefined; 
         }
 
+        // Log activity
+        try { setTimeout(function() { helper.trackActivities(node)},0); }
+        catch(err) { console.log(err); }
         helper.setContextValue(RED, node, data, outputObject, outObject, outputType);
         returnedValue = [undefined,data];
     }
@@ -87,6 +90,9 @@ const input = (RED, node, data, config) => {
             _tmp[loopKey] = undefined; 
         }
 
+        // Log activity
+        try { setTimeout(function() { helper.trackActivities(node)},0); }
+        catch(err) { console.log(err); }
         helper.setContextValue(RED, node, data, outputObject, undefined, outputType);
         returnedValue = [undefined,data];
     }

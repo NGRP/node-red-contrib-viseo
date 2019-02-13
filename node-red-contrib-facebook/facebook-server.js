@@ -36,8 +36,6 @@ module.exports = function(RED) {
 // ------------------------------------------
 
 let LISTENERS_REPLY = {};
-let LISTENERS_PROMPT = {};
-
 const start = (RED, node, config) => {
 
     // Bind webhook
@@ -98,17 +96,11 @@ const start = (RED, node, config) => {
     // Add listener to reply
     let listenerReply = LISTENERS_REPLY[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
     helper.listenEvent('reply', listenerReply)
-
-    let listenerPrompt = LISTENERS_PROMPT[node.id] = (srcNode, data, srcConfig) => { prompt(node, data, config) }
-    helper.listenEvent('prompt', listenerPrompt)
 }
 
 const stop = (node, config, done) => {
     let listenerReply = LISTENERS_REPLY[node.id]
     helper.removeListener('reply', listenerReply)
-
-    let listenerPrompt = LISTENERS_PROMPT[node.id]
-    helper.removeListener('prompt', listenerPrompt)
     done();
 }
 
@@ -117,6 +109,10 @@ const stop = (node, config, done) => {
 // ------------------------------------------
 
 const receive = (node, config, json) => {
+
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
 
     if (json.attachments) {
         json.message = json.messag || {}
@@ -153,36 +149,6 @@ const receive = (node, config, json) => {
     node.send([data]);
 
 }
-
-
-// ------------------------------------------
-// PROMPT
-// ------------------------------------------
-
-const prompt = (node, data, config) => {
-
-    const next = function() {
-        if (helper.countListeners('prompt') === 1) {
-            helper.fireAsyncCallback(data);
-        }
-    }
-
-    let address = botmgr.getUserAddress(data)
-    if (!address || address.carrier !== CARRIER) return next();
-
-    node.warn({"type": "prompt", "data": data});
-
-    /*
-    if (data.prompt.request.intent && data.prompt.request.intent.name === "RawText") {
-        data.prompt.message.text = json.request.intent.slots.Text.value;
-    }
-    if (data.prompt.request.type === "LaunchRequest")       data.prompt.message.text = "START CONVERSATION";
-    if (data.prompt.request.type === "SessionEndedRequest")data.prompt.message.text = "END CONVERSATION";
-    */
-
-    next();
-}
-    
 
 // ------------------------------------------
 //  REPLY

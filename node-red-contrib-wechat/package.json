@@ -1,11 +1,11 @@
 {
     "name"          : "node-red-contrib-viseo-wechat",
-    "version"       : "0.1.5",
+    "version"       : "0.2.0-alpha.1",
     "description"   : "VISEO Bot Maker - WeChat Bot Implementation",
     "dependencies"  : {
         "wechat"                     : "^2.0.3",
         "wechat-api"                 : "^1.28.0",
-        "node-red-viseo-helper"      : "~0.1",
+        "node-red-viseo-helper"      : "~0.2",
         "node-red-viseo-bot-manager" : "~0.0"
     },
     "repository" : {

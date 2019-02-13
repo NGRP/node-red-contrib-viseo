@@ -20,6 +20,10 @@ module.exports = function (RED) {
 
 async function input(RED, node, data, config) {
   
+  // Log activity
+  try { setTimeout(function() { helper.trackActivities(node)},0); }
+  catch(err) { console.log(err); }
+
   let token = helper.getContextValue(RED, node, data, config.token, config.tokenType);
   if (!token) return node.error("Missing token");
   

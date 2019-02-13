@@ -92,6 +92,11 @@ const getButtons = (RED, locale, config, data) => {
 }
 
 const input = (RED, node, data, config, reply) => {
+
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+    
     let convId = botmgr.getConvId(data)
 
     // Prepare the prompt

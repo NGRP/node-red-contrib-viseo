@@ -25,6 +25,10 @@ module.exports = function(RED) {
 
 async function input (RED, node, data, config) {
 
+    // Log activity
+    try { setTimeout(function() { helper.trackActivities(node)},0); }
+    catch(err) { console.log(err); }
+
     let host = helper.getContextValue(RED, node, data, config.host, config.hostType);
     let knowledgeBaseId = helper.getContextValue(RED, node, data, config.knowledgeBaseId, config.knowledgeType);
     let question = helper.getContextValue(RED, node, data, config.question, config.questionType);
