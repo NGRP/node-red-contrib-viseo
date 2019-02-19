@@ -157,6 +157,9 @@ const prepareQuery = (node, data, config) => {
                 case 'lte':
                     comp = '<=';
                     break;
+                case 'neq':
+                    comp = '!=';
+                    break;
                 case 'eq':
                     comp = '=';
                     break;
