@@ -71,7 +71,7 @@
             subtextAdaptiveCard:      { value: undefined },
             attachAdaptiveCard:       { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
-            containerSeparatorAdaptiveCard: {value: "**"},
+            containerSeparatorAdaptiveCard: {value: "@"},
         },
         inputs:  1,
         outputs: 1,
@@ -619,11 +619,6 @@
                 <input type="hidden" id="node-input-mediaType">
             </div>
         </section>
-
-
-
-
-
         <section class="section-type section-card">
             <div class="form-row">
                 <label for="node-input-title"><i class="fa fa-pencil-square-o"></i> Title</label>
@@ -637,7 +632,7 @@
 
             <div class="form-row">
                 <label for="node-input-subtext"><i class="fa fa-pencil-square-o"></i> SubText</label>
-                <textarea id="node-input-subtext" rows="4" placeholder="SubText to send"></textarea>
+                <textarea id="node-input-subtext" rows="1" placeholder="SubText to send"></textarea>
             </div>
 
             <div class="form-row">
@@ -646,14 +641,6 @@
                 <input type="hidden" id="node-input-attachType">
             </div>
         </section>
-
-
-
-
-
-
-
-
         <section class="section-type section-adaptiveCard">
             <div class="form-row">
                 <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
