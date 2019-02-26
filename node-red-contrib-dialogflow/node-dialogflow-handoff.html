@@ -1,0 +1,159 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-dialogflow-handoff',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            name:           { value: undefined },
+            delay:          { value: undefined },
+            notif:          { value: undefined },
+            notifType:      { value: 'str' },
+            reason:         { value: undefined },
+            reasonType:     { value: 'str'},
+            capab:          { value: '[]' },
+            capabType:      { value: 'json'},
+            promptText:     { value: "prompt.text" },
+            promptTextType: { value: "msg" },
+            output:         { value: "payload" }
+        },
+        inputs:  1, 
+        outputs: 2,
+        icon: 'google.svg',
+        align: "left",
+        paletteLabel: "Handoff",
+        outputLabels: ["stdout", "stderr"],
+        label: function() { return this.name || "Dialogflow handoff"; },
+        oneditprepare: function () {
+
+            // Typed Input
+            $("#node-input-name").typedInput({  default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-reason").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-reasonType")});
+            $("#node-input-notif").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-notifType")});
+            $("#node-input-capab").typedInput({ default: 'json', types: ['msg','json'], typeField: $("#node-input-capabType")});
+            $("#node-input-delay").typedInput({ default: 'num', types: ['num'], type: 'num' }).typedInput("width", "100px");
+            $("#node-input-promptText").typedInput({   default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-output").typedInput({   default: 'msg', types: ['msg'], type: 'msg' });
+
+            $("#node-input-delay").change(function(e) {
+                var val = $(this).val();
+                if($('#node-input-delay-category').val() == "custom" && val < 200) {
+                    $("#node-input-delay").val(200);
+                }
+            });
+
+            $('#node-input-delay-category').change(function(e) {
+                if($(this).val() == "default") {
+                    $("#node-input-delay").val(0);
+                    $("#node-input-delay-custom").hide();
+                } else {
+                    $("#node-input-delay-custom").show();
+                    $("#node-input-delay").typedInput('show');
+                    if($("#node-input-delay").val() == 0) {
+                        $("#node-input-delay").val(this.delay || 2000);
+                    }
+                }
+            });
+
+            if(this.delay && this.delay != 0) {
+                $('#node-input-delay-category').val('custom');
+            } else {
+                $('#node-input-delay-category').change();
+            }
+
+           
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-dialogflow-handoff">
+   
+
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name" style="width:70%;">
+        </div>
+
+        <br>
+        <b>Handoff parameters</b>
+        <div class="form-row">
+            <br>
+            <label for="node-input-reason"><i class="fa fa-comment"></i> Reason</label>
+            <input type="text" id="node-input-reason" placeholder="Reason for the transfer" style="width:70%;">
+            <input type="hidden" id="node-input-reasonType">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-notif"><i class="fa fa-exclamation-circle"></i> Notif.</label>
+            <input type="text" id="node-input-notif" placeholder="Notification to appear on the new surface" style="width:70%;">
+            <input type="hidden" id="node-input-notifType">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-capab"><i class="fa fa-tablet"></i> Capab.</label>
+            <input type="text" id="node-input-capab" placeholder="Requested capabilities" style="width:70%;">
+            <input type="hidden" id="node-input-capabType">
+        </div>
+
+        <br>
+        <b>Message parameters</b>
+
+        <div class="form-row">
+            <br>
+            <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+            <select id="node-input-delay-category">
+                <option value="default">default</option>
+                <option value="custom">custom</option>
+            </select>
+            <div id="node-input-delay-custom" style="display:inline-block">
+                <input type="text" id="node-input-delay" > 
+                <p style="display: inline-block;"> ms</p>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-promptText"><i class="icon-tag"></i> Prompt</label>
+            <input type="text" id="node-input-promptText" style="width: 70%;" placeholder="prompt.text">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+            <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+        </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="node-dialogflow-handoff">
+
+    <p>If there is an available surface with the needed capabilities, your Action will need to ask the user if they want to transfer the conversation. 
+        If one of the targeted capabilies is not available or if the user refuses, the Standard error output is used.</p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Reason <span class="property-type">string</span></dt>
+        <dd>reason for the transfer</dd>
+        <dt>Notification <span class="property-type">string</span></dt>
+        <dd>notification to appear on the new surface</dd>
+        <dt>Capabilities <span class="property-type">string</span></dt>
+        <dd>requested capabilities</dd>
+        <dt>Delay <span class="property-type">number</span></dt>
+        <dd>if precised, overrides the global delay before sending the message (min. 200ms)</dd>
+        <dt>Prompt <span class="property-type">string</span></dt>
+        <dd>where to store the user response</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+    <p>You must add the <b>actions_intent_NEW_SURFACE</b> event to track the handoff result.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.google.com/actions/assistant/surface-capabilities">Surface capabilities</a> - explanations</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

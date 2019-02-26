@@ -21,7 +21,7 @@ module.exports = function(RED) {
 let LISTENERS_REPLY = {};
 let LISTENERS_PROMPT = {};
 
-const {dialogflow, SimpleResponse, Carousel, SignIn, TransactionDecision, TransactionRequirements, OrderUpdate, Button, BasicCard, Permission, Suggestions, Image, Confirmation} = require('actions-on-google');
+const {dialogflow, NewSurface, SimpleResponse, Carousel, SignIn, TransactionDecision, TransactionRequirements, OrderUpdate, Button, BasicCard, Permission, Suggestions, Image, Confirmation} = require('actions-on-google');
 let app = dialogflow();
 
 const start = (RED, node, config) => {  
@@ -468,6 +468,11 @@ const getMessage = exports.getMessage = (replies) => {
                 msg.data.push(new Suggestions(suggestions));
             }
             continue;
+        }
+
+        // Handoff
+        if (reply.type === "handoff") {
+            msg.data.push(new NewSurface({context: reply.reason, notification: reply.notif, capabilities: reply.capab }));
         }
     }
 
