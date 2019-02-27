@@ -24,16 +24,29 @@ class MongoDBManager extends DatabaseManager {
 
     getStatus(config) {
     	let error = '';
-        if(!this.hosts) {
-            error = 'Missing host for MongoDB server';
-        } else if(!this._database) {
-            error = 'Missing database name for Mongo connection';
-        } else if(config && !config.collection) {
-            error = 'Missing collection name for Mongo request';
-        } else if(!this.user) {
-            error = 'Missing user name for Mongo connection';
-        } else if(!this.password) {
-            error = 'Missing password for Mongo connection';
+
+        if(this.useConnectionString) {
+            if(!this.connectionString) {
+                error = 'Missing connection string for MongoDB server';
+            } else {
+
+                if(!/^mongodb:\/\/([^:]+:[^@]+@)?[^:\/]+(:[0-9]+)?(,[^:\/]+(:[0-9]+)?)*\/[a-zA-Z0-9_\-]+(\?.*)?$/.test(this.connectionString)) {
+                    error = "Invalid connection string for MongoDB server";
+                }
+                
+            }
+        } else {
+            if(!this.hosts) {
+                error = 'Missing host for MongoDB server';
+            } else if(!this._database) {
+                error = 'Missing database name for Mongo connection';
+            } else if(config && !config.collection) {
+                error = 'Missing collection name for Mongo request';
+            } else if(!this.user) {
+                error = 'Missing user name for Mongo connection';
+            } else if(!this.password) {
+                error = 'Missing password for Mongo connection';
+            }
         }
 
         return error;
@@ -41,24 +54,32 @@ class MongoDBManager extends DatabaseManager {
 
     _init(node) {
 
-        this._database = node.credentials.database;
-        this.user = node.credentials.user;
-        this.password = node.credentials.password;
-        this._initHosts(JSON.parse(node.credentials.hosts));
+        let url = '';
+        this.useConnectionString = node.useConnectionString
+        if(this.useConnectionString) {
+            this.connectionString = node.credentials.connectionString;
+            url = this.connectionString;
 
-        if(node.credentials.ssl === "on") {
-            this.ssl = true;
         } else {
-            this.ssl = false;
-        }
-        this.replicaSet = node.credentials.replicaSet;
+            this._database = node.credentials.database;
+            this.user = node.credentials.user;
+            this.password = node.credentials.password;
+            this._initHosts(JSON.parse(node.credentials.hosts));
 
-       
-		if(this.db === null && this.getStatus() === '') {
+            if(node.credentials.ssl === "on") {
+                this.ssl = true;
+            } else {
+                this.ssl = false;
+            }
+            this.replicaSet = node.credentials.replicaSet;
 
-            this.url =  'mongodb://'+node.credentials.user+':'+encodeURIComponent(node.credentials.password)
+            url = 'mongodb://'+node.credentials.user+':'+encodeURIComponent(node.credentials.password)
                     +'@'+this._hosts()+'/'+node.credentials.database+this._options();
+        }
+       
+		if(this.db === null && this.getStatus() === '' && url !== '') {
 
+            this.url = url
 
             let manager = this;
 
