@@ -416,7 +416,7 @@ const getMessage = exports.getMessage = (replies) => {
             let options = { 
                 buttons: [],
                 subtitle: reply.subtitle,
-                text: reply.text || reply.quicktext,
+                formattedText: reply.text || reply.quicktext,
                 title: reply.title
             }
 
@@ -429,11 +429,12 @@ const getMessage = exports.getMessage = (replies) => {
                 for (let btn of reply.buttons){
                     
                     if (btn.action !== 'openUrl') continue;
-                    options.buttons.push(new Button({ title: btn.title, openUrlAction: { url: helper.absURL(btn.value)}}));
+
+                    options.buttons.push(new Button({ title: btn.title, url: helper.absURL(btn.value)}));
                 }
             }
-            
-            msg.data.push(new BasicCard(options));
+            let basicCard = new BasicCard(options)
+            msg.data.push(basicCard);
             continue;
         }
 
