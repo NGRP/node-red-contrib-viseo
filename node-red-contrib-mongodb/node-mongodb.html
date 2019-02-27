@@ -3,15 +3,17 @@
         category: 'config',
         color: '#3FADB5',
         defaults: { 
-            name:      { value: undefined }
+            name:      { value: undefined },
+            useConnectionString: {value: false},
         },
         credentials: {
-            hosts:      { type: "text" },
-            user:       { type: "text" },
-            password:   { type: "text" },
-            database:   { type: "text" },
-            replicaSet: { type: "text" },
-            ssl:        { type: "text" }
+            connectionString :  { type: "text" },
+            hosts:              { type: "text" },
+            user:               { type: "text" },
+            password:           { type: "text" },
+            database:           { type: "text" },
+            replicaSet:         { type: "text" },
+            ssl:                { type: "text" }
         },
         inputs:  1,
         outputs: 1,
@@ -21,11 +23,7 @@
         label: function() { return this.name || "Mongo DB"; },
         oneditprepare: function() {
 
-            $("#node-config-input-database").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-config-input-user").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-config-input-password").typedInput({ default: 'str', types: ['str'], type: 'str' });
-            $("#node-config-input-replicaSet").typedInput({ default: 'str', types: ['str'], type: 'str' });
-
+            
             if (this.credentials.ssl == "on") {
                 $("#node-config-input-ssl").prop("checked", true);
             } else {
@@ -61,9 +59,27 @@
 
             }
 
-            for(let host of hosts) {    
-                $('#node-hosts').editableList('addItem', host);
-            }
+            $("#node-config-input-useConnectionString").change(function() {
+                if($(this).prop("checked")) {
+                    $("#mongodb-connectionstring-section").show()
+                    $("#mongodb-parameter-section").hide()
+                } else {
+                    $("#mongodb-connectionstring-section").hide()
+                    $("#mongodb-parameter-section").show()
+
+                    $("#node-config-input-database").typedInput({ default: 'str', types: ['str'], type: 'str' });
+                    $("#node-config-input-user").typedInput({ default: 'str', types: ['str'], type: 'str' });
+                    $("#node-config-input-password").typedInput({ default: 'str', types: ['str'], type: 'str' });
+                    $("#node-config-input-replicaSet").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+                    if($("#node-hosts li").length === 0) {
+                        for(let host of hosts) {    
+                            $('#node-hosts').editableList('addItem', host);
+                        }
+                    }
+
+                }
+            }).prop('checked', this.useConnectionString)
             
         },
         oneditsave: function() {
@@ -72,8 +88,14 @@
             } else {
                 $("#node-config-input-ssl").val('off');
             }
+
+            if($("#node-config-input-useConnectionString").prop("checked")) {
+                $("#node-config-input-useConnectionString").val(1)
+            } else {
+                $("#node-config-input-useConnectionString").val(0);
+                $('#node-config-input-hosts').val(JSON.stringify($('#node-config-dialog-edit-form').serializeArray()))
+            }
             
-            $('#node-config-input-hosts').val(JSON.stringify($('#node-config-dialog-edit-form').serializeArray()))
 
         }
     });
@@ -86,37 +108,51 @@
     </div>
 
     <br>
+    <div id="mongodb-parameter-section">
     <b>Database</b>
 
-    <div class="form-row">
+        <div class="form-row">
+            <br>
+            <label for="node-config-input-database"><i class="fa fa-database"></i> DB</label>
+            <input type="text" id="node-config-input-database" style="width:70%;" placeholder="database">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-user"><i class="fa fa-user"></i> User</label>
+            <input type="text" id="node-config-input-user" style="width:70%;" placeholder="">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
+            <input type="text" id="node-config-input-password" style="width:70%;" placeholder="">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-replicaSet"><i class="fa fa-group"></i> Replica Set</label>
+            <input type="text" id="node-config-input-replicaSet" style="width:70%;" placeholder="">
+        </div>
+        <div class="form-row">
+            <label for="node-config-input-ssl"><i class="fa fa-certificate"></i> SSL</label>
+            <input type="checkbox" id="node-config-input-ssl" style="width: unset; vertical-align: top;">
+        </div>
+
         <br>
-        <label for="node-config-input-database"><i class="fa fa-database"></i> DB</label>
-        <input type="text" id="node-config-input-database" style="width:70%;" placeholder="database">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-user"><i class="fa fa-user"></i> User</label>
-        <input type="text" id="node-config-input-user" style="width:70%;" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
-        <input type="text" id="node-config-input-password" style="width:70%;" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-replicaSet"><i class="fa fa-group"></i> Replica Set</label>
-        <input type="text" id="node-config-input-replicaSet" style="width:70%;" placeholder="">
-    </div>
-    <div class="form-row">
-        <label for="node-config-input-ssl"><i class="fa fa-certificate"></i> SSL</label>
-        <input type="checkbox" id="node-config-input-ssl" style="width: unset; vertical-align: top;">
+        <b>Hosts</b>
+
+         <div class="form-row">
+            <br>
+            <input type="hidden" id="node-config-input-hosts">
+            <ol id="node-hosts"></ol>
+        </div>
+
     </div>
 
-    <br>
-    <b>Hosts</b>
+    <div id="mongodb-connectionstring-section">
+        <div class="form-row">
+            <label for="node-config-input-connectionString"><i class="fa fa-lock"></i> Connection string</label>
+            <input type="text" id="node-config-input-connectionString" style="width:70%;" placeholder="">
+        </div>
+    </div>
 
-     <div class="form-row">
-        <br>
-        <input type="hidden" id="node-config-input-hosts">
-        <ol id="node-hosts"></ol>
+    <div class="form-row">
+        <input type="checkbox" id="node-config-input-useConnectionString" style="width: unset; vertical-align: top;"><label for="node-config-input-useConnectionString" style="margin-left:9px;width:50%">Use a connection string.</label>
     </div>
 
 
@@ -127,6 +163,8 @@
 
     <h3>Details</h3>
     <p>Properties</p>
+
+    With parameters:
     <dl class="message-properties">
         <dt>DB <span class="property-type">string</span></dt>
         <dd>the database name</dd>
@@ -136,6 +174,12 @@
         <dd>server name where MongoDB is installed</dd>
         <dt>Port <span class="property-type">string</span></dt>
         <dd>server port on which MongoDB will respond</dd>
+    </dl>
+
+    With the final connection string:
+    <dl class="message-properties">
+        <dt>Connection string <span class="property-type">string</span></dt>
+        <dd>The connection string. This URI must include the database name</dd>
     </dl>
 
     <h3>References</h3>

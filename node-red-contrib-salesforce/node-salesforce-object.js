@@ -134,6 +134,10 @@ const prepareQuery = (RED, node, data, config) => {
         wheres:
         for(let where of wheres) {
 
+            if(!where) {
+                continue;
+            }
+
             let value = where.value
             let field = where.field
             let comp = '='
@@ -144,6 +148,9 @@ const prepareQuery = (RED, node, data, config) => {
                     break;
                 case 'lte':
                     comp = '<=';
+                    break;
+                case 'neq':
+                    comp = '!=';
                     break;
                 case 'eq':
                     comp = '=';

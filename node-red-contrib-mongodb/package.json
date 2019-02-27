@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-viseo-mongodb",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "VISEO Bot Maker - MongoDB database",
   "dependencies": {
     "mongodb": "^2.2.29",
@@ -11,7 +11,14 @@
     "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-mongodb"
   },
   "license": "Apache-2.0",
-  "keywords": ["viseo", "sarah", "node-red", "database", "mongodb", "nosql"],
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "database",
+    "mongodb",
+    "nosql"
+  ],
   "node-red": {
     "nodes": {
       "node-mongodb": "node-mongodb.js"

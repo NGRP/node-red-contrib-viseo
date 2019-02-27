@@ -6,6 +6,7 @@
             fields:    { value: [{  field: '', typed: 'str'}]},
             separator: { value: ' '},
             separatyp: { value: 'separator_def'},
+            escape:    { value: false },
             add:       { value: ""},
             keep:      { value: ""}
         },
@@ -78,6 +79,7 @@
             });
 
             this.fields = (results.length === 0) ? [{ field: '', typed: 'str'}] : results;
+            this.escape = ($("#node-config-input-escape").is(":checked")) ? true : false;
         }
     });
 </script>
@@ -110,6 +112,12 @@
         <label for="node-config-input-separator"><i class="fa fa-arrows-h"></i> Separator</label>
         <input type="text" id="node-config-input-separator" style="width:70%;">
         <input type="hidden" id="node-config-input-separatyp">
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-escape"><i class="fa fa-quote-right"></i> Escape</label>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-config-input-escape"> <span>Escape fields and wrap them with <code>"</code></span>
+        <br>
     </div>
 
     <div class="form-row" style="width:97%;">

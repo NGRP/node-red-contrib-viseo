@@ -17,6 +17,7 @@ module.exports = function(RED) {
         config.sepatype = conf.separatyp;
         config.endFileName = conf.add;
         config.keepFiles = conf.keep;
+        config.escape = conf.escape;
         let node = this;
         this.on('input', (data)  => { input(node, data, config)  })
     }
@@ -29,38 +30,45 @@ const input = (node, data, config) => {
     let logpath = path.normalize(config.path);
     helper.mkpathsync(path.dirname(logpath));
 
-    let separate = (config.sepatype === 'str') ? config.separate : ' ',
-        logstr = "",
-        nb = 0;
+    function escape(strLine) {
+        if (!config.escape) return String(strLine);
+        return ('"' + String(strLine).replace(/"/g, '""') + '"');
+    }
+
+    let separate = (config.sepatype === 'str') ? config.separate : ' ';
+    let logstr = "";
+    let nb = 0;
 
     for (let temp of config.template) {
+        let tempString = "";
         switch(temp.typed) {
             case 'date':
-                logstr += String(Date.now()) + separate;
+                tempString = Date.now();
                 break;
             case 'option_date':
-                logstr += (new Date()).toISOString() + separate;
+                tempString = (new Date()).toISOString();
                 break;
             case 'option_carr':
-                logstr += data.user.address.carrier + separate;
+                tempString = data.user.address.carrier;
                 break;
             case 'option_conv':
-                logstr += data.user.address.conversation.id + separate;
+                tempString = data.user.address.conversation.id;
                 break;
             case 'option_userid':
-                logstr += data.user.id + separate;
+                tempString = data.user.id;
                 break;
             case 'option_userna':
-                logstr += data.user.name + separate;
+                tempString = data.user.name;
                 break;
             case 'str':
                 let cont = config.content[nb];
-                logstr += (cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value;
-                logstr += separate ;
+                tempString = (cont.typed === 'msg') ? helper.getByString(data, cont.value) : cont.value;
                 nb++;
         }
+        logstr += escape(tempString) + separate;
     }
 
+    // Get path
     var fPath = logpath;
     if (config.endFileName) {
         var index = logpath.lastIndexOf('.');
@@ -70,52 +78,52 @@ const input = (node, data, config) => {
 
     // Write to logfile
     logstr = logstr.substring(0, logstr.length - separate.length) + '\n';
-    var stream = fs.createWriteStream(fPath, {flags:'a'});
-    stream.write(logstr);
-    stream.end();
+    
+    fs.appendFile(fPath, logstr, function (err) {
+        if (err) return node.error("Can not append line to file.")
+    
+        // Delete old files if needed
+        if (config.endFileName && config.keepFiles) {
+            var folder = path.dirname(logpath);
+            fs.readdir(folder, function(err, items) {
+                if (err) {
+                    node.warn("Can not delete old files.");
+                    return node.send(data);
+                }
+                logpath = path.basename(logpath);
+                var index = logpath.lastIndexOf('.');
+                var files = [];
+                var regex = new RegExp( logpath.slice(0, index) + '-[0-9]{4}-[0-9]{2}-[0-9]{2}' + logpath.slice(index));
+                for (let i=0; i<items.length; i++) {
+                    if (!items[i].match(regex)) continue;
+                    files.push({
+                        match: items[i].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)[0],
+                        file: items[i]
+                    });
+                }
+                
+                var keep = Number(config.keepFiles);
+                if (files.length <= keep) return node.send(data);
+                files = files.sort( function(a,b) {
+                    if (Number(a.match.substring(0,4)) > Number(b.match.substring(0,4))) return 1;
+                    if (Number(a.match.substring(0,4)) < Number(b.match.substring(0,4))) return -1;
+                    if (Number(a.match.substring(5,7)) > Number(b.match.substring(5,7))) return 1;
+                    if (Number(a.match.substring(5,7)) < Number(b.match.substring(5,7))) return -1;
+                    if (Number(a.match.substring(8)) > Number(b.match.substring(8))) return 1;
+                    if (Number(a.match.substring(8)) < Number(b.match.substring(8))) return -1;
+                    return 0;
+                })
 
-    // Delete old files if needed
-    if (config.endFileName && config.keepFiles) {
-        var folder = path.dirname(logpath);
-        var files = [];
-
-        fs.readdir(folder, function(err, items) {
-            if (err) {
-                node.warn("Can not delete old files.");
+                files = files.slice(0, keep+1);
+                for (let f of files) {
+                    console.log("[Log lines] Deleted file " + f.file)
+                    fs.unlinkSync(path.join(folder, f.file));    
+                }
                 return node.send(data);
-            }
-            logpath = path.basename(logpath);
-            var index = logpath.lastIndexOf('.');
-            var files = [];
-            var regex = new RegExp( logpath.slice(0, index) + '-[0-9]{4}-[0-9]{2}-[0-9]{2}' + logpath.slice(index));
-            for (let i=0; i<items.length; i++) {
-                if (!items[i].match(regex)) continue;
-                files.push({
-                    match: items[i].match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)[0],
-                    file: items[i]
-                });
-            }
-            
-            var keep = Number(config.keepFiles);
-            if (files.length <= keep) return node.send(data);
-            files = files.sort( function(a,b) {
-                if (Number(a.match.substring(0,4)) > Number(b.match.substring(0,4))) return 1;
-                if (Number(a.match.substring(0,4)) < Number(b.match.substring(0,4))) return -1;
-                if (Number(a.match.substring(5,7)) > Number(b.match.substring(5,7))) return 1;
-                if (Number(a.match.substring(5,7)) < Number(b.match.substring(5,7))) return -1;
-                if (Number(a.match.substring(8)) > Number(b.match.substring(8))) return 1;
-                if (Number(a.match.substring(8)) < Number(b.match.substring(8))) return -1;
-                return 0;
-            })
+            });
+        }
 
-            files = files.slice(0, keep+1);
-            for (let f of files) {
-                console.log("[Log lines] Deleted file " + f.file)
-                fs.unlinkSync(path.join(folder, f.file));    
-            }
-            return node.send(data);
-        });
-    }
+        else return node.send(data);
+    });
 
-    else return node.send(data);
 }
