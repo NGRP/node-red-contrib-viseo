@@ -223,6 +223,10 @@ const buildReply = (node, data, config) => {
 
         if (reply.speech === undefined) reply.speech = reply.text;
     }
+
+    if(config.sendType === 'confirm') {
+        reply.text = marshall(locale, config.confirmtext,  data, '');
+    }
     
     // Other card message
     if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard') {
@@ -239,6 +243,7 @@ const buildReply = (node, data, config) => {
             }
             if (reply.speech === undefined) reply.speech = reply.quicktext;
         } 
+<<<<<<< HEAD
         else if (config.sendType === 'card') {
 
             let title = config.title;
@@ -264,6 +269,29 @@ const buildReply = (node, data, config) => {
         else if (config.sendType === 'adaptiveCard') {
             buildReplyAdaptiveCard(locale, data, config, reply);
 
+=======
+        else {
+
+            let title = config.title;
+            let attach = config.attach;
+
+            if (!config.titleType) title = marshall(locale, title,  data, '');
+            else if (config.titleType !== 'str') {
+                let loc = (config.titleType === 'global') ? node.context().global : data;
+                title = helper.getByString(loc, title);
+            }
+            if (!config.attachType) attach = marshall(locale, attach,  data, '');
+            else if (config.attachType !== 'str') {
+                let loc = (config.attachType === 'global') ? node.context().global : data;
+                attach = helper.getByString(loc, attach);
+            }
+            
+            reply.title =    title;
+            reply.subtitle = marshall(locale, config.subtitle,  data, '');
+            reply.subtext =  marshall(locale, config.subtext,   data, '');
+            reply.attach =   attach;
+            if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
+>>>>>>> upstream/master
         }
     }
     

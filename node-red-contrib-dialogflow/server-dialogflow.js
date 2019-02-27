@@ -21,7 +21,7 @@ module.exports = function(RED) {
 let LISTENERS_REPLY = {};
 let LISTENERS_PROMPT = {};
 
-const {dialogflow, SimpleResponse, Carousel, SignIn, TransactionDecision, TransactionRequirements, OrderUpdate, Button, BasicCard, Permission, Suggestions, Image} = require('actions-on-google');
+const {dialogflow, SimpleResponse, Carousel, SignIn, TransactionDecision, TransactionRequirements, OrderUpdate, Button, BasicCard, Permission, Suggestions, Image, Confirmation} = require('actions-on-google');
 let app = dialogflow();
 
 const start = (RED, node, config) => {  
@@ -93,23 +93,27 @@ const receive = (conv, node, config, resolve, reject) => {
         return;
     }
 
-    let data = botmgr.buildMessageFlow({ message : conv }, {
-        userLocale: 'message.request.user.locale',
-        userId:     'message.request.user.userId', 
+    let data = botmgr.buildMessageFlow({ message : JSON.parse(JSON.stringify(conv)) }, {
+        userLocale: 'message.user.locale',
+        userId:     'message.user._id', 
         convId:     'message.request.conversation.conversationId',
-        payload:    'message.request.inputs[0].rawInputs[0].query',
-        inputType:  'message.request.inputs[0].rawInputs[0].inputType',
+        payload:    'message.input.raw',
+        inputType:  'message.input.type',
         source:     CARRIER
     })
 
+<<<<<<< HEAD
     data.user.id = data.user.id || data.user._id;
     delete  data.user._id;
     data.user.accessToken = data.message.request.user.accessToken;
 
+=======
+>>>>>>> upstream/master
     let context = getMessageContext(data.message)
     context.conv = conv;
     context.resolve = resolve;
     context.reject = reject;
+<<<<<<< HEAD
 
     if (conv.request.inputs[0].arguments !== undefined && 
         conv.request.inputs[0].arguments.length > 0) {
@@ -119,6 +123,8 @@ const receive = (conv, node, config, resolve, reject) => {
         conv.request.inputs[0].rawInputs.length > 0) {
         data.message.text = conv.request.inputs[0].rawInputs[0].query;
     }
+=======
+>>>>>>> upstream/master
 
     // Handle Prompt
     let convId  = botmgr.getConvId(data)
@@ -200,7 +206,11 @@ const reply = (node, data, config) => {
         // Building the message
         let message = getMessage(data.reply);
 
+<<<<<<< HEAD
         // node.warn({ REPLY: message, receive: data.message, rep: data.reply})
+=======
+        //node.warn({ REPLY: message, receive: data.message, rep: data.reply})
+>>>>>>> upstream/master
 
         if (!message || message.data.length === 0) return false;
         let endMsg = message.data.pop();
@@ -258,11 +268,19 @@ const getMessage = exports.getMessage = (replies) => {
                         msg.data = [new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] })];
                         continue;
                     }
+<<<<<<< HEAD
 
                     if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
                     else suggestions.push(button.title);
                 }
 
+=======
+
+                    if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
+                    else suggestions.push(button.title);
+                }
+
+>>>>>>> upstream/master
                 msg.data.push(new Suggestions(suggestions));
             }
 
@@ -316,6 +334,7 @@ const getMessage = exports.getMessage = (replies) => {
             continue;
         }
 
+<<<<<<< HEAD
         // Transaction
         if (reply.type === "transaction") {
             if (reply.intent == "confirm") {
@@ -348,6 +367,45 @@ const getMessage = exports.getMessage = (replies) => {
                     totalPrice += item.price
                 }
 
+=======
+        if (reply.type === 'confirm'){
+            let text = reply.text;
+            msg.data.push(new Confirmation(text));
+        }
+
+        // Transaction
+        if (reply.type === "transaction") {
+            if (reply.intent == "confirm") {
+
+                let items = []
+                let totalPrice = 0
+
+                for (let item of reply.orderItems) {
+                    let units = String(Math.trunc(price));
+                    let nanos = String(price).replace(/.*\./, '');
+                        nanos = (nanos + '000000000').substring(0,9);
+                        nanos = (price < 0) ? Number('-' + nanos) : Number(nanos);
+
+                    items.push({
+                        name: item.name,
+                        id: item.name.toLowerCase().replace(/\s/g, '_'),
+                        price: { 
+                            amount: { currencyCode: 'EUR', units: units, nanos: nanos }, 
+                            type: 'ESTIMATE'
+                        },
+                        quantity: 1,
+                        type: 'REGULAR',
+                        image: {
+                            url: item.imageUrl,
+                            accessibilityText: item.name
+                        },
+                        subLines: [{note: item.description}]
+                    })
+
+                    totalPrice += item.price
+                }
+
+>>>>>>> upstream/master
                 let units = String(Math.trunc(totalPrice));
                 let nanos = String(totalPrice).replace(/.*\./, '');
                     nanos = (nanos + '000000000').substring(0,9);
@@ -389,6 +447,7 @@ const getMessage = exports.getMessage = (replies) => {
                 continue;
             }
         }
+<<<<<<< HEAD
 
         // Receipt
         if (reply.receipt !== undefined) {
@@ -406,6 +465,25 @@ const getMessage = exports.getMessage = (replies) => {
 
             orderUpdateObject.infoExtension['RECEIPT'] = { userVisibleOrderId: reply.receipt.orderId };
 
+=======
+
+        // Receipt
+        if (reply.receipt !== undefined) {
+
+            let orderUpdateObject = {
+                actionOrderId: reply.receipt.orderId, 
+                orderState: { 
+                    label: reply.receipt.orderStateNam, 
+                    state: reply.receipt.orderState
+                },
+                infoExtension: {},
+                orderManagementActions: [],
+                updateTime: new Date().toISOString()
+            };
+
+            orderUpdateObject.infoExtension['RECEIPT'] = { userVisibleOrderId: reply.receipt.orderId };
+
+>>>>>>> upstream/master
             for (let action of reply.receipt.orderActions) {
                 orderUpdateObject.orderManagementActions.push({button: {openUrlAction: {url: action.url}, title: action.title}, type: action.type})
             }
@@ -424,7 +502,11 @@ const getMessage = exports.getMessage = (replies) => {
             let options = { 
                 buttons: [],
                 subtitle: reply.subtitle,
+<<<<<<< HEAD
                 text: reply.text || reply.quicktext,
+=======
+                formattedText: reply.text || reply.quicktext,
+>>>>>>> upstream/master
                 title: reply.title
             }
 
@@ -437,6 +519,7 @@ const getMessage = exports.getMessage = (replies) => {
                 for (let btn of reply.buttons){
                     
                     if (btn.action !== 'openUrl') continue;
+<<<<<<< HEAD
                     options.buttons.push(new Button({ title: btn.title, openUrlAction: { url: helper.absURL(btn.value)}}));
                 }
             }
@@ -445,6 +528,17 @@ const getMessage = exports.getMessage = (replies) => {
             continue;
         }
 
+=======
+
+                    options.buttons.push(new Button({ title: btn.title, url: helper.absURL(btn.value)}));
+                }
+            }
+            let basicCard = new BasicCard(options)
+            msg.data.push(basicCard);
+            continue;
+        }
+
+>>>>>>> upstream/master
         // Simple text and quick replies
         if (reply.type === 'text' || reply.type === 'quick') {
             let text = reply.text || reply.quicktext;

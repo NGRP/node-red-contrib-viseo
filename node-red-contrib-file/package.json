@@ -1,6 +1,10 @@
 {
     "name": "node-red-contrib-viseo-file",
+<<<<<<< HEAD
     "version": "0.2.1",
+=======
+    "version": "0.2.3",
+>>>>>>> upstream/master
     "description": "VISEO Bot Maker - Manage data with files",
     "dependencies": {
         "node-red-viseo-helper": "~0.1",

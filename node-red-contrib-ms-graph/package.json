@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-ms-graph",
-    "version"       : "0.2.9",
+    "version"       : "0.2.10",
     "description"   : "VISEO Bot Maker - Microsoft Graph",
     "dependencies"  : {  
         "oauth"     : "0.9.15",

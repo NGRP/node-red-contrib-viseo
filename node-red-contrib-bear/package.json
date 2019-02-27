@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-bear",
-    "version"       : "0.1.1",
+    "version"       : "0.1.2",
     "description"   : "VISEO Bot Maker - Bear Bear2b API",
     "dependencies"  : {
         "request"   : "^2.76.0",
@@ -14,7 +14,8 @@
     "keywords": [ "viseo", "sarah", "node-red", "bear", "bear2b", "rest"],
     "node-red" : {
         "nodes": {
-            "bear-query": "node-bear-query.js"
+            "bear-query": "node-bear-query.js",
+            "bear-config": "node-bear-config.js"
         }
     }
 }

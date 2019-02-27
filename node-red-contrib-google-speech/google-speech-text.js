@@ -134,7 +134,7 @@ const input = (node, data, config) => {
         }
         if (config.voiceName) {
             let voiceName = (config.voiceNameType === 'msg') ? helper.getByString(data, config.voiceName) : config.voiceName;
-            parameters.voice.voiceName = voiceName;
+            parameters.voice.voice = voiceName;
         }
         if (config.ssmlGender) {
             let ssmlGender = (config.ssmlGenderType === 'msg') ? helper.getByString(data, config.ssmlGender) : config.ssmlGender;

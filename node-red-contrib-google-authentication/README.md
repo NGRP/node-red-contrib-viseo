@@ -9,8 +9,10 @@ Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-google-speech
+npm install node-red-contrib-viseo-google-authentication
 ```
+
+And follow the [guide](https://developers.google.com/sheets/api/quickstart/nodejs) to get the required credential via create or select a project in the Google Developers Console.
 
 ## Getting Help
 

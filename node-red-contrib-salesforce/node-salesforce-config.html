@@ -21,19 +21,21 @@
         },
 
         oneditprepare: function () {
-            $("#node-config-input-intent-version").typedInput({ default: 'str', types: ['str'], type:'str' });
-            $("#node-config-input-intent-instance").typedInput({ default: 'str', types: ['str'], type:'str' });
-            $("#node-config-input-intent-login").typedInput({ default: 'str', types: ['str'], type:'str' });
-            $("#node-config-input-intent-refresh").typedInput({ default: 'str', types: ['str'], type:'str' });
-            $("#node-config-input-intent-secret").typedInput({ default: 'str', types: ['str'], type:'str' });
-            $("#node-config-input-intent-id").typedInput({ default: 'str', types: ['str'], type:'str' });
-            $("#node-config-input-intent-iss").typedInput({ default: 'str', types: ['str'], type:'str' });
-            $("#node-config-input-intent-subject").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-version").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-instance").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-login").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-refresh").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-secret").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-id").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-iss").typedInput({ default: 'str', types: ['str'], type:'str' });
+            $("#node-config-input-subject").typedInput({ default: 'str', types: ['str'], type:'str' });
 
             $("#node-config-input-oauthtype").change(function() {
                 $('.credential-info').hide();
                 $('.credential-info.'+$(this).val()+'-info').show();
+
                 $('.credential-info').find('input[type="text"]').typedInput('show')
+                
             })
             if(this.oauthtype === undefined) {
                 $('#node-config-input-oauthtype').val("refresh-token");
