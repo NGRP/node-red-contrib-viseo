@@ -846,10 +846,19 @@
         <dt>Card</dt>
         <dd>sends a card to the user, with possible image, text and buttons; if <i>Carousel</i> is checked, the card will not be sent;
             the program will wait for another card (with the option unchecked) to send all the cards as a carousel </dd>
+        <dt>AdaptiveCard</dt>
+        <dd>sends a card to the user, with possible image, text and buttons; The card can trim the content with a <i>More</i> button,
+            if the option <i>Wrap text up to</i> is filled in with the number of characters to display (i.e.
+            If you only want to display 200 characters in the card, fill <i>Wrap text up to</i> with <i>200</i>).
+            This card can also interpret Markdown text, creating buttons (containers) in the card for each Markdown section. To define a Markdown section,
+            fill in the field <i>Container separator</i> with the character separating each section. For more details, see the 
+            <a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards Documentation</a>.
+        </dd>
         <dt>SignIn</dt>
         <dd>sends card to signin to an account; a signin URL should be precised</dd>
         <dt>Event</dt>
         <dd>sends an event (label and value - object) to the bot connector</dd>
+        
     </dl>
     <p>Buttons and quick replies</p>
     <dl class="message-properties">
@@ -890,6 +899,7 @@
     <ul>
         <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Cards example</a> - Messenger generic templates</li>
         <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Quick replies example</a> - Messenger quick replies</li>
+        <li><a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards</a> - Adaptive Cards</li>
         <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
 
