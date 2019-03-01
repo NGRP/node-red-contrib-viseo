@@ -205,7 +205,7 @@ const getSession  = (data) => {
 
 const getMessage = (node, address, replies, isPush) => {
     let msg = new builder.Message();
-
+    
     // The message will be a carousel
     if (replies.length > 1) {
         msg.attachmentLayout(builder.AttachmentLayout.carousel)
@@ -220,8 +220,17 @@ const getMessage = (node, address, replies, isPush) => {
 
     // One or multiple cards
     for (let reply of replies) {
-        
-        let card = getHeroCard(reply);
+
+        //let card = getHeroCard(reply);
+        let card;
+        console.log("\n Reply type is " + reply.type);
+
+        if (reply.type === "AdaptiveCard") {
+            card = getAdaptiveCard(reply);
+        } else {
+            card = getHeroCard(reply);
+        }
+        msg.textFormat("markdown");
         msg.addAttachment(card);
 
         // Only the latest speech is used
@@ -524,3 +533,26 @@ const getHeroCard = (opts) => {
 
     return card;
 }
+
+const getAdaptiveCard = (opts) => {
+    opts._speech = '';
+    // Attach Title to card
+    if (!!opts.title) {
+        opts._speech += opts.title + ' ';
+    }
+
+    // Attach Subtext, appears just below subtitle, differs from Subtitle in font styling only.
+    if (!!opts.subtext) {
+        opts._speech += opts.subtext
+    }
+
+    // Attach Subtitle, appears just below Title field, differs from Title in font styling only.
+    if (!!opts.subtitle) {
+        opts._speech += opts.subtitle;
+    }
+
+    return {
+                contentType: "application/vnd.microsoft.card.adaptive",
+                content: opts
+            };
+};

@@ -50,3 +50,4 @@ Thumbs.db
 
 .idea
 node_modules
+.eslintrc.json
