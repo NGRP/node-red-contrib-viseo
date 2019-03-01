@@ -221,10 +221,7 @@ const getMessage = (node, address, replies, isPush) => {
     // One or multiple cards
     for (let reply of replies) {
 
-        //let card = getHeroCard(reply);
         let card;
-        console.log("\n Reply type is " + reply.type);
-
         if (reply.type === "AdaptiveCard") {
             card = getAdaptiveCard(reply);
         } else {
@@ -265,15 +262,11 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
     if(address.channelId === 'facebook') {
 
-
         if (contentShare) {
-
             buildFacebookSpecificMessage(msg, "generic", opts, isPush);
             return true;
-
         }
 
-        
         if (opts.type === 'card') {
             if(!opts.title && !opts.attach && opts.buttons && opts.subtitle) {
 
