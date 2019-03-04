@@ -88,12 +88,12 @@ const getButtons = (locale, config, data) => {
             if (!config.shcardbuttonType) shcardbutton = marshall(locale, shcardbutton,  data, '');
             else if (config.shcardbuttonType !== 'str') {
                 let loc = (config.shcardbuttonType === 'global') ? node.context().global : data;
-                shcardbutton = helper.getByString(loc, shcardbutton);
+                shcardbutton = helper.getByString(loc, shcardbutton);value
             }
 
             button.sharedCard = {
                 title:  shcardtitle,
-                text:   marshall(locale, config.shcardtext,   data, ''),
+                text:   marshall(locale, config.shcardtext,   data, 'value
                 media:  shcardimage,
                 button: shcardbutton,
                 url:    shcardurl
@@ -177,11 +177,7 @@ const buildReply = (node, data, config) => {
 
     // Simple text message
     if (config.sendType === 'text'){
-        let text = marshall(locale, config.text, data, '');
-        if (config.random){
-            let txt = text.split('\n');
-            text = txt[Math.round(Math.random() * (txt.length-1))]
-        }
+        buildReplyText(locale, data, config, reply);
 
         reply.text = text;
         if (reply.speech === undefined) reply.speech = text;
@@ -236,6 +232,7 @@ const buildReply = (node, data, config) => {
         buttonsStack.push(data, buttons);
         reply.buttons = buttons;
 
+        // Quick replies
         if (config.sendType === 'quick') {
             reply.quicktext = marshall(locale, config.quicktext, data, '');
             if (config.random){
@@ -249,22 +246,6 @@ const buildReply = (node, data, config) => {
             let title = config.title;
             let attach = config.attach;
 
-            if (!config.titleType) title = marshall(locale, title,  data, '');
-            else if (config.titleType !== 'str') {
-                let loc = (config.titleType === 'global') ? node.context().global : data;
-                title = helper.getByString(loc, title);
-            }
-            if (!config.attachType) attach = marshall(locale, attach,  data, '');
-            else if (config.attachType !== 'str') {
-                let loc = (config.attachType === 'global') ? node.context().global : data;
-                attach = helper.getByString(loc, attach);
-            }
-            
-            reply.title =    title;
-            reply.subtitle = marshall(locale, config.subtitle,  data, '');
-            reply.subtext =  marshall(locale, config.subtext,   data, '');
-            reply.attach =   attach;
-            if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
         }
         else if (config.sendType === 'adaptiveCard') {
             buildReplyAdaptiveCard(locale, data, config, reply);
