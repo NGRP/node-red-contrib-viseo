@@ -107,7 +107,7 @@
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
-            $("#node-input-value").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json','bin','date','jsonata','env'] ,typeField: $("#node-input-valueType")});
+            $("#node-input-metadata").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json','bin','date','jsonata','env'] ,typeField: $("#node-input-metadataType")});
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
