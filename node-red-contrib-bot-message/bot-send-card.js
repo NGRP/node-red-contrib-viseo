@@ -1,4 +1,4 @@
-const mustache = require('mustache');
+(function (exports, require, module, __filename, __dirname) { const mustache = require('mustache');
 const i18n     = require('./lib/i18n.js');
 const botmgr   = require('node-red-viseo-bot-manager');
 const helper   = require('node-red-viseo-helper');
@@ -136,7 +136,29 @@ const input = (node, data, config, reply) => {
     data._replyid = node.id;
 
     if (config.metadata) {
-        data.metadata = JSON.parse(config.metadata);
+        switch (config.metadataType) {
+            case 'msg':
+                data.metadata = data[config.metadata];
+                break;
+            case 'flow':
+                data.metadata = node.context().flow.get(config.metadata);
+                break;
+            case 'global':
+                data.metadata = node.context().global.get(config.metadata);
+                break;
+            case 'str':
+                data.metadata = config.metadata;
+                break;
+            case 'num':
+                data.metadata = +config.metadata;
+                break;
+            case 'bool':
+                data.metadata = config.metadata === 'true';
+                break;
+            case 'json':
+                data.metadata = JSON.parse(config.metadata);
+                break;
+        }
     }
 
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
@@ -609,3 +631,4 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         buildAdaptiveCardJson(textToShow, reply.body, separator);
     }
 }
+});
