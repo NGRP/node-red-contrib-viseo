@@ -1,4 +1,4 @@
-(function (exports, require, module, __filename, __dirname) { const mustache = require('mustache');
+const mustache = require('mustache');
 const i18n     = require('./lib/i18n.js');
 const botmgr   = require('node-red-viseo-bot-manager');
 const helper   = require('node-red-viseo-helper');
@@ -134,7 +134,7 @@ const input = (node, data, config, reply) => {
     // Emit reply message
     data.reply = replies;
     data._replyid = node.id;
-
+    
     if (config.metadata) {
         switch (config.metadataType) {
             case 'msg':
@@ -631,4 +631,3 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         buildAdaptiveCardJson(textToShow, reply.body, separator);
     }
 }
-});
