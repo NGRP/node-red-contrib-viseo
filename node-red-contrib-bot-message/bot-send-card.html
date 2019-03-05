@@ -74,8 +74,8 @@
             attachAdaptiveCard:       { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: "**"},
-            metadata :             {value : undefined},
-            metadataType : { value : "str"}
+            metadata : { value : "{}" },
+            metadataType : { value : "json" }
         },
         inputs:  1,
         outputs: 1,
@@ -107,7 +107,7 @@
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
-            $("#node-input-metadata").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json','bin','date','jsonata','env'] ,typeField: $("#node-input-metadataType")});
+            $("#node-input-metadata").typedInput({default: 'json', types: ['msg','flow','global','json','jsonata'] ,typeField: $("#node-input-metadataType")});
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {

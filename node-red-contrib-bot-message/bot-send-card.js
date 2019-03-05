@@ -134,7 +134,11 @@ const input = (node, data, config, reply) => {
     // Emit reply message
     data.reply = replies;
     data._replyid = node.id;
-    data.metadata = config.metadata;
+
+    if (config.metadata) {
+        data.metadata = JSON.parse(config.metadata);
+    }
+
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
         helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
