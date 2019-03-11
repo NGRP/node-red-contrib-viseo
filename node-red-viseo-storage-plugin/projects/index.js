@@ -467,15 +467,22 @@ function createProject(user, metadata) {
     metadata.path = fspath.join(projectsDir,metadata.name);
 
     return Projects.create(user, metadata).then(function(p) {
-        runtime.events.emit("runtime-event",{
-            id:"viseo-success",
-            payload:{
-                type:"success",
-                error:"project-created",
-                text:"Project "+p.name+" created. You can load it now.",
-            },
-            retain:true
-        });
+
+
+        if(activeProject == metadata.name) {
+            setActiveProject(user, activeProject)
+        } else {
+            runtime.events.emit("runtime-event",{
+                id:"viseo-success",
+                payload:{
+                    type:"success",
+                    error:"project-created",
+                    text:"Project "+p.name+" created. You can load it now.",
+                },
+                retain:true
+            });
+        }
+        
     });
 }
 
