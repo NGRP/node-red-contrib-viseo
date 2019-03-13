@@ -13,7 +13,17 @@
 		"url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-adobe"
 	},
 	"license": "Apache-2.0",
-	"keywords": [ "viseo", "sarah", "node-red", "adobe", "analytics", "omniture", "bot", "chatbot", "log" ],
+	"keywords": [
+		"viseo",
+		"sarah",
+		"node-red",
+		"adobe",
+		"analytics",
+		"omniture",
+		"bot",
+		"chatbot",
+		"log"
+	],
 	"node-red": {
 		"nodes": {
 			"node-omniture-insertion": "node-omniture-insertion.js",

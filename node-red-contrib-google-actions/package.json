@@ -11,7 +11,18 @@
         "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-google-actions"
     },
     "license": "Apache-2.0",
-    "keywords": ["viseo", "sarah", "node-red", "google", "assistant", "actions", "conversation", "chatbot", "bot", "home"],
+    "keywords": [
+        "viseo",
+        "sarah",
+        "node-red",
+        "google",
+        "assistant",
+        "actions",
+        "conversation",
+        "chatbot",
+        "bot",
+        "home"
+    ],
     "node-red": {
         "nodes": {
             "google-actions": "google-actions.js"
