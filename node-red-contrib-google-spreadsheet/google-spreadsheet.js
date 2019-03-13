@@ -1,7 +1,7 @@
 const fs = require('fs');
 const helper = require('node-red-viseo-helper');
-const google = require('googleapis');
-const sheets = google.sheets('v4');
+const { google } = require('googleapis');
+let sheets;
 
 
 // --------------------------------------------------------------------------
@@ -424,6 +424,7 @@ function input (node, data, config) {
 
     try {
         node.auth.authenticate((auth) => {
+            sheets = google.sheets({version: 'v4', auth});
             parameters.auth = auth;
 
             if      (action === "clear" || (action === "set" && config.method === "new")) return queryClear();

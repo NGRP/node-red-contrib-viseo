@@ -1,11 +1,11 @@
 {
     "name"          : "node-red-contrib-viseo-google-youtube",
-    "version"       : "0.0.9",
+    "version"       : "0.1.0-alpha.3",
     "description"   : "VISEO Bot Maker - Youtube",
     "dependencies"  : {
         "node-red-contrib-viseo-google-authentication" : "~0.0",
         "node-red-viseo-helper"                        : "~0.1",
-        "googleapis"                                   : "~22.2.0"
+        "googleapis"                                   : "~27.0.0"
     },
     "repository" : {
         "type":"git",
