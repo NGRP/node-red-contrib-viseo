@@ -313,15 +313,26 @@ const getMessage = exports.getMessage = (replies) => {
         if (reply.type === "transaction") {
             if (reply.intent == "confirm") {
 
+                const calc_nanos = (price) => {
+                    let priceString = String(price);
+                    if(priceString.indexOf(".") !== -1) {
+                        let nanos = priceString.replace(/.*\./, '');
+                        nanos = (nanos + '000000000').substring(0,9);
+                        nanos = (price < 0) ? Number('-' + nanos) : Number(nanos);
+                        return nanos;
+                    } else {
+                        return 0;
+                    }
+                };
+
                 let items = []
                 let totalPrice = 0
 
                 for (let item of reply.orderItems) {
-                    let units = String(Math.trunc(price));
-                    let nanos = String(price).replace(/.*\./, '');
-                        nanos = (nanos + '000000000').substring(0,9);
-                        nanos = (price < 0) ? Number('-' + nanos) : Number(nanos);
 
+                    let units = Math.trunc(item.price);
+                    let nanos = calc_nanos(item.price);
+                        
                     items.push({
                         name: item.name,
                         id: item.name.toLowerCase().replace(/\s/g, '_'),
@@ -341,12 +352,13 @@ const getMessage = exports.getMessage = (replies) => {
                     totalPrice += item.price
                 }
 
-                let units = String(Math.trunc(totalPrice));
-                let nanos = String(totalPrice).replace(/.*\./, '');
-                    nanos = (nanos + '000000000').substring(0,9);
-                    nanos = (totalPrice < 0) ? Number('-' + nanos) : Number(nanos);
+                let units = Math.trunc(totalPrice);
+                let nanos = calc_nanos(totalPrice);
 
                 let options = {
+                    orderOptions: {
+                        requestDeliveryAddress: false,
+                      },
                     proposedOrder: {
                         id: reply.orderId,
                         cart: {
@@ -354,7 +366,7 @@ const getMessage = exports.getMessage = (replies) => {
                                 id: reply.merchant.toLowerCase().replace(/\s/g, '_'),
                                 name: reply.merchant
                             },
-                            linesItem: items
+                            lineItems: items
                         },
                         totalPrice: {
                             amount: { currencyCode: 'EUR', units: units, nanos: nanos }, 
@@ -366,7 +378,7 @@ const getMessage = exports.getMessage = (replies) => {
                 if (totalPrice > 0) {
                     options.paymentOptions = {
                         actionProvidedOptions: {
-                            type: 'ON_FULFILLMENT',
+                            paymentType: 'ON_FULFILLMENT',
                             displayName: "Règlement en magasin"
                         }
                     }
@@ -378,7 +390,7 @@ const getMessage = exports.getMessage = (replies) => {
             } 
             
             if (reply.intent == "requirement_check") {
-                msg.data.push(TransactionRequirements());
+                msg.data.push(new TransactionRequirements());
                 continue;
             }
         }

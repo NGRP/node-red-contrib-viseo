@@ -1,0 +1,5 @@
+{
+    "extends": "airbnb",
+    "eslint.run": "onSave",
+    "eslint.enable": "disable"
+}

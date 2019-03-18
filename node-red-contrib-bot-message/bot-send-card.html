@@ -66,11 +66,20 @@
             shcardbutton:    { value: undefined },
             shcardbuttonType:    { value: "str" },
             shcardurl:       { value: undefined },
-            shcardurlType:       { value: "str" }
+            shcardurlType:       { value: "str" },
+            titleAdaptiveCard:        { value: undefined },
+            titleTypeAdaptiveCard:    { value: "str" },
+            textAdaptiveCard:      { value: undefined },
+            subtextAdaptiveCard:      { value: undefined },
+            attachAdaptiveCard:       { value: undefined },
+            displayedTextSizeAdaptiveCard: {value: undefined},
+            containerSeparatorAdaptiveCard: {value: "##"},
+            metadata : { value : undefined },
+            metadataType : { value : "str" }
         },
-        inputs:  1, 
+        inputs:  1,
         outputs: 1,
-        outputLabels: function(index) { 
+        outputLabels: function(index) {
             return this.labels[index];
         },
         oneditprepare: function () {
@@ -94,6 +103,11 @@
             $("#node-input-repeat").typedInput({       default: 'num', types: ['num'], type: 'num' })
                 .typedInput("width", "100px");
 
+            $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
+            $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
+            $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
+            $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
+            $("#node-input-metadata").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json'], typeField: $("#node-input-metadataType")});
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -136,7 +150,7 @@
             }
 
             // Type : show and hide sections
-            $('#node-input-sendType').change(function (event) { 
+            $('#node-input-sendType').change(function (event) {
                 var type = $(this).val();
                 $('.section-type, .section-share').addClass('hide');
                 $('.section-'+type).removeClass('hide');
@@ -160,43 +174,57 @@
                 }
                 else if (type === "event") {
                     $("#node-input-eventValue, #node-input-eventName").typedInput('show');
+                } 
+                else if (type === "adaptiveCard") {
+                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
             });
 
-            // Buttons and quick replies : init
-            $("#btn-container").css('min-height','100px').editableList({
-                addItem: function ( row, index, data ) {
+            function addButtonItem( row, index, data ) {
+                var button = data.btn,
+                    title = '',
+                    action = 'postBack',
+                    value = '',
+                    regexp = '';
 
-                    var button = data.btn,
-                        title = '',
-                        action = 'postBack',
-                        value = '',
-                        regexp = '';
+                if (button) {
+                    if (button.hasOwnProperty('title'))  title =  button.title;
+                    if (button.hasOwnProperty('action')) action = button.action;
+                    if (button.hasOwnProperty('value'))  value =  button.value;
+                    if (button.hasOwnProperty('regexp')) regexp = button.regexp;
+                }
 
-                    if (button) {
-                        if (button.hasOwnProperty('title'))  title =  button.title;
-                        if (button.hasOwnProperty('action')) action = button.action;
-                        if (button.hasOwnProperty('value'))  value =  button.value;
-                        if (button.hasOwnProperty('regexp')) regexp = button.regexp;
-                    }
+                var hiddenField = $('<span/>', {}).appendTo(row);
+                var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
+                var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                    actionField.append($("<option></option>").val("postBack").text("Post Back"));
+                    actionField.append($("<option></option>").val("imBack").text("IM Back"));
+                    actionField.append($("<option></option>").val("openUrl").text("Open URL"));
+                    actionField.append($("<option></option>").val("share").text("Share card"));
+                    actionField.append($("<option></option>").val("showImage").text("Show Image"));
+                    actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
+                    actionField.append($("<option></option>").val("playVideo").text("Play Video"));
+                    actionField.append($("<option></option>").val("call").text("Call"));
+                var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
+                var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
+                    actionField.val(action).change();
+            }; 
 
-                    var hiddenField = $('<span/>', {}).appendTo(row);
-                    var titleField =  $('<input/>',  { class:"property-btn-title",  type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Label"}).appendTo(row);
-                    var actionField = $('<select/>', { class:"property-btn-action", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
-                        actionField.append($("<option></option>").val("postBack").text("Post Back"));
-                        actionField.append($("<option></option>").val("imBack").text("IM Back"));
-                        actionField.append($("<option></option>").val("openUrl").text("Open URL"));
-                        actionField.append($("<option></option>").val("share").text("Share card"));
-                        actionField.append($("<option></option>").val("showImage").text("Show Image"));
-                        actionField.append($("<option></option>").val("playAudio").text("Play Audio"));
-                        actionField.append($("<option></option>").val("playVideo").text("Play Video"));
-                        actionField.append($("<option></option>").val("call").text("Call"));
-                    var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
-                    var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
-                        actionField.val(action).change();
-                },
-                sortable: true,
-                removable: true
+             // Buttons and quick replies : init
+             $("#btn-container").css('min-height','100px').editableList({
+              addItem: function ( row, index, data ) {
+			            addButtonItem( row, index, data );
+	          },
+              sortable: true,
+              removable: true
+            });
+
+           $("#btn-container-AdaptiveCard").css('min-height','100px').editableList({
+              addItem: function ( row, index, data ) {
+			            addButtonItem( row, index, data );
+	          },
+              sortable: true,
+              removable: true
             });
 
             $("#qck-container").css('min-height','150px').editableList({
@@ -257,11 +285,12 @@
             }).change();
 
             // Get buttons and quick replies
-            for (var i=0; i<this.buttons.length; i++) {      
+            for (var i=0; i<this.buttons.length; i++) {
                 var infos = this.buttons[i];
                 $("#btn-container").editableList('addItem', { btn: infos, i:i });
+                $("#btn-container-AdaptiveCard").editableList('addItem', { btn: infos, i:i });
             }
-            for (var i=0; i<this.quickreplies.length; i++) {      
+            for (var i=0; i<this.quickreplies.length; i++) {
                 var infos = this.quickreplies[i];
                 $("#qck-container").editableList('addItem', { btn: infos, i:i });
             }
@@ -283,7 +312,7 @@
                 }
                 else  $(this).addClass("input-error");
             });
-            
+
             function newID() {
                 let result = false;
                 let nodeid = "";
@@ -312,7 +341,13 @@
         oneditsave: function(){
 
              // Buttons
-            let butt = $("#btn-container").editableList('items');
+            let butt;
+            var type = $('#node-input-sendType').val();
+            if (type === 'adaptiveCard'){
+              butt = $("#btn-container-AdaptiveCard").editableList('items');
+            } else {
+              butt = $("#btn-container").editableList('items');
+            }
             let quic = $("#qck-container").editableList('items');
             let results = new Array();
 
@@ -326,7 +361,7 @@
                 if ((btn.title && btn.value) || btn.action === 'share') { results.push(btn); }
             });
             this.buttons = (results.length === 0) ? [{ title: "", action:"postBack", value:"", regexp:""}] : results;
-            
+
             results = new Array();
             quic.each(function(i) {
                 var btn = {
@@ -346,7 +381,7 @@
             this.outputs = 1 ;
 
             var type = $('#node-input-sendType').val();
-            if (type === 'card'){
+            if (type === 'card' || type === 'adaptiveCard'){
                 var btnOut = $('#node-input-btnOutput').is(':checked')
                 if (btnOut) {
                     labels.push("Unexpected");
@@ -367,8 +402,8 @@
                     }
                 }
             }
-            
-            this.labels = (labels.length > 0) ? labels : ["Default output"]; 
+
+            this.labels = (labels.length > 0) ? labels : ["Default output"];
 
             if  (this.repeat > 0) {
                 this.labels.push("Repeat");
@@ -376,18 +411,18 @@
             }
         },
         icon: function() {
-            if (this.sendType === "text")   return "text.svg"; 
-            if (this.sendType === "media")  return "picture.svg"; 
+            if (this.sendType === "text")   return "text.svg";
+            if (this.sendType === "media")  return "picture.svg";
             if (this.sendType === "quick")  return "buttons.svg";
             if (this.sendType === "signin") return "fingerprint.svg";
             if (this.sendType === "event")  return "tech.svg";
             if (this.carousel === true)     return "carousel.svg";
             return "card.svg";
-        }, 
+        },
         align: "left",
         paletteLabel: "Message",
         labelStyle: "bot-card-name",
-        label: function() { 
+        label: function() {
             if (this.name) return this.name;
             if (this.carousel === true) return "Card";
             if (this.sendType === "text" || this.sendType === "quick")  { 
@@ -397,7 +432,8 @@
                 }
                 else return "Send: \"\"";
             }
-            if (this.sendType === "card")   return "Send card"; 
+            if (this.sendType === "card")   return "Send card";
+            if (this.sendType === "adaptiveCard")  return "Send card"; 
             if (this.sendType === "media")  return "Send media"; 
             if (this.sendType === "signin") return "Send signin";
             if (this.sendType === "event")  return "Send event";
@@ -479,7 +515,7 @@
 </style>
 
 <script type="text/x-red" data-template-name="send-card">
-   
+
     <div class="red-ui-tabs" style="margin-bottom: 10px; min-width:600px;">
         <div>
             <ul id="send-card-tabs">
@@ -568,6 +604,7 @@
                 <option value="card">Card</option>
                 <option value="signin">SignIn</option>
                 <option value="event">Event</option>
+                <option value="adaptiveCard">AdaptiveCard</option>
                 <option value="confirm">Confirm</option>
             </select>
         </div>
@@ -592,7 +629,6 @@
                 <input type="hidden" id="node-input-mediaType">
             </div>
         </section>
-
         <section class="section-type section-card">
             <div class="form-row">
                 <label for="node-input-title"><i class="fa fa-pencil-square-o"></i> Title</label>
@@ -603,10 +639,44 @@
                 <label for="node-input-subtitle"><i class="fa fa-pencil-square-o"></i> Text</label>
                 <textarea id="node-input-subtitle" rows="4" placeholder="Text to send"></textarea>
             </div>
+
+            <div class="form-row">
+                <label for="node-input-subtext"><i class="fa fa-pencil-square-o"></i> SubText</label>
+                <textarea id="node-input-subtext" rows="1" placeholder="SubText to send"></textarea>
+            </div>
+
             <div class="form-row">
                 <label for="node-input-attach"><i class="fa fa-image"></i> Image</label>
                 <input type="text" id="node-input-attach" style="width:80%;" placeholder="http://path/to/card/image">
                 <input type="hidden" id="node-input-attachType">
+            </div>
+        </section>
+        <section class="section-type section-adaptiveCard">
+            <div class="form-row">
+                <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-titleTypeAdaptiveCard">
+            </div>
+            <!--<div class="form-row">
+                <label for="node-input-subtextAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-subtextAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
+            </div>-->
+            <div class="form-row">
+                <label for="node-input-textAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
+            </div>
+            <div class="form-row">
+                <label  for="node-input-displayedTextSizeAdaptiveCard"> Wrap text up to </label>
+                <input type="number" id="node-input-displayedTextSizeAdaptiveCard">
+                </div>
+                <div class="form-row">
+                    <label for="node-input-containerSeparatorAdaptiveCard"> Container separator </label>
+                    <input type="text" id="node-input-containerSeparatorAdaptiveCard">
+                </div>
+                <div class="form-row">
+                <label for="node-input-attachAdaptiveCard"><i class="fa fa-image"></i> Image</label>
+                <input type="text" id="node-input-attachAdaptiveCard" style="width:80%;" placeholder="http://path/to/card/image">
+                <input type="hidden" id="node-input-attachTypeAdaptiveCard">
             </div>
         </section>
 
@@ -614,7 +684,7 @@
             <div class="form-row">
                 <label for="node-input-quicktext"><i class="fa fa-pencil-square-o"></i> Text</label>
                 <textarea id="node-input-quicktext" rows="4" placeholder="Text to send"></textarea>
-            </div>    
+            </div>
         </section>
 
         <section class="section-type section-signin">
@@ -693,9 +763,19 @@
             <br>
             <b>Buttons</b>
             <br><br>
-            
+
             <div class="form-row" style="width:97%;">
                 <ol id="btn-container"></ol>
+            </div>
+        </section>
+
+        <section class="section-type section-adaptiveCard">
+            <br>
+            <b>Buttons</b>
+            <br><br>
+
+            <div class="form-row" style="width:97%;">
+                <ol id="btn-container-AdaptiveCard"></ol>
             </div>
         </section>
 
@@ -731,7 +811,12 @@
                 <input type="hidden" id="node-input-shcardurlType">
             </div>
         </section>
-
+        <br/>
+        <div class="form-row">
+                <label for="node-input-metadata"><i class="fa fa-database"></i> Metadata</label>
+                <input type="text" id="node-input-metadata" style="width:80%;">
+                <input type="hidden" id="node-input-metadataType">
+        </div>
     </div>
 </script>
 
@@ -769,10 +854,19 @@
         <dt>Card</dt>
         <dd>sends a card to the user, with possible image, text and buttons; if <i>Carousel</i> is checked, the card will not be sent;
             the program will wait for another card (with the option unchecked) to send all the cards as a carousel </dd>
+        <dt>AdaptiveCard</dt>
+        <dd>sends a card to the user, with possible image, text and buttons; The card can trim the content with a <i>More</i> button,
+            if the option <i>Wrap text up to</i> is filled in with the number of characters to display (i.e.
+            If you only want to display 200 characters in the card, fill <i>Wrap text up to</i> with <i>200</i>).
+            This card can also interpret Markdown text, creating buttons (containers) in the card for each Markdown section. To define a Markdown section,
+            fill in the field <i>Container separator</i> with the character separating each section. For more details, see the 
+            <a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards Documentation</a>.
+        </dd>
         <dt>SignIn</dt>
         <dd>sends card to signin to an account; a signin URL should be precised</dd>
         <dt>Event</dt>
         <dd>sends an event (label and value - object) to the bot connector</dd>
+        
     </dl>
     <p>Buttons and quick replies</p>
     <dl class="message-properties">
@@ -794,6 +888,9 @@
 
     <p><b>Note:</b> if your bot is a vocal application, then customize the played content: uncheck the <i>Speech</i> checkbox. </p>
     
+    <p>Metadata</p>
+    <p>Custom data associated to the message.</p>
+
     <h3>Details: settings</h3>
     <p>Properties</p>
     <dl class="message-properties">
@@ -813,6 +910,7 @@
     <ul>
         <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/generic-template">Cards example</a> - Messenger generic templates</li>
         <li><a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">Quick replies example</a> - Messenger quick replies</li>
+        <li><a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards</a> - Adaptive Cards</li>
         <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
     </ul>
 

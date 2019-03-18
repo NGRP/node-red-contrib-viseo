@@ -1,6 +1,6 @@
 'use strict';
 const DatabaseManager = require('node-red-contrib-viseo-nosql-manager').DbManager;
-const MongoClient   = require('mongodb').MongoClient;
+const MongoClient   = new require('mongodb').MongoClient();
 
 
 class MongoDBManager extends DatabaseManager {
@@ -76,25 +76,40 @@ class MongoDBManager extends DatabaseManager {
             url = 'mongodb://'+node.credentials.user+':'+encodeURIComponent(node.credentials.password)
                     +'@'+this._hosts()+'/'+node.credentials.database+this._options();
         }
-       
+
+
 		if(this.db === null && this.getStatus() === '' && url !== '') {
 
             this.url = url
-
-            let manager = this;
-
-                //CONNECT DATABASE
-            MongoClient.connect(this.url, function(err, db) {
-
-                if(err === null) {
-                    manager.db = db;
-                    info("Connected to database "+manager.url);
-                } else {
-                    error("Could not connect to database "+manager.url+' : '+err);
-                }
-            });
+            this._connect()
+            
         }
     }
+
+    _connect(callback) {
+        let manager = this;
+
+            //CONNECT DATABASE
+        MongoClient.connect(this.url, function(err, db) {
+
+            if(err === null) {
+                manager.db = db;
+
+                info("Connected to database "+manager.url);
+
+                db.on('close', () => {
+                    manager.db = null;
+                });
+
+                if(callback) {
+                    callback(db);
+                }
+            } else {
+                error("Could not connect to database "+manager.url+' : '+err);
+            }
+        });
+    }
+
     _initHosts(hosts) {
 
         let string = '';
@@ -154,6 +169,17 @@ class MongoDBManager extends DatabaseManager {
         return string;
     }
 
+    _request(request) {
+
+        if(this.db === null) {
+            this._connect((db) => {
+                request(db);
+            })
+        } else {
+            request(this.db);
+        }
+    }
+
     end(callback) {
     	
     	if(this.db !== null) {
@@ -168,77 +194,93 @@ class MongoDBManager extends DatabaseManager {
 
     count(key, data, config, callback) {
 
-        try {
-            const collection = this.db.collection(config.collection);
-            collection.count(key, function(err, count) {
-                callback(err, data, count)
-            });
-        } catch(e) {
-            callback(e, data, {})
-        }
+        this._request((db) => {
+            try {
+                const collection = db.collection(config.collection);
+                collection.count(key, function(err, count) {
+                    callback(err, data, count)
+                });
+            } catch(e) {
+                callback(e, data, {})
+            }
+
+        });
 
     }
 
-    async find(key, data, config, callback) { 
+    find(key, data, config, callback) { 
 
-        var err = null;
-        let documents = [];
+        this._request(async (db) => {
 
-        try {
-            const collection = this.db.collection(config.collection);
+            var err = null;
+            let documents = [];
+
+            try {
+                const collection = db.collection(config.collection);
 
 
-            let cursor = collection.find(key);
-            if(config.limit) {
-                cursor = cursor.skip(config.offset).limit(config.limit);
-            } 
-            while(await cursor.hasNext()) {
-              documents.push(await cursor.next());
+                let cursor = collection.find(key);
+                if(config.limit) {
+                    cursor = cursor.skip(config.offset).limit(config.limit);
+                } 
+                while(await cursor.hasNext()) {
+                  documents.push(await cursor.next());
+                }
+            } catch(e) {
+                err = e
             }
-        } catch(e) {
-            err = e
-        }
 
-        callback(err, data, documents);
+            callback(err, data, documents);
+
+        });
     }
 
 	update(key, value, data, config, callback) {
 
-        try {
-    		let collection = this.db.collection(config.collection);
-    	    collection.updateOne(key, { $set: value }, { upsert: true }, function(err, result) {
-    	        callback(err, data, result);
-    	    });
-        } catch(e) {
-            callback(e, data, {})
-        }
+        this._request((db) => {
+
+            try {
+        		let collection = db.collection(config.collection);
+        	    collection.updateOne(key, { $set: value }, { upsert: true }, function(err, result) {
+        	        callback(err, data, result);
+        	    });
+            } catch(e) {
+                callback(e, data, {})
+            }
+        });
 	}
 
 	add(values, data, config, callback) {
 
-        try { 
+        this._request((db) => {
 
-    	    let collection = this.db.collection(config.collection);
-    	    collection.insert(values, function(err, result) {
-    	    	callback(err, data, result);
-    	    });
-        } catch(e) {
-            callback(e, data, {})
-        }
+            try { 
+
+        	    let collection = db.collection(config.collection);
+        	    collection.insert(values, function(err, result) {
+        	    	callback(err, data, result);
+        	    });
+            } catch(e) {
+                callback(e, data, {})
+            }
+        });
 
 	}
 
 	remove(key, data, config, callback) {
 
-        try {
+        this._request((db) => {
 
-    	    let collection = this.db.collection(config.collection);
-    	    collection.remove(key, function(err, result) {
-    	        callback(err, data, result);
-    	    });    
-        } catch(e) {
-            callback(e, data, {})
-        }
+            try {
+
+        	    let collection = db.collection(config.collection);
+        	    collection.remove(key, function(err, result) {
+        	        callback(err, data, result);
+        	    });    
+            } catch(e) {
+                callback(e, data, {})
+            }
+        });
 	}
 };
 

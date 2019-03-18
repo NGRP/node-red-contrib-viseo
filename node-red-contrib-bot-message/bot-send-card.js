@@ -119,6 +119,33 @@ const input = (RED, node, data, config, reply) => {
     // Emit reply message
     data.reply = replies;
     data._replyid = node.id;
+    
+    if (config.metadata) {
+        switch (config.metadataType) {
+            case 'msg':
+                data.metadata = data[config.metadata];
+                break;
+            case 'flow':
+                data.metadata = node.context().flow.get(config.metadata);
+                break;
+            case 'global':
+                data.metadata = node.context().global.get(config.metadata);
+                break;
+            case 'str':
+                data.metadata = config.metadata;
+                break;
+            case 'num':
+                data.metadata = +config.metadata;
+                break;
+            case 'bool':
+                data.metadata = config.metadata === 'true';
+                break;
+            case 'json':
+                data.metadata = JSON.parse(config.metadata);
+                break;
+        }
+    }
+
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
         helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
@@ -190,7 +217,7 @@ const buildReply = (RED, node, data, config) => {
     }
     
     // Other card message
-    if (config.sendType === 'quick' || config.sendType === 'card') {
+    if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard') {
     
         let buttons = getButtons(RED, locale, config, data);
         buttonsStack.push(data, buttons);
@@ -204,7 +231,7 @@ const buildReply = (RED, node, data, config) => {
             }
             if (reply.speech === undefined) reply.speech = reply.quicktext;
         } 
-        else {
+        else if (config.sendType === 'card') {
 
             let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
             let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
@@ -214,6 +241,10 @@ const buildReply = (RED, node, data, config) => {
             reply.subtext =  marshall(locale, config.subtext,   data, '');
             reply.attach =   marshall(locale, attach,  data, '');
             if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
+        }
+        else if (config.sendType === 'adaptiveCard') {
+            buildReplyAdaptiveCard(locale, data, config, reply);
+
         }
     }
     
@@ -349,4 +380,204 @@ const sendData = (node, data, config) => {
     } else {
         _continue(data);
     }
-}   
+}
+
+/**
+ * Takes the "whole" text and builds a "body" for the adaptive card.
+ * @param {*} whole The whole text to process
+ * @param {*} body The parameter in which to put the processed text, see adaptive card documentation
+ * @param {*} separator The parameter used as a section separator. Each line of text is finally a container, with title containers non-clickable and item container clickable.
+ */
+const buildAdaptiveCardJson = function(whole, body, separator) {
+    /**Original text is:
+     **Memory**:
+     - 1. Item memory 1
+     **Storage**:
+      - 1. Item storage 1
+      - 2. Item storage 2
+     **Note**:
+      - 1. Item Note 1
+     **Standard**:
+      - 1. Item Standard 1
+    -----------------------------------------       
+    
+    part is:  with index: 0
+     line is:  with index: 0
+     ---------------
+     part is: Memory**:
+      - 1. Item memory 1
+      with index: 1
+     line is: Memory**: with index: 0
+     line is:  - 1. Item memory 1 with index: 1
+     line is:  with index: 2
+     ---------------
+     part is: Storage**:
+       - 1. Item storage 1
+       - 2. Item storage 2
+      with index: 2
+     line is: Storage**: with index: 0
+     line is:   - 1. Item storage 1 with index: 1
+     line is:   - 2. Item storage 2 with index: 2
+     line is:  with index: 3
+     ---------------
+     part is: Note**:
+       - 1. Item Note 1
+      with index: 3
+     line is: Note**: with index: 0
+     line is:   - 1. Item Note 1 with index: 1
+     line is:  with index: 2
+     ---------------
+     part is: Standard**:
+       - 1. Item Standard 1 with index: 4
+     line is: Standard**: with index: 0
+     line is:   - 1. Item Standard 1 with index: 1
+    */
+    
+           //TODO refactor
+    
+           whole.split(' '+ separator).forEach((part, index) => {
+            if (index === 0) {
+                // begins with title directly
+                if (part.startsWith(' '+ separator, 0)) { 
+                    body.push({
+                      "type": "Container",
+                      "items": [
+                          {
+                              "type": "TextBlock",
+                              "wrap": true,
+                              "size": "default",
+                              "text": part //  here is what I found...
+                          }	
+                      ]
+                  });
+                } else { 
+                    // Otherwise, begin with attributes belong to last title
+                    part.split('\n').forEach((line, i) => {
+                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                        body.push({
+                                  "type": "Container",
+                                  "items": [
+                                      {
+                                          "type": "TextBlock",
+                                          "wrap": true,
+                                          "size": "default",
+                                          "text": line						
+                                      }
+                                  ],
+                                  "selectAction": {
+                                      "type": "Action.Submit",
+                                      "title": "cool link",
+                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+                                  }
+                                });
+                            });
+              }
+            } else {
+                part.split('\n').forEach((line, i) => {
+                    if (i === 0) {
+                        body.push({
+                          "type": "Container",
+                          "items": [
+                              {
+                                  "type": "TextBlock",
+                                  "wrap": true,
+                                  "size": "default",
+                                  "text": separator + line // memory
+                              }
+                          ]});
+                    } else {
+                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
+                        body.push({
+                                  "type": "Container",
+                                  "items": [
+                                      {
+                                          "type": "TextBlock",
+                                          "wrap": true,
+                                          "size": "default",
+                                          "text": line						
+                                      }
+                                  ],
+                                  "selectAction": {
+                                      "type": "Action.Submit",
+                                      "title": "cool link",
+                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
+                                  }
+                                });
+                    }
+            });
+        }
+    });
+}
+
+const buildReplyAdaptiveCard = (locale, data, config, reply) => {
+    //--- same as card
+    let title = config.titleAdaptiveCard;
+    let attach = config.attachAdaptiveCard;
+    let subtext = config.textAdaptiveCard;
+    let separator = config.containerSeparatorAdaptiveCard;
+    let displayedTextSize = config.displayedTextSizeAdaptiveCard;
+   
+    if (!separator) {
+        separator = "**";
+    }
+
+    if (!displayedTextSize) {
+        // if not defined value, then don't wrap, display up to 100k characters.
+        displayedTextSize = 100000;
+    }
+
+    if (!config.titleTypeAdaptiveCard) title = marshall(locale, title,  data, '');
+    else if (config.titleTypeAdaptiveCard !== 'str') {
+        let loc = (config.titleTypeAdaptiveCard === 'global') ? node.context().global : data;
+        title = helper.getByString(loc, title);
+    }
+
+    if (!config.attachTypeAdaptiveCard) attach = marshall(locale, attach,  data, '');
+    else if (config.attachTypeAdaptiveCard !== 'str') {
+        let loc = (config.attachTypeAdaptiveCard === 'global') ? node.context().global : data;
+        attach = helper.getByString(loc, attach);
+    }
+
+    reply.type = 'AdaptiveCard';
+    reply.title = title;
+    reply.attach = attach;
+    reply.version = "1.0";
+    reply.body = [];
+    /*customized text to display*/
+    
+    let textToShow = marshall(locale, subtext,  data, '');
+
+    // if textToShow is too big and has to be wrapped up to <displayedTextSize> characters
+    if (textToShow.length > displayedTextSize) {
+        let tmp = textToShow.substring(0, displayedTextSize);
+
+        // in case Markdown Emphasis got truncated...
+        let empIndex = tmp.lastIndexOf(" "+ separator);
+        if (empIndex> 0 && tmp.substring(empIndex+ 2).lastIndexOf(separator) < 0) tmp += separator;
+
+        // in case hiperlink got truncated...
+        let linkBegin = tmp.lastIndexOf("](http");
+        let linkEnd;
+        if (linkBegin > 0) {
+          linkEnd = textToShow.substring(linkBegin).indexOf(")");
+          if (linkEnd > 0) tmp = textToShow.substring(0, linkBegin + linkEnd + 1);
+        }
+
+        // assure attribute complete
+        let attrIndex = (tmp.lastIndexOf("\n") < linkBegin + linkEnd + 1) ? (linkBegin + linkEnd + 1) : tmp.lastIndexOf("\n");
+        tmp = textToShow.substring(0, attrIndex);
+        buildAdaptiveCardJson(tmp, reply.body, separator); //reply.body.push({"type": "TextBlock", "text": tmp, "size": "default", "wrap": true});
+
+        reply.actions = [];
+        tmp = textToShow.substring(attrIndex);
+
+        //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
+        reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": []}});
+        buildAdaptiveCardJson(tmp, reply.actions[0].card.body, separator);
+        
+    } else {
+        // otherwise show all the text
+        //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
+        buildAdaptiveCardJson(textToShow, reply.body, separator);
+    }
+}
