@@ -74,6 +74,8 @@
             attachAdaptiveCard:       { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: "##"},
+            metadata : { value : undefined },
+            metadataType : { value : "str" }
         },
         inputs:  1,
         outputs: 1,
@@ -105,6 +107,7 @@
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
+            $("#node-input-metadata").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json'], typeField: $("#node-input-metadataType")});
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -808,7 +811,12 @@
                 <input type="hidden" id="node-input-shcardurlType">
             </div>
         </section>
-
+        <br/>
+        <div class="form-row">
+                <label for="node-input-metadata"><i class="fa fa-database"></i> Metadata</label>
+                <input type="text" id="node-input-metadata" style="width:80%;">
+                <input type="hidden" id="node-input-metadataType">
+        </div>
     </div>
 </script>
 
@@ -880,6 +888,9 @@
 
     <p><b>Note:</b> if your bot is a vocal application, then customize the played content: uncheck the <i>Speech</i> checkbox. </p>
     
+    <p>Metadata</p>
+    <p>Custom data associated to the message.</p>
+
     <h3>Details: settings</h3>
     <p>Properties</p>
     <dl class="message-properties">

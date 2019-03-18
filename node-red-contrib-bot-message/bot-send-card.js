@@ -134,6 +134,33 @@ const input = (node, data, config, reply) => {
     // Emit reply message
     data.reply = replies;
     data._replyid = node.id;
+    
+    if (config.metadata) {
+        switch (config.metadataType) {
+            case 'msg':
+                data.metadata = data[config.metadata];
+                break;
+            case 'flow':
+                data.metadata = node.context().flow.get(config.metadata);
+                break;
+            case 'global':
+                data.metadata = node.context().global.get(config.metadata);
+                break;
+            case 'str':
+                data.metadata = config.metadata;
+                break;
+            case 'num':
+                data.metadata = +config.metadata;
+                break;
+            case 'bool':
+                data.metadata = config.metadata === 'true';
+                break;
+            case 'json':
+                data.metadata = JSON.parse(config.metadata);
+                break;
+        }
+    }
+
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
         helper.emitAsyncEvent('replied', node, newData, config, () => {})
         if (config.prompt) { 
