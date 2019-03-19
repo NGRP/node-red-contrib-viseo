@@ -35,10 +35,6 @@ async function input(RED, node, data, config) {
     try { setTimeout(function() { helper.trackActivities(node)},0); }
     catch(err) { console.log(err); }
 
-    // Log activity
-    try { setTimeout(function() { helper.trackActivities(node)},0); }
-    catch(err) { console.log(err); }
-
 
     // Get parameters
     let url = node.endpoint;  
