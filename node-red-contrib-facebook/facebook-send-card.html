@@ -1,0 +1,805 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-send-card', {
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            name:    { value: undefined },
+            labels:  { value: ["Default output"] },
+            isMessageNode:  { value: true },
+            nodeid:  { value: undefined },
+
+            delay:        { value: undefined },
+            repeat:       { value: 0 },
+            outputs:      { value: 1 },
+            btnOutput:    { value: undefined },
+            quickOutput:  { value: undefined },
+
+            prompt:       { value: undefined },
+            promptText:   { value: "prompt.text" },
+            promptTextType:   { value: "msg" },
+            metadata:       { value: undefined },
+            metadataType:   { value: "msg" },
+
+            sendType:     { value: "text" },
+            buttons:      { value: []  },
+            quickreplies: { value: []  },
+
+            text:         { value: undefined },
+            random:       { value: undefined },
+
+            media:        { value: undefined },
+            mediaType:    { value: 'str' },
+            mediaSource:  { value: 'attachment_id' },
+            mediaContent: { value: 'image' },
+
+            attachmentContent: { value: "image" },
+            attachmentSource:  { value: "url" },
+            attachment:      { value: undefined },
+            attachmentType:  { value: "str" },
+            attachmentContentType:     { value: undefined },
+            attachmentContentTypeType: { value: "str" },
+
+            carousel:     { value: true },
+            sharable:     { value: false },
+            square:       { value: false },
+            carouselFormat: { value: "carousel" },
+            carouselButton: { value: "postBack" },
+            carouselButtonTitle: { value: undefined },
+            carouselButtonTitleType: { value: 'str' },
+            carouselButtonPayload: { value: undefined },
+            carouselButtonPayloadType: { value: 'str' },
+            top_element:  { value: false },
+            title:        { value: undefined },
+            titleType:    { value: "str" },
+            subtitle:     { value: undefined },
+            subtitleType: { value: "str" },
+            default_action: { value: "tall" },
+            default_action_url: { value: undefined },
+            default_action_urlType: { value: undefined },
+            image_url:       { value: undefined },
+            image_urlType:   { value: "str" },
+
+            share_title: { value : undefined },
+            share_subtitle: { value : undefined },
+            share_image_url: { value : undefined },
+            share_default_action: { value : "tall" },
+            share_default_action_url: { value : undefined },
+            share_button: { value : undefined },
+            share_button_url: { value : undefined },
+
+            payment_summary: { value : undefined },
+            payment_summaryType: { value : 'msg' }
+        },
+        inputs:  1, 
+        outputs: 1,
+        outputLabels: function(index) { 
+            return this.labels[index];
+        },
+        oneditprepare: function () {
+
+            // Manage ID
+            if (!MessageNodesFunctions) console.log("error");
+            let utilsFunctions = new MessageNodesFunctions(this.id);
+                utilsFunctions.init();
+
+            $(document).on("click", '#refresh-config', function() { utilsFunctions.setNewID() });
+
+            $(document).on('click', '#send-card-tabs .red-ui-tab-label', function(){
+                $('.send-card-panel').addClass('hide');
+                $('.send-card-tab').removeClass('active');
+                var $this = $(this);
+                var panelId = '#send-card-' + $this.attr('href').substring(1);
+
+                $(panelId).removeClass('hide');
+                $this.parent('.send-card-tab').addClass('active');
+
+                $("#node-input-promptText").typedInput('show');
+                $("#node-input-name").typedInput('show');
+                $("#node-input-delay").typedInput('show');
+                $("#node-input-repeat").typedInput('show');
+            })
+
+            // Attachment
+            $("#node-input-attachment").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-attachmentType")});
+            $("#node-input-attachmentContentType").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-attachmentContentTypeType")});
+
+            // Card content
+            $("#node-input-title").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-titleType")});
+            $("#node-input-subtitle").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-subtitleType")});
+            $("#node-input-image_url").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-image_urlType")});
+            $("#node-input-default_action_url").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-default_action_urlType")});
+            $("#node-input-carouselButtonTitle").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-carouselButtonTitleType")});
+            $("#node-input-carouselButtonPayload").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-carouselButtonPayloadType")});
+    
+            // Shared content
+            $("#node-input-share_title").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-share_titleType")});
+            $("#node-input-share_subtitle").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-share_subtitleType")});
+            $("#node-input-share_image_url").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-share_image_urlType")});
+            $("#node-input-share_default_action_url").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-share_default_action_urlType")});
+            $("#node-input-share_button").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-share_buttonType")});
+            $("#node-input-share_button_url").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-share_button_urlType")});
+
+            // Media
+            $("#node-input-media").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-mediaType")}); 
+
+            // Payment
+            $("#node-input-payment_summary").typedInput({ default: 'msg', types: ['msg','json'], typeField: $("#node-input-payment_summaryType")});
+
+            // Settings
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-metadata").typedInput({ default: 'msg', types: ['msg','str','json','num'], type: 'str' });
+            $("#node-input-delay").typedInput({ default: 'num', types: ['num'], type: 'num' }).typedInput("width", "100px");
+            $("#node-input-repeat").typedInput({ default: 'num', types: ['num'], type: 'num' }).typedInput("width", "100px");
+
+            // Prompt : show and hide fields
+            $("#node-input-prompt").change( function() {
+                if ($(this).is(":checked")) {
+                    $("#prompt").show();
+                    $("#node-input-promptText").typedInput('show');
+                }
+                else $("#prompt").hide();
+            }).change();
+
+            $("#node-input-carousel").change( function() {
+                if ($(this).is(":checked")) {
+                    $(".carousel-behavior").hide();
+                    return;
+                }
+                $(".carousel-behavior").show();
+                $("#node-input-carouselFormat").change();
+            }).change();
+
+            $("#node-input-carouselFormat").change( function() {
+                if ($(this).val() === "list") {
+                    $("#max-buttons").text("1");
+                    $(".carousel-behavior-carousel").hide();
+                    $(".carousel-behavior-list").show();
+                    $("#node-input-carouselButtonTitle").typedInput('show');
+                    $("#node-input-carouselButtonPayload").typedInput('show');
+                }
+                else {
+                    $("#max-buttons").text("3");
+                    $(".carousel-behavior-list").hide();
+                    $(".carousel-behavior-carousel").show();
+                }
+            }).change();
+
+            $("#node-input-delay").change(function(e) {
+                var val = $(this).val();
+                if ($('#node-input-delay-category').val() == "custom" && val < 200) {
+                    $("#node-input-delay").val(200);
+                }
+            });
+
+            $('#node-input-delay-category').change(function(e) {
+                if($(this).val() == "default") {
+                    $("#node-input-delay").val(0);
+                    $("#node-input-delay-custom").hide();
+                } else {
+                    $("#node-input-delay-custom").show();
+                    $("#node-input-delay").typedInput('show');
+                    if($("#node-input-delay").val() == 0) {
+                        $("#node-input-delay").val(this.delay || 2000);
+                    }
+                }
+            });
+
+            $("#node-input-attachmentSource").change( function() {
+                let value = $(this).val();
+                $("#node-input-attachmentContentType").attr('disabled', value !== "file");
+            }).change();
+
+            if (this.delay && this.delay != 0) {
+                $('#node-input-delay-category').val('custom');
+            } else {
+                $('#node-input-delay-category').change();
+            }
+
+            // Type : show and hide sections
+            $('#node-input-sendType').change(function (event) { 
+                var type = $(this).val();
+                $('.section-type').addClass('hide');
+
+                // share buttons action card carousel quickreplies attachment text
+
+                if (type === "text") {
+                    $('.section-text, .section-quickreplies').removeClass('hide');
+                    return;
+                }
+                if (type === "attachment") {
+                    $('.section-attachment, .section-quickreplies').removeClass('hide');
+                    $("#node-input-attachment").typedInput('show');
+                    $("#node-input-attachmentContentType").typedInput('show');
+                    $("#node-input-attachmentSource").change();
+                    return;
+                }
+                if (type === "generic") {
+                    $('.section-carousel, .section-card, .section-action, .section-buttons').removeClass('hide');
+                    $("#node-input-image_url, #node-input-title, #node-input-subtitle, #node-input-default_action_url").typedInput('show');
+                    $("#max-buttons").text("3");
+                }
+                else if (type === "button") {
+                    $('.section-text, .section-buttons').removeClass('hide');
+                    $("#max-buttons").text("3");
+                }
+                else if (type === "media") {
+                    $('.section-media, .section-buttons').removeClass('hide');
+                    $("#node-input-media").typedInput('show');
+                    $("#max-buttons").text("1");
+                }
+
+                displayHiddenFields();
+                $("#node-input-carousel").change();
+                
+            });
+
+            // Buttons and quick replies : init
+            $("#btn-container").css('min-height','100px').editableList({
+                addItem: function ( row, index, data ) {
+                    let button = data.btn || {};
+                    let type = button.type ||'postBack';
+                    let title = button.title || "";
+                    let payload = button.payload || "";
+                    let url = button.url || "";
+                    let fallback_url = button.fallback_url || "";
+                    let regexp = button.regexp || "";
+                    let webview_height_ratio = button.webview_height_ratio || "full";
+                    let btnStyle = "width: calc(50% - 5px); margin: 0 5px 5px 0;";
+
+                    $('<span/>', {}).appendTo(row);
+                    var actionField = $('<select/>', { type:"text", class:"property-btn-type", style:btnStyle }).appendTo(row);
+                    actionField.append($("<option></option>").val("postBack").text("Post Back")); // title, payload
+                    actionField.append($("<option></option>").val("web_url").text("Web URL")); // title, url 
+                    actionField.append($("<option></option>").val("element_share").text("Share card")); // shared content
+                    actionField.append($("<option></option>").val("account_link").text("Log in")); // url
+                    actionField.append($("<option></option>").val("account_unlink").text("Log out"));
+                    actionField.append($("<option></option>").val("phone_number").text("Call")); // title, payload
+                    actionField.append($("<option></option>").val("payment").text("Buy")); // title, payload, payment_summary
+                    
+                    $('<input/>', { class:"property-btn-regexp", type:"text", style:btnStyle, value: regexp, placeholder:"Regex"}).appendTo(row);
+                    $('<br/>', {}).appendTo(row);
+                    $('<input/>', { class:"property-btn-title",  type:"text", style: btnStyle, value: title,  placeholder:"Title"}).appendTo(row);
+                    $('<input/>', { class:"property-btn-payload",  type:"text", style: btnStyle, value: payload,  placeholder:"Payload"}).appendTo(row);
+                    $('<input/>', { class:"property-btn-url",  type:"text", style: btnStyle, value: url,  placeholder:"URL"}).appendTo(row);
+
+                    var webviewField = $('<select/>', { type:"text", class:"property-btn-webview_height_ratio", style:btnStyle}).appendTo(row);
+                        webviewField.append($("<option></option>").val("compact").text("Compact"));
+                        webviewField.append($("<option></option>").val("tall").text("Tall")); 
+                        webviewField.append($("<option></option>").val("full").text("Full"));
+                    $('<input/>', { class:"property-btn-fallback_url",  type:"text", style: btnStyle, value: fallback_url,  placeholder:"Fallback URL"}).appendTo(row);
+                    actionField.val(type).change();
+                    webviewField.val(webview_height_ratio);
+                },
+                sortable: true,
+                removable: true
+            });
+
+            $("#qck-container").css('min-height','150px').editableList({
+                addItem: function ( row, index, data ) {
+                    let button = data.btn || {};
+                    let content_type = button.content_type ||'text';
+                    let title = button.title || "";
+                    let payload = button.payload || "";
+                    let image_url = button.image_url || "";
+                    let regexp = button.regexp || "";
+
+                    $('<span/>', {}).appendTo(row);
+                    let actionField = $('<select/>', { 
+                        type:"text", 
+                        class:"property-qck-content_type", 
+                        style:"width: calc(50% - 5px); margin: 0 5px 5px 0;"
+                    }).appendTo(row);
+                    actionField.append($("<option></option>").val("text").text("Text"));
+                    actionField.append($("<option></option>").val("location").text("Location"));
+                    actionField.append($("<option></option>").val("user_phone_number").text("User phone number"));
+                    actionField.append($("<option></option>").val("user_email ").text("User email"));
+
+                    let quickStyle = "width: calc((100% / 3) - 5px); margin-right: 5px;";
+                    $('<input/>', { class:"property-qck-regexp",  type:"text", style: "width: calc(50% - 5px); margin: 0 0 5px 0;", value: regexp,  placeholder:"Regex"}).appendTo(row);
+                    $('<br/>', {}).appendTo(row);
+                    $('<input/>', { class:"property-qck-title",  type:"text", style: quickStyle, value: title,  placeholder:"Title"}).appendTo(row);
+                    $('<input/>', { class:"property-qck-payload",  type:"text", style: quickStyle, value: payload,  placeholder:"Payload"}).appendTo(row);
+                    $('<input/>', { class:"property-qck-image_url",  type:"text", style: quickStyle, value: image_url,  placeholder:"Image URL"}).appendTo(row); 
+                    actionField.val(content_type).change();
+                },
+                sortable: true,
+                removable: true
+            });
+
+            // Buttons and quick replies : trigger action changes
+            $(document).on('change', '.property-qck-content_type', function() {
+
+                var $parent = $(this).parent();
+                var $inputs = $parent.find('input');
+                    $inputs.hide();
+
+                if ($(this).val() === 'text') {
+                    $inputs.show();
+                }
+
+            }).change();
+
+            $(document).on('change', '.property-btn-type', function() {
+                var $parent = $(this).parent();
+                var $inputs = $parent.find('input');
+                    $inputs.hide();
+                $parent.find('.property-btn-webview_height_ratio').hide();
+
+                switch($(this).val()) {
+                    case "postBack":
+                        $parent.find('.property-btn-title, .property-btn-payload, .property-btn-regexp').show();
+                        break;
+                    case "web_url":
+                        $parent.find('.property-btn-title, .property-btn-url, .property-btn-webview_height_ratio, .property-btn-fallback_url').show(); 
+                        break;
+                    case "account_link":
+                        $parent.find('.property-btn-url').show(); 
+                        break;
+                    case "account_unlink": 
+                        break;
+                    case "phone_number":
+                        $parent.find('.property-btn-title, .property-btn-payload').show(); 
+                        break;
+                    case "payment":
+                        $parent.find('.property-btn-title, .property-btn-payload').show();
+                        break;
+                }
+                displayHiddenFields();
+            }).change();
+
+            // Get buttons and quick replies
+            for (var i=0; i<this.buttons.length; i++) {      
+                var infos = this.buttons[i];
+                $("#btn-container").editableList('addItem', { btn: infos, i:i });
+            }
+            for (var i=0; i<this.quickreplies.length; i++) {      
+                var infos = this.quickreplies[i];
+                $("#qck-container").editableList('addItem', { btn: infos, i:i });
+            }
+
+            function displayHiddenFields() {
+                $('.section-share, .section-payment').addClass('hide');
+                let butt = $("#btn-container").editableList('items');
+                butt.each(function(){
+                    if ($(this).find('.property-btn-type').val() === "element_share") {
+                        $('.section-share').removeClass('hide');
+                        $("#node-input-share_title, #node-input-share_subtitle").typedInput('show');
+                        $("#node-input-share_image_url, #node-input-share_default_action_url").typedInput('show');
+                        $("#node-input-share_button, #node-input-share_button_url").typedInput('show');
+                    }
+                    if ($(this).find('.property-btn-type').val() === "payment") {
+                        $('.section-payment').removeClass('hide');
+                        $("#node-input-payment_summary").typedInput('show');
+                    }
+                })
+            }
+
+        },
+        oneditsave: function(){
+
+             // Buttons and quickreplies
+            let butt = $("#btn-container").editableList('items');
+            let quic = $("#qck-container").editableList('items');
+            let results = new Array();
+            butt.each(function(i) {
+                var btn = {
+                    type    : $(this).find('.property-btn-type').val(),
+                    title   : $(this).find('.property-btn-title').val(),
+                    payload : $(this).find('.property-btn-payload').val(),
+                    url     : $(this).find('.property-btn-url').val(),
+                    regexp  : $(this).find('.property-btn-regexp').val(),
+                    fallback_url :  $(this).find('.property-btn-fallback_url').val(),
+                    webview_height_ratio :  $(this).find('.property-btn-webview_height_ratio').val()
+                }
+                console.log(btn)
+                results.push(btn);
+            });
+            this.buttons = (results.length === 0) ? [] : results;
+            results = new Array();
+            quic.each(function(i) {
+                var btn = {
+                    content_type : $(this).find('.property-qck-content_type').val(),
+                    title        : $(this).find('.property-qck-title').val(),
+                    payload      : $(this).find('.property-qck-payload').val(),
+                    image_url    : $(this).find('.property-qck-image_url').val(),
+                    regexp       : $(this).find('.property-qck-regexp').val()
+                }
+                if ((btn.title && btn.payload) || btn.action !== 'text') { results.push(btn); }
+            });
+            this.quickreplies = (results.length === 0) ? [] : results;
+
+            // Outputs and labels
+            let labels = new Array();
+            this.delay  = $('#node-input-delay').val();
+            this.repeat = $('#node-input-repeat').val() || 0;
+            this.outputs = 1 ;
+
+            if ($('#node-input-btnOutput').is(':checked')) {
+                labels.push("Unexpected");
+                let len = ($('#node-input-sendType').val() === 'text') ? this.quickreplies.length : this.buttons.length;
+                for (let i=0; i<len; i++) { labels.push("Quickreply " + i); }
+            }
+            
+            this.labels = (labels.length > 0) ? labels : ["Default output"]; 
+
+            if  (this.repeat > 0) {
+                this.labels.push("Repeat");
+                this.outputs ++;
+            }
+        },
+        icon: function() {
+            return "facebook.svg";
+        }, 
+        align: "left",
+        paletteLabel: "Message",
+        labelStyle: "bot-card-name",
+        label: function() { 
+            if (this.name) return this.name;
+            else return "Send card";
+        }
+    });
+
+
+</script>
+
+<style>
+    textarea {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        min-height: 60px;
+        max-width: 100%;
+        width:80%;
+        resize: vertical;
+    }
+    .red-ui-editableList-border.red-ui-editableList-container {
+        overflow-x: hidden;
+        resize: vertical;
+    }
+</style>
+
+<script type="text/x-red" data-template-name="facebook-send-card">
+   
+    <div class="red-ui-tabs" style="margin-bottom: 10px; min-width:600px;">
+        <div>
+            <ul id="send-card-tabs">
+                <li class="send-card-tab active" style="min-width:150px; margin-left:20px;">    <a href="#msg"  class="red-ui-tab-label"><span class="bidiAware" dir="">Content</span></a></li>
+                <li class="send-card-tab"        style="min-width:150px;">                      <a href="#sett" class="red-ui-tab-label"><span class="bidiAware" dir="">Settings</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="send-card-sett" class="send-card-panel hide">
+
+        <br>
+        <b>Node</b>
+        <div class="form-row">
+            <br>
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name" style="width: calc(100% - 105px);">
+        </div>
+        <div class="form-row">
+            <label for="node-input-nodeid"><i class="icon-tag"></i> Unique ID</label>
+            <input type="text" id="node-input-nodeid" placeholder="Unique send-message node ID" style="width: calc(80% - 36px)">
+            <a id="refresh-config" class="editor-button" style="display:inline-block; vertical-align:middle; ">
+                <i class="fa fa-refresh"></i>
+            </a>
+        </div>
+
+        <br>
+        <b>Message</b>
+
+        <div class="form-row">
+            <br>
+            label for="node-input-metadata"><i class="fa fa-code"></i> Metadata</label>
+            <input type="text" id="node-input-metadata" style="width:80%;" placeholder="">
+            <input type="hidden" id="node-input-metadataType">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-prompt"><i class="fa fa-sign-in"></i> Prompt</label>
+            <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-prompt"> <span>Require a user input/answer</span>
+        </div>
+
+        <div class="form-row" id="prompt">
+            <label for="node-input-promptText"></label>
+            <input type="text" id="node-input-promptText" style="width: 80%;" placeholder="prompt.text">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-btnOutput"><i class="fa fa-sign-out"></i> Outputs</label>
+            <input type="checkbox" id="node-input-btnOutput" style="width: auto; vertical-align:top;"> <span>Add outputs for each button</span>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+            <select id="node-input-delay-category" style="width: 150px;">
+                <option value="default">default</option>
+                <option value="custom">custom</option>
+            </select>
+            <div id="node-input-delay-custom" style="width: 150px; display:inline-block;">
+                <input type="text" id="node-input-delay" placeholder="2000" > 
+                <p style="display: inline-block;"> ms</p>
+            </div>
+        </div>
+
+        <div class="form-row" >
+            <label for="node-input-repeat"><i class="fa fa-repeat"></i> Repeat</label>
+            <input type="number" min="0" id="node-input-repeat" placeholder="0" style="width: 150px;">
+            <p style="display: inline-block;"> times</p>
+        </div>
+    </div>
+
+
+    <!-- CONTENT -->
+    <div id="send-card-msg"  class="send-card-panel ">
+
+        <br>
+        <div class="form-row">
+            <label for="node-input-sendType"><i class="fa fa-square-o"></i> Type</label>
+            <select id="node-input-sendType" style="width:80%;">
+                <option value="text">Text</option>
+                <option value="attachment">Attachment</option>
+                <option value="generic">Generic Template</option>
+                <option value="button">Button Template</option>
+                <option value="media">Media Template</option>
+                <option value="open_graph" disabled>Open Graph Template</option>
+                <option value="receipt" disabled>Receipt Template</option>
+                <option value="airline_boardingpass" disabled>Airline Boarding Pass Template</option>
+                <option value="airline_checkin" disabled>Airline Check-in Reminder Template</option>
+                <option value="airline_itinerary" disabled>Airline Itinerary Template</option>
+                <option value="airline_update" disabled>Airline Flight Update Template</option>
+            </select>
+        </div>
+
+        <section class="section-type section-carousel">
+
+            <br>
+            <b>Carousel</b>
+            <br><br>
+
+            <div class="form-row">
+                <label for="node-input-carousel"><i class="fa fa-th"></i> Element</label>
+                <input type="checkbox" id="node-input-carousel" style="width: auto; vertical-align:top;"> <span>Do not send message, wait for the next card</span>
+            </div>
+
+            <section class="carousel-behavior">
+                <div class="form-row">
+                    <label for="node-input-carouselFormat"><i class="fa fa-ellipsis-h"></i> Format</label>
+                    <select id="node-input-carouselFormat" style="width:80%;">
+                        <option value="carousel">Carousel</option>
+                        <option value="list">List</option>
+                    </select>
+                </div>
+                <div class="form-row carousel-behavior-list">
+                    <label for="node-input-carouselButton"><i class="fa fa-circle"></i> Button</label>
+                    <select id="node-input-carouselButton" style="width:150px;">
+                        <option value="postBack">Post Back</option>
+                        <option value="web_url">Web URL</option>
+                    </select>
+                    <input type="text" id="node-input-carouselButtonTitle" style="width:calc(80% - 155px);" placeholder="Title">
+                    <input type="hidden" id="node-input-carouselButtonTitleType">
+                </div>
+                <div class="form-row carousel-behavior-list">
+                    <input type="text" id="node-input-carouselButtonPayload" style="margin-left: 105px; width:80%;" placeholder="Payload">
+                    <input type="hidden" id="node-input-carouselButtonTitlePayload">
+                </div>
+
+                <div class="form-row" style="margin-bottom :0">
+                    <label for="node-input-sharable"><i class="fa fa-filter"></i> Options</label>
+                    <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-sharable"> <span>Enable the native 'share' button</span>
+                </div>
+                <div class="form-row carousel-behavior-carousel" style="margin: 0 0 0 105px">
+                    <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-square"> <span>(Horizontal only) Use 'square' aspect ratio to render images</span>
+                </div>
+                <div class="form-row carousel-behavior-list" style="margin: 0 0 0 105px">
+                    <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-top_element"> <span>(Vertical format only) Large top element</span>
+                </div>
+            </section>
+
+        </section>
+    
+        <section class="section-type section-text">
+
+            <br>
+            <b>Content</b>
+            <br><br>
+
+            <div class="form-row">
+                <label for="node-input-text"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-text" rows="3" style="width:80%;" placeholder="Hello world!"></textarea>
+            </div>
+            <div class="form-row">
+                <label for="node-input-random"><i class="fa fa-random"></i> Random</label>
+                <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-random"> <span>Choose randomly between each lines of text</span>
+            </div>
+
+        </section>
+
+        <section class="section-type section-attachment">
+
+            <br>
+            <b>Content</b>
+            <br><br>
+
+
+            <div class="form-row">
+                <label for="node-input-attachmentContent"><i class="fa fa-paperclip"></i> Attachment</label>
+                <select id="node-input-attachmentContent" style="width:150px;">
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                    <option value="audio">Audio</option>
+                    <option value="file">File</option>
+                </select>
+                <input type="text" id="node-input-attachmentContentType" style="width:calc(80% - 155px);" placeholder="content-type (image/png...)">
+                <input type="hidden" id="node-input-attachmentContentTypeType">
+            </div>
+
+            <div class="form-row">
+                <label for="node-input-attachmentSource"><i class="fa fa-globe"></i> Source</label>
+                <select id="node-input-attachmentSource" style="width:150px;">
+                    <option value="attachment_id">Attachment ID</option>
+                    <option value="url">URL</option>
+                    <option value="file">File</option>
+                </select>
+                <input type="text" id="node-input-attachment" style="width:calc(80% - 155px);" placeholder="Path, URL or ID">
+                <input type="hidden" id="node-input-attachmentType">
+            </div>
+        
+        </section>
+
+        <section class="section-type section-media">
+
+            <br>
+            <b>Content</b>
+            <br><br>
+
+            <div class="form-row">
+                <label for="node-input-mediaContent"><i class="fa fa-image"></i> Media</label>
+                <select id="node-input-mediaContent" style="width:150px;">
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label for="node-input-mediaSource"><i class="fa fa-globe"></i> Source</label>
+                <select id="node-input-mediaSource" style="width:150px;">
+                    <option value="attachment_id">Attachment ID</option>
+                    <option value="url">Facebook URL</option>
+                </select>
+                <input type="text" id="node-input-media" style="width:calc(80% - 155px);" placeholder="ID or URL">
+                <input type="hidden" id="node-input-mediaType">
+            </div>
+        
+        </section>
+
+        <section class="section-type section-quickreplies">
+
+            <br>
+            <b>Quick replies</b>
+            <br><br>
+
+            <div class="form-row" style="width:100%;">
+                <ol id="qck-container"></ol>
+            </div>
+        </section>
+
+        <section class="section-type section-card">
+
+            <br>
+            <b>Content</b>
+            <br><br>
+
+            <div class="form-row">
+                <label for="node-input-title"><i class="fa fa-pencil-square-o"></i> Title*</label>
+                <input type="text" id="node-input-title" style="width:80%;">
+                <input type="hidden" id="node-input-titleType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-subtitle"><i class="fa fa-pencil-square-o"></i> Subtitle</label>
+                <input type="text" id="node-input-subtitle" style="width:80%;">
+                <input type="hidden" id="node-input-subtitleType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-image_url"><i class="fa fa-image"></i> Image</label>
+                <input type="text" id="node-input-image_url" style="width:80%;" placeholder="http://path/to/card/image">
+                <input type="hidden" id="node-input-image_urlType">
+            </div>
+
+        </section>
+
+        <section class="section-type section-action">
+
+            <div class="form-row">
+                <br>
+                <b>Default action</b>
+                <br><br>
+
+                <label for="node-input-default_action"><i class="fa fa-globe"></i> Webview</label>
+                <select id="node-input-default_action" style="width:150px;">
+                    <option value="compact">Compact</option>
+                    <option value="tall">Tall</option>
+                    <option value="full">Full</option>
+                </select>
+                <input type="text" id="node-input-default_action_url" style="width:calc(80% - 155px);" placeholder="http://path/to/url">
+                <input type="hidden" id="node-input-default_action_urlType">
+            </div>
+
+        </section>
+
+        <section class="section-type section-buttons">
+
+            <br>
+            <b>Buttons </b>- Max. <span id="max-buttons">3</span>
+            <br><br>
+            
+            <div class="form-row" style="width:97%;">
+                <ol id="btn-container"></ol>
+            </div>
+
+        </section>
+
+
+        <section class="section-type section-share">
+            <br>
+            <b>Shared card</b>
+            <br><br>
+
+            <div class="form-row">
+                <label for="node-input-share_title"><i class="fa fa-pencil-square-o"></i> Title*</label>
+                <input type="text" id="node-input-share_title" style="width:80%;">
+                <input type="hidden" id="node-input-share_titleType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-share_subtitle"><i class="fa fa-pencil-square-o"></i> Subtitle</label>
+                <input type="text" id="node-input-share_subtitle" style="width:80%;">
+                <input type="hidden" id="node-input-share_subtitleType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-share_image_url"><i class="fa fa-image"></i> Image</label>
+                <input type="text" id="node-input-share_image_url" style="width:80%;" placeholder="http://path/to/card/image">
+                <input type="hidden" id="node-input-share_image_urlType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-share_default_action"><i class="fa fa-globe"></i> Webview</label>
+                <select id="node-input-share_default_action" style="width:150px;">
+                    <option value="compact">Compact</option>
+                    <option value="tall">Tall</option>
+                    <option value="full">Full</option>
+                </select>
+                <input type="text" id="node-input-share_default_action_url" style="width:calc(80% - 155px);" placeholder="http://path/to/url">
+                <input type="hidden" id="node-input-share_default_action_urlType">
+            </div>
+
+            <div class="form-row">
+                <label for="node-input-share_button"><i class="fa fa-arrow-circle-o-right"></i> Button</label>
+                <input type="text" id="node-input-share_button" placeholder="Title" style="width:150px">
+                <input type="hidden" id="node-input-share_buttonType">
+                <input type="text" id="node-input-share_button_url" placeholder="https://url.to/send" style="width:calc(80% - 155px);">
+                <input type="hidden" id="node-input-share_button_urlType">
+            </div>
+
+        </section>
+
+
+        <section class="section-type section-payment">
+            <br>
+            <b>Payment</b>
+            <br><br>
+
+            <div class="form-row">
+                <label for="node-input-payment_summary"><i class="fa fa-credit-card"></i> Summary</label>
+                <input type="text" id="node-input-payment_summary" style="width:80%;">
+                <input type="hidden" id="node-input-payment_summaryType">
+            </div>
+
+        </section>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="facebook-send-card">
+<!-- quickreplies: 20 caractères. img 24 px x 24 px min-->
+
+</script>

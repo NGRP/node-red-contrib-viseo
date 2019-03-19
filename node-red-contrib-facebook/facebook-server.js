@@ -213,6 +213,11 @@ const getMessage = exports.getMessage = (replies, psid) => {
         "message": {}
     }
 
+    if (reply.source && reply.source === "facebpok-send-card") {
+        msg.message = reply.message;
+        return msg;
+    }
+
     if (reply.type === "text") {
         msg.message.text = reply.text;
     }

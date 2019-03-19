@@ -1,0 +1,85 @@
+<script type="text/javascript">
+    RED.nodes.registerType('facebook-attachment',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults:  { 
+            name:       { value: undefined },
+            pageToken:  { value: undefined, type: 'facebook-token'},
+            content:      { value: 'image'},
+            contentType:  { value: undefined },
+            contentTypeType:  { value: 'str'},
+            source:      { value: 'url'},
+            attachment: { value: undefined },
+            attachmentType:  { value: 'str'},
+            output: { value: "payload"}
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "facebook.svg",  align: "left",
+        paletteLabel: "Attachment",
+        label: function() { return this.name || "Attachment"; },
+        oneditprepare: function () {
+            $("#node-input-contentType").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-contentTypeType") });
+            $("#node-input-attachment").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-attachmentType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-outputType") });
+
+            $("#node-input-source").change( function() {
+                let value = $(this).val();
+                $("#node-input-contentType").attr('disabled', value === "url");
+            }).change();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="facebook-attachment">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Facebook Messenger settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-pageToken"><i class="fa fa-lock"></i> Page token</label>
+        <input type="text" id="node-input-pageToken" placeholder="" style="width:70%">
+    </div>
+
+    <br>
+    <b>Attachment </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-content"><i class="fa fa-paperclip"></i> Attachment</label>
+        <select id="node-input-content" style="width:150px;">
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+            <option value="audio">Audio</option>
+            <option value="file">File</option>
+        </select>
+        <input type="text" id="node-input-contentType" style="width:calc(70% - 155px);" placeholder="content-type (image/png...)">
+        <input type="hidden" id="node-input-contentTypeType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-source"><i class="fa fa-user"></i> Source</label>
+        <select id="node-input-source" style="width:150px;">
+            <option value="url">URL</option>
+            <option value="file">File</option>
+        </select>
+        <input type="text" id="node-input-attachment" style="width:calc(70% - 155px);" placeholder="Path, or URL">
+        <input type="hidden" id="node-input-attachmentType">
+    </div>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-output"><i class="fa fa-signout"></i> Output</label>
+        <input type="text" id="node-input-output" placeholder="payload" style="width:70%">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="facebook-attachment">
+
+
+</script>

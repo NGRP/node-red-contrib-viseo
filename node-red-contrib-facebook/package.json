@@ -16,6 +16,7 @@
     "keywords": [ "viseo", "sarah", "node-red", "facebook", "messenger", "bot", "chatbot", "server" ],
     "node-red" : {
         "nodes": {
+            "facebook-send-card": "facebook-send-card.js",
             "facebook-handover": "facebook-handover.js",
             "facebook-takeover": "facebook-takeover.js",
             "facebook-server":   "facebook-server.js",

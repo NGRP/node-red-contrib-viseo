@@ -24,9 +24,7 @@
     "keywords": [ "viseo", "sarah", "node-red", "microsoft", "azure", "botbuilder", "chatbot", "vocal", "bot" ],
     "node-red" : {
         "nodes": {
-            "msbot-connect":     "nodes/msbot-connect.js",
-            "msbot-directline-token": "nodes/msbot-directline-token.js",
-            "msbot-offline":     "nodes/directline-offline.js"
+            "msbot-connect":     "nodes/msbot-connect.js"
         }
     }
 }
