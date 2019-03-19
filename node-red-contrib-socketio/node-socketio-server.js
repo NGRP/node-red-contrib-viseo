@@ -8,6 +8,7 @@ const CARRIER = "socketServer"
 
 let Server = require('socket.io');
 let LISTENERS_END = {};
+let LISTENERS_REPLY = {};
 let SOCKETS = [];
 let io;
 
