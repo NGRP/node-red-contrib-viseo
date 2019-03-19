@@ -226,7 +226,8 @@ const getMessage = (node, address, replies, isPush) => {
     // One or multiple cards
     for (let reply of replies) {
         
-        let card = getHeroCard(reply);
+        let card = (reply.type === "AdaptiveCard") ? getAdaptiveCard(reply) : getHeroCard(reply);
+        msg.textFormat("markdown");
         msg.addAttachment(card);
 
         // Only the latest speech is used
@@ -485,6 +486,7 @@ const buildFacebookButtonObject = (obj) => {
         "payload": obj.value
     }
 }
+
 const getHeroCard = (opts) => {
     let card     = new builder.HeroCard();
     opts._speech = '';
@@ -529,3 +531,26 @@ const getHeroCard = (opts) => {
 
     return card;
 }
+
+const getAdaptiveCard = (opts) => {
+    opts._speech = '';
+    // Attach Title to card
+    if (!!opts.title) {
+        opts._speech += opts.title + ' ';
+    }
+
+    // Attach Subtext, appears just below subtitle, differs from Subtitle in font styling only.
+    if (!!opts.subtext) {
+        opts._speech += opts.subtext
+    }
+
+    // Attach Subtitle, appears just below Title field, differs from Title in font styling only.
+    if (!!opts.subtitle) {
+        opts._speech += opts.subtitle;
+    }
+
+    return {
+        contentType: "application/vnd.microsoft.card.adaptive",
+        content: opts
+    };
+};
