@@ -18,59 +18,34 @@ module.exports = function(RED) {
             node.status({});
         }
 
-        this.on('input', (data)  => { input(node, data, config,) });
+        this.on('input', (data)  => { input(RED, node, data, config,) });
     }
     RED.nodes.registerType("google-spreadsheet", register, {});
 }
 
-function input (node, data, config) {
+function input (RED, node, data, config) {
 
     // Log activity
     try { setTimeout(function() { helper.trackActivities(node)},0); }
     catch(err) { console.log(err); }
 
-    let action = config.action || 'set',
-        spreadsheetId = config.sheet,
-        range = config.range,
-        save = config.save || '_sheet';
+    let action = config.action || 'set';
+    let save = config.save || '_sheet';
 
-    if (config.sheetType !== 'str') {
-        spreadsheetId = getFromType(config.sheetType, spreadsheetId);
-    }
-    if (config.rangeType !== 'str') {
-        range = getFromType(config.rangeType, range);
-  
-    }
-
+    let spreadsheetId = helper.getContextValue(RED, node, data, config.sheet, config.sheetType);
+    let range = helper.getContextValue(RED, node, data, config.range, config.rangeType);
     let saveField = range.replace(/[!:'" ]/g, "_");
 
-    let saveLoc = getFromType(config.saveType, save) || {};
-    setFromType(config.saveType, save, saveLoc);
+    let saveLoc = helper.getContextValue(RED, node, data, save, config.saveType) || {};
+    helper.setContextValue(RED, node, data, saveLoc, save, config.saveType)
 
     let parameters = { spreadsheetId, range };
     let method = config.method || 'append';
 
-
-    function getFromType(type, key) {
-        if(type === "global") {
-            return node.context().global.get(key);
-        } else {
-            return helper.getByString(data, key);
-        }
-    }
-
-    function setFromType(type, key, value) {
-        if(type === "global") {
-            return node.context().global.set(key, value);
-        } else {
-            return helper.setByString(data, key, value);
-        }
-    }
-
     function querySet() {
 
         // Get input fields
-        let rows = getFromType(config.inputType, config.input || "payload");
+        let rows = helper.getContextValue(RED, node, data, config.input || "payload", config.inputType);
 
         if (!rows || rows.length < 1) {
             node.error("Input object is empty");
@@ -174,13 +149,16 @@ function input (node, data, config) {
                 node.error(err); 
                 return node.send([ undefined, data ]);
             }
-
-            if (!config.output){ return node.send([ data, undefined ]); }
-
-            if (response.updates){ setFromType(config.outputType, config.output || "payload", response); }
+            if (!config.output){ 
+                return node.send([ data, undefined ]);
+            }
+            if (response.updates){ 
+                helper.setContextValue(RED, node, data, config.output || "payload", response, config.outputType)
+            }
             else if (response.values){  
-                if (!fields) { setFromType(config.outputType, config.output || "payload", response.values); }
-                else {
+                if (!fields) { 
+                    helper.setContextValue(RED, node, data, config.output || "payload", response.values, config.outputType)
+                } else {
                     let rows   = response.values
                     let values = []
                     for (row of rows){
@@ -189,7 +167,7 @@ function input (node, data, config) {
                             helper.setByString(obj, fields[i], row[i])
                         }
                     }
-                    setFromType(config.outputType, config.output || "payload", values);
+                    helper.setContextValue(RED, node, data, config.output || "payload", values, config.outputType)
                 }
             }
             node.send([ data, undefined ]);
@@ -204,7 +182,7 @@ function input (node, data, config) {
                 return node.send([ undefined, data ]);
             }
             if (action === "clear") {
-                setFromType(config.outputType, config.output || "payload", response);
+                helper.setContextValue(RED, node, data, config.output || "payload", response, config.outputType);
                 helper.setByString(saveLoc, saveField, undefined);
                 return node.send([ data, undefined ]);
             }
@@ -220,7 +198,7 @@ function input (node, data, config) {
             for (let ob of saveArray) response.push(Array.from(ob));
 
             if (!config.line && !config.column) {
-                setFromType(config.outputType, config.output || "payload", response);
+                helper.setContextValue(RED, node, data, config.output || "payload", response, config.outputType);
                 return node.send([ data, undefined ]);
             }
             if (config.line && config.column) {
@@ -238,7 +216,7 @@ function input (node, data, config) {
                     }
                     objet[item] = newl;
                 }
-                setFromType(config.outputType, config.output || "payload", objet);
+                helper.setContextValue(RED, node, data, config.output || "payload", objet, config.outputType);
                 return node.send([ data, undefined ]);
             }
             if ((config.column && config.direction === "column") || 
@@ -247,8 +225,7 @@ function input (node, data, config) {
                     for (let obj of response) {
                         objet[obj.shift()] = obj;
                     }
-
-                    setFromType(config.outputType, config.output || "payload", objet);
+                    helper.setContextValue(RED, node, data, config.output || "payload", objet, config.outputType);
                     return node.send([ data, undefined ]);
             }
             else {
@@ -262,8 +239,7 @@ function input (node, data, config) {
                     }
                     array.push(newl);
                 }
-
-                setFromType(config.outputType, config.output || "payload", array);
+                helper.setContextValue(RED, node, data, config.output || "payload", array, config.outputType);
                 return node.send([ data, undefined ]);
             }
         }
@@ -276,7 +252,7 @@ function input (node, data, config) {
                 return node.send([ undefined, data ]);
             }
             if (!response.values) {
-                setFromType(config.outputType, config.output || "payload", "");
+                helper.setContextValue(RED, node, data, config.output || "payload", "", config.outputType);
                 return node.send([ data, undefined ]);
             }
 
@@ -285,7 +261,7 @@ function input (node, data, config) {
             helper.setByString(saveLoc, saveField, result);
 
             if (!config.line && !config.column) {
-                setFromType(config.outputType, config.output || "payload", response.values);
+                helper.setContextValue(RED, node, data, config.output || "payload", response.values, config.outputType);
                 return node.send([ data, undefined ]);
             }
             if (config.line && config.column) {
@@ -303,7 +279,7 @@ function input (node, data, config) {
                     }
                     objet[item] = newl;
                 }
-                setFromType(config.outputType, config.output || "payload", objet);
+                helper.setContextValue(RED, node, data, config.output || "payload", objet, config.outputType);
                 return node.send([ data, undefined ]);
             }
             if ((config.column && response.majorDimension === "COLUMNS") || 
@@ -312,8 +288,7 @@ function input (node, data, config) {
                     for (let obj of response.values) {
                         objet[obj.shift()] = obj;
                     }
-
-                    setFromType(config.outputType, config.output || "payload", objet);
+                    helper.setContextValue(RED, node, data, config.output || "payload", objet, config.outputType);
                     return node.send([ data, undefined ]);
             }
             else {
@@ -327,23 +302,16 @@ function input (node, data, config) {
                     }
                     array.push(newl);
                 }
-
-                setFromType(config.outputType, config.output || "payload", array);
+                helper.setContextValue(RED, node, data, config.output || "payload", array, config.outputType);
                 return node.send([ data, undefined ]);
             }
         });
     }
 
     function queryCell() {
-        let cell_l = config.cell_l,
-            cell_c = config.cell_c;
 
-        if (config.cell_lType !== 'str') {
-            cell_l = getFromType(config.cell_lType, loc, cell_l);
-        }
-        if (config.cell_cType !== 'str') {
-            cell_c = getFromType(config.cell_cType, loc, cell_c);
-        }
+        let cell_l = helper.getContextValue(RED, node, data, config.cell_l, config.cell_lType)
+        let cell_c = helper.getContextValue(RED, node, data, config.cell_c, config.cell_cType)
 
         if (!cell_l || !cell_c) {
             node.error("Cannot find line and column labels")
@@ -365,8 +333,12 @@ function input (node, data, config) {
             let c = column_labels.indexOf(cell_c),
                 l = line_labels.indexOf(cell_l);
 
-            if (c === -1 || l === -1 || !response[l][c]) setFromType(config.outputType, config.output || "payload", "Not found");
-            else setFromType(config.outputType, config.output || "payload", response[l][c]);
+            if (c === -1 || l === -1 || !response[l][c]) {
+                helper.setContextValue(RED, node, data, config.output || "payload", "Not found", config.outputType);
+            }
+            else {
+                helper.setContextValue(RED, node, data, config.output || "payload", response[l][c], config.outputType);
+            }
             return node.send([ data, undefined ]);
         }
 
@@ -377,7 +349,7 @@ function input (node, data, config) {
             }
 
             if (!response.values) {
-                setFromType(config.outputType, config.output || "payload", "");
+                helper.setContextValue(RED, node, data, config.output || "payload", "", config.outputType);
                 return node.send([ data, undefined ]);
             }
 
@@ -387,7 +359,6 @@ function input (node, data, config) {
                 saved.push(Array.from(ob));
             }
             helper.setByString(saveLoc, saveField, saved);
-
 
             let column_labels = result.shift();
                 column_labels.shift();
@@ -400,9 +371,12 @@ function input (node, data, config) {
             let c = column_labels.indexOf(cell_c),
                 l = line_labels.indexOf(cell_l);
 
-            if (c === -1 || l === -1 || !result[l][c]) setFromType(config.outputType, config.output || "payload", "Not found");
-
-            else setFromType(config.outputType, config.output || "payload", result[l][c]);
+            if (c === -1 || l === -1 || !result[l][c]) {
+                helper.setContextValue(RED, node, data, config.output || "payload", "Not found", config.outputType);
+            }
+            else {
+                helper.setContextValue(RED, node, data, config.output || "payload", response[l][c], config.outputType);
+            }
             return node.send([ data, undefined ]);
         });
     }
