@@ -29,7 +29,8 @@
       "dialogflow": "node-dialogflow.js",
       "dialogflow-handoff": "node-dialogflow-handoff.js",
       "dialogflow-server": "server-dialogflow.js",
-      "dialogflow-config": "node-dialogflow-config.js"
+      "dialogflow-config": "node-dialogflow-config.js",
+      "dialogflow-send-card": "dialogflow-send-card.js"
     }
   }
 }

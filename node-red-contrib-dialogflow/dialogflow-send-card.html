@@ -1,0 +1,596 @@
+<script type="text/javascript">
+    RED.nodes.registerType('dialogflow-send-card', {
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            name:           { value: undefined },
+            labels:         { value: ["Default output"] },
+            isMessageNode:  { value: true },
+
+            nodeid:         { value: undefined },
+            sendType:       { value: "text" },
+
+            final:          { value: false },
+            continue:       { value: true },
+            promptText:     { value: "prompt.text" },
+            promptTextType: { value: "msg" },
+            repeat:         { value: 0 },
+            delay:          { value: undefined },
+            outputs:        { value: 1 },
+
+            text:         { value: undefined },
+            textRandom:   { value: false },
+            textSpeech:   { value: true },
+            textAudio:    { value: undefined },
+
+            quickAudio:   { value: undefined },
+            quickAudioType:   { value: 'msg' },
+            suggestions:    { value: []  },
+            btnOutput:      { value: undefined },
+
+            imageFormat:    { value: "DEFAULT"},
+            imageUrl:       { value: undefined },
+            imageUrlType:   { value: "str" },
+            accessibilityText:      { value: undefined }, 
+            accessibilityTextType:  { value: "str" }, 
+            buttonUrl:          { value: undefined }, 
+
+            description:        { value: undefined },
+            descriptionType:    { value: "str" },
+            optionKey:          { value: undefined },
+            optionKeyType:      { value: "str" },
+            optionSynonyms:     { value: [""] },
+            footer:             { value: undefined },
+            footerType:         { value: "str" },
+
+            title:          { value: undefined },
+            titleType:      { value: "str" },
+            subtitle:       { value: undefined },
+            subtitleType:   { value: "str" },
+            formattedText:  { value: undefined },
+
+            buttonUrlType:      { value: "str" }, 
+            buttonTitle:        { value: undefined }, 
+            buttonTitleType:    { value: "str" }, 
+
+            listTitle:      { value: undefined }, 
+            listTitleType:  { value: "str" }, 
+
+
+            buttons:      { value: []  },
+            carousel:     { value: true },
+            square:       { value: false },
+            carouselFormat: { value: "carousel" },
+            carouselButton: { value: "postBack" },
+            carouselButtonTitle: { value: undefined },
+            carouselButtonTitleType: { value: 'str' },
+            carouselButtonPayload: { value: undefined },
+            carouselButtonPayloadType: { value: 'str' },
+            top_element:  { value: false }
+        },
+        inputs:  1, 
+        outputs: 1,
+        outputLabels: function(index) { 
+            return this.labels[index];
+        },
+        oneditprepare: function () {
+
+            // Manage ID
+            if (!MessageNodesFunctions) console.log("error");
+            let utilsFunctions = new MessageNodesFunctions(this.id);
+                utilsFunctions.init();
+
+            $(document).on("click", '#refresh-config', function() { utilsFunctions.setNewID() });
+
+            // Text
+            $("#node-input-quickAudio").typedInput({ default: 'msg', types: ['msg','str'], typeField: $("#node-input-quickAudioType")});
+
+            // Card content
+            $("#node-input-title").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-titleType")});
+            $("#node-input-subtitle").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-subtitleType")});
+            $("#node-input-imageUrl").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-imageUrlType")});
+            $("#node-input-accessibilityText").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-accessibilityTextType")});
+            $("#node-input-buttonTitle").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-buttonTitleType")});
+            $("#node-input-buttonUrl").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-buttonUrlType")});
+            
+            // Element specific content
+            $("#node-input-description").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-descriptionType")});
+            $("#node-input-optionKey").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-optionKeyType")});
+            $("#node-input-footer").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-footerType")});
+
+            // Settings
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-listTitle").typedInput({ default: 'msg', types: ['msg','str'], typeField: $("#node-input-listTitleType")});
+            $("#node-input-delay").typedInput({ default: 'num', types: ['num'], type: 'num' }).typedInput("width", "100px");
+            $("#node-input-repeat").typedInput({ default: 'num', types: ['num'], type: 'num' }).typedInput("width", "100px");
+
+            // Audio text
+            $("#node-input-textSpeech").change( function() {
+                if ($(this).is(":checked")) $(".display-textSpeech").hide();
+                else $(".display-textSpeech").show();
+            });
+            
+            // Display settings
+            $("#node-input-continue").change( function() {
+                if ($(this).is(":checked")) $(".section-settings").hide();
+                else {
+                    $(".section-settings").show();
+                    $('.ti-settings').typedInput('show');
+                }
+            });
+
+            $("#node-input-carousel").change( function() {
+                if ($(this).is(":checked")) {
+                    $(".carousel-behavior").hide();
+                    return;
+                }
+                $(".carousel-behavior").show();
+                $("#node-input-carouselFormat").change();
+            }).change();
+
+            $("#node-input-carouselFormat").change( function() {
+                if ($(this).val() === "list") {
+                    $("#max-buttons").text("1");
+                    $(".carousel-behavior-carousel").hide();
+                    $(".carousel-behavior-list").show();
+                    $("#node-input-carouselButtonTitle").typedInput('show');
+                    $("#node-input-carouselButtonPayload").typedInput('show');
+                }
+                else {
+                    $("#max-buttons").text("3");
+                    $(".carousel-behavior-list").hide();
+                    $(".carousel-behavior-carousel").show();
+                }
+            }).change();
+
+            $("#node-input-delay").change(function(e) {
+                var val = $(this).val();
+                if ($('#node-input-delay-category').val() == "custom" && val < 200) {
+                    $("#node-input-delay").val(200);
+                }
+            });
+
+            $('#node-input-delay-category').change(function(e) {
+                if($(this).val() == "default") {
+                    $("#node-input-delay").val(0);
+                    $("#node-input-delay-custom").hide();
+                } else {
+                    $("#node-input-delay-custom").show();
+                    $("#node-input-delay").typedInput('show');
+                    if($("#node-input-delay").val() == 0) {
+                        $("#node-input-delay").val(this.delay || 2000);
+                    }
+                }
+            });
+
+            if (this.delay && this.delay != 0) {
+                $('#node-input-delay-category').val('custom');
+            } else {
+                $('#node-input-delay-category').change();
+            }
+
+            // Type : show and hide sections
+            $('#node-input-sendType').change(function (event) { 
+                var type = $(this).val();
+                $('.section-type').addClass('hide');
+                $(`.section-${type}`).removeClass('hide');
+                $(`.ti-${type}`).typedInput('show');
+
+                $("#node-input-carousel").change();
+                
+            });
+
+            // Buttons and quick replies : init
+            $("#btn-container").css('min-height','100px').editableList({
+                addItem: function ( row, index, data ) {
+                    let button = data.btn || {};
+                    let type = button.type ||'postBack';
+                    let title = button.title || "";
+                    let payload = button.payload || "";
+                    let url = button.url || "";
+                    let fallback_url = button.fallback_url || "";
+                    let regexp = button.regexp || "";
+                    let webview_height_ratio = button.webview_height_ratio || "full";
+                    let btnStyle = "width: calc(50% - 5px); margin: 0 5px 5px 0;";
+
+                    $('<span/>', {}).appendTo(row);
+                    var actionField = $('<select/>', { type:"text", class:"property-btn-type", style:btnStyle }).appendTo(row);
+                    actionField.append($("<option></option>").val("postBack").text("Post Back")); // title, payload
+                    actionField.append($("<option></option>").val("web_url").text("Web URL")); // title, url 
+                    actionField.append($("<option></option>").val("account_link").text("Log in")); // url
+                    actionField.append($("<option></option>").val("account_unlink").text("Log out"));
+                    actionField.append($("<option></option>").val("phone_number").text("Call")); // title, payload
+                    actionField.append($("<option></option>").val("payment").text("Buy")); // title, payload, payment_summary
+                    
+                    $('<input/>', { class:"property-btn-regexp", type:"text", style:btnStyle, value: regexp, placeholder:"Regex"}).appendTo(row);
+                    $('<br/>', {}).appendTo(row);
+                    $('<input/>', { class:"property-btn-title",  type:"text", style: btnStyle, value: title,  placeholder:"Title"}).appendTo(row);
+                    $('<input/>', { class:"property-btn-payload",  type:"text", style: btnStyle, value: payload,  placeholder:"Payload"}).appendTo(row);
+                    $('<input/>', { class:"property-btn-url",  type:"text", style: btnStyle, value: url,  placeholder:"URL"}).appendTo(row);
+
+                    var webviewField = $('<select/>', { type:"text", class:"property-btn-webview_height_ratio", style:btnStyle}).appendTo(row);
+                        webviewField.append($("<option></option>").val("compact").text("Compact"));
+                        webviewField.append($("<option></option>").val("tall").text("Tall")); 
+                        webviewField.append($("<option></option>").val("full").text("Full"));
+                    $('<input/>', { class:"property-btn-fallback_url",  type:"text", style: btnStyle, value: fallback_url,  placeholder:"Fallback URL"}).appendTo(row);
+                    actionField.val(type).change();
+                    webviewField.val(webview_height_ratio);
+
+                    // url / title
+                },
+                sortable: true,
+                removable: true
+            });
+
+            $("#chip-container").css('min-height','150px').editableList({
+                addItem: function ( row, index, data ) {
+                    let title = data.title || "";
+                    $('<input/>', { class:"property-chip",  type:"text", style: "width:100%;", value: title,  placeholder:"Title"}).appendTo(row);
+                },
+                sortable: true,
+                removable: true
+            });
+
+            $("#synonyms-container").editableList({
+                addItem: function ( row, index, data ) {
+                    let synonym = data.synonym || "";
+                    $('<input/>', { class:"property-synonym",  type:"text", value: synonym, style:"width:100%;", placeholder:"Option synonym"}).appendTo(row);
+                },
+                sortable: false,
+                removable: true
+            })
+
+
+            $(document).on('change', '.property-btn-type', function() {
+                var $parent = $(this).parent();
+                var $inputs = $parent.find('input');
+                    $inputs.hide();
+                $parent.find('.property-btn-webview_height_ratio').hide();
+
+                switch($(this).val()) {
+                    case "postBack":
+                        $parent.find('.property-btn-title, .property-btn-payload, .property-btn-regexp').show();
+                        break;
+                    case "web_url":
+                        $parent.find('.property-btn-title, .property-btn-url, .property-btn-webview_height_ratio, .property-btn-fallback_url').show(); 
+                        break;
+                    case "account_link":
+                        $parent.find('.property-btn-url').show(); 
+                        break;
+                    case "account_unlink": 
+                        break;
+                    case "phone_number":
+                        $parent.find('.property-btn-title, .property-btn-payload').show(); 
+                        break;
+                    case "payment":
+                        $parent.find('.property-btn-title, .property-btn-payload').show();
+                        break;
+                }
+            }).change();
+
+            // Get buttons and quick replies
+            for (var i=0; i<this.buttons.length; i++) {      
+                $("#btn-container").editableList('addItem', { btn: this.buttons[i], i:i });
+            }
+
+            for (var i=0; i<this.suggestions.length; i++) {      
+                $("#chip-container").editableList('addItem', { title: this.suggestions[i], i:i });
+            }
+
+            for (var i=0; i<this.optionSynonyms.length; i++) {      
+                $("#synonyms-container").editableList('addItem', { synonym: this.optionSynonyms[i], i:i });
+            }
+
+        },
+        oneditsave: function(){
+
+             // Buttons and suggestions
+            let butt = $("#btn-container").editableList('items');
+            let quic = $("#chip-container").editableList('items');
+            let syno = $("#synonyms-container").editableList('items');
+
+            let results = new Array();
+            butt.each(function(i) {
+                var btn = {
+                    type    : $(this).find('.property-btn-type').val(),
+                    title   : $(this).find('.property-btn-title').val(),
+                    payload : $(this).find('.property-btn-payload').val(),
+                    url     : $(this).find('.property-btn-url').val(),
+                    regexp  : $(this).find('.property-btn-regexp').val(),
+                    fallback_url :  $(this).find('.property-btn-fallback_url').val(),
+                    webview_height_ratio :  $(this).find('.property-btn-webview_height_ratio').val()
+                }
+                console.log(btn)
+                results.push(btn);
+            });
+            this.buttons = (results.length === 0) ? [] : results;
+
+            results = new Array();
+            quic.each(function(i) {
+                var title = $(this).find('.property-chip').val();
+                if (title) results.push(title);
+            });
+            this.suggestions = (results.length === 0) ? [] : results;
+            
+            results = new Array();
+            syno.each(function(i) {
+                var synonym = $(this).find('.property-synonym').val();
+                if (synonym) results.push(synonym);
+            });
+            this.optionSynonyms = (results.length === 0) ? [] : results;
+
+            console.log(this.optionSynonyms)
+
+            // Outputs and labels
+            let labels = new Array();
+            this.delay  = $('#node-input-delay').val();
+            this.repeat = $('#node-input-repeat').val() || 0;
+            this.outputs = 1 ;
+
+            if ($('#node-input-btnOutput').is(':checked')) {
+                labels.push("Unexpected");
+                let len = ($('#node-input-sendType').val() === 'text') ? this.suggestions.length : this.buttons.length;
+                for (let i=0; i<len; i++) { labels.push("Quickreply " + i); }
+            }
+            
+            this.labels = (labels.length > 0) ? labels : ["Default output"]; 
+
+            if  (this.repeat > 0) {
+                this.labels.push("Repeat");
+                this.outputs ++;
+            }
+        },
+        icon: function() {
+            return "google.svg";
+        }, 
+        align: "left",
+        paletteLabel: "Message",
+        labelStyle: "bot-card-name",
+        label: function() { 
+            if (this.name) return this.name;
+            else return "Send card";
+        }
+    });
+
+
+</script>
+
+<style>
+    textarea {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        min-height: 60px;
+        max-width: 100%;
+        width:70%;
+        resize: vertical;
+    }
+    .red-ui-editableList-border.red-ui-editableList-container {
+        overflow-x: hidden;
+        resize: vertical;
+    }
+</style>
+
+<script type="text/x-red" data-template-name="dialogflow-send-card">
+
+    <b>Node</b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-nodeid"><i class="icon-tag"></i> Unique ID</label>
+        <input type="text" id="node-input-nodeid" placeholder="Unique send-message node ID" style="width: calc(70% - 36px)">
+        <a id="refresh-config" class="editor-button" style="display:inline-block; vertical-align:middle; ">
+            <i class="fa fa-refresh"></i>
+        </a>
+    </div>
+    <div class="form-row">
+        <label for="node-input-sendType"><i class="fa fa-square-o"></i> Type</label>
+        <select id="node-input-sendType" style="width:70%;">
+            <option value="text">Text</option>
+            <option value="card">Basic card</option>
+            <option value="list">List element</option>
+            <option value="carousel">Carousel element</option>
+            <option value="browse">Browse carousel element</option>
+            <option value="suggestions">Suggestion chips</option>
+        </select>
+    </div>
+   
+    <section class="section-type section-text">
+        <br>
+        <b>Text content</b>
+        <br><br>
+
+        <div class="form-row">
+            <label for="node-input-text"><i class="fa fa-pencil-square-o"></i> Text</label>
+            <textarea id="node-input-text" rows="3" style="width:70%;" placeholder="Hello world!"></textarea>
+        </div>
+        <div class="form-row">
+            <label for="node-input-textSpeech"><i class="fa fa-comment-o"></i> Speech</label>
+            <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-textSpeech"> <span>Convert text to speech</span>
+        </div>
+        <div class="form-row display-textSpeech">
+            <label for="node-input-textAudio"><i class="fa fa-commenting-o"></i> Audio</label>
+            <textarea id="node-input-textAudio" rows="2" style="width:70%;" placeholder="Hello world!"></textarea>
+        </div>
+        <div class="form-row display-textRandom">
+            <label for="node-input-textRandom"><i class="fa fa-random"></i> Random</label>
+            <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-textRandom"> <span>Choose randomly between each line of text</span>
+        </div>
+    </section>
+
+    <section class="section-type section-suggestions">
+        <br>
+        <b>Suggestion chips content</b>
+        <br><br>
+
+        <div class="form-row">
+            <label for="node-input-quickAudio"><i class="fa fa-commenting-o"></i> Audio</label>
+            <input id="node-input-quickAudio" class="ti-suggestions" style="width:70%;" placeholder="Append audio for quick replies">
+            <input type="hidden" id="node-input-quickAudioType">
+        </div>
+
+        <div class="form-row" style="width:100%;">
+            <ol id="chip-container"></ol>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-btnOutput"><i class="fa fa-sign-out"></i> Outputs</label>
+            <input type="checkbox" id="node-input-btnOutput" style="width: auto; vertical-align:top;"> <span>Add outputs for each button</span>
+        </div>
+    </section>
+
+    <div class="form-tips section-type section-card section-list section-carousel section-browse section-suggestions">
+        <span>This message type can not be sent alone. It must be linked to a 'text' one at least.</span>
+    </div>
+
+    <section class="section-type section-card">
+        <br>
+        <b>Card content</b>
+        <br><br>
+    </section>
+
+    <section class="section-type section-list section-carousel section-browse">
+        <br>
+        <b>Element content</b>
+        <br><br>
+
+        <div class="form-row">
+            <label for="node-input-description"><i class="fa fa-pencil-square-o"></i> Descript.</label>
+            <input type="text" id="node-input-description" class="ti-suggestions ti-list ti-carousel ti-browse" style="width:70%;" placeholder="Element description">
+            <input type="hidden" id="node-input-descriptionType">
+        </div>
+    </section>
+
+    <section class="section-type section-card section-list section-carousel section-browse">
+        <div class="form-row">
+            <label for="node-input-imageUrl"><i class="fa fa-image"></i> Image</label>
+            <select id="node-input-imageFormat" style="width:160px;">
+                <option value="DEFAULT">Default</option>
+                <option value="WHITE">White</option>
+                <option value="CROPPED">Cropped</option>
+            </select>
+            <input type="text" id="node-input-imageUrl" class="ti-list ti-carousel ti-browse" style="width:calc(70% - 165px);" placeholder="Image URL">
+            <input type="hidden" id="node-input-imageUrlType">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-accessibilityText"></label>
+            <input type="text" id="node-input-accessibilityText" class="ti-list ti-carousel ti-browse" style="width:70%;" placeholder="Accessibility text">
+            <input type="hidden" id="node-input-accessibilityTextType">
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-title"><i class="fa fa-pencil-square-o"></i> Title</label>
+            <input type="text" id="node-input-title" class="ti-list ti-carousel ti-browse" style="width:70%;">
+            <input type="hidden" id="node-input-titleType">
+        </div>
+    </section>
+
+    <section class="section-type section-card">
+        <div class="form-row">
+            <label for="node-input-subtitle"><i class="fa fa-pencil-square-o"></i> Sub-title</label>
+            <input type="text" id="node-input-subtitle" class="ti-card" style="width:70%;">
+            <input type="hidden" id="node-input-subtitleType">
+        </div>
+        <div class="form-row">
+            <label for="node-input-formattedText"><i class="fa fa-pencil-square-o"></i> Text body</label>
+            <textarea id="node-input-formattedText" rows="3" style="width:70%;" placeholder="Hello world!"></textarea>
+        </div>
+           
+        <div class="form-row">
+            <label for="node-input-buttonUrl"><i class="fa fa-circle"></i> Button</label>
+            <input type="text" id="node-input-buttonTitle" class="ti-card" style="width:160px;" placeholder="Button title">
+            <input type="text" id="node-input-buttonUrl" class="ti-card" style="width:calc(70% - 165px);" placeholder="Button URL">
+            <input type="hidden" id="node-input-buttonUrlType">
+            <input type="hidden" id="node-input-buttonTitleType">
+        </div>
+
+        <!-- <br>
+        <b>Buttons </b>- Max. <span id="max-buttons">3</span>
+        <br><br>
+        
+        <div class="form-row" style="width:97%;">
+            <ol id="btn-container"></ol>
+        </div> -->
+
+    </section>
+
+    <section class="section-type section-browse">
+        <div class="form-row">
+            <label for="node-input-footer"><i class="fa fa-pencil-square-o"></i> Footer</label>
+            <input type="text" id="node-input-footer" class="ti-browse" style="width:70%;" placeholder="Footer text">
+            <input type="hidden" id="node-input-footerType">
+        </div>
+    </section>
+
+    <section class="section-type section-list section-carousel section-browse">
+        <div class="form-row">
+            <label for="node-input-optionKey"><i class="fa fa-circle"></i> Option</label>
+            <input type="text" id="node-input-optionKey" class="ti-browse ti-carousel ti-list" style="width:70%;" placeholder="Option key">
+            <input type="hidden" id="node-input-optionKeyType">
+        </div>
+        <div class="form-row">
+            <label for="node-input-optionSynonyms"></label>
+            <div style="display: inline-block; width: 70%;"><ol id="synonyms-container"></ol></div>
+        </div>
+    </section>
+
+    <div class="form-row">
+        <label for="node-input-continue"><i class="fa fa-pause"></i> Continue</label>
+        <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-continue"> <span>Add elements to this message</span>
+    </div>
+
+    <section class="section-type section-settings">
+        <br>
+        <b>Global message settings</b>
+        <br><br>
+
+        <div class="form-row">
+            <label for="node-input-final"><i class="fa fa-stop"></i> Final</label>
+            <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-final"> <span>Ends the conversation</span>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-listTitle"><i class="fa fa-sign-in"></i> Title</label>
+            <input type="text" id="node-input-listTitle" class="ti-settings" style="width: 70%;" placeholder="List title if any">
+            <input type="hidden" id="node-input-listTitleType">
+        </div>
+    
+        <div class="form-row">
+            <label for="node-input-promptText"><i class="fa fa-sign-in"></i> Prompt</label>
+            <input type="text" id="node-input-promptText" class="ti-settings" style="width: 70%;" placeholder="prompt.text">
+        </div>
+
+        <div class="form-row" >
+            <label for="node-input-repeat"><i class="fa fa-repeat"></i> Repeat</label>
+            <input type="number" min="0" id="node-input-repeat" class="ti-settings" placeholder="0" style="width: 150px;">
+            <p style="display: inline-block;"> times</p>
+        </div>
+
+        <div class="form-row">
+            <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+            <select id="node-input-delay-category" style="width: 150px;">
+                <option value="default">default</option>
+                <option value="custom">custom</option>
+            </select>
+            <div id="node-input-delay-custom" style="width: 150px; display:inline-block;">
+                <input type="text" id="node-input-delay" placeholder="2000" > 
+                <p style="display: inline-block;"> ms</p>
+            </div>
+        </div>
+    </section>
+
+
+    
+
+
+
+</script>
+
+<script type="text/x-red" data-help-name="dialogflow-send-card">
+
+
+</script>
