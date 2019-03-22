@@ -128,7 +128,7 @@
             // Settings
             $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
-            $("#node-input-metadata").typedInput({ default: 'msg', types: ['msg','str','json','num'], type: 'str' });
+            $("#node-input-metadata").typedInput({ default: 'msg', types: ['msg','str','json','num'], typeField: $("#node-input-metadataType")});
             $("#node-input-delay").typedInput({ default: 'num', types: ['num'], type: 'num' }).typedInput("width", "100px");
             $("#node-input-repeat").typedInput({ default: 'num', types: ['num'], type: 'num' }).typedInput("width", "100px");
 
