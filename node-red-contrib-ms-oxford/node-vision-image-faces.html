@@ -171,8 +171,9 @@
         },
         oneditsave: function () { 
             let parameters = [];
-            $(".parameters:visible").find('input[type=text]').each( function(i, elt) {
-                parameters.push(elt.id.split('-').pop());
+            $(".parameters:visible").find('label').each( function(i, elt) {
+                let _id = $(elt).attr('for');
+                parameters.push(_id.split('-').pop());
             })
             this.parameters = parameters;
         },
