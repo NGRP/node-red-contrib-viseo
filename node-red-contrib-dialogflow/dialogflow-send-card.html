@@ -53,20 +53,13 @@
             buttonTitle:        { value: undefined }, 
             buttonTitleType:    { value: "str" }, 
 
+            linkUrl:        { value: undefined }, 
+            linkUrlType:    { value: "str" }, 
+            linkName:       { value: undefined }, 
+            linkNameType:   { value: "str" }, 
+
             listTitle:      { value: undefined }, 
-            listTitleType:  { value: "str" }, 
-
-
-            buttons:      { value: []  },
-            carousel:     { value: true },
-            square:       { value: false },
-            carouselFormat: { value: "carousel" },
-            carouselButton: { value: "postBack" },
-            carouselButtonTitle: { value: undefined },
-            carouselButtonTitleType: { value: 'str' },
-            carouselButtonPayload: { value: undefined },
-            carouselButtonPayloadType: { value: 'str' },
-            top_element:  { value: false }
+            listTitleType:  { value: "str" }
         },
         inputs:  1, 
         outputs: 1,
@@ -98,6 +91,10 @@
             $("#node-input-optionKey").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-optionKeyType")});
             $("#node-input-footer").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-footerType")});
 
+            // Link
+            $("#node-input-linkUrl").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-linkUrlType")});
+            $("#node-input-linkName").typedInput({ default: 'str', types: ['msg','str'], typeField: $("#node-input-linkNameType")});
+
             // Settings
             $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-promptText").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
@@ -119,30 +116,6 @@
                     $('.ti-settings').typedInput('show');
                 }
             });
-
-            $("#node-input-carousel").change( function() {
-                if ($(this).is(":checked")) {
-                    $(".carousel-behavior").hide();
-                    return;
-                }
-                $(".carousel-behavior").show();
-                $("#node-input-carouselFormat").change();
-            }).change();
-
-            $("#node-input-carouselFormat").change( function() {
-                if ($(this).val() === "list") {
-                    $("#max-buttons").text("1");
-                    $(".carousel-behavior-carousel").hide();
-                    $(".carousel-behavior-list").show();
-                    $("#node-input-carouselButtonTitle").typedInput('show');
-                    $("#node-input-carouselButtonPayload").typedInput('show');
-                }
-                else {
-                    $("#max-buttons").text("3");
-                    $(".carousel-behavior-list").hide();
-                    $(".carousel-behavior-carousel").show();
-                }
-            }).change();
 
             $("#node-input-delay").change(function(e) {
                 var val = $(this).val();
@@ -176,51 +149,6 @@
                 $('.section-type').addClass('hide');
                 $(`.section-${type}`).removeClass('hide');
                 $(`.ti-${type}`).typedInput('show');
-
-                $("#node-input-carousel").change();
-                
-            });
-
-            // Buttons and quick replies : init
-            $("#btn-container").css('min-height','100px').editableList({
-                addItem: function ( row, index, data ) {
-                    let button = data.btn || {};
-                    let type = button.type ||'postBack';
-                    let title = button.title || "";
-                    let payload = button.payload || "";
-                    let url = button.url || "";
-                    let fallback_url = button.fallback_url || "";
-                    let regexp = button.regexp || "";
-                    let webview_height_ratio = button.webview_height_ratio || "full";
-                    let btnStyle = "width: calc(50% - 5px); margin: 0 5px 5px 0;";
-
-                    $('<span/>', {}).appendTo(row);
-                    var actionField = $('<select/>', { type:"text", class:"property-btn-type", style:btnStyle }).appendTo(row);
-                    actionField.append($("<option></option>").val("postBack").text("Post Back")); // title, payload
-                    actionField.append($("<option></option>").val("web_url").text("Web URL")); // title, url 
-                    actionField.append($("<option></option>").val("account_link").text("Log in")); // url
-                    actionField.append($("<option></option>").val("account_unlink").text("Log out"));
-                    actionField.append($("<option></option>").val("phone_number").text("Call")); // title, payload
-                    actionField.append($("<option></option>").val("payment").text("Buy")); // title, payload, payment_summary
-                    
-                    $('<input/>', { class:"property-btn-regexp", type:"text", style:btnStyle, value: regexp, placeholder:"Regex"}).appendTo(row);
-                    $('<br/>', {}).appendTo(row);
-                    $('<input/>', { class:"property-btn-title",  type:"text", style: btnStyle, value: title,  placeholder:"Title"}).appendTo(row);
-                    $('<input/>', { class:"property-btn-payload",  type:"text", style: btnStyle, value: payload,  placeholder:"Payload"}).appendTo(row);
-                    $('<input/>', { class:"property-btn-url",  type:"text", style: btnStyle, value: url,  placeholder:"URL"}).appendTo(row);
-
-                    var webviewField = $('<select/>', { type:"text", class:"property-btn-webview_height_ratio", style:btnStyle}).appendTo(row);
-                        webviewField.append($("<option></option>").val("compact").text("Compact"));
-                        webviewField.append($("<option></option>").val("tall").text("Tall")); 
-                        webviewField.append($("<option></option>").val("full").text("Full"));
-                    $('<input/>', { class:"property-btn-fallback_url",  type:"text", style: btnStyle, value: fallback_url,  placeholder:"Fallback URL"}).appendTo(row);
-                    actionField.val(type).change();
-                    webviewField.val(webview_height_ratio);
-
-                    // url / title
-                },
-                sortable: true,
-                removable: true
             });
 
             $("#chip-container").css('min-height','150px').editableList({
@@ -242,38 +170,6 @@
             })
 
 
-            $(document).on('change', '.property-btn-type', function() {
-                var $parent = $(this).parent();
-                var $inputs = $parent.find('input');
-                    $inputs.hide();
-                $parent.find('.property-btn-webview_height_ratio').hide();
-
-                switch($(this).val()) {
-                    case "postBack":
-                        $parent.find('.property-btn-title, .property-btn-payload, .property-btn-regexp').show();
-                        break;
-                    case "web_url":
-                        $parent.find('.property-btn-title, .property-btn-url, .property-btn-webview_height_ratio, .property-btn-fallback_url').show(); 
-                        break;
-                    case "account_link":
-                        $parent.find('.property-btn-url').show(); 
-                        break;
-                    case "account_unlink": 
-                        break;
-                    case "phone_number":
-                        $parent.find('.property-btn-title, .property-btn-payload').show(); 
-                        break;
-                    case "payment":
-                        $parent.find('.property-btn-title, .property-btn-payload').show();
-                        break;
-                }
-            }).change();
-
-            // Get buttons and quick replies
-            for (var i=0; i<this.buttons.length; i++) {      
-                $("#btn-container").editableList('addItem', { btn: this.buttons[i], i:i });
-            }
-
             for (var i=0; i<this.suggestions.length; i++) {      
                 $("#chip-container").editableList('addItem', { title: this.suggestions[i], i:i });
             }
@@ -286,27 +182,10 @@
         oneditsave: function(){
 
              // Buttons and suggestions
-            let butt = $("#btn-container").editableList('items');
             let quic = $("#chip-container").editableList('items');
             let syno = $("#synonyms-container").editableList('items');
 
             let results = new Array();
-            butt.each(function(i) {
-                var btn = {
-                    type    : $(this).find('.property-btn-type').val(),
-                    title   : $(this).find('.property-btn-title').val(),
-                    payload : $(this).find('.property-btn-payload').val(),
-                    url     : $(this).find('.property-btn-url').val(),
-                    regexp  : $(this).find('.property-btn-regexp').val(),
-                    fallback_url :  $(this).find('.property-btn-fallback_url').val(),
-                    webview_height_ratio :  $(this).find('.property-btn-webview_height_ratio').val()
-                }
-                console.log(btn)
-                results.push(btn);
-            });
-            this.buttons = (results.length === 0) ? [] : results;
-
-            results = new Array();
             quic.each(function(i) {
                 var title = $(this).find('.property-chip').val();
                 if (title) results.push(title);
@@ -319,8 +198,6 @@
                 if (synonym) results.push(synonym);
             });
             this.optionSynonyms = (results.length === 0) ? [] : results;
-
-            console.log(this.optionSynonyms)
 
             // Outputs and labels
             let labels = new Array();
@@ -395,6 +272,10 @@
             <option value="carousel">Carousel element</option>
             <option value="browse">Browse carousel element</option>
             <option value="suggestions">Suggestion chips</option>
+            <option value="linkout">Link out</option>
+            <option value="table" disabled>Table card</option>
+            <option value="media" disabled>Audio media</option>
+            <option value="payload" disabled>Custom payload</option>
         </select>
     </div>
    
@@ -442,9 +323,26 @@
         </div>
     </section>
 
-    <div class="form-tips section-type section-card section-list section-carousel section-browse section-suggestions">
-        <span>This message type can not be sent alone. It must be linked to a 'text' one at least.</span>
+    <div class="section-type section-card section-list section-carousel section-browse section-suggestions section-linkout" style="padding-left: 105px;">
+        <div class="form-tips" style="width: 80%">
+            <span>This message type can not be sent alone. It must be linked to a 'text' one at least.</span>
+        </div>
     </div>
+
+    <section class="section-type section-linkout">
+        <br>
+        <b>Link content</b>
+        <br><br>
+
+        <div class="form-row">
+            <label for="node-input-linkUrl"><i class="fa fa-circle"></i> Link</label>
+            <input type="text" id="node-input-linkName" class="ti-linkout" style="width:160px;" placeholder="Name">
+            <input type="text" id="node-input-linkUrl" class="ti-linkout" style="width:calc(70% - 165px);" placeholder="URL">
+            <input type="hidden" id="node-input-linkUrlType">
+            <input type="hidden" id="node-input-linkNameType">
+        </div>
+
+    </section>
 
     <section class="section-type section-card">
         <br>
