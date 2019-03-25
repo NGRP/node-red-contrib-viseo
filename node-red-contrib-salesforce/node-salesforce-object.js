@@ -58,7 +58,7 @@ const input = async (RED, node, data, config) => {
             return node.send([undefined, data]);
         }
     } else if(["GET", "PATCH", "POST", "DELETE"]) {
-        [ objectId, objectObject ] = prepareRequest(RED, data, config)
+        [ objectId, objectObject ] = prepareRequest(RED, node, data, config)
     }
 
 
@@ -210,7 +210,7 @@ const prepareQuery = (RED, node, data, config) => {
     return [ querySelect, queryWhere ]
 }
 
-const prepareRequest = (RED, data, config) => { 
+const prepareRequest = (RED, node, data, config) => { 
 
     // let objectLabel = config.objectLabel;
     let objectId = helper.getContextValue(RED, node, data, config.objectId, config.objectIdType);

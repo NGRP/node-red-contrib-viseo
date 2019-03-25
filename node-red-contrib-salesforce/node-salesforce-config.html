@@ -33,8 +33,7 @@
             $("#node-config-input-oauthtype").change(function() {
                 $('.credential-info').hide();
                 $('.credential-info.'+$(this).val()+'-info').show();
-
-                $('.credential-info').find('input[type="text"]').typedInput('show')
+                $('.credential-info-input').typedInput('show');
                 
             })
             if(this.oauthtype === undefined) {
@@ -75,24 +74,24 @@
     <!-- refresh token -->
     <div class="form-row credential-info refresh-token-info">
         <label for="node-config-input-id"><i class="fa fa-lock"></i> Client ID</label>
-        <input type="text" id="node-config-input-id" style="width:70%;"  placeholder="">
+        <input type="text" class="credential-info-input" id="node-config-input-id" style="width:70%;"  placeholder="">
     </div>
     <div class="form-row credential-info refresh-token-info">
         <label for="node-config-input-secret"><i class="fa fa-lock"></i> Client secret</label>
-        <input type="text" id="node-config-input-secret" style="width:70%;"  placeholder="">
+        <input type="text" class="credential-info-input" id="node-config-input-secret" style="width:70%;"  placeholder="">
     </div>
     <div class="form-row credential-info refresh-token-info">
         <label for="node-config-input-refresh"><i class="fa fa-lock"></i> Refresh Token</label>
-        <input type="text" id="node-config-input-refresh" style="width:70%;" placeholder="">
+        <input type="text" class="credential-info-input" id="node-config-input-refresh" style="width:70%;" placeholder="">
     </div>
     <!-- jwt -->
     <div class="form-row credential-info jwt-info">
         <label for="node-config-input-iss"><i class="fa fa-lock"></i> ISS</label>
-        <input type="text" id="node-config-input-iss" style="width:70%;" placeholder="Consumer key">
+        <input type="text" class="credential-info-input" id="node-config-input-iss" style="width:70%;" placeholder="Consumer key">
     </div>
     <div class="form-row credential-info jwt-info">
         <label for="node-config-input-subject"><i class="fa fa-lock"></i> Subject</label>
-        <input type="text" id="node-config-input-subject" style="width:70%;" placeholder="Email address of the account">
+        <input type="text" class="credential-info-input" id="node-config-input-subject" style="width:70%;" placeholder="Email address of the account">
     </div>
      <div class="form-row credential-info jwt-info">
         <label for="node-config-input-privateKey"><i class="fa fa-lock"></i> Private Key</label>
