@@ -16,12 +16,12 @@ module.exports = function(RED) {
 
         if (this.visioncreds) node.status({});
 
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("vision-image-describe", register, {});
 }
 
-async function input (node, data, config) {
+async function input (RED, node, data, config) {
 
     // Log activity
     try { setTimeout(function() { helper.trackActivities(node)},0); }
