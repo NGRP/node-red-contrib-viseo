@@ -401,15 +401,15 @@ const getMessage = exports.getMessage = (replies) => {
             let orderUpdateObject = {
                 actionOrderId: reply.receipt.orderId, 
                 orderState: { 
-                    label: reply.receipt.orderStateNam, 
+                    label: reply.receipt.orderStateName, 
                     state: reply.receipt.orderState
                 },
-                infoExtension: {},
                 orderManagementActions: [],
-                updateTime: new Date().toISOString()
+                updateTime: new Date().toISOString(),
+                receipt: {
+                    userVisibleOrderId: reply.receipt.orderId 
+                }
             };
-
-            orderUpdateObject.infoExtension['RECEIPT'] = { userVisibleOrderId: reply.receipt.orderId };
 
             for (let action of reply.receipt.orderActions) {
                 orderUpdateObject.orderManagementActions.push({button: {openUrlAction: {url: action.url}, title: action.title}, type: action.type})
