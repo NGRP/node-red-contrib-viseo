@@ -33,7 +33,7 @@ async function input (RED, node, data, config) {
     let knowledgeBaseId = helper.getContextValue(RED, node, data, config.knowledgeBaseId, config.knowledgeType);
     let question = helper.getContextValue(RED, node, data, config.question, config.questionType);
     let endpointKey = helper.getContextValue(RED, node, data, config.endpointKey, config.endpointKeyType);
-    let output = output = config.output;
+    let output = config.output;
 
     if (host === undefined || knowledgeBaseId === undefined ||endpointKey === undefined) {
         return node.status({
