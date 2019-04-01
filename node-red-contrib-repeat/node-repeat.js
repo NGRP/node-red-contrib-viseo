@@ -8,13 +8,12 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        this.on('input', (data)  => { input(node, data, config)  });
+        this.on('input', (data)  => { input(RED, node, data, config)  });
     }
     RED.nodes.registerType("repeat", register, {});
 }
  
-let COUNTER = 0;
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
 
     const repeatKey = 'rpt_' + node.id.replace('.', '_');
 
@@ -26,10 +25,12 @@ const input = (node, data, config) => {
     if (scope === 'global') {
  
         // Increment counter
-        COUNTER = (COUNTER >= max) ? 1 : COUNTER+1;
+        let count = helper.getContextValue(RED, node, data, repeatKey, 'global') || 0;
+            count = (count >= max) ? 1 : count+1;
 
         // Set data
-        out[COUNTER-1] = data;
+        helper.setContextValue(RED, node, data, repeatKey, count, 'global');
+        out[count-1] = data;
         return node.send(out);
     }
      

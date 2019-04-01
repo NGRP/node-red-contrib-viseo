@@ -18,23 +18,24 @@ module.exports = function(RED) {
 let CONF = {};
 const input = (RED, node, data, config) => {
 
-    const loopKey = 'loop' + node.id.replace('.', '_');
+    const loopKey = '_loop_' + node.id.replace('.', '_');
 
     // 1. SCOPE : confObject
     // 1.1. Scope: Flow
-    let scope = config.scope || 'msg',
-        _tmp = data._tmp = data._tmp || {};
+    let scope = config.scope || 'msg';
+    let confObject = {};
 
     // 1.2. Scope: User
     if (scope === 'user'){
         data.user = data.user || {};
-        _tmp = data.user._tmp = data.user._tmp || {};
-    } 
-
-    // 1.3. Scope: Global
-    let confObject = CONF;
-    if (scope !== 'global') confObject = _tmp[loopKey] || {};
-
+        confObject = data.user[loopKey] = data.user[loopKey] || {};
+    } else {
+        confObject = helper.getContextValue(RED, node, data, loopKey, scope);
+        if (!confObject) {
+            confObject = {};
+            helper.setContextValue(RED, node, data, loopKey, confObject, scope);
+        }
+    }
 
     // 2. FIRST ITERATION : init object
     if (JSON.stringify(confObject) === '{}') {
@@ -70,11 +71,9 @@ const input = (RED, node, data, config) => {
     // 4.1. Out of loop
     if (confObject.count === (len-1) && behavior === "before") {
         let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};  
-        if (scope === 'global') CONF = {} 
-        else {
-            delete (scope === 'user' ? data.user._tmp : data._tmp)
-            _tmp[loopKey] = undefined; 
-        }
+
+        if (scope === "user") delete data.user[loopKey];
+        else helper.setContextValue(RED, node, data, loopKey, undefined, scope); 
 
         // Log activity
         try { setTimeout(function() { helper.trackActivities(node)},0); }
@@ -84,11 +83,8 @@ const input = (RED, node, data, config) => {
     }
 
     else if (confObject.count >= len) {  
-        if (scope === 'global') CONF = {} 
-        else {
-            delete (scope === 'user' ? data.user._tmp : data._tmp)
-            _tmp[loopKey] = undefined; 
-        }
+        if (scope === "user") delete data.user[loopKey];
+        else helper.setContextValue(RED, node, data, loopKey, undefined, scope); 
 
         // Log activity
         try { setTimeout(function() { helper.trackActivities(node)},0); }
@@ -99,7 +95,9 @@ const input = (RED, node, data, config) => {
 
     else {
         // 4.2. Increment
-        (scope === 'global') ? CONF = confObject : _tmp[loopKey] = confObject;
+        if (scope === "user") data.user[loopKey] = confObject;
+        else helper.setContextValue(RED, node, data, loopKey, confObject, scope); 
+
         let outObject = (confObject.array !== undefined) ? confObject.array[confObject.count] : {'property': confObject.properties[confObject.count],'value': confObject.values[confObject.count]};
         helper.setContextValue(RED, node, data, outputObject, outObject, outputType);
         returnedValue = [data, undefined];
