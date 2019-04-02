@@ -227,7 +227,7 @@ const getMessage = exports.getMessage = (replies) => {
 
         if (i==0) {
             if (reply.type !== "card" && reply.type !== "text" && reply.type !== "quick") break;
-            let text   = reply.text || reply.quicktext || reply.subtitle || reply.title;
+            let text   = reply.text || reply.quicktext || reply.subtitle || reply.title ;
             let speech = reply.speech || text;
             
             msg.data.push(new SimpleResponse({speech: speech, text: text }))
@@ -263,7 +263,7 @@ const getMessage = exports.getMessage = (replies) => {
 
         let item = { 
             title: reply.title, 
-            description: reply.subtitle || '', 
+            description: reply.subtext || '', 
             optionInfo: { key: reply.title, synonyms: [] }
         };
 
@@ -271,7 +271,7 @@ const getMessage = exports.getMessage = (replies) => {
         if (reply.attach) {
             item.image = new Image({ 
                 url: helper.absURL(reply.attach), 
-                alt: reply.subtitle || reply.title
+                alt: reply.subtext || reply.title
             })
         }
         if (reply.buttons) {
@@ -428,7 +428,7 @@ const getMessage = exports.getMessage = (replies) => {
         if (reply.type === "card") {
             let options = { 
                 buttons: [],
-                subtitle: reply.subtitle,
+                subtitle: reply.subtext,
                 formattedText: reply.text || reply.quicktext,
                 title: reply.title
             }
