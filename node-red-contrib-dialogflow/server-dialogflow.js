@@ -261,28 +261,18 @@ const getMessage = exports.getMessage = (replies) => {
             break;
         }
 
-        let item = { 
-            title: reply.title, 
-            description: reply.subtext || '', 
-            optionInfo: { key: reply.title, synonyms: [] }
-        };
+        let item = cardOptions(reply);
+        item.optionInfo = { key: reply.title, synonyms: [] }
+
+        if(item.subtitle) {
+            item.description = item.subtitle;
+            delete item.subtitle;
+        }
+
+        delete item.text;
 
         if (reply.prompt) msg.expectUserResponse = true;
-        if (reply.attach) {
-            item.image = new Image({ 
-                url: helper.absURL(reply.attach), 
-                alt: reply.subtext || reply.title
-            })
-        }
-        if (reply.buttons) {
-            let button = reply.buttons[0];
-            if ("string" === typeof button) item.optionInfo.key = button ;
-            else {
-                item.optionInfo.key = button.value
-                item.optionInfo.synonyms.push(button.title)
-            }
-        }
-
+        
         items.push(item) ;
     }
 
@@ -426,26 +416,12 @@ const getMessage = exports.getMessage = (replies) => {
 
         // Card
         if (reply.type === "card") {
-            let options = { 
-                buttons: [],
-                subtitle: reply.subtext,
-                formattedText: reply.text || reply.quicktext,
-                title: reply.title
+            
+            let options = cardOptions(reply)
+            if(options.image) {
+                options.display = 'CROPPED';
             }
 
-            if (reply.media || reply.attach) {
-                options.image = { url: helper.absURL(reply.attach), accessibilityText: reply.title || "[image]" }
-                options.imageDisplayOptions = 'CROPPED';
-            }
-
-            if (reply.buttons) {
-                for (let btn of reply.buttons){
-                    
-                    if (btn.action !== 'openUrl') continue;
-
-                    options.buttons.push(new Button({ title: btn.title, url: helper.absURL(btn.value)}));
-                }
-            }
             let basicCard = new BasicCard(options)
             msg.data.push(basicCard);
             continue;
@@ -490,5 +466,40 @@ const getMessage = exports.getMessage = (replies) => {
     }
 
     return msg;
+}
+
+const cardOptions = (reply) => {
+    let options = {
+        subtitle: reply.subtitle,
+        text: reply.subtext,
+        title: reply.title
+    }
+
+    if(options.subtitle == "") {
+       delete options.subtitle;
+    }
+    if(options.text == "") {
+        delete options.text;
+    }
+
+    if (reply.media || reply.attach) {
+        options.image = { url: helper.absURL(reply.attach), accessibilityText: reply.title || "[image]" }
+    }
+
+    if (reply.buttons) {
+        let buttons = [];
+        for (let btn of reply.buttons){
+            
+            if (btn.action !== 'openUrl') continue;
+
+            buttons.push(new Button({ title: btn.title, url: helper.absURL(btn.value)}));
+        }
+
+        if(buttons.length > 0) {
+            options.buttons = buttons;
+        }
+    }
+
+    return options;
 }
 
