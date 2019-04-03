@@ -30,15 +30,70 @@ let LISTENERS_PROMPT = {};
 
 const start = (RED, node, config) => {
 
-    // Bind webhook
-    RED.httpNode.post ('/amazon-alexa', (req, res, next) => { receive(node, config, req, res); });
+    var cookieParser = require("cookie-parser")
+    var bodyParser = require("body-parser");
 
+    var httpMiddleware = function(req, res, next) { next();}
+    var corsHandler = function(req,res,next) { next(); }
+    var metricsHandler = function(req,res,next) { next(); }
+    var multipartParser = function(req,res,next) { next(); }
+    var callback = function(req,res,next) { 
+        receive(node, config, req, res);
+    }
+    var errorHandler = function(err,req,res,next) {
+        node.warn(err);
+        res.sendStatus(500);
+    };
+    function rawBodyParser(req, res, next) {
+        if (req.skipRawBodyParser) { next(); } // don't parse this if told to skip
+        if (req._body) { return next(); }
+        req.body = "";
+        req._body = true;
+
+        var isText = true;
+        var checkUTF = false;
+
+        if (req.headers['content-type']) {
+            var parsedType = typer.parse(req.headers['content-type'])
+            if (parsedType.type === "text") {
+                isText = true;
+            } else if (parsedType.subtype === "xml" || parsedType.suffix === "xml") {
+                isText = true;
+            } else if (parsedType.type !== "application") {
+                isText = false;
+            } else if (parsedType.subtype !== "octet-stream") {
+                checkUTF = true;
+            } else {
+                // applicatino/octet-stream
+                isText = false;
+            }
+        }
+
+        getBody(req, {
+            length: req.headers['content-length'],
+            encoding: isText ? "utf8" : null
+        }, function (err, buf) {
+            if (err) { return next(err); }
+            if (!isText && checkUTF && isUtf8(buf)) {
+                buf = buf.toString()
+            }
+            req.body = buf;
+            next();
+        });
+    }
+    var maxApiRequestSize = RED.settings.apiMaxLength || '5mb';
+    var jsonParser = bodyParser.json({limit:maxApiRequestSize});
+    var urlencParser = bodyParser.urlencoded({limit:maxApiRequestSize,extended:true});
+    
     // Add listener to reply
     let listenerReply = LISTENERS_REPLY[node.id] = (srcNode, data, srcConfig) => { reply(node, data, config) }
     helper.listenEvent('reply', listenerReply)
 
     let listenerPrompt = LISTENERS_PROMPT[node.id] = (srcNode, data, srcConfig) => { prompt(node, data, config) }
     helper.listenEvent('prompt', listenerPrompt)
+
+    // Prompt
+    RED.httpNode.post('/amazon-alexa', cookieParser(), httpMiddleware, corsHandler, metricsHandler, jsonParser, urlencParser, multipartParser, rawBodyParser, callback, errorHandler);
 }
 
 const stop = (node, config, done) => {
@@ -86,11 +141,13 @@ const receive = (node, config, req, res) => {
     catch(err) { console.log(err); }
 
     let json = req.body;
-
-    if (json.request === undefined) {
+    if (!json || !json.request) {
+        node.warn(req)
         node.warn('Empty request received');
         return;
     }
+
+    node.warn({'received': json.request})
 
     let data = botmgr.buildMessageFlow({ message : json }, {
         userLocale: 'message.request.locale',
@@ -101,6 +158,7 @@ const receive = (node, config, req, res) => {
         source:     CARRIER
     })
 
+    
     data.user.accessToken = data.message.session.user.accessToken;
     
     let context = getMessageContext(data.message);
