@@ -1,5 +1,8 @@
 const helper  = require('node-red-viseo-helper')
 const botmgr  = require('node-red-viseo-bot-manager')
+const uuidv4 = require('uuid/v4');
+
+
 const CARRIER = "GoogleHome"
 
 // --------------------------------------------------------------------------
@@ -60,7 +63,6 @@ const stop = (node, config, done) => {
 // ------------------------------------------
 
 const LRUMap = require('./lru.js').LRUMap;
-const uuidv4 = require('uuid/v4');
 
 // Should it be init in start() ?
 let _CONTEXTS    = new LRUMap(CONFIG.server.contextLRU || 10000);
@@ -98,12 +100,20 @@ const receive = (conv, node, config, resolve, reject) => {
 
     let data = botmgr.buildMessageFlow({ message : JSON.parse(JSON.stringify(conv)) }, {
         userLocale: 'message.user.locale',
-        userId:     'message.user._id', 
+        userId:     'message.user.storage.userId', 
         convId:     'message.request.conversation.conversationId',
         payload:    'message.input.raw',
         inputType:  'message.input.type',
         source:     CARRIER
     })
+
+
+    if(data.user.id == "UnknownId") {
+        let userId = uuidv4();
+        conv.user.storage.userId = data.user.id = userId;
+
+    } 
+
 
     let context = getMessageContext(data.message)
     context.conv = conv;
@@ -181,6 +191,7 @@ const reply = (node, data, config) => {
         let context = data.prompt ? getMessageContext(data.prompt)
                                   : getMessageContext(data.message)
         let conv = context.conv;
+
 
         let resolve = context.resolve;
         let reject = context.reject;
