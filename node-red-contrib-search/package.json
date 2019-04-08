@@ -23,7 +23,7 @@
     ],
     "node-red": {
         "nodes": {
-            "loop-management": "node-object-search.js"
+            "object-search": "node-object-search.js"
         }
     }
 }

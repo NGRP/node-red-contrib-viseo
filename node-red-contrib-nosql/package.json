@@ -15,8 +15,8 @@
   "keywords": ["viseo", "sarah", "node-red", "database", "db", "nosql"],
   "node-red": {
     "nodes": {
-      "node-mongodb": "node-nosql.js",
-      "node-handover": "node-handover.js"
+      "nosql": "node-nosql.js",
+      "handover": "node-handover.js"
     }
   }
 }
