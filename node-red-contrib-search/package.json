@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-viseo-object-search",
-    "version": "0.1.0-alpha.1",
+    "version": "0.1.0-alpha.2",
     "description": "VISEO Bot Maker - Searches a value in an object",
     "dependencies": {
         "node-red-viseo-helper": "~0.1"
