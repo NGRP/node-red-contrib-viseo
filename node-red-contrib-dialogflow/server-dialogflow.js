@@ -238,33 +238,7 @@ const getMessage = exports.getMessage = (replies) => {
 
         if (i==0) {
             if (reply.type !== "card" && reply.type !== "text" && reply.type !== "quick") break;
-            let text   = reply.text || reply.quicktext || reply.subtitle || reply.title ;
-            let speech = reply.speech || text;
-            
-            msg.data.push(new SimpleResponse({speech: speech, text: text }))
-
-            // Quick replies
-            if (reply.type === 'quick'){
-
-                let suggestions = []
-                for (let button of reply.buttons){
-
-                    if (button.action && button.action === 'askLocation') {
-                        msg.data = [new Permission({context: text || '', permissions: "DEVICE_PRECISE_LOCATION" })];
-                        continue;
-                    } 
-                    if (button.action && button.action === 'askIdentity') {
-                        msg.data = [new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] })];
-                        continue;
-                    }
-
-                    if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
-                    else suggestions.push(button.title);
-                }
-
-                msg.data.push(new Suggestions(suggestions));
-            }
-
+            simpleMessage(msg, reply);
             continue;
         }
         else if (reply.type !== "card") {
@@ -286,6 +260,8 @@ const getMessage = exports.getMessage = (replies) => {
         
         items.push(item) ;
     }
+
+
 
     if (items.length > 1) {
         msg.data.push(new Carousel({ imageDisplayOptions: 'DEFAULT', items: items }));
@@ -440,33 +416,7 @@ const getMessage = exports.getMessage = (replies) => {
 
         // Simple text and quick replies
         if (reply.type === 'text' || reply.type === 'quick') {
-            let text = reply.text || reply.quicktext;
-            if (!text && reply.title) text = reply.title + ' ' + (reply.subtitle || '');
-            let speech = reply.speech || text;
-            
-            msg.data.push(new SimpleResponse({speech: speech, text: text }))
-
-            // Quick replies
-            if (reply.type === 'quick'){
-
-                let suggestions = []
-                for (let button of reply.buttons){
-
-                    if (button.action && button.action === 'askLocation') {
-                        msg.data = [new Permission({context: text || '', permissions: "DEVICE_PRECISE_LOCATION" })];
-                        continue;
-                    } 
-                    if (button.action && button.action === 'askIdentity') {
-                        msg.data = [new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] })];
-                        continue;
-                    }
-
-                    if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
-                    else suggestions.push(button.title);
-                }
-
-                msg.data.push(new Suggestions(suggestions));
-            }
+            simpleMessage(msg, reply);
             continue;
         }
 
@@ -479,6 +429,36 @@ const getMessage = exports.getMessage = (replies) => {
     return msg;
 }
 
+const simpleMessage = (msg, reply) => {
+    let text = reply.text || reply.quicktext;
+    if (!text && reply.title) text = reply.title + ' ' + (reply.subtitle || '');
+    let speech = reply.speech || text;
+    
+    msg.data.push(new SimpleResponse({speech: speech, text: text }))
+
+    // Quick replies
+    if (reply.type === 'quick'){
+
+        let suggestions = []
+        for (let button of reply.buttons){
+
+            if (button.action && button.action === 'askLocation') {
+                msg.data.push(new Permission({context: text || '', permissions: "DEVICE_PRECISE_LOCATION" }));
+                continue;
+            } 
+            if (button.action && button.action === 'askIdentity') {
+                msg.data.push(new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] }));
+                continue;
+            }
+
+            if ("string" === typeof button) suggestions.push(button) // btn.optionInfo = { key: button, synonyms: [button] }
+            else suggestions.push(button.title);
+        }
+
+        msg.data.push(new Suggestions(suggestions));
+    }
+
+}
 const cardOptions = (reply) => {
     let options = {
         subtitle: reply.subtitle,
