@@ -1,4 +1,4 @@
-const GoogleAuth = require("google-auth-library");
+const { google } = require("googleapis");
 
 module.exports = function(RED) {
     const register = function (config) {
@@ -39,8 +39,9 @@ const auth = (node, RED, config, callback) => {
 
 const authenticate = (json, scope, callback) => {
 
-    let client = new GoogleAuth();
+    let client = google.auth;
     let jwt    = new client.JWT(json.client_email, null, json.private_key, scope, null);
+
     renewJWTAuth(jwt , callback);
 }
 

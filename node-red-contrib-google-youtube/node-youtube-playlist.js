@@ -1,6 +1,6 @@
 'use strict'
 
-const googleapis = require('googleapis');
+const { google } = require('googleapis');
 const helper = require('node-red-viseo-helper');
 
 module.exports = function(RED) {
@@ -41,7 +41,7 @@ const input = (node, data, config) => {
     }
 
 
-    let service = googleapis.youtube('v3');
+    let service =  google.youtube('v3');
 
     service.playlistItems.list({
         playlistId: playlist,
@@ -55,7 +55,7 @@ const input = (node, data, config) => {
           return node.send([ undefined, data ]);
         }
 
-        data.payload = response;
+        data.payload = response.data;
         node.send([ data, undefined ]);
     })
 

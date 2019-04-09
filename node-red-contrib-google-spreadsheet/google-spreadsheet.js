@@ -37,7 +37,7 @@ function input (RED, node, data, config) {
     let saveField = range.replace(/[!:'" ]/g, "_");
 
     let saveLoc = helper.getContextValue(RED, node, data, save, config.saveType) || {};
-    helper.setContextValue(RED, node, data, saveLoc, save, config.saveType)
+    helper.setContextValue(RED, node, data, save, saveLoc,config.saveType)
 
     let parameters = { spreadsheetId, range };
     let method = config.method || 'append';
@@ -149,6 +149,9 @@ function input (RED, node, data, config) {
                 node.error(err); 
                 return node.send([ undefined, data ]);
             }
+
+            response = response.data
+
             if (!config.output){ 
                 return node.send([ data, undefined ]);
             }
@@ -181,6 +184,9 @@ function input (RED, node, data, config) {
                 node.error(err); 
                 return node.send([ undefined, data ]);
             }
+
+            response = response.data;
+
             if (action === "clear") {
                 helper.setContextValue(RED, node, data, config.output || "payload", response, config.outputType);
                 helper.setByString(saveLoc, saveField, undefined);
@@ -251,6 +257,9 @@ function input (RED, node, data, config) {
                 node.error(err);
                 return node.send([ undefined, data ]);
             }
+
+            response = response.data;
+
             if (!response.values) {
                 helper.setContextValue(RED, node, data, config.output || "payload", "", config.outputType);
                 return node.send([ data, undefined ]);
@@ -347,6 +356,8 @@ function input (RED, node, data, config) {
                 node.error(err);
                 return node.send([ undefined, data ]);
             }
+            
+            response = response.data;
 
             if (!response.values) {
                 helper.setContextValue(RED, node, data, config.output || "payload", "", config.outputType);
