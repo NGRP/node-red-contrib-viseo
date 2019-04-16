@@ -42,7 +42,7 @@
             });
 
             let hosts = [];
-            let savedHosts = JSON.parse(this.credentials.hosts)
+            let savedHosts = this.credentials.hosts ? JSON.parse(this.credentials.hosts) : []
 
             let regex = /([a-z]+)\[([0-9]+)\]/
 
@@ -58,6 +58,7 @@
                 hosts[parseResult[2]][parseResult[1]] = object.value
 
             }
+
 
             $("#node-config-input-useConnectionString").change(function() {
                 if($(this).prop("checked")) {
