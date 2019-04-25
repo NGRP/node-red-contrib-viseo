@@ -20,7 +20,7 @@
             "log-file":               "node-log-file.js",
             "log-azure-appinsight":   "node-azure-appinsight.js",
             "log-xiti":               "node-log-xiti.js",
-            "log-logstach":           "node-logstach.js",
+            "log-logstash":           "node-logstash.js",
             "log-sqlite":             "node-log-sqlite.js"
         }
     }
