@@ -13,7 +13,7 @@ module.exports = function(RED) {
         setup(RED, node, config);
         this.on('input', (data) => { input(node, data, config)  });
     }
-    RED.nodes.registerType("logstach", register, {});
+    RED.nodes.registerType("logstash", register, {});
 }
 
 // See: https://github.com/purposeindustries/node-logstash-client
