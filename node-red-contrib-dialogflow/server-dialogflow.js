@@ -206,8 +206,6 @@ const reply = (node, data, config) => {
         // Building the message
         let message = getMessage(data.reply);
 
-        //node.warn({ REPLY: message, receive: data.message, rep: data.reply})
-
         if (!message || message.data.length === 0) return false;
         let endMsg = message.data.pop();
         for (let m of message.data) conv.ask(m);
@@ -215,7 +213,12 @@ const reply = (node, data, config) => {
         if (message.expectUserResponse === false) conv.close(endMsg);
         else conv.ask(endMsg);
 
-        node.log('REPLY: '+JSON.stringify(data.reply));
+        node.log('REPLY: '+JSON.stringify({
+            user : {
+                id: data.user.id
+            },
+            response: data.reply
+        }));
         
         // Trap the event in order to continue
         helper.fireAsyncCallback(data);
