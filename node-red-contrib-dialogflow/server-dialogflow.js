@@ -112,7 +112,14 @@ const receive = (conv, node, config, resolve, reject) => {
         let userId = uuidv4();
         conv.user.storage.userId = data.user.id = userId;
 
-    } 
+    }
+
+    node.log('RECEIVED :'+JSON.stringify({
+        user : {
+            id: data.user.id
+        },
+        intent: data.message.intent
+    }));
 
 
     let context = getMessageContext(data.message)
@@ -207,6 +214,8 @@ const reply = (node, data, config) => {
 
         if (message.expectUserResponse === false) conv.close(endMsg);
         else conv.ask(endMsg);
+
+        node.log('REPLY: '+JSON.stringify(data.reply));
         
         // Trap the event in order to continue
         helper.fireAsyncCallback(data);

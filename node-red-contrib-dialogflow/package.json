@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-viseo-dialogflow",
-  "version": "0.1.0-alpha.18",
+  "version": "0.1.0-alpha.19",
   "description"   : "VISEO Bot Maker - Dialogflow server and NLP",
   "dependencies": {
     "actions-on-google": "~2.6",
