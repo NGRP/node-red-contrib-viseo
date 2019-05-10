@@ -265,6 +265,8 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
     if(address.channelId === 'facebook') {
 
+        msg.data.address = { channelId: 'facebook' };
+
         if (contentShare) {
             buildFacebookSpecificMessage(msg, "generic", opts, isPush);
             return true;
@@ -278,19 +280,22 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
             }
         }
 
+        if(isPush) {
+
+            msg.sourceEvent({ facebook : {
+                messaging_type: "MESSAGE_TAG",
+                tag: "NON_PROMOTIONAL_SUBSCRIPTION",
+                notification_type: opts.notification ? "REGULAR" : "NO_PUSH"
+            }});
+        }
+
     } else if(contentShare) {
         node.error("Share option only available on Facebook");
         return true;
     }
 
 
-    if(isPush) {
-        msg.sourceEvent({ facebook : {
-            messaging_type: "MESSAGE_TAG",
-            tag: "NON_PROMOTIONAL_SUBSCRIPTION"
-
-        }});
-    }
+    
 
     if (opts.type === 'signin') {
         var card = new builder.SigninCard()
@@ -403,6 +408,7 @@ const buildFacebookSpecificMessage = (msg, template, reply, isPush) => {
 
     let messaging_type = isPush ? "MESSAGE_TAG" : "RESPONSE";
     let tag = isPush ? "NON_PROMOTIONAL_SUBSCRIPTION" : undefined;
+    let notification_type = (isPush && reply.notification) ? "REGULAR" : "NO_PUSH"
 
     switch(template) {
 
@@ -440,7 +446,7 @@ const buildFacebookSpecificMessage = (msg, template, reply, isPush) => {
         msg.inputHint('expectingInput');
     }
 
-    msg.sourceEvent({ facebook: { attachment, messaging_type, tag }});
+    msg.sourceEvent({ facebook: { attachment, messaging_type, tag, notification_type }});
 }
 
 const buildFacebookButtonObject = (obj) => {
