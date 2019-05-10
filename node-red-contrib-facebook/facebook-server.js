@@ -46,12 +46,12 @@ const start = (RED, node, config) => {
         // Checks this is an event from a page subscription
         if (body.object === 'page') {
             if (!body.entry || body.entry.length < 1 || !body.entry[0].messaging) {
-                node.warn({error:'Empty request received', content: body});
+                node.error(JSON.stringify({error:'Empty request received', content: body}));
                 return res.sendStatus(404);
             }
 
             if (!body.entry[0].messaging[0].message && !body.entry[0].messaging[0].postback) {
-                node.warn(body)
+                //node.log(JSON.stringify(body))
                 return res.status(200).send('EVENT_RECEIVED');
             }
 
@@ -63,7 +63,7 @@ const start = (RED, node, config) => {
             res.status(200).send('EVENT_RECEIVED');
         } 
         else {
-            node.warn(body)
+            node.error(JSON.stringify(body))
             res.sendStatus(404);
         }
     });
@@ -90,7 +90,8 @@ const start = (RED, node, config) => {
                 return node.status({fill:"red", shape:"ring", text: "disconnected (webhook)"});
             }
         }
-        else node.warn(req.body)
+        else  node.log(JSON.stringify(req.body));
+     
     });
 
     // Add listener to reply
@@ -137,6 +138,9 @@ const receive = (node, config, json) => {
         source:     CARRIER
     })
 
+    if(data.message.message.quick_reply) {
+        data.message.text = data.message.message.quick_reply.payload;
+    }
     
     //let context = getMessageContext(data.message);
 
@@ -167,10 +171,14 @@ async function reply(node, data, config) {
         if (!address || address.carrier !== CARRIER) return false;
 
         // Building the message
-        let message = getMessage(data.reply, botmgr.getConvId(data));
-        node.warn(message)
-        if (!message) return false;
+        let message = getMessage(data.reply, botmgr.getConvId(data), data.message.timestamp === undefined);
         
+        if (!message) return false;
+
+
+        node.log(JSON.stringify(message));
+
+
         // Write the message 
         let req = {
             uri: "https://graph.facebook.com/v2.6/me/messages?access_token=" + config.pageToken,
@@ -192,7 +200,7 @@ async function reply(node, data, config) {
             let res = await request(req);
         }
         catch(err) {
-            node.warn({error: err});
+            node.error(JSON.stringify(err));
             return false;
         }
 
@@ -202,7 +210,7 @@ async function reply(node, data, config) {
     } catch(ex){ console.log(ex) }
 }
 
-const getMessage = exports.getMessage = (replies, psid) => { 
+const getMessage = exports.getMessage = (replies, psid, isPush) => { 
     if (!replies) return;
     let reply = replies[0];
 
@@ -312,7 +320,9 @@ const getMessage = exports.getMessage = (replies, psid) => {
         }
     }
 
-
+    msg.notification_type = (isPush && reply.notification) ? "REGULAR" : "NO_PUSH"
+    msg.messaging_type = isPush ? "MESSAGE_TAG" : "RESPONSE"
+    msg.tag = isPush ? "NON_PROMOTIONAL_SUBSCRIPTION" : undefined
 
     /*
     if (!msg.response.card.type) {
@@ -331,6 +341,7 @@ const getMessage = exports.getMessage = (replies, psid) => {
 }
 
 function getButton(button) {
+
     switch(button.action) {
         //value, button.title;
 

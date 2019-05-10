@@ -8,6 +8,7 @@ class MongoDBManager extends DatabaseManager {
     constructor(node) {
         super();
         this.db = null;
+        this.urlRegex = /^mongodb:\/\/(([^:]+):([^@]+)@)?([^:\/]+(:[0-9]+)?(,[^:\/]+(:[0-9]+)?)*)\/([a-zA-Z0-9_\-]+)(\?.*)?$/;
         this._init(node);
     }
 
@@ -30,7 +31,7 @@ class MongoDBManager extends DatabaseManager {
                 error = 'Missing connection string for MongoDB server';
             } else {
 
-                if(!/^mongodb:\/\/([^:]+:[^@]+@)?[^:\/]+(:[0-9]+)?(,[^:\/]+(:[0-9]+)?)*\/[a-zA-Z0-9_\-]+(\?.*)?$/.test(this.connectionString)) {
+                if(!this.urlRegex.test(this.connectionString)) {
                     error = "Invalid connection string for MongoDB server";
                 }
                 
@@ -59,6 +60,19 @@ class MongoDBManager extends DatabaseManager {
         if(this.useConnectionString) {
             this.connectionString = node.credentials.connectionString;
             url = this.connectionString;
+
+            let matches = this.connectionString.match(this.urlRegex);
+            if(matches) {
+                this._database = matches[8];
+                this.user = matches[2];
+                this.password = matches[3];
+                this.hosts = []
+                for(let host of matches[4].split(',')) {
+                    let hostSplit = host.split(":")
+                    this.hosts.push({ host: hostSplit[0], port : hostSplit[1] });
+                }
+
+            }
 
         } else {
             this._database = node.credentials.database;
@@ -94,8 +108,11 @@ class MongoDBManager extends DatabaseManager {
 
             if(err === null) {
                 manager.db = db;
-
-                info("Connected to database "+manager.url);
+                let hosts = '';
+                for (let host of manager.hosts) {
+                    hosts += " "+Object.values(host).join(":");
+                }
+                info("Connected to database "+hosts+'/'+manager._database);
 
                 db.on('close', () => {
                     manager.db = null;

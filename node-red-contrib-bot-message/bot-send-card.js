@@ -160,7 +160,8 @@ const buildReply = (RED, node, data, config) => {
     let reply = {
         "type"      : config.sendType,
         "prompt"    : config.prompt,
-        "receipt"   : data._receipt
+        "receipt"   : data._receipt,
+        "notification": data.notification
     };
 
     // Simple event message
@@ -176,6 +177,7 @@ const buildReply = (RED, node, data, config) => {
     else { // Prepare speech
         reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
         delete data._receipt;
+        delete data.notification;
     }
 
     // Simple text message
@@ -332,6 +334,7 @@ const sendData = (node, data, config) => {
 
                 if (!rgxp.test(testValue)) {
                     rgxp = new RegExp('^'+buttonValue+'$', 'i');
+
                     if (!rgxp.test(testValue)) {
                         continue;
                     }
