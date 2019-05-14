@@ -116,7 +116,10 @@ const receive = (conv, node, config, resolve, reject) => {
 
     node.log('RECEIVED :'+JSON.stringify({
         user : {
-            id: data.user.id
+            id: data.user.id,
+        },
+        conversation: {
+            id: data.user.address.conversation.id
         },
         intent: data.message.intent,
         timestamp: Date.now()
@@ -217,6 +220,9 @@ const reply = (node, data, config) => {
         node.log('REPLY: '+JSON.stringify({
             user : {
                 id: data.user.id
+            },
+            conversation: {
+                id: data.user.address.conversation.id
             },
             response: data.reply,
             timestamp: Date.now()
