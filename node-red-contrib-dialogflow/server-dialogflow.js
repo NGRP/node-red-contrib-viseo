@@ -118,7 +118,8 @@ const receive = (conv, node, config, resolve, reject) => {
         user : {
             id: data.user.id
         },
-        intent: data.message.intent
+        intent: data.message.intent,
+        timestamp: Date.now()
     }));
 
 
@@ -217,7 +218,8 @@ const reply = (node, data, config) => {
             user : {
                 id: data.user.id
             },
-            response: data.reply
+            response: data.reply,
+            timestamp: Date.now()
         }));
         
         // Trap the event in order to continue
