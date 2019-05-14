@@ -19,34 +19,30 @@
         paletteLabel: 'Handover',
         label: function() { return this.name || "Handover"; },
         oneditprepare: function () {
+            $.ajax({
+                url: window.location.pathname + 'facebook/handover/secondary_apps',
+                success: function(result) {
+                    var $select = $('#node-input-appDestination');
+
+                    for(var index in result) {
+                        var app = result[index];
+
+                        $select.append(
+                            '<option value="'+app.id+'">'+
+                                app.name +
+                            '</option>'
+                        );
+                    }
+
+                }
+            });
+
             $("#node-input-userId").typedInput({ default: 'msg', types: ['msg','str'], typeField: $("#node-input-userIdType") });
             $("#node-input-metadata").typedInput({ default: 'msg', types: ['msg','str','json'], typeField: $("#node-input-metadataType") });
         }
     });
 
-    $.ajax({
-        url: window.location.pathname + 'facebook/handover/secondary_apps',
-        success: function(result) {
-            var $html = $('<div>'),
-                $script = $("script[data-template-name=facebook-handover]");
-
-            $html.append($script.html());
-            var $select = $html.find('#node-input-appDestination');
-
-            for(var index in result) {
-                var app = result[index];
-
-                $select.append(
-                    '<option value="'+app.id+'">'+
-                        app.name +
-                    '</option>'
-                );
-            }
-
-            $script.html($html.html());
-
-        }
-    });
+    
 </script>
 
 <script type="text/x-red" data-template-name="facebook-handover">
