@@ -117,6 +117,7 @@ const receive = (conv, node, config, resolve, reject) => {
     node.log('RECEIVED :'+JSON.stringify({
         user : {
             id: data.user.id,
+            locale: data.user.locale
         },
         conversation: {
             id: data.user.address.conversation.id
@@ -219,7 +220,8 @@ const reply = (node, data, config) => {
 
         node.log('REPLY: '+JSON.stringify({
             user : {
-                id: data.user.id
+                id: data.user.id,
+                locale: data.user.locale
             },
             conversation: {
                 id: data.user.address.conversation.id
