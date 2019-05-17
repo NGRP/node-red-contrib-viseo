@@ -148,7 +148,8 @@ const buildReply = (node, data, config) => {
     let reply = {
         "type"      : config.sendType,
         "prompt"    : config.prompt,
-        "receipt"   : data._receipt
+        "receipt"   : data._receipt,
+        "notification": data.notification
     };
 
     // Simple event message
@@ -172,6 +173,7 @@ const buildReply = (node, data, config) => {
     else { // Prepare speech
         reply.speech = (config.speech) ? "" : marshall(locale, config.speechText, data, '');
         delete data._receipt;
+        delete data.notification;
     }
 
     // Simple text message
