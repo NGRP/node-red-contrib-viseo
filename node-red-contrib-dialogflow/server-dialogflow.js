@@ -122,6 +122,7 @@ const receive = (conv, node, config, resolve, reject) => {
         conversation: {
             id: data.user.address.conversation.id
         },
+        surfaces: data.message.surface.capabilities.list,
         intent: data.message.intent,
         timestamp: Date.now()
     }));
@@ -226,6 +227,7 @@ const reply = (node, data, config) => {
             conversation: {
                 id: data.user.address.conversation.id
             },
+            surfaces: data.message.surface.capabilities.list,
             response: data.reply,
             timestamp: Date.now()
         }));
