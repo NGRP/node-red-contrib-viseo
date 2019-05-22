@@ -47,7 +47,10 @@ module.exports = function(RED) {
 
         //Some information is missing in the node
         let err = this.server.databaseManager.getStatus(config);
-        if (err) node.status({ fill: "red", shape: "dot", text: err });
+        if(err) {
+            node.status({ fill: "red", shape: "dot", text: err });
+        }
+
 
         this.on('input', (data)  => { input(node, data, config) });
 
@@ -106,9 +109,7 @@ const input = (node, data, config) => {
 }
 
 const get = function(node, data, config) {
-    let dbKey = config.key;
-    if (config.keyType === "msg") dbKey = helper.getByString(data, dbKey, dbKey);
-
+    let dbKey = helper.getByString(data, config.key, config.key);
     if (!dbKey) {
         node.warn('No id Found. Do nothing');
         return node.send(data);
@@ -116,23 +117,26 @@ const get = function(node, data, config) {
 
     node.server.databaseManager.find({ id: dbKey }, data, config, function(err, data, results) {
 
-        if (err) return node.error(err);
-        if (results) {
+        if (err) {
+            return node.error(err);
+        }
+        if(results) {
             let result = results[0];
-            if (result) {
+
+            if(result) {
                 if (config.merge) {
-                    let value = config.value || 'payload';
-                    if (config.valueType === "msg")  value = helper.getByString(data, value);
+                    let value = helper.getByString(data, config.value);
                     if (value && (typeof value) === 'object') {
                         result = extend(true, {}, result, value);
-                        helper.setByString(data, config.value || 'payload', result);
+                        helper.setByString(data, config.value, result);
                         return node.send(data);
                     }
-                }     
+                }            
 
-                helper.setByString(data, config.value || 'payload', result);
+                helper.setByString(data, config.value, result);
             }
         }
+
         node.send(data);
     });
 };
@@ -186,11 +190,14 @@ const count = function(node, data, config) {
 
     // Kludge test to avoid logs exception for inline JSON
 
-    let dbKey = config.key || 'payload';
-    if (config.keyType === "msg")  dbKey = helper.getByString(data, dbKey);
-    if (dbKey.indexOf('{') !== 0)  dbKey = helper.resolve(dbKey, data);
-    if (typeof dbKey === 'string') dbKey = JSON.parse(dbKey);
+    let dbKey = config.key;
+    if (dbKey.indexOf('{') !== 0) {
+        dbKey = helper.getByString(data, config.key || 'payload');
+    }
 
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
+    }
     if (!dbKey) {
         node.warn('No condition found for search. Do Nothing.');
         return node.send(data);
@@ -219,18 +226,20 @@ const test = function(node, data, config) {
 
 const set = (node, data, config) => {
 
-    let dbKey = config.key || 'payload';
-    if (config.keyType === "msg")  dbKey = helper.getByString(data, dbKey);
-
-    let value = config.value || 'payload';
-    if (config.valueType === "msg")  value = helper.getByString(data, value);
-    if (!value) return node.error('No values: '+ (config.value || 'payload'));
+    let dbKey = helper.getByString(data, config.key);
+    let value = helper.getByString(data, config.value);
+    
+    if (!value) {
+        return node.error('No values: '+ config.value);
+    }
     
     value.id = dbKey;
     value.mdate = Date.now();
 
     node.server.databaseManager.update({ id: dbKey }, value, data, config, function(err, data, result) {
-        if (err) node.error(err);
+        if(err) {
+            node.error(err);
+        }
         node.send(data);
     });
 
@@ -238,23 +247,29 @@ const set = (node, data, config) => {
 
 const update = function(node, data, config) {
 
-    let value = config.value || 'payload';
-    if (config.valueType === "msg")  value = helper.getByString(data, value);
-
-    let dbKey = config.key || 'payload';
-    if (config.keyType === "msg")  dbKey = helper.getByString(data, dbKey);
-    if (dbKey.indexOf('{') !== 0)  dbKey = helper.resolve(dbKey, data);
-    if (typeof dbKey === 'string') dbKey = JSON.parse(dbKey);
-
+    let value = helper.getByString(data, config.value);
+    let dbKey = config.key;
+    
+    if (dbKey.indexOf('{') !== 0) {
+        dbKey = helper.getByString(data, config.key);
+    }
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
+    }
     if (!value) {
-        node.warn('No values: '+ (config.value || 'payload'));
+        node.warn('No values: '+ config.value);
         node.send(data);
         return;
     }
 
     node.server.databaseManager.update(dbKey, value, data, config, function(err, data, result) {
-        if (err) node.error(err);
+        
+        if(err) {
+            node.error(err);
+        }
+
         node.send(data);
+
     })
 }
 
@@ -282,15 +297,16 @@ const increment = function(node, data, config) {
 
 const add = (node, data, config) => {
 
-    let values = config.value || 'payload';
-    if (config.valueType === "msg")  values = helper.getByString(data, values);
-
+    let values = helper.getByString(data, config.value);
     //check value
     if(values !== null && (typeof values == "object" || (Array.isArray(values) && typeof values[0] === "object"))) {
         node.server.databaseManager.add(values, data, config, function(err, data, results) {
-            if (err) node.error(err);
+            if(err) {
+                node.error(err);
+            }
             node.send(data);
         });
+       
     } else {
         node.warn("Could not insert value. Operation ignored");
         node.send(data);
@@ -299,13 +315,18 @@ const add = (node, data, config) => {
 
 const remove = (node, data, config) => {
     
-    let dbKey = config.key || 'payload';
-    if (config.keyType === "msg")  dbKey = helper.getByString(data, dbKey);
-    if (dbKey.indexOf('{') !== 0)  dbKey = helper.resolve(dbKey, data);
-    if (typeof dbKey === 'string') dbKey = JSON.parse(dbKey);
+    let dbKey = config.key;
+    if (dbKey.indexOf('{') !== 0) {
+        dbKey = helper.getByString(data, config.key || 'payload');
+    }
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
+    }
 
     node.server.databaseManager.remove(dbKey, data, config, function(err, data, result) {
-        if (err) node.error(err);
+        if(err) {
+            node.error(err);
+        }
         node.send(data);
     });
 
