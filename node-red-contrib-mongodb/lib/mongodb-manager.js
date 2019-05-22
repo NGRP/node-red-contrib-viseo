@@ -57,6 +57,7 @@ class MongoDBManager extends DatabaseManager {
 
         let url = '';
         this.useConnectionString = node.useConnectionString
+
         if(this.useConnectionString) {
             this.connectionString = node.credentials.connectionString;
             url = this.connectionString;
@@ -266,6 +267,21 @@ class MongoDBManager extends DatabaseManager {
             }
         });
 	}
+
+    increment(key, value, data, config, callback) {
+
+        this._request((db) => {
+
+            try {
+                let collection = db.collection(config.collection);
+                collection.updateOne(key, { $inc: value }, { upsert: true }, function(err, result) {
+                    callback(err, data, result);
+                });
+            } catch(e) {
+                callback(e, data, {})
+            }
+        });
+    }
 
 	add(values, data, config, callback) {
 

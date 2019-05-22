@@ -106,6 +106,13 @@ class NeDBManager extends DatabaseManager {
 	    });
 	}
 
+    increment(key, value, data, config, callback) {
+
+        this.db.update(key, { $inc: value }, { upsert: true }, function(err, result) {
+            callback(err, data, result);
+        });
+    }
+
 	add(values, data, config, callback) {
 
 	    this.db.insert(values, function(err, result) {
