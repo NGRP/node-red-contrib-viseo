@@ -275,16 +275,17 @@ const update = function(node, data, config) {
 
 const increment = function(node, data, config) {
 
-    let value = config.value || 'payload';
-    if (config.valueType === "msg")  value = helper.getByString(data, value);
-
-    let dbKey = config.key || 'payload';
-    if (config.keyType === "msg")  dbKey = helper.getByString(data, dbKey);
-    if (dbKey.indexOf('{') !== 0)  dbKey = helper.resolve(dbKey, data);
-    if (typeof dbKey === 'string') dbKey = JSON.parse(dbKey);
-
+    let value = helper.getByString(data, config.value);
+    let dbKey = config.key;
+    
+    if (dbKey.indexOf('{') !== 0) {
+        dbKey = helper.getByString(data, config.key);
+    }
+    if (typeof dbKey === 'string'){
+        dbKey = JSON.parse(dbKey);
+    }
     if (!value) {
-        node.warn('No values: '+ (config.value || 'payload'));
+        node.warn('No values: '+ config.value);
         node.send(data);
         return;
     }
