@@ -13,7 +13,7 @@
     "keywords": [ "viseo", "sarah", "node-red", "search", "key", "value", "object", "json", "parents" ],
     "node-red" : {
         "nodes": {
-            "object-search": "node-object-search.js"
+            "loop-management":"node-object-search.js"
         }
     }
 }
