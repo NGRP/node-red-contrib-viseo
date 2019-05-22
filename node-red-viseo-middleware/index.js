@@ -18,6 +18,7 @@ module.exports = function() {
 
         let scopeTest = /^\/restricted\/([a-z]+\.[a-z]+)\//
         let requestedUrl = req.url;
+        let port = req.socket.localPort;
 
 
     	if(scopeTest.test(requestedUrl) === false) {
@@ -33,7 +34,7 @@ module.exports = function() {
             try {
 
                 let result = JSON.parse(await request({
-                    uri: global.CONFIG.server.host + '/auth/token',
+                    uri: "http://localhost:"+ port + '/auth/token',
                     method: 'POST',
                     form: {
                         client_id: 'node-red-admin',
@@ -53,7 +54,7 @@ module.exports = function() {
 
                 //redirect
                 res.cookie(scope, ssid, 30 * 60);
-                res.send({redirection: req.body['requested-url']});
+                res.send({redirection: global.CONFIG.server.host+req.body['requested-url']});
 
 
             } catch(e) {
