@@ -166,11 +166,10 @@ const buildReply = (RED, node, data, config) => {
 
     // Simple event message
     if (config.sendType === 'event'){
-        
         let value = helper.getContextValue(RED, node, data, config.eventValue, config.eventValueType || 'str');
         let event = { 
             name: config.eventName,
-            value: marshall(locale, value,  data, '')
+            value: (typeof value === "string") ? marshall(locale, value,  data, '') : value
         }
         reply.event = event;
     }
