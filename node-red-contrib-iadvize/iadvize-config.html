@@ -1,0 +1,64 @@
+<script type="text/javascript">
+    RED.nodes.registerType('iadvize-config',{
+        category: 'config',
+        defaults:  { 
+            name:       { value: undefined },
+            rest_endpoint:  { value: "https://ha.iadvize.com/api/2" },
+            graphql_endpoint:   { value: "https://api.iadvize.com/graphql" }
+        },
+        credentials: {
+            rest:    { type: "text" },
+            graphql:    { type: "text" }
+        },
+        label: function() { return this.name || "iAdvize config"; },
+        oneditprepare: function() {
+            $("#node-config-input-name").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-rest").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-rest_endpoint").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-graphql").typedInput({ default: 'str', types: ['str'], type: 'str'});
+            $("#node-config-input-graphql_endpoint").typedInput({ default: 'str', types: ['str'], type: 'str'});
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="iadvize-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>REST API</b>
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-rest_endpoint"><i class="fa fa-tasks"></i> Endpoint</label>
+        <input type="text" id="node-config-input-rest_endpoint" placeholder="https://ha.iadvize.com/api/2" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-rest"><i class="fa fa-tasks"></i> Token</label>
+        <input type="text" id="node-config-input-rest" style="width:70%;">
+    </div>
+
+    <br>
+    <b>GraphQL API</b>
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-graphql_endpoint"><i class="fa fa-sign-out"></i> Endpoint</label>
+        <input type="text" id="node-config-input-graphql_endpoint" placeholder="https://api.iadvize.com/graphql" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-graphql"><i class="fa fa-tasks"></i> Token</label>
+        <input type="text" id="node-config-input-graphql" style="width:70%;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="iadvize-config">
+    <p>Tokens and endpoints. </p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.iadvize.com/documentation#rest-api">IAdvize</a> - REST API</li>
+        <li><a href="https://developers.iadvize.com/documentation#graphql-api-alpha">IAdvize</a> - GraphQL API</li>
+    </ul>
+
+</script>

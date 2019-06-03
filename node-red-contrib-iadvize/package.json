@@ -1,0 +1,33 @@
+{
+  "name": "node-red-contrib-viseo-iadvize",
+  "version": "0.0.1",
+  "description"   : "VISEO Bot Maker - iAdvize",
+  "dependencies": {
+    "node-red-viseo-bot-manager": "~0.0",
+    "node-red-viseo-helper"      : "0.2.0-alpha.10",
+    "request": "2.88.0",
+    "request-promise":"~4.2",
+    "uuid": "3.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-iadvize"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "iadvize",
+    "chatbot",
+    "bot"
+  ],
+  "node-red": {
+    "nodes": {
+      "server-iadvize": "server-iadvize.js",
+      "iadvize-handover":"iadvize-handover.js",
+      "iadvize-query":"iadvize-query.js",
+      "iadvize-config": "iadvize-config.js"
+    }
+  }
+}

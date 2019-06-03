@@ -1,0 +1,235 @@
+<script type="text/javascript">
+    RED.nodes.registerType('iadvize-query', {
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            "name":   { value: undefined },
+            "config": { value: undefined, type: 'iadvize-config'},
+            "api":    { value: "rest" },
+
+            "action": { value: "GET" },
+            "graphquery": { value: "connector"},
+
+            "endpoint": { value: undefined },
+            "endpointType": { value: "str"},
+            "payload": { value: undefined },
+            "payloadType": { value: "json"},
+            "graphqlParams": { value: []},
+            "graphql-id": { value: undefined },
+            "graphql-idType": { value: "str"},
+            "graphql-ids": { value: undefined },
+            "graphql-idsType": { value: "json"},
+            "graphql-connectorVersionId": { value: undefined },
+            "graphql-connectorVersionIdType": { value: "str"},
+            "graphql-conversationId": { value: undefined },
+            "graphql-conversationIdType": { value: "num"},
+            "graphql-channel": { value: undefined },
+            "graphql-channelType": { value: "str"},
+            "graphql-websiteIds": { value: undefined },
+            "graphql-websiteIdsType": { value: "json"},
+            "graphql-projectId": { value: undefined },
+            "graphql-projectIdType": { value: "num"},
+            "graphql-legacyVisitorId": { value: undefined },
+            "graphql-egacyVisitorIdType": { value: "str"}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'iadvize.png',
+        align: 'left',
+        paletteLabel: 'Query',
+        outputLabels: ["stdout", "stderr"],
+        label: function () { return this.name || 'iAdvize query' },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+            $("#node-input-endpoint").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-endpointType")  });
+            $("#node-input-payload").typedInput({  default: 'json', types: ['msg','json'],  typeField: $("#node-input-payloadType")  });
+
+            $("#node-input-graphql-id").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-graphql-idType")  });
+            $("#node-input-graphql-connectorVersionId").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-graphql-connectorVersionIdType")  });
+            $("#node-input-graphql-conversationId").typedInput({  default: 'num', types: ['msg','num'],  typeField: $("#node-input-graphql-conversationIdType")  });
+            $("#node-input-graphql-channel").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-graphql-channelType")  });
+            $("#node-input-graphql-projectId").typedInput({  default: 'num', types: ['msg','num'],  typeField: $("#node-input-graphql-projectIdType")  });
+            $("#node-input-graphql-legacyVisitorId").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-graphql-legacyVisitorIdType")  });
+            $("#node-input-graphql-ids").typedInput({  default: 'json', types: ['msg','json'],  typeField: $("#node-input-graphql-idsType")  });
+            $("#node-input-graphql-websiteIds").typedInput({  default: 'json', types: ['msg','json'],  typeField: $("#node-input-graphql-websiteIdsType")  });
+
+            $("#node-input-api").change(displaySections);
+            $("#node-input-action").change(displaySections);
+            $("#node-input-graphquery").change(displaySections);
+
+            function displaySections() {
+                $(".api").hide();
+                let value = $("#node-input-api").val();
+                $(".api-" + value).show();
+
+                if (value === "rest") {
+                    let actionValue = $("#node-input-action").val();
+                    $("#node-input-endpoint").typedInput('show');
+                    $(".api-rest-" + actionValue).show();
+                    $(".api-rest-" + actionValue).find('label').each(function(a,b) {
+                        let _id = $(b).attr('for');
+                        $('#' + _id).typedInput('show');
+                    })
+                }
+                else {
+                    let actionValue = $("#node-input-graphquery").val();
+                    $(".api-graphql-" + actionValue).show();
+                    $(".api-graphql-" + actionValue).find('label').each(function(a,b) {
+                        let _id = $(b).attr('for');
+                        $('#' + _id).typedInput('show');
+                    })
+                }
+            }
+        },
+        oneditsave: function() {
+            let value = $("#node-input-api").val();
+            if (value === "graphql") {
+                let actionValue = $("#node-input-graphquery").val();
+                let graphqlParams = [];
+                $(".api-graphql-" + actionValue).find('label').each(function(a,b) {
+                    let param = ($(b).attr('for')).split('-').pop();
+                    graphqlParams.push(param);
+                })
+                this.graphqlParams = graphqlParams;
+            }
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="iadvize-query">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-lock"></i> Config</label>
+        <input type="text" id="node-input-config" style="width:70%;" placeholder="">
+    </div>
+
+    <br>
+    <b>Query</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-api"><i class="fa fa-globe"></i> API</label>
+        <select id="node-input-api" style="width:70%;">
+            <option value="rest">REST</option>
+            <option value="graphql">GraphQL API alpha</option>
+        </select>
+    </div>
+
+    <div class="form-row api api-rest">
+        <select id="node-input-action" style="width: 100px; display:inline-block;">
+            <option value="GET">Read</option>
+            <option value="POST" disabled>Create</option>
+            <option value="PUT" disabled>Update</option>
+            <option value="DELETE" disabled>Delete</option>
+        </select>
+        <input type="text" id="node-input-endpoint" style="width:70%; display:inline-block;" placeholder="">
+        <input type="hidden" id="node-input-endpointType">
+    </div>
+
+    <div class="form-row api api-graphql">
+        <label for="node-input-graphquery"><i class="fa fa-question-circle"></i> Query</label>
+        <select id="node-input-graphquery" style="width:70%;">
+            <option value="connector">Get a connector</option> 
+            <option value="connectorVersion">Get a connector version</option>
+            <option value="connectorConversationClosingFormValues">Get a conversation closing form values</option>
+            <option value="connectorVersionParameters">List connector version parameters</option>
+            <option value="connectorVersions">List connector versions</option>
+            <option value="connectors">List connectors</option>
+            <option value="routingGroup">Look up a routing group</option>
+            <option value="routingGroups">Look up routing groups</option>
+            <option value="routingRule">Look up a routing rule</option>
+            <option value="routingRules">Look up routing rules.</option>
+            <option value="visitorCustomData">Get the custom data of a visitor</option>
+            <option value="custom">Custom request...</option>
+        </select>
+    </div>
+
+    <div class="form-row api api-graphql-custom api-rest-POST api-rest-GET api-rest-PUT">
+        <label for="node-input-payload"><i class="fa fa-tasks"></i> Payload</label>
+        <input type="text" id="node-input-payload" style="width:70%;" placeholder="Content: query or payload">
+        <input type="hidden" id="node-input-payloadType">
+    </div>
+
+    <div class="form-row api api-graphql-connector api-graphql-connectorVersion api-graphql-routingGroup api-graphql-routingRule">
+        <label for="node-input-graphql-id"><i class="fa fa-tasks"></i> Id</label>
+        <input type="text" id="node-input-graphql-id" style="width:70%;" placeholder="Id">
+        <input type="hidden" id="node-input-graphql-idType">
+    </div>
+
+    <div class="form-row api api-graphql-connectorVersions">
+        <label for="node-input-graphql-ids"><i class="fa fa-tasks"></i> Ids</label>
+        <input type="text" id="node-input-graphql-ids" style="width:70%;" placeholder="List of connector version ids">
+        <input type="hidden" id="node-input-graphql-idsType">
+    </div>
+
+    <div class="form-row api api-graphql-connectorConversationClosingFormValues api-graphql-connectorVersionParameters">
+        <label for="node-input-graphql-connectorVersionId"><i class="fa fa-tasks"></i> Vers. id</label>
+        <input type="text" id="node-input-graphql-connectorVersionId" style="width:70%;" placeholder="Id of the version of the connector">
+        <input type="hidden" id="node-input-graphql-connectorVersionIdType">
+    </div>
+
+    <div class="form-row api api-graphql-connectorConversationClosingFormValues">
+        <label for="node-input-graphql-conversationId"><i class="fa fa-tasks"></i> Conv. id</label>
+        <input type="text" id="node-input-graphql-conversationId" style="width:70%;" placeholder="Id of the iAdvize conversation">
+        <input type="hidden" id="node-input-graphql-conversationIdType">
+    </div>
+
+    <div class="form-row api api-graphql-routingGroups api-graphql-routingRules">
+        <label for="node-input-graphql-websiteIds"><i class="fa fa-tasks"></i> Sites ids</label>
+        <input type="text" id="node-input-graphql-websiteIds" style="width:70%;" placeholder="Optional list of website identifiers to filter on">
+        <input type="hidden" id="node-input-graphql-websiteIdsType">
+    </div>
+
+    <div class="form-row api api-graphql-visitorCustomData">
+        <label for="node-input-graphql-channel"><i class="fa fa-tasks"></i> Channel</label>
+        <input type="text" id="node-input-graphql-channel" style="width:70%;" placeholder="Channel used">
+        <input type="hidden" id="node-input-graphql-channelType">
+    </div>
+
+    <div class="form-row api api-graphql-visitorCustomData">
+        <label for="node-input-graphql-projectId"><i class="fa fa-tasks"></i> Project id</label>
+        <input type="text" id="node-input-graphql-projectId" style="width:70%;" placeholder="Id of the iAdvize project">
+        <input type="hidden" id="node-input-graphql-projectIdType">
+    </div>
+
+    <div class="form-row api api-graphql-visitorCustomData">
+        <label for="node-input-graphql-legacyVisitorId"><i class="fa fa-tasks"></i> Visitor id</label>
+        <input type="text" id="node-input-graphql-legacyVisitorId" style="width:70%;" placeholder="Id of the visitor">
+        <input type="hidden" id="node-input-graphql-legacyVisitorIdType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="iadvize-query">
+    <p>Transfer the conversation to a an agent, depending on the rule. </p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Pre-transfer message<span class="property-type">string</span></dt>
+        <dd>(opt) the message to be sent before the transfer</dd>
+        <dt>Post-transfer message<span class="property-type">string</span></dt>
+        <dd>(opt) the message to be sent if the transfer fail</dd>
+        <dt>Distribution ID <span class="property-type">string</span></dt>
+        <dd>id of distribution rule to follow.</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.iadvize.com/documentation#conversation-flow-endpoints">IAdvize documentation</a> - conversation flow</li>
+        <li><a href="https://graphql-docs.com/docs/?graphqlUrl=https://chat-api.zopim.com/graphql/request">IAdvize Chat API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

@@ -1,0 +1,132 @@
+<script type="text/javascript">
+    RED.nodes.registerType('iadvize-handover', {
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            name:      { value: undefined },
+            message : { value: undefined },
+            messageType:  { value: 'str' },
+            errmessage : { value: undefined },
+            errmessageType:  { value: 'str' },
+            ruleway: { value: "id" },
+            ruleid : { value: undefined },
+            ruleidType:  { value: 'str' },
+            rulename : { value: undefined },
+            rulenameType:  { value: 'str' },
+            websiteid : { value: undefined },
+            websiteidType:  { value: 'str' }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: 'iadvize.png',
+        align: 'left',
+        paletteLabel: 'Handover',
+        outputLabels: ["stdout", "stderr"],
+        label: function () { return this.name || 'iAdvize handover' },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-message").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-messageType")  });
+            $("#node-input-errmessage").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-errmessageType")  });
+            $("#node-input-ruleid").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-ruleidType")  });
+            $("#node-input-rulename").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-rulenameType")  });
+            $("#node-input-websiteid").typedInput({  default: 'str', types: ['msg','str'],  typeField: $("#node-input-websiteidType")  });
+
+            $("#node-input-ruleway").change( function() {
+                $(".way").hide();
+                let value = $(this).val();
+                $(".way-" + value).show();
+
+                if (value === "id") {
+                    $("#node-input-ruleid").typedInput('show');
+                }
+                else {
+                    $("#node-input-rulename").typedInput('show');
+                    $("#node-input-websiteid").typedInput('show');
+                }
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="iadvize-handover">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="">
+    </div>
+
+    <br>
+    <b>Message (opt)</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-message"><i class="fa fa-user"></i> Pre-transfer</label>
+        <input type="text" id="node-input-message" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-messageType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-errmessage"><i class="fa fa-user"></i> Post-transfer</label>
+        <input type="text" id="node-input-errmessage" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-errmessageType">
+    </div>
+
+    <br>
+    <b>Distribution</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-ruleway"><i class="fa fa-tasks"></i> Rule</label>
+        <select id="node-input-ruleway" style="width:70%;">
+            <option value="id">With rule ID</option>
+            <option value="name">With rule name</option>
+        </select>
+    </div>
+
+    <div class="form-row way way-id">
+        <label for="node-input-ruleid"><i class="fa fa-user"></i> ID*</label>
+        <input type="text" id="node-input-ruleid" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-ruleidType">
+    </div>
+    
+    <div class="form-row way way-name">
+        <label for="node-input-rulename"><i class="fa fa-user"></i> Name*</label>
+        <input type="text" id="node-input-rulename" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-rulenameType">
+    </div>
+
+    <div class="form-row way way-name">
+        <label for="node-input-websiteid"><i class="fa fa-user"></i> WebsiteID</label>
+        <input type="text" id="node-input-websiteid" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-websiteidType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="iadvize-handover">
+    <p>Transfer the conversation to a an agent, depending on the rule. </p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Pre-transfer message<span class="property-type">string</span></dt>
+        <dd>(opt) the message to be sent before the transfer</dd>
+        <dt>Post-transfer message<span class="property-type">string</span></dt>
+        <dd>(opt) the message to be sent if the transfer fail</dd>
+        <dt>Distribution ID <span class="property-type">string</span></dt>
+        <dd>id of distribution rule to follow.</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.iadvize.com/documentation#conversation-flow-endpoints">IAdvize documentation</a> - conversation flow</li>
+        <li><a href="https://graphql-docs.com/docs/?graphqlUrl=https://chat-api.zopim.com/graphql/request">IAdvize Chat API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

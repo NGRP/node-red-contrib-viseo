@@ -1,0 +1,112 @@
+<script type="text/javascript">
+    RED.nodes.registerType('server-iadvize',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: { 
+            name: { value: undefined },
+            delay: { value: 1 },
+        },
+        credentials: {
+            botName: { type: "text" },
+            botID: { type: "text" },
+            uiUrl: { type : "text" }
+        },
+        inputs:  0,
+        outputs: 2,
+        icon: "iadvize.png",
+        align: "left",
+        paletteLabel: 'iAdvize',
+        label: function() { return this.name || "iAdvize"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-botName").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-botID").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-uiUrl").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-delay").typedInput({ default: 'num', types: ['num'], type: 'num' });
+        },
+        oneditsave: function(){}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="server-iadvize">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;">
+    </div>
+
+    <br><b>Bot</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-botName"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-botName" placeholder="bot" style="width: 70%;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-botID"><i class="fa fa-tag"></i> ID</label>
+        <input type="text" id="node-input-botID" placeholder="bot" style="width: 70%;">
+    </div>
+
+    <br><b>Conversation</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-uiUrl"><i class="fa fa-globe"></i> Flow</label>
+        <input type="text" id="node-input-uiUrl" placeholder="https://node-red.ui/url" style="width: 70%;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay (ms)</label>
+        <input type="text" id="node-input-delay" placeholder="1000" style="width: 70%;">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="server-iadvize">
+    <p>[<b>Bot server</b>] Connects to a IAdvize bot. </p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Callback output
+            <dl class="message-properties">
+                <dt>callback <span class="property-type">object</span></dt>
+                <dd>the sent callback</dd>
+            </dl>
+        </li>
+        <li>Message output
+            <dl class="message-properties">
+                <dt>payload <span class="property-type">string</span></dt>
+                <dd>the user input</dd>
+                <dt>user <span class="property-type">object</span></dt>
+                <dd>the user information</dd>
+                <dt>message <span class="property-type">object</span></dt>
+                <dd>the complete conversation information</dd>
+            </dl>
+        </li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Bot name <span class="property-type">string</span></dt>
+        <dd>the bot name</dd>
+        <dt>Bot ID <span class="property-type">string</span></dt>
+        <dd>the bot id</dd>
+        <dt>Conversation flow <span class="property-type">string</span></dt>
+        <dd>the flow (Node-RED UI) URL</dd>
+        <dt>Conversation delay <span class="property-type">number</span></dt>
+        <dd>the delay between each message</dd>
+    </dl>
+    <p>This node uses the <code>/iadvize/*</code> routes to connect with IAdvize. <br>
+    Please set the webhooks route to <code>/iadvize/callback</code> in the app configuration.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.iadvize.com/documentation#external-bot">IAdvize documentation</a> - about external bots</li>
+        <li><a href="https://developers.iadvize.com/documentation#conversation-flow-endpoints">IAdvize documentation</a> - conversation flow</li>
+        <li><a href="https://developers.iadvize.com/documentation#webhooks">IAdvize documentation</a> - webhooks</li>
+        <li><a href="https://developers.iadvize.com/documentation#rest-api">IAdvize documentation</a> - REST API</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>
