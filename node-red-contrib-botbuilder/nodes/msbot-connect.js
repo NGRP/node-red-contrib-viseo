@@ -334,7 +334,8 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
     if (opts.type === 'media') {
         let url  = helper.absURL(opts.media);
-        let type = CONTENT_TYPE[url.substring(url.length - 3)]
+        let extension = url.split('.').pop();
+        let type = CONTENT_TYPE[extension.toLowerCase()];
         msg.attachments([{
             "contentType": type || CONTENT_TYPE['png'],
             "contentUrl": url
@@ -386,7 +387,8 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
     // Backward compatibility
     if (!!opts.attach && undefined === opts.buttons) {
         let url  = helper.absURL(opts.attach);
-        let type = CONTENT_TYPE[url.substring(url.length - 3)]
+        let extension = url.split('.').pop();
+        let type = CONTENT_TYPE[extension.toLowerCase()];
         msg.attachments([{
             "contentType": type || CONTENT_TYPE['png'],
             "contentUrl": url
