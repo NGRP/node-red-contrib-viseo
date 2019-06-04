@@ -192,9 +192,18 @@ const delayReply = (delay, data, callback, customTyping) => {
 // ------------------------------------------
 
 const CONTENT_TYPE = {
-    "jpg": "image/jpg",
+    "jpe": "image/jpeg",
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
     "gif": "image/gif",
     "png": "image/png",
+    "tif": "image/tiff",
+    "tiff": "image/tiff",
+    "mp4": "video/mp4",
+    "mpeg": "video/mpeg",
+    "mpe": "video/mpeg",
+    "mpg": "video/mpeg",
+    "mov":	"video/quicktime"
 }
 
 const getSession  = (data) => {
