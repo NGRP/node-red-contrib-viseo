@@ -335,9 +335,11 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
     if (opts.type === 'media') {
         let url  = helper.absURL(opts.media);
         let extension = url.split('.').pop();
-        let type = CONTENT_TYPE[extension.toLowerCase()];
+        let type = CONTENT_TYPE[extension.toLowerCase()]
+        if (!type) type = (url.match(/youtube/)) ? "video/mp4" : CONTENT_TYPE['png']
+
         msg.attachments([{
-            "contentType": type || CONTENT_TYPE['png'],
+            "contentType": type,
             "contentUrl": url
         }]);
         return true;
@@ -388,9 +390,11 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
     if (!!opts.attach && undefined === opts.buttons) {
         let url  = helper.absURL(opts.attach);
         let extension = url.split('.').pop();
-        let type = CONTENT_TYPE[extension.toLowerCase()];
+        let type = CONTENT_TYPE[extension.toLowerCase()]
+        if (!type) type = (url.match(/youtube/)) ? "video/mp4" : CONTENT_TYPE['png']
+
         msg.attachments([{
-            "contentType": type || CONTENT_TYPE['png'],
+            "contentType": type,
             "contentUrl": url
         }]);
         return true;
