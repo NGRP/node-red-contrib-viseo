@@ -4,11 +4,11 @@
 
 <h1 align="center">
   <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Home">
-    <img src="https://v1zo.viseo.io/static/ban2.png" alt="VISEO Bot Maker" width="100%">
+    <img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/header.png" alt="VISEO Bot Maker" width="100%">
   </a>
-  <a href="https://bot.viseo.io/"><img src="https://v1zo.viseo.io/static/web2.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://v1zo.viseo.io/static/doc2.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/mail2.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://bot.viseo.io/"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_doc.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
 </h1>
 
 <p align="center">
@@ -26,7 +26,7 @@
 VISEO Bot Maker is a framework built on top of Node-RED. This is also the full re-engineering V5 of the smart-home assistant [SARAH](http://sarah.encausse.net), architectured by [@jpencausse](https://twitter.com/jpencausse) in 2012.
 
 <br>
-<img src="https://v1zo.viseo.io/static/archi.jpg" alt="VISEO Bot Maker channels" width="100%">
+<img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/framework.jpg" alt="VISEO Bot Maker channels" width="100%">
 <br>
 
 Different **bot Servers** nodes act as adapters between the flow and text or voice channels, allowing your program to behave independently of the channel. 
@@ -44,7 +44,7 @@ The roadmap is available on [this GitHub Project](https://github.com/NGRP/node-r
 - we selected Node-RED platform to let managers and developers easily switch between modules (NLP, Computer Vision, etc.)
 - we open-sourced this project to share our state-of-the-art work to and between our customers
 
-<a href="mailto:contact@viseo.io"><img src="https://v1zo.viseo.io/static/voice2.png" alt="Contact us at contact(at)viseo(.)io"/></a>
+<a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/mailus.png" alt="Contact us at contact(at)viseo(.)io"/></a>
 
 ---
 
