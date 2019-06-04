@@ -8,7 +8,7 @@
   </a>
   <a href="https://bot.viseo.io/"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
   <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_doc.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_mail.png" alt="VISEO Bot Maker" width="120"></a>
 </h1>
 
 <p align="center">
