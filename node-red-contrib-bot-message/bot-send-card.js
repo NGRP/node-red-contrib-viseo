@@ -225,6 +225,7 @@ const buildReply = (node, data, config) => {
         }
 
         reply.media = media;
+        reply.mediaContentType = config.mediaContent;
         if (reply.speech === undefined) reply.speech = "";
     }
 

@@ -334,9 +334,15 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
     if (opts.type === 'media') {
         let url  = helper.absURL(opts.media);
-        let extension = url.split('.').pop();
-        let type = CONTENT_TYPE[extension.toLowerCase()]
-        if (!type) type = (url.match(/youtube/)) ? "video/mp4" : CONTENT_TYPE['png']
+        let type = opts.mediaContentType;
+        
+        if (!type || type === "image" || type === "video") {
+            let extension = url.split('.').pop();
+            let testType = CONTENT_TYPE[extension.toLowerCase()];
+            if (testType) type = testType;
+            else if (type === "image") type = CONTENT_TYPE['png']
+            else type = CONTENT_TYPE['mp4']
+        }
 
         msg.attachments([{
             "contentType": type,
