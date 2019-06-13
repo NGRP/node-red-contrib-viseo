@@ -161,12 +161,14 @@ const input = (node, data, config, reply) => {
         }
     }
 
-    helper.emitAsyncEvent('reply', node, data, config, (newData) => {
-        helper.emitAsyncEvent('replied', node, newData, config, () => {})
-        if (config.prompt) { 
-            return; 
-        }
-        sendData(node, newData, config);
+    helper.emitAsyncEvent('before-reply', node, data, config, (newData) => {
+        helper.emitAsyncEvent('reply', node, newData, config, (otherData) => {
+            helper.emitAsyncEvent('replied', node, otherData, config, () => {})
+            if (config.prompt) { 
+                return; 
+            }
+            sendData(node, otherData, config);
+        });
     });
 }
 
