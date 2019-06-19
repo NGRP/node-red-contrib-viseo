@@ -17,7 +17,11 @@ module.exports = function(RED) {
 
         this.on('input', (data) => { input(node, data, config)  });
     }
-    RED.nodes.registerType("facebook-handover", register);
+    RED.nodes.registerType("facebook-handover", register, {
+        credentials: {
+            appDestination: { type: "text" }
+        }
+    });
 }
 
 let SECONDARY_APPS = [];
@@ -58,7 +62,7 @@ const input = (node, data, config) => {
 
     let metadata     = config.metadata;
 
-    let secondaryApp = config.appDestination;
+    let secondaryApp = node.credentials.appDestination;
 
     request(
         {
