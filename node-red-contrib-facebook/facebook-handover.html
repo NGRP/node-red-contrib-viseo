@@ -3,13 +3,16 @@
         category: 'VISEO_BOT',
         color: '#3FADB5',
         defaults: { 
+
             name:           { value: undefined },
             pageToken:      { value: undefined, type: 'facebook-token'}, 
             userId:         { value: undefined },
             userIdType:     { value: 'msg' },
-            appDestination: { value: undefined },
             metadata:       { value: undefined },
             metadataType:   { value: 'msg' }
+        },
+        credentials: {
+            appDestination: { type: "text" }
         },
         inputs:  1,
         outputs: 2,
