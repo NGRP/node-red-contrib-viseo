@@ -33,7 +33,9 @@ const route = (callback, options, server) => {
     })*/
     
     
-    server.post('/api/v1/messages', connector.listen());
+    server.post('/api/v1/messages', /*connector.listen()*/ (req, res) => {
+        connector.listen()(req, res);
+    });
     bot = bindConnector(connector, opt);
 
     callback(undefined, bot);

@@ -196,6 +196,11 @@ const buildReply = (RED, node, data, config) => {
         let media = helper.getContextValue(RED, node, data, config.media, config.mediaType || 'str');
         reply.media = marshall(locale, media,  data, '');
 
+
+        reply.media = media;
+        reply.mediaContentType = config.mediaContent;
+
+
         if (reply.speech === undefined) reply.speech = "";
     }
 

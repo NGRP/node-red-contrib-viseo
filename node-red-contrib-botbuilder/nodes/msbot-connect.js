@@ -194,9 +194,18 @@ const delayReply = (delay, data, callback, customTyping) => {
 // ------------------------------------------
 
 const CONTENT_TYPE = {
-    "jpg": "image/jpg",
+    "jpe": "image/jpeg",
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
     "gif": "image/gif",
     "png": "image/png",
+    "tif": "image/tiff",
+    "tiff": "image/tiff",
+    "mp4": "video/mp4",
+    "mpeg": "video/mpeg",
+    "mpe": "video/mpeg",
+    "mpg": "video/mpeg",
+    "mov":	"video/quicktime"
 }
 
 const getSession  = (data) => {
@@ -325,9 +334,18 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
 
     if (opts.type === 'media') {
         let url  = helper.absURL(opts.media);
-        let type = CONTENT_TYPE[url.substring(url.length - 3)]
+        let type = opts.mediaContentType;
+        
+        if (!type || type === "image" || type === "video") {
+            let extension = url.split('.').pop();
+            let testType = CONTENT_TYPE[extension.toLowerCase()];
+            if (testType) type = testType;
+            else if (type === "image") type = CONTENT_TYPE['png']
+            else type = CONTENT_TYPE['mp4']
+        }
+
         msg.attachments([{
-            "contentType": type || CONTENT_TYPE['png'],
+            "contentType": type,
             "contentUrl": url
         }]);
         return true;
@@ -377,9 +395,12 @@ const buildRawMessage = (node, msg, opts, address, isPush) => {
     // Backward compatibility
     if (!!opts.attach && undefined === opts.buttons) {
         let url  = helper.absURL(opts.attach);
-        let type = CONTENT_TYPE[url.substring(url.length - 3)]
+        let extension = url.split('.').pop();
+        let type = CONTENT_TYPE[extension.toLowerCase()]
+        if (!type) type = (url.match(/youtube/)) ? "video/mp4" : CONTENT_TYPE['png']
+
         msg.attachments([{
-            "contentType": type || CONTENT_TYPE['png'],
+            "contentType": type,
             "contentUrl": url
         }]);
         return true;
