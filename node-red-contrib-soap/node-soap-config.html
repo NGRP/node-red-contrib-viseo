@@ -1,0 +1,88 @@
+<script type="text/javascript">
+    RED.nodes.registerType('soap-config',{
+        category: 'config',
+        defaults: {
+            name: { value: undefined },
+            auth: { value: "none" },
+            options: { value: "{}" }
+        },
+        credentials: {
+            wsdl: { type:"text" },
+            login: { type:"text" },
+            password: { type:"text" },
+            sslKey: { type:"text" },
+            sslCert: { type:"text" },
+            bearerToken: { type:"text" }
+        },
+        label: function() {
+            return this.name || "SOAP Client";
+        },
+        oneditprepare: function() {
+            $("#node-config-input-wsdl").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-options").typedInput({ default: 'json', types: ['json'], type: 'json' });
+
+            $("#node-config-input-auth").change(function() {
+                $(".auth").hide();
+                if ($(this).val() !== "none") $("." + $(this).val()).show();
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="soap-config">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" style="width:70%;" placeholder="Name">
+    </div>
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-wsdl"><i class="fa fa-globe"></i> WSDL</label>
+        <input type="text" id="node-config-input-wsdl" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-options"><i class="fa fa-sliders"></i> Options</label>
+        <input type="text" id="node-config-input-options" style="width:70%;" placeholder="">
+    </div>
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-auth"><i class="fa fa-lock"></i> Authent.</label>
+        <select id="node-config-input-auth" style="width:70%;">
+            <option value="none">None</option>
+            <option value="basic">Basic authentication</option>
+            <option value="ssl">SSL - Client certificate</option>
+            <option value="ws">WS - Security</option>
+            <option value="token">Bearer token</option>
+        </select>
+    </div>
+    <br>
+    <div class="form-row auth basic ws">
+        <label for="node-config-input-login"><i class="fa fa-user"></i> Login</label>
+        <input type="text" id="node-config-input-login" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row auth basic ws">
+        <label for="node-config-input-password"><i class="fa fa-key"></i> Password</label>
+        <input type="text" id="node-config-input-password" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row auth ssl">
+        <label for="node-config-input-sslKey"><i class="fa fa-key"></i> Client key</label>
+        <input type="text" id="node-config-input-sslKey" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row auth ssl">
+        <label for="node-config-input-sslCert"><i class="fa fa-certificate"></i> Client cert</label>
+        <input type="text" id="node-config-input-sslCert" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row auth token">
+        <label for="node-config-input-bearerToken"><i class="fa fa-key"></i> Token</label>
+        <input type="text" id="node-config-input-bearerToken" style="width:70%;" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="soap-config">
+    <p>A SOAP client server.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://www.npmjs.com/package/soap">SOAP package</a> - npm page</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>

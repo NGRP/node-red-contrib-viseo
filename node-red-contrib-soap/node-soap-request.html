@@ -1,0 +1,102 @@
+<script type="text/javascript">
+    RED.nodes.registerType('soap-request', {
+        category: 'function',
+        color: '#3FADB5',
+        defaults: {
+            name: { value: undefined },
+            client: { value: undefined, type: 'soap-config', required: true },
+            method:     { value: undefined, required: true },
+            methodType: { value: "str" },
+            parameters:     { value: "payload" },
+            parametersType: { value: "msg" },
+            headers:    { value: undefined, required: false },
+            headersType: { value: "msg" },
+            output: { value: "payload"}
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: 'white-globe.png',
+        align: 'left',
+        paletteLabel: 'soap client',
+        outputLabels: ["stdout", "stderr"],
+        label: function () { return this.name || 'soap' },
+        oneditprepare: function() {
+            $("#node-input-method").typedInput({ default: 'str', types: ['msg','str','global'], typeField: $("#node-input-methodType") });
+            $("#node-input-parameters").typedInput({ default: 'msg', types: ['msg','json','global'], typeField: $("#node-input-parametersType") });
+            $("#node-input-headers").typedInput({ default: 'str', types: ['msg','json','global'], typeField: $("#node-input-headersType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'],  type: 'msg'});
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="soap-request">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Dialogflow">
+    </div>
+
+    <br>
+    <b>SOAP client </b>
+
+    <div class="form-row" id="display_v1">
+        <br>
+        <label for="node-input-client"><i class="fa fa-globe"></i> Config</label>
+        <input type="text" id="node-input-client" style="width:70%;">
+    </div>
+
+    <br>
+    <b>SOAP request settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-method"><i class="fa fa-arrow-circle-right"></i> Method</label>
+        <input type="text" id="node-input-method" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-methodType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-parameters"><i class="fa fa-sign-in"></i> Parameters</label>
+        <input type="text" id="node-input-parameters" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-parametersType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-headers"><i class="fa fa-info-circle"></i> Headers</label>
+        <input type="text" id="node-input-headers" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-headersType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="soap-request">
+    <p>A SOAP client to perform requests. </p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Config <span class="property-type">config</span></dt>
+        <dd>client server configuration</dd>
+        <dt>Method <span class="property-type">string</span></dt>
+        <dd>client method to call</dd>
+        <dt>parameters <span class="property-type">object</span></dt>
+        <dd>required parameters for the method</dd>
+        <dt>headers <span class="property-type">object</span></dt>
+        <dd>optional headers to include in the request</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://www.npmjs.com/package/soap">SOAP package</a> - npm page</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>
