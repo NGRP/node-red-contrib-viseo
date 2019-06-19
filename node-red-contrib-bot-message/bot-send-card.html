@@ -33,6 +33,7 @@
 
             media:        { value: undefined },
             mediaType:    { value: "str" },
+            mediaContent: { value: "image" },
 
             eventName:      { value: undefined },
             eventValue:     { value: undefined },
@@ -600,7 +601,7 @@
             <select id="node-input-sendType" style="width:80%;">
                 <option value="text">Text</option>
                 <option value="quick">Text + Quick replies</option>
-                <option value="media">Image</option>
+                <option value="media">Media</option>
                 <option value="card">Card</option>
                 <option value="signin">SignIn</option>
                 <option value="event">Event</option>
@@ -624,9 +625,27 @@
 
         <section class="section-type section-media">
             <div class="form-row">
-                <label for="node-input-media"><i class="fa fa-image"></i> Image</label>
+                <label for="node-input-media"><i class="fa fa-image"></i> Media</label>
                 <input type="text" id="node-input-media" style="width:80%;" placeholder="http://path/to/card/image">
                 <input type="hidden" id="node-input-mediaType">
+            </div>
+            <div class="form-row">
+                <label for="node-input-mediaContent">Content-Type</label>
+                <select id="node-input-mediaContent" style="width:80%;">
+                    <optgroup label="Image">
+                        <option value="image">auto (image)</option>
+                        <option value="image/jpeg">image/jpeg</option>
+                        <option value="image/gif">image/gif</option>
+                        <option value="image/png">image/png</option>
+                        <option value="image/tiff">image/tiff</option>
+                    </optgroup>
+                    <optgroup label="Video">
+                        <option value="video">auto (video)</option>
+                        <option value="video/mp4">video/mp4</option>
+                        <option value="video/mpeg">video/mpeg</option>
+                        <option value="video/quicktime">video/quicktime</option>
+                    </optgroup>
+                </select>
             </div>
         </section>
         <section class="section-type section-card">
