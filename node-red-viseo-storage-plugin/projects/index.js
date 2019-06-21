@@ -117,7 +117,9 @@ function init(_settings, _runtime) {
                     globalGitUser = gitConfig.user;
                     Projects.init(settings,runtime);
                     sshTools.init(settings,runtime);
-                    projectsDir = fspath.join(settings.userDir,"projects");
+
+                    projectsDir = settings.projectsDir || fspath.join(settings.userDir, 'projects');
+                    
                     if (!settings.readOnly) {
                         return fs.ensureDir(projectsDir)
                         //TODO: this is accessing settings from storage directly as settings
@@ -199,6 +201,7 @@ function loadProject(name) {
     if (projectPath.indexOf(fspath.sep) === -1) {
         projectPath = fspath.join(projectsDir,name);
     }
+
     return Projects.load(projectPath).then(function(project) {
 
         activeProject = project;

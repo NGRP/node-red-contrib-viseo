@@ -1190,7 +1190,7 @@ function init(_settings, _runtime) {
     settings = _settings;
     runtime = _runtime;
     log = runtime.log;
-    projectsDir = fspath.join(settings.userDir,"projects");
+    projectsDir = settings.projectsDir || fspath.join(settings.userDir,"projects");
     authCache.init();
 }
 
