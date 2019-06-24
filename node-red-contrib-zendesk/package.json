@@ -1,0 +1,28 @@
+{
+  "name": "node-red-contrib-viseo-zendesk",
+  "version": "0.0.1",
+  "description"   : "VISEO Bot Maker - Zendesk server",
+  "dependencies": {
+    "node-red-viseo-bot-manager": "~0.0",
+    "node-red-viseo-helper"      : "0.2.0-alpha.10",
+    "request-promise": "~4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-zendesk"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "zendesk"
+  ],
+  "node-red": {
+    "nodes": {
+      "zendesk-server": "server-zendesk.js",
+      "zendesk-token": "zendesk-token.js",
+      "zendesk-handover": "zendesk-handover.js"
+    }
+  }
+}

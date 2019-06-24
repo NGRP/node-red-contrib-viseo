@@ -1,0 +1,66 @@
+<script type="text/javascript">
+    RED.nodes.registerType('zendesk-handover', {
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: {
+            name:      { value: undefined },
+            agent_id : { value: undefined },
+            agent_idType : { value: 'msg' }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: 'zendesk.png',
+        align: 'left',
+        paletteLabel: 'Handover',
+        outputLabels: ["stdout", "stderr"],
+        label: function () { return this.name || 'Zendesk handover' },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-agent_id").typedInput({  default: 'msg', types: ['msg','str'],  typeField: $("#node-input-agent_idType")  });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="zendesk-handover">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Dialogflow">
+    </div>
+
+    <br>
+    <b>Handover settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-agent_id"><i class="fa fa-user"></i> Agent ID</label>
+        <input type="text" id="node-input-agent_id" style="width:70%;" placeholder="">
+        <input type="hidden" id="node-input-agent_idType">
+    </div>
+    
+</script>
+
+<script type="text/x-red" data-help-name="zendesk-handover">
+    <p> Transfer the conversation to a an agent. </p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload<span class="property-type">object</span></dt>
+        <dd>The result of the transfer operation. If the operation operation went well, the result is sent in the first output.
+            If it failed, the result is sent in the second output.</dd>
+    </dl>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Agent ID <span class="property-type">string</span></dt>
+        <dd>id of the agent to send the conversation to.</dd>
+    </dl>
+    <p>If no agent ID is given, the conversation will be sent to a random online agent.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://graphql-docs.com/docs/?graphqlUrl=https://chat-api.zopim.com/graphql/request">Zendesk Chat API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

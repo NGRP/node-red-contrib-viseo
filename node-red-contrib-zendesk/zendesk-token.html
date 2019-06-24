@@ -1,0 +1,103 @@
+<script type="text/javascript">
+    RED.nodes.registerType('zendesk-token',{
+        category: 'config',
+        defaults: {
+            name:       { value: undefined },
+            redirect_uri:      { value: undefined },
+            client_id:         { value: undefined },
+            scope:      { value: undefined },
+            subdomain:  { value: undefined },
+            result:     { value: undefined }
+        },
+        credentials: {
+            token:        { type: "text" }
+        },
+        label: function() {
+            return this.name || "Zendesk token";
+        },
+        oneditprepare: function() {
+            $("#node-config-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-token").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-redirect_uri").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-client_id").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-scope").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-config-input-subdomain").typedInput({ default: 'str', types: ['str'], type: 'str' });
+
+            $("#generate").on("click", function(res) {
+
+                let url = "https://www.zopim.com/oauth2/authorizations/new?response_type=token"
+                    url += "&redirect_uri=" + encodeURIComponent($("#node-config-input-redirect_uri").val());
+                    url += "&client_id=" + encodeURIComponent($("#node-config-input-client_id").val());
+                    url += "&scope=" + encodeURIComponent($("#node-config-input-scope").val());
+                    url += "&subdomain=" + encodeURIComponent($("#node-config-input-subdomain").val());
+                
+                    $("#node-config-input-result").val(url);
+            });
+
+            $("#open_url").on("click", function(res) {
+                let url = $("#node-config-input-result").val()
+                if (url) window.open(url,'_blank');
+            });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="zendesk-token">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" style="width: 70%;" placeholder="Name">
+    </div>
+
+    <br><b>Token</b>
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-token"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-config-input-token" style="width: 70%;" placeholder="Access token">
+    </div>
+
+    <br><b>Client info</b>
+    <br>
+    <br><p>To get a new token, click the "Generate" button.
+        <br>Then click the right arrow to open the URL in a new tab.
+        <br>Copy/paste the token into the above "Token" field.</p>
+    <div class="form-row">
+        <br>
+        <label for="node-config-input-redirect_uri">Redirect</label>
+        <input type="text" id="node-config-input-redirect_uri" placeholder="https://my.redirect/url" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-client_id"> Client ID</label>
+        <input type="text" id="node-config-input-client_id" placeholder="" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-scope"> Scope</label>
+        <input type="text" id="node-config-input-scope" placeholder="read write" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-subdomain"> Subdomain</label>
+        <input type="text" id="node-config-input-subdomain" placeholder="" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="">
+            <a id="generate" class="editor-button" style="vertical-align:middle; display:inline-block;">Generate</a>
+        </label>
+        <input type="text" id="node-config-input-result" placeholder="" style="width: calc(70% - 36px)">
+        <a id="open_url" class="editor-button" style="display:inline-block; vertical-align:middle; ">
+            <i class="fa fa-arrow-right"></i>
+        </a>
+    </div>
+
+
+
+</script>
+
+<script type="text/x-red" data-help-name="zendesk-token">
+    <p>Zendesk token.</p>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developer.zendesk.com/rest_api/docs/chat/auth/">Zendesk Chat API</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

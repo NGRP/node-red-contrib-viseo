@@ -1,0 +1,66 @@
+<script type="text/javascript">
+    RED.nodes.registerType('zendesk-server',{
+        category: 'VISEO_BOT',
+        color: '#3FADB5',
+        defaults: { 
+            "name":     { value: undefined },
+            "bot_name": { value: undefined },
+            "token":    { value: "",  type: 'zendesk-token' },
+            "typing":   { value: "1000" }
+        },
+        inputs:  0,
+        outputs: 2,
+        icon: "zendesk.png",
+        align: "left",
+        paletteLabel: 'Zendesk',
+        outputLabels: ["stdout", "stderr"],
+        label: function() { return this.name || "Zendesk"; },
+        oneditprepare: function() {
+            $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-bot_name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-typing").typedInput({ default: 'num', types: ['num'], type: 'num' });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="zendesk-server">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="width: 70%;">
+    </div>
+
+    <br><b>Config</b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-token"><i class="fa fa-lock"></i> Access token</label>
+        <input type="text" id="node-input-token" placeholder="" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-typing"><i class="fa fa-edit"></i> Typing (ms)</label>
+        <input type="text" id="node-input-typing" placeholder="1000" style="width: 70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bot_name"><i class="fa fa-user"></i> Bot name</label>
+        <input type="text" id="node-input-bot_name" style="width:70%;" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="zendesk-server">
+    <p>[<b>Bot server</b>] Connects to a Zendesk agent. </p>
+
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://graphql-docs.com/docs/?graphqlUrl=https://chat-api.zopim.com/graphql/request">Zendesk Chat API</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>
