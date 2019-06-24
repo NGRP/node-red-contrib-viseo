@@ -1,7 +1,9 @@
 <script type="text/javascript">
     RED.nodes.registerType('aws-rekognition',{
-        category: 'VISEO_VISION',
-        color: '#3FADB5',
+        category: '🖼️_image',
+        color: '#ffe0b3',
+        icon: "aws.png",
+        align: "left",
         defaults: { 
             name:   { value: undefined },
             key:    { value: undefined, type: 'aws-config'},
@@ -45,6 +47,10 @@
         },
         inputs:  1,
         outputs: 1,
+        paletteLabel: "Rekognition",
+        label: function() { 
+            return this.name || "Rekognition";
+        },
         oneditprepare: function () {
             $("#node-input-name").typedInput({   default: 'str', types: ['str'], type: "str" });
             $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], type: "msg" });
@@ -85,11 +91,7 @@
                 parameters.push(_id.split('-').pop());
             })
             this.parameters = parameters;
-        },
-        icon: "aws.png",
-        align: "left",
-        paletteLabel: "Rekognition",
-        label: function() { return this.name || "Rekognition"; }
+        }
     });
 </script>
 

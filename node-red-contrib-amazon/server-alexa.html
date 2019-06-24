@@ -1,14 +1,14 @@
 <script type="text/javascript">
     RED.nodes.registerType('amazon-alexa',{
-        category: 'VISEO_BOT',
-        color: '#3FADB5',
+        category: '📻_channels',
+        color: '#d9f4fd',
         defaults: {
             name:    { value: undefined },
             title:   { value: "Alexa" }
         },
         inputs:  0,
         outputs: 1,
-        icon: "amazon.png",  align: "left",
+        icon: "alexa.png",  align: "left",
         paletteLabel: "Alexa",
         label: function() { return this.name || "Alexa"; },
         oneditprepare: function() {

@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('wechat',{
-        category: 'VISEO_BOT',
-        color: '#3FADB5',
+        category: '📻_channels',
+        color: '#c5edbb',
         defaults: {
             name:           { value: undefined },
             token:          { value: undefined, required: true, type: 'wechat-config'},
@@ -31,7 +31,7 @@
                 }
             });
         }},
-        icon: "wechat.svg",  align: "left",
+        icon: "wechat.png",  align: "left",
         paletteLabel: "WeChat",
         label: function() { return this.name || "WeChat"; },
         oneditprepare: function() {

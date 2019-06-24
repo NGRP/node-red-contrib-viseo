@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('google-spreadsheet',{
-        category: 'VISEO_REST',
-        color: '#3FADB5',
+        category: '💾_data',
+        color: '#f9c6c3',
         defaults: { 
             name:    { value: undefined },
             auth:    { value: undefined, type: 'google-service-account', required: true },
@@ -30,7 +30,7 @@
         },
         inputs:  1,
         outputs: 2,
-        icon: "google.svg",
+        icon: "gcc.png",
         align: "left",
         paletteLabel: 'Spreadsheet',
         label: function() { return this.name || "Google Spreadsheet"; },

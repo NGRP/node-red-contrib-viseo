@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('aws-lex', {
-        category: 'VISEO_NLP',
-        color: '#3FADB5',
+        category: '💬_language',
+        color: '#ffe0b3',
         defaults: {
             name:         { value: undefined },
             token:        { value: undefined, type: 'aws-config', required: false },
@@ -24,8 +24,8 @@
         outputs: 1,
         icon: 'aws.png',
         align: 'left',
-        paletteLabel: 'AWS Lex',
-        label: function () { return this.name || 'AWS Lex' },
+        paletteLabel: 'Lex',
+        label: function () { return this.name || 'Lex' },
         oneditprepare: function() {
 
             // TypedInput for Content-Types

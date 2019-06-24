@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('ms-video-indexer',{
-        category: 'VISEO_VISION',
-        color: '#3FADB5',
+        category: '🖼️_image',
+        color: '#8accff',
         defaults: { 
             name:           { value: undefined },
             action:         { value: "Search"  },
@@ -297,7 +297,7 @@
             if ($(".content").css('display') === "none") this.contt = undefined;
             if ($(".body").css('display') === "none") this.body =  undefined;
         },
-        icon: "microsoft.svg",
+        icon: "azure.png",
         align: "left",
         paletteLabel: "Video Indexer",
         label: function() { return this.name || "Video Indexer"; }

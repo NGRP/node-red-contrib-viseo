@@ -3,8 +3,8 @@
 <script type="text/javascript">
 
     RED.nodes.registerType('msbot-offline',{
-        category: 'VISEO_BOT',
-        color: '#3FADB5',
+        category: '🖐️_channels_helpers',
+        color: '#8accff',
         defaults:  { 
             name:   { value: undefined },
             webchat:  { value: "/offchat", validate: function(v) {
@@ -22,7 +22,8 @@
         },
         inputs:0,
         outputs:0,
-        icon: "microsoft.svg",  align: "left",
+        icon: "azure.png", 
+        align: "left",
         paletteLabel: "Offline",
         oneditprepare: function(){ 
             $("#node-input-host").typedInput({     default: 'str', types: ['str'], type: 'str' });

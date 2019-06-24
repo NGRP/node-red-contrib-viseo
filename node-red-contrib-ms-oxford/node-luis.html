@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('ms-luis',{
-        category: 'VISEO_NLP',
-        color: '#3FADB5',
+        category: '💬_language',
+        color: '#8accff',
         defaults: { 
             name:         { value: undefined },
             config:       { value: undefined, type: "ms-luis-config" }, 
@@ -11,7 +11,7 @@
         },
         inputs: 1,
         outputs:1,
-        icon: "microsoft.svg", align: "left",
+        icon: "azure.png", align: "left",
         paletteLabel: "LUIS",
         label: function() { return this.name || "LUIS"; },
         oneditprepare: function() {

@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('ms-qna',{
-        category: 'VISEO_NLP',
-        color: '#3FADB5',
+        category: '💬_language',
+        color: '#8accff',
         defaults: { 
             name:               { value: undefined },
             host:               { value: undefined, required: true },
@@ -18,7 +18,7 @@
         },
         inputs: 1,
         outputs:1,
-        icon: "microsoft.svg",
+        icon: "azure.png",
         align: "left",
         paletteLabel: 'QnA Maker',
         label: function() { return this.name || "QnA Maker"; },

@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-ethjs",
-    "version"       : "0.0.5",
+    "version"       : "0.0.6",
     "description"   : "VISEO Bot Maker - Blockchain with EthJS ",
     "dependencies"  : {
         "ethjs" : "~0.2.8",

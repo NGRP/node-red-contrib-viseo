@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('facebook-server',{
-        category: 'VISEO_BOT',
-        color: '#3FADB5',
+        category: '📻_channels',
+        color: '#abbbde',
         defaults: {
             name:       { value: undefined },
             pageToken:  { value: "",  type: 'facebook-token' }
@@ -11,7 +11,7 @@
         },
         inputs:  0,
         outputs: 1,
-        icon: "facebook.svg",  align: "left",
+        icon: "facebook.png",  align: "left",
         paletteLabel: "Messenger",
         label: function() { return this.name || "Messenger"; },
         oneditprepare: function() {

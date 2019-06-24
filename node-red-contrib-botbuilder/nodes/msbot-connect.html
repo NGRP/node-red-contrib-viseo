@@ -11,8 +11,8 @@
     });
 
     RED.nodes.registerType('bot',{
-        category: 'VISEO_BOT',
-        color: '#3FADB5',
+        category: '📻_channels',
+        color: '#8accff',
         defaults:  { 
             name:          { value: undefined },
             project:       { value: undefined },
@@ -26,7 +26,8 @@
         },
         inputs:0,
         outputs:1,
-        icon: "microsoft.svg",  align: "left",
+        icon: "azure.png", 
+        align: "left",
         paletteLabel: "BotBuilder",
         oneditsave:    function(){ var node = this; setTimeout(function(){ setProject(node.project) },1) },
         oneditprepare: function(){ 

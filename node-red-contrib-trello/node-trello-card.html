@@ -691,8 +691,8 @@
     };
 
     RED.nodes.registerType('trello-card',{
-        category: 'VISEO_REST',
-        color: '#3FADB5',
+        category: '🃏_miscellaneous',
+        color: '#70cbff',
         defaults: { 
             'name'       : { value: undefined },
             'key'        : { value: undefined, type: 'trello-config', required: true },
@@ -710,7 +710,7 @@
         },
         inputs:  1,
         outputs: 1,
-        icon: "trello.svg",
+        icon: "trello.png",
         align: "left",
         paletteLabel: "Trello",
         label: function() { return this.name || "Trello"; },
