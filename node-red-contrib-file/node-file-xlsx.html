@@ -30,7 +30,8 @@
             
         },
         inputs:  1,
-        outputs: 1,
+        outputs: 2,
+        outputLabels: ["stdout", "stderr"],
         icon: "xlsx.svg",
         align: "left",
         paletteLabel: 'XLSX file',
@@ -203,6 +204,12 @@
 <script type="text/x-red" data-help-name="file-xlsx">
 
     <p>Manipulate a XLSX file. </p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
 
     <h3>Details</h3>
     <p>Properties</p>

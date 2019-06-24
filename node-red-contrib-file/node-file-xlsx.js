@@ -104,12 +104,12 @@ async function input(node, data, config) {
   }
   catch(ex) {
     node.warn(ex);
-    helper.setByString(outLoc, config.output || "payload", { "error": ex});
-    return node.send(data);
+    helper.setByString(outLoc, config.output || "payload", ex);
+    return node.send([undefined,data]);
   }
 
   helper.setByString(outLoc, config.output || "payload",  res);
-  return node.send(data);
+  return node.send([data, undefined]);
 
 }
 
