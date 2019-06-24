@@ -1,0 +1,29 @@
+{
+  "name": "node-red-contrib-viseo-nlp-js",
+  "version": "0.0.0",
+  "description"   : "VISEO Bot Maker - NLP.js",
+  "dependencies": {
+    "node-red-viseo-helper": "~0.1",
+    "node-nlp": "2.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-nlp-js"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "nlp",
+    "sentiment",
+    "language",
+    "local"
+  ],
+  "node-red": {
+    "nodes": {
+      "nlp-js": "node-nlp-js.js",
+      "nlp-js-config": "node-nlp-js-config.js"
+    }
+  }
+}
