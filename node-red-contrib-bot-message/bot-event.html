@@ -6,7 +6,7 @@
         color: '#3FADB5',
         defaults:  { 
             name:   { value: undefined },
-            listen: { value: undefined }
+            listen: { value: "received" }
         },
         inputs:  0,
         outputs: 1,
@@ -24,11 +24,11 @@
     <div class="form-row">
         <label for="node-input-listen"><i class="fa fa-calendar"></i> Event</label>
         <select id="node-input-listen" style="width:70%;">
+            <option value="received">Received</option>
             <option value="prompt">Prompt</option>
             <option value="prompt-unexpected">Prompt unexpected text</option>
-            <option value="received">Received</option>
-            <option value="replied">Replied</option>
-            <option value="reply">Reply</option>
+            <option value="before-reply">Before reply</option>
+            <option value="replied">After reply</option>
             <option value="greeting">Greeting</option>
         </select>
     </div>
@@ -51,10 +51,10 @@
         <dd>when a prompt message arrives but does not match any of the following : button values/regexp, quickreplies values/regexp</dd>
         <dt>Received <span class="property-type">needs Continue</span></dt>
         <dd>when the connector just received a message from the user</dd>
-        <dt>Replied </dt>
-        <dd>when the bot replied to the user</dd>
-        <dt>Reply </dt>
-        <dd>when the bot just prepared the message to reply to the user</dd>
+        <dt>After reply </dt>
+        <dd>after the bot replied to the user</dd>
+        <dt>Before reply </dt>
+        <dd>juste before the bot to reply to the user</dd>
     </dl>
 
     <h4>Precedence</h4>
@@ -62,7 +62,7 @@
     <ul>
         <li>Received > Prompt > Prompt Unexpected text</li>
 
-        <li>Reply > Replied</li>
+        <li>Before reply > Reply > After reply</li>
     </ul>
 
     

@@ -146,12 +146,12 @@ const input = (RED, node, data, config, reply) => {
         }
     }
 
-    helper.emitAsyncEvent('reply', node, data, config, (newData) => {
-        helper.emitAsyncEvent('replied', node, newData, config, () => {})
-        if (config.prompt) { 
-            return; 
-        }
-        sendData(node, newData, config);
+    helper.emitAsyncEvent('before-reply', node, data, config, (beforeData) => {
+        helper.emitAsyncEvent('reply', node, beforeData, config, (newData) => {
+            helper.emitAsyncEvent('replied', node, newData, config, () => {})
+            if (config.prompt) return; 
+            sendData(node, newData, config);
+        });
     });
 }
 
