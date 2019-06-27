@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('node-recast',{
-        category: 'VISEO_NLP',
-        color: '#3FADB5',
+        category: '💬_language',
+        color: '#fff0c2',
         defaults: { 
             name:         { value: undefined },
             key:          { value: undefined, type: "node-recast-config" }, 
@@ -12,7 +12,7 @@
         },
         inputs: 1,
         outputs:1,
-        icon: "recast.svg", align: "left",
+        icon: "recast.png", align: "left",
         paletteLabel: "Recast",
         label: function() { return this.name || "Recast"; },
         oneditprepare: function() {

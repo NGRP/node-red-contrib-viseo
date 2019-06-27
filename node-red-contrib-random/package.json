@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-random",
-    "version"       : "0.2.3",
+    "version"       : "0.3.0",
     "description"   : "VISEO Bot Maker - Random call between outputs",
     "dependencies"  : { 
         "node-red-viseo-helper" : "~0.1"

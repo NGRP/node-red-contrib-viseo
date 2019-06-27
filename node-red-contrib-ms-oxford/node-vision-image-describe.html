@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('vision-image-describe',{
-        category: 'VISEO_VISION',
-        color: '#3FADB5',
+        category: '🖼️_image',
+        color: '#8accff',
         defaults: { 
             name:           { value: undefined },
             image:          { value: undefined },
@@ -40,7 +40,7 @@
         oneditsave: function () { 
             this.imageT = $("#node-input-image").typedInput('type');
         },
-        icon: "microsoft.svg",
+        icon: "azure.png",
         align: "left",
         paletteLabel: "Computer Vision",
         label: function() { return this.name || "Computer Vision"; }

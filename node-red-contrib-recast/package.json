@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-recast",
-    "version"       : "0.0.3",
+    "version"       : "0.1.0",
     "description"   : "VISEO Bot Maker - Recast API",
     "dependencies"  : {  
         "recastai"   : "~3.6",

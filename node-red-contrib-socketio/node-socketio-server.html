@@ -29,8 +29,8 @@
 
 <script type="text/javascript">
     RED.nodes.registerType('socketio-server',{
-        category: 'VISEO_BOT',
-        color: '#3FADB5',
+        category: '📻_channels',
+        color: '#d6d6d6',
         defaults: { 
             name:   { value: undefined },
             config: { value: undefined,  type: 'socketio-server-config' },
@@ -38,9 +38,9 @@
         },
         inputs:  0,
         outputs: 1,
-        icon: "socketio.svg",
+        icon: "socketio.png",
         align: "left",
-        paletteLabel: 'Socket.io bot',
+        paletteLabel: 'Socket.io',
         label: function() { return this.name || "Socket.io bot server"; },
         oneditprepare: function() {
             $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });

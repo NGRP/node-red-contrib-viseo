@@ -1,0 +1,229 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nlp-js', {
+        category: '💬_language',
+        color: '#3FADB5',
+        defaults: {
+            name:    { value: undefined },
+            model:   { value: undefined, type: 'nlp-js-config', required: false },
+            action:    { value: 'train' },
+            input:     { value: 'payload' },
+            inputType:  { value: 'msg' },
+            language:     { value: undefined },
+            languageType: { value: 'str' },
+            similar:      { value: 'getSimilarity' },
+            useCollation: { value: false },
+            normalize:    { value: false },
+            compare:      { value: undefined },
+            compareType:  { value: 'str' },
+            output:       { value: 'payload' }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: 'nlpjs.png',
+        align: 'left',
+        paletteLabel: 'NLP.js',
+        outputLabels: ["stdout", "stderr"],
+        label: function () { return this.name || 'NLP.js' },
+        oneditprepare: function() {
+            $("#node-input-compare").typedInput({ default: 'str', types: ['msg','str'],  typeField: $("#node-input-compareType")  });
+            $("#node-input-input").typedInput({   default: 'msg', types: ['msg','str','json'],  typeField: $("#node-input-inputType") });
+            $("#node-input-language").typedInput({  default: 'str', types: ['msg','str','json'],  typeField: $("#node-input-languageType") });
+            $("#node-input-output").typedInput({    default: 'msg', types: ['msg'], type: 'msg' });
+            $("#node-input-action").change(showSections);
+
+            function showSections() {
+                $(".parameters").hide();
+                let action = $("#node-input-action").val();
+                $("." + action).show();
+                $('.' + action).find('label').each(function(a,b) {
+                    let _id = $(b).attr('for');
+                    let _el = $('#' + _id);
+                    if (_el.attr('type') === "text") _el.typedInput('show');
+                })
+            }
+        },
+        oneditsave: function() {}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nlp-js">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="NLP.js" style="width:70%;">
+    </div>
+
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-action"><i class="fa fa-navicon"></i> Action</label>
+        <select id="node-input-action" style="width:70%;">
+            <option value="train">Train</option>
+            <option value="process">General process</option>
+            <option value="language">Guess language</option>
+            <option value="sentiment">Analyze sentiment</option>
+            <option value="similar">Search similiarity</option>
+        </select>
+    </div>
+
+    <div class="form-row parameters train process">
+        <label for="node-input-model"><i class="fa fa-file"></i> Model</label>
+        <input type="text" id="node-input-model" style="width:70%;">
+    </div>    
+
+    <br>
+    <br>
+
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row parameters process language sentiment">
+        <label for="node-input-language"><i class="fa fa-globe"></i> Language</label>
+        <input type="text" id="node-input-language">
+        <input type="hidden" id="node-input-languageType">
+    </div> 
+
+    <div class="form-row parameters similar">
+        <label for="node-input-compare"><i class="fa fa-sign-in"></i> Input 2</label>
+        <input type="text" id="node-input-compare">
+        <input type="hidden" id="node-input-compareType">
+    </div>
+
+    <div class="form-row parameters similar">
+        <label for="node-input-similar"><i class="fa fa-navicon"></i> Process</label>
+        <select id="node-input-similar" style="width:70%;">
+            <option value="getSimilarity">Get similarity</option>
+            <option value="getBestSubstring">Get best substring</option>
+        </select>
+    </div>
+
+    <div class="form-row parameters similar">
+        <label for="node-input-useCollation"></label>
+        <input type="checkbox" id="node-input-useCollation" style="width: auto; vertical-align:top;"> <span>Use collation</span>
+    </div>
+
+    <div class="form-row parameters similar">
+        <label for="node-input-normalize"></label>
+        <input type="checkbox" id="node-input-normalize" style="width: auto; vertical-align:top;"> <span>Normalize</span>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+    </div>
+</script>
+
+<style>
+.parameters > .red-ui-typedInput-container {
+    width: 70% !important;
+    margin-left: 0 !important;
+}
+</style>
+
+
+<script type="text/x-red" data-help-name="nlp-js">
+    <p>Uses AXA NLP.js library to classify, analyze... </p>
+
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output</li>
+        <li>Standard error</li>
+    </ol>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Model <span class="property-type">config</span></dt>
+        <dd>agent NLP model </dd>
+        <dt>Input <span class="property-type">text|json</span></dt>
+        <dd>text input or data to train (see <code>train</code> section) </dd>
+        <dt>Input 2 <span class="property-type">text</span></dt>
+        <dd>other text input to compare with the first one </dd>
+        <dt>Language <span class="property-type">text|array</span></dt>
+        <dd>2-letters language (string or array of strings)</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results </dd>
+    </dl>
+    <p>
+        Use <i>train</i> to create a new agent from scratch or to update an existing one, and <i>process</i> to get the full result of the NLP operation on a sentence.
+    </p>
+    <p>
+        To <code>train</code> data, please make sure the input data is formatted such as:
+    </p>
+    <pre>{
+  "languages": ["fr, en"],
+  "entities": [
+    {
+      "name": "hero",
+      "type": "enum",
+      "value": "spiderman",
+      "languages": ["fr","en"]
+      "enum": ["Spiderman","Spider-man","spiderman"}
+      ]
+    }
+    {
+      "name": "mail",
+      "type": "regex",
+      "languages": "en"
+      "regex":"/\b(\\w[-._\\w]*\\w@\\w[-._\\w]*\\w\\.\\w{2,3})\b/ig"
+    },
+    {
+      "name": "fromEntity",
+      "type": "trim",
+      "languages" : "en",
+      "trim" : [{ 
+          "type" : "between",
+          "condition" : ["from", "to"]
+        },
+        {
+          "type" : ""afterLast"",
+          "condition" : "to"
+      }]
+    }, ...
+  ],
+  "utterances": [
+    {
+      "intent": "whois",
+      "value": "who is %hero%?",
+      "language": "en"
+    },
+    {
+      "intent": "whois",
+      "value": "who are you", 
+      "language": "en"
+    },
+    {
+      "intent": "whois",
+      "value": "who is it",
+      "language": "en"
+    }, ...
+  ],
+  "answers": [
+    {
+      "intent": "whois",
+      "value": "this is me"
+      "language": "en"
+    },
+    {
+      "intent": "whois",
+      "value": "this is Bruce Banner"
+      "language": "en",
+      "condition": "hero === 'hulk'"
+    },
+    {
+      "intent": "whois",
+      "value": "c'est moi"
+      "language": "fr"
+    }
+  ]
+}</pre>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/axa-group/nlp.js/">AXA NLP.js</a> - the github repository</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>

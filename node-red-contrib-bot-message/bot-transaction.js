@@ -54,12 +54,12 @@ const input = (node, data, config) => {
     
     // Emit reply message
     data.reply = [ reply ];
-    helper.emitAsyncEvent('reply', node, data, config, (newData) => {
-        helper.emitAsyncEvent('replied', node, newData, config, () => {})
-        if (node.prompt) { 
-            return; 
-        }
-        node.send(data)
+    helper.emitAsyncEvent('before-reply', node, data, config, (beforeData) => {
+        helper.emitAsyncEvent('reply', node, beforeData, config, (newData) => {
+            helper.emitAsyncEvent('replied', node, newData, config, () => {})
+            if (node.prompt) return; 
+            node.send(data)
+        });
     });
 };
 

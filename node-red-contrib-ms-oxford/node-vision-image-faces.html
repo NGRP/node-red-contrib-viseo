@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('vision-image-faces',{
-        category: 'VISEO_VISION',
-        color: '#3FADB5',
+        category: '🖼️_image',
+        color: '#8accff',
         defaults: { 
             name:       { value: undefined },
             facekey:    { value: undefined, required: true,  type: 'ms-config'},
@@ -177,7 +177,7 @@
             })
             this.parameters = parameters;
         },
-        icon: "microsoft.svg",
+        icon: "azure.png",
         align: "left",
         paletteLabel: "Face",
         label: function() { return this.name || "Face"; }

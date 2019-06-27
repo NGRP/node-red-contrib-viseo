@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('ms-speech-text',{
-        category: 'VISEO_SPEECH',
-        color: '#3FADB5',
+        category: '🔉_audio',
+        color: '#8accff',
         defaults: { 
             name:        { value: undefined },
             key:         { value: undefined, required: true, type: 'ms-config'},
@@ -24,7 +24,7 @@
         },
         inputs:  1,
         outputs: 2,
-        icon: "microsoft.svg",
+        icon: "azure.png",
         align: "left",
         paletteLabel: 'Speech',
         label: function() { return this.name || "Speech"; },
