@@ -23,32 +23,63 @@ var util = require("./util");
 
 var globalSettingsFile;
 var globalSettingsBackup;
+var projectSettingsFile;
+var projectSettingsBackup;
 var settings;
 
 module.exports = {
     init: function(_settings) {
         settings = _settings;
-        globalSettingsFile = fspath.join(settings.userDir,".config.json");
-        globalSettingsBackup = fspath.join(settings.userDir,".config.json.backup");
+        globalSettingsFile = fspath.join(settings.settingsDir,".config.json");
+        globalSettingsBackup = fspath.join(settings.settingsDir,".config.json.backup");
+
+        projectSettingsFile = fspath.join(settings.userDir,".config.json");
+        projectSettingsBackup = fspath.join(settings.userDir,".config.json.backup");
     },
     getSettings: function() {
-        return when.promise(function(resolve,reject) {
-            fs.readFile(globalSettingsFile,'utf8',function(err,data) {
-                if (!err) {
-                    try {
-                        return resolve(util.parseJSON(data));
-                    } catch(err2) {
-                        log.trace("Corrupted config detected - resetting");
-                    }
+
+        return when.promise(async function(resolve,reject) {
+
+            try {
+                let data = await fs.readFile(globalSettingsFile,'utf8')
+                let settings = {};
+                try {
+                    settings = util.parseJSON(data);
+                } catch(err) {
+                    log.trace("Corrupted global config detected - resetting");
                 }
-                return resolve({});
-            })
+
+                console.log(globalSettingsFile, settings);
+                data = await fs.readFile(projectSettingsFile, 'utf8');
+
+                let nodesSettings = {};
+                try {
+
+                    nodesSettings = util.parseJSON(data);
+                } catch(err) {
+                    log.trace("Corrupted project config detected - resetting");
+                }
+                console.log(projectSettingsFile, nodesSettings);
+                Object.assign(settings, nodesSettings);
+
+                return resolve(settings);
+
+            } catch(err2) {}
+
+            return resolve({});
+        
         })
     },
     saveSettings: function(newSettings) {
         if (settings.readOnly) {
             return when.resolve();
         }
-        return util.writeFile(globalSettingsFile,JSON.stringify(newSettings,null,1),globalSettingsBackup);
+        let projectSettings = JSON.stringify({"nodes": newSettings["nodes"]},null,1);
+        let globalSettings = newSettings;
+        delete globalSettings["nodes"];
+
+
+        return util.writeFile(projectSettingsFile, projectSettings, projectSettingsBackup)
+            .then(util.writeFile(globalSettingsFile, JSON.stringify(globalSettings,null,1), globalSettingsBackup));
     }
 }
