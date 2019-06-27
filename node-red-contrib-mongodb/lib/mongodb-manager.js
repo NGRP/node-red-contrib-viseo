@@ -2,14 +2,25 @@
 const DatabaseManager = require('node-red-contrib-viseo-nosql-manager').DbManager;
 const MongoClient   = new require('mongodb').MongoClient();
 
+// --------------------------------------------------------------------------
+//  LOGS
+// --------------------------------------------------------------------------
+
+let info  = console.log;
+let error = console.log;
 
 class MongoDBManager extends DatabaseManager {
 
-    constructor(node) {
+    constructor(RED, node) {
+        
+        info  = RED.log.info;
+        error = RED.log.error;
+
         super();
         this.db = null;
         this.urlRegex = /^mongodb:\/\/(([^:]+):([^@]+)@)?([^:\/]+(:[0-9]+)?(,[^:\/]+(:[0-9]+)?)*)\/([a-zA-Z0-9_\-]+)(\?.*)?$/;
         this._init(node);
+
     }
 
     get database() {

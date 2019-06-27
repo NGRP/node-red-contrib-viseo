@@ -5,10 +5,23 @@ const Datastore = require('nedb');
 const xlsx      = require('node-xlsx')
 const path      = require('path');
 
+
+// --------------------------------------------------------------------------
+//  LOGS
+// --------------------------------------------------------------------------
+
+let info  = console.log;
+let error = console.log;
+
 class NeDBManager extends DatabaseManager {
 
-    constructor(node) {
+    constructor(RED, node) {
+
         super();
+
+        info  = RED.log.info;
+        error = RED.log.error;
+
         this.db = null;
         this._init(node);
     }
