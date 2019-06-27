@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-contrib-viseo-ms-search",
+    "version"       : "0.0.1",
+    "description"   : "VISEO Bot Maker - Microsoft Cognitive Services Search",
+    "dependencies"  : {  
+        "node-red-contrib-viseo-ms-authentication" : "~0.0",
+        "node-red-viseo-helper" : "0.2.0-alpha.8",
+        "request"   : "^2.76.0",
+		"request-promise" : "^4.1.1" 
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-search"
+    },
+    "license": "Apache-2.0",
+    "keywords": ["viseo", "sarah", "node-red", "ai", "intelligence", "azure", "cognitives", "services", "search", "bing", "spell"],
+    "node-red" : {
+        "nodes": {
+            "ms-cs-search":          "node-search.js",
+            "ms-spell-check":        "node-spell-check.js"
+        }
+    }
+}

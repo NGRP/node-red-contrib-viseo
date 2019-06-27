@@ -1,0 +1,25 @@
+{
+    "name"          : "node-red-contrib-viseo-ms-vision",
+    "version"       : "0.0.1",
+    "description"   : "VISEO Bot Maker - Microsoft Cognitive Services Vision",
+    "dependencies"  : { 
+        "node-red-contrib-viseo-ms-authentication" : "~0.0",
+        "node-red-viseo-helper" : "0.2.0-alpha.8",
+        "request"   : "^2.76.0",
+		"request-promise" : "^4.1.1" 
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-ms-vision"
+    },
+    "license": "Apache-2.0",
+    "keywords": ["viseo", "sarah", "node-red", "ai", "intelligence", "image", "azure", 
+        "recognition", "analyze", "computer","vision", "face", "cognitive", "services"],
+    "node-red" : {
+        "nodes": {
+            "ms-video-indexer":      "node-video-indexer.js",
+			"vision-image-describe": "node-vision-image-describe.js",
+            "vision-image-faces":	 "node-vision-image-faces.js"
+        }
+    }
+}

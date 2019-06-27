@@ -1,0 +1,134 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-spell-check',{
+        category: '💬_language',
+        color: '#8accff',
+        defaults: { 
+            name: { value: undefined },
+            input: { value: undefined, required: false },
+            output: { value: undefined, required: false },
+            enpoint: { value: undefined, required: false },
+            key: { value: undefined, required: true, type: 'ms-config'},
+            preContextText: { value: undefined },
+            postContextText: { value: undefined },
+            api: { value: "get" },
+            mkt: { value: "en-us" },
+            mode: {value: "proof"},
+            inputType: { value: "msg" },
+            endpointType: { value: "str" },
+            preContextTextType: { value: "str" },
+            postContextTextType: { value: "str" },
+            mktType: { value: "str" }
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "azure.png",
+        align: "left",
+        paletteLabel: 'Spell Check',
+        label: function() { return this.name || "Spell Check"; },
+        oneditprepare: function() {
+            $("#node-input-input").typedInput({  default: 'msg',  types: ['msg','global', 'str'], typeField: $("#node-input-inputType")  });
+            $("#node-input-endpoint").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-endpointType")  });
+            $("#node-input-preContextText").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-preContextTextType")  });
+            $("#node-input-postContextText").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-postContextTextType")  });
+            $("#node-input-mkt").typedInput({ default: 'msg',  types: ['str','msg','global'], typeField: $("#node-input-mktType")  });
+            $("#node-input-output").typedInput({  default: 'msg',  types: ['msg'], type: 'msg' });
+
+            $("#node-input-api").change(function () {
+                $(".get-method").hide();
+                if ($(this).val() === "get") {
+                    $(".get-method").show();
+                    $("#node-input-preContextText").typedInput('show')
+                    $("#node-input-postContextText").typedInput('show')
+                }
+            }).change();
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-spell-check">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <br>
+    <b>API settings </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-key"><i class="fa fa-lock"></i> Key</label>
+        <input type="text" id="node-input-key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-endpoint"><i class="fa fa-lock"></i> Endpoint</label>
+        <input type="text" id="node-input-endpoint" style="width: 70%" placeholder="https://api.cognitive.microsoft.com/bing/v7.0/spellcheck"/>
+        <input type="hidden" id="node-input-endpointType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-sign-in"></i> Input</label>
+        <input type="text" id="node-input-input" style="width: 70%" placeholder="payload"/>  
+        <input type="hidden" id="node-input-inputType">
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+    </div>
+
+    <br>
+    <b>API parameters </b>
+    <div class="form-row">
+        <br>
+        <label for="node-input-api"><i class="fa fa-tasks"></i> API</label>
+        <select id="node-input-api" style="width:70%;">
+            <option value="get">Get method - Default</option>
+            <option value="post">Post method</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-mode" style="padding-left:10px; width:150px; margin-bottom:10px;"> Mode</label>
+        <select id="node-input-mode" style="width:60%;">
+            <option value="proof">Proof (Office Word like) - Default</option>
+            <option value="spell">Spell (Search engine like)</option>
+        </select>
+    </div>
+    <div class="form-row get-method">
+        <label for="node-input-preContextText" style="padding-left:10px; width:150px; margin-bottom:10px;">preContextText</label>
+        <input type="text" id="node-input-preContextText" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-preContextTextType">
+    </div>
+    <div class="form-row get-method">
+        <label for="node-input-postContextText" style="padding-left:10px; width:150px; margin-bottom:10px;">postContextText</label>
+        <input type="text" id="node-input-postContextText" style="width: 60%" placeholder=""/>  
+        <input type="hidden" id="node-input-postContextTextType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mkt" style="padding-left:10px; width:150px; margin-bottom:10px;">mkt</label>
+        <input type="text" id="node-input-mkt" style="width: 60%" placeholder="en-us"/>  
+        <input type="hidden" id="node-input-mktType">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="ms-spell-check">
+    <p>Uses the Microsoft Cognitive Services Language API to get informations on a text. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Key <span class="property-type">config</span></dt>
+        <dd>credentials for the Spell Check API</dd>
+        <dt>Endpoint <span class="property-type">string</span></dt>
+        <dd>endpoint specified with the key in Azure Portal</dd>
+        <dt>Input <span class="property-type">string</span></dt>
+        <dd>where to get the input text</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://dev.cognitive.microsoft.com/docs/services/5f7d486e04d2430193e1ca8f760cd7ed/">Microsoft Spell Check</a> - reference</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>
