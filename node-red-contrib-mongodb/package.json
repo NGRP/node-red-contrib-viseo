@@ -1,10 +1,10 @@
 {
   "name": "node-red-contrib-viseo-mongodb",
-  "version": "0.5.0-alpha.1",
+  "version": "0.5.0-alpha.2",
   "description": "VISEO Bot Maker - MongoDB database",
   "dependencies": {
     "mongodb": "^2.2.29",
-    "node-red-contrib-viseo-nosql-manager": "~0.0"
+    "node-red-contrib-viseo-nosql-manager": "0.1.0-alpha.1"
   },
   "repository": {
     "type": "git",
