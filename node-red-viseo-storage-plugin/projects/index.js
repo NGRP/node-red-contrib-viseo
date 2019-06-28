@@ -126,6 +126,7 @@ function init(_settings, _runtime) {
                         //      has not yet been initialised. That isn't ideal - can this be deferred?
                         .then(storageSettings.getSettings)
                         .then(function(globalSettings) {
+
                             var saveSettings = false;
                             if (!globalSettings.projects) {
                                 globalSettings.projects = {
@@ -471,10 +472,11 @@ function createProject(user, metadata) {
 
     return Projects.create(user, metadata).then(function(p) {
 
-
         if(activeProject == metadata.name) {
             setActiveProject(user, activeProject)
+
         } else {
+            
             runtime.events.emit("runtime-event",{
                 id:"viseo-success",
                 payload:{
@@ -484,6 +486,13 @@ function createProject(user, metadata) {
                 },
                 retain:true
             });
+
+            if(!activeProject) {
+
+                setTimeout(() => {
+                    process.exit();//kill to restart and reload everything
+                }, 1000)
+            }
         }
         
     });

@@ -40,33 +40,27 @@ module.exports = {
 
         return when.promise(async function(resolve,reject) {
 
+            let settings = {};
+
             try {
                 let data = await fs.readFile(globalSettingsFile,'utf8')
-                let settings = {};
-                try {
-                    settings = util.parseJSON(data);
-                } catch(err) {
-                    log.trace("Corrupted global config detected - resetting");
-                }
+                settings = util.parseJSON(data);
+            } catch(err) {
+                log.trace("Corrupted global config detected - resetting");
+            }
 
-                console.log(globalSettingsFile, settings);
+            let nodesSettings = {};
+
+            try {
                 data = await fs.readFile(projectSettingsFile, 'utf8');
+                nodesSettings = util.parseJSON(data);
+            } catch(err) {
+                log.trace("Corrupted project config detected - resetting");
+            }
+                
+            Object.assign(settings, nodesSettings);
 
-                let nodesSettings = {};
-                try {
-
-                    nodesSettings = util.parseJSON(data);
-                } catch(err) {
-                    log.trace("Corrupted project config detected - resetting");
-                }
-                console.log(projectSettingsFile, nodesSettings);
-                Object.assign(settings, nodesSettings);
-
-                return resolve(settings);
-
-            } catch(err2) {}
-
-            return resolve({});
+            return resolve(settings);
         
         })
     },
