@@ -40,7 +40,7 @@ module.exports = function(RED) {
         }
 
         //the config node is incomplete and doesn't define a database manager
-        if(this.server.databaseManager === undefined || this.server.databaseManager instanceof DatabaseManager === false) {
+        if(this.server.databaseManager === undefined) {
             node.error("Database Manager for "+config.type+" must be set.");
         }
 
