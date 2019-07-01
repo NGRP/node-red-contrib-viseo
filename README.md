@@ -44,4 +44,4 @@ Please report unacceptable behavior to any of the project's core team.
 
 Icons are made by [Freepik](http://www.freepik.com) from [Flaticon](http://www.flaticon.com) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
 
-Copyright 2016-2017 [VISEO](http://www.viseo.com/) under the Apache 2.0 license.
+Copyright 2016-2019 [VISEO](http://www.viseo.com/) under the Apache 2.0 license.
