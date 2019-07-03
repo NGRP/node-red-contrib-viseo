@@ -1,0 +1,81 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-mustache', {
+        category: '🛠️_tools',
+        color: '#3FADB5',
+        defaults: {
+            name: { value: ""},
+            input: { value: ""},
+            inputType: { value: "msg" },
+            dataType: { value: "msg"},
+            output: { value: ""},
+            outputType: { value: "msg" },
+        },
+        inputs:  1,
+        outputs: 1,
+        icon: "template.png",
+        align: "left",
+        paletteLabel: "Mustache",
+        label: function() { return this.name || 'Mustache'; },
+        oneditprepare: function() {
+            $("#node-input-input").typedInput({
+                typeField: "#node-input-inputType",
+                types: ["msg", "global"]
+            });
+
+            $("#node-input-output").typedInput({
+                typeField: "#node-input-outputType",
+                types: ["msg", "global"]
+            });
+
+        },
+        oneditsave: function() {
+
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="node-mustache">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <hr/>
+    <div class="form-row">
+        <label for="node-input-input"><i class="fa fa-brackets-curly"></i> Template</label>
+        <input type="text" id="node-input-input">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dataType"><i class="fa fa-database"></i> Data from</label>
+        <select id="node-input-dataType">
+            <option value="msg">msg</option>
+            <option value="global">global</option>
+        </select>
+    </div>
+    <hr/>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output">
+        <input type="hidden" id="node-input-outputType">
+    </div>
+    
+</script>
+
+<script type="text/x-red" data-help-name="node-mustache">
+   <p>Uses input as template for mustache. The input value must use the mustache syntax.</p>
+
+    <h3>Details</h3>
+    <p>Chose the <i>Scopes</i> for input, output and data.</p>
+    <p>Scopes</p>
+    <dl class="message-properties">
+        <dt>Global</dt>
+        <dd>The Node-RED global context.</dd>
+        <dt>Msg</dt>
+        <dd>The current message context.</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>
