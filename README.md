@@ -4,11 +4,11 @@
 
 <h1 align="center">
   <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Home">
-    <img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/header.png" alt="VISEO Bot Maker" width="100%">
+    <img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/header.png" alt="VISEO Bot Maker" width="100%">
   </a>
-  <a href="https://bot.viseo.io/"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_doc.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_mail.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://bot.viseo.io/"><img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/icon_doc.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/icon_mail.png" alt="VISEO Bot Maker" width="120"></a>
 </h1>
 
 <p align="center">
