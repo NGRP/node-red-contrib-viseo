@@ -4,7 +4,7 @@ This project contains a set of Node-RED nodes OpenSourced by [VISEO](http://www.
 - It is architectured on top of [Microsoft Bot Framework](https://dev.botframework.com/) in order to connect to multiple channels. 
 - New channels like WeChat, Google Home, Amazon Echo are also in the roadmap.
 
-![Framework](https://github.com/NGRP/node-red-contrib-viseo/blob/master/doc/framework.png?raw=true)
+![Framework](https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/archi/framework.png?raw=true)
 
 This project is also the v5 and full re-engineering of a SmartHome Assistant named [SARAH](http://sarah.encausse.net) (build in 2012).
 
