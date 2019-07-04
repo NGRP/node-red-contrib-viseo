@@ -1,0 +1,127 @@
+<script type="text/javascript">
+    RED.nodes.registerType('vision-image-describe',{
+        category: '🖼️_image',
+        color: '#8accff',
+        defaults: { 
+            name:           { value: undefined },
+            image:          { value: undefined },
+            imageT:         { value: 'msg'},
+            features:       { value: true },
+            Categories:     { value: true },
+            Tags:           { value: true },
+            Description:    { value: true },
+            Faces:          { value: true },
+            ImageType:      { value: true },
+            Color:          { value: true },
+            Adult:          { value: true },
+            celebrities:    { value: false },
+            landmarks:      { value: false },
+            visionkey:      { value: undefined, required: true, type: 'ms-config'} 
+        },
+        inputs:  1,
+        outputs: 1,
+        oneditprepare: function() {
+            $("#node-input-image").typedInput({types:['msg','global','str']});
+            $("#node-input-image").typedInput('type', this.imageT|| 'msg');
+
+            $("#node-input-image").on('change', function(type, value) {
+                if (value === 'str') $("#node-input-image").attr("placeholder","http://link.to/image");
+                else                 $("#node-input-image").attr("placeholder","message.attachments[0].contentUrl");
+            });
+
+            $("#node-input-features").change( function() {
+                if ($(this).is(":checked")) {
+                    $(".column").prop('checked',true);
+                    $(".column").attr("disabled", true);
+                }
+                else $(".column").attr("disabled", false);
+            });
+        },
+        oneditsave: function () { 
+            this.imageT = $("#node-input-image").typedInput('type');
+        },
+        icon: "azure.png",
+        align: "left",
+        paletteLabel: "Computer Vision",
+        label: function() { return this.name || "Computer Vision"; }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="vision-image-describe">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <p><b>Image</b></p>
+    <div class="form-row">
+        <label for="node-input-image"><i class="fa fa-tasks"></i> Location</label>
+        <input type="text" id="node-input-image" style="width:70%;">
+    </div>
+
+    <p><b>Options</b></p>
+    <div class="form-row" style="width:500px;">
+        <label for="node-input-features"><i class="fa fa-tasks"></i> Features</label>
+        <input type="checkbox" id="node-input-features" style="display: inline-block; width: auto; vertical-align: top;"> <i>All</i>
+        <br>
+        <div style="float:left; margin:0; margin-left: 105px; width:120px;">
+            <input type="checkbox" class="column" id="node-input-Categories" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Categories</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-Tags" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Tags</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-Description" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Description</i>
+        </div>
+        <div style="float:left; margin:0;width:120px;">
+            <input type="checkbox" class="column" id="node-input-Faces" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Faces</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-ImageType" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Image type</i>
+            <br>
+            <input type="checkbox" class="column" id="node-input-Color" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Color</i>
+        </div>
+        <div style="float:left; margin:0;width:120px;">
+            <input type="checkbox" class="column" id="node-input-Adult" style="display: inline-block; width: auto; vertical-align: top"> <i style="color:#A4A4A4;">Adult</i>
+            <br>
+        </div>
+    </div>
+    <div class="form-row" style="width:500px;  style="display: inline-block; vertical-align: top;"">
+        <label for="node-input-details"><i class="fa fa-tasks"></i> Details</label>
+        <br>
+        <div style="float:left; margin:0; margin-left: 105px; width:120px;">
+            <input type="checkbox" class="column2" id="node-input-celebrities" style="display: inline-block; width: auto; vertical-align: top;"> <i style="color:#A4A4A4;">Celebrities</i>
+        </div>
+        <div style="float:left; margin:0;width:120px;">
+            <input type="checkbox" class="column2" id="node-input-landmarks" style="display: inline-block; width: auto; vertical-align: top; "> <i style="color:#A4A4A4;">Landmarks</i>
+        </div>
+    </div>
+    <div class="form-row"></div>
+
+    <p><b>Key</b></p>
+    <div class="form-row"">
+        <label for="node-input-visionkey"><i class="fa fa-lock"></i> Vision API</label>
+        <input type="text" id="node-input-visionkey" placeholder="">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="vision-image-describe">
+    <p>Query the Microsoft Cognitive Services Computer Vision API to get informations about an image. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Image <span class="property-type">string/buffer</span></dt>
+        <dd>the image location or the image buffer</dd>
+        <dt>Key <span class="property-type">config</span></dt>
+        <dd>credentials for Computer Vision API from Azure portal</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/home">Computer Vision</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+    <h3>Tracking</h3>
+    <p>This node is likely to display an error message if no key is configured in the VISEO Bot Maker project.
+        If such an error appears, please get a key <a href="https://key.bot.viseo.io/">here</a>.  
+    </p>
+</script>

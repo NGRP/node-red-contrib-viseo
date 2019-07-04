@@ -1,0 +1,110 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ms-qna',{
+        category: '💬_language',
+        color: '#8accff',
+        defaults: { 
+            name:               { value: undefined },
+            host:               { value: undefined, required: true },
+            hostType:           { value: "str" },
+            knowledgeBaseId:    { value: undefined, required: true },
+            knowledgeType:      { value: "str" },
+            endpointKeyType:    { value: "str" },
+            question:           { value: "payload" },
+            questionType:       { value: "msg" },
+            output:             { value: "payload" }
+        },
+        credentials: {
+            endpointKey:        { type: "text" }
+        },
+        inputs: 1,
+        outputs:1,
+        icon: "azure.png",
+        align: "left",
+        paletteLabel: 'QnA Maker',
+        label: function() { return this.name || "QnA Maker"; },
+        oneditprepare: function() {
+            if (!this.hostType) this.hostType = 'str';
+            if (!this.knowledgeType) this.knowledgeType = 'str';
+            if (!this.endpointKeyType) this.endpointKeyType = 'str';
+            if (!this.questionType) this.questionType = 'msg';
+            if (!this.outputType) this.outputType = 'msg';
+            $("#node-input-host").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-hostType") });
+            $("#node-input-knowledgeBaseId").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-knowledgeType") });
+            $("#node-input-endpointKey").typedInput({ default: 'str', types: ['str','msg','global'], typeField: $("#node-input-endpointKeyType") });
+            $("#node-input-question").typedInput({ default: 'msg', types: ['msg','str','global'], typeField: $("#node-input-questionType") });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'], type: 'msg' });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ms-qna">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="QnA">
+    </div>
+
+    <br>
+    <b>QnA settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-host" style="width:160px;"><i class="fa fa-globe"></i> Host</label>
+        <input type="text" id="node-input-host" style="width:57%;" placeholder="">
+        <input type="hidden" id="node-input-hostType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-endpointKey" style="width:160px;"><i class="fa fa-lock"></i> Endpoint key</label>
+        <input type="text" id="node-input-endpointKey" style="width:57%;" placeholder="">
+        <input type="hidden" id="node-input-endpointKeyType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-knowledgeBaseId" style="width:160px;"><i class="fa fa-globe"></i> Knowledge Base ID</label>
+        <input type="text" id="node-input-knowledgeBaseId" style="width:57%;" placeholder="">
+        <input type="hidden" id="node-input-knowledgeType">
+    </div>
+
+    <br>
+    <b>NLP settings </b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-question"><i class="fa fa-tasks"></i> Question</label>
+        <input type="text" id="node-input-question" style="width:70%;" placeholder="payload">
+        <input type="hidden" id="node-input-questionType">
+    </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-tasks"></i> Output</label>
+        <input type="text" id="node-input-output" style="width:70%;" placeholder="payload">
+    </div>
+   
+</script>
+
+<script type="text/x-red" data-help-name="ms-qna">
+    <p>Query Microsoft QNA Maker API V4.</p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Host <span class="property-type">string</span></dt>
+        <dd>host specified in the Azure portal</dd>
+        <dt>Endpoint key <span class="property-type">string</span></dt>
+        <dd>endpoint containing the key specified in Azure Portal</dd>
+        <dt>Knowledge Base ID <span class="property-type">string</span></dt>
+        <dd>base ID to request</dd>
+        <dt>Input <span class="property-type">string</span></dt>
+        <dd>where to get the input text</dd>
+        <dt>Output <span class="property-type">string</span></dt>
+        <dd>where to store the results</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://docs.microsoft.com/fr-fr/azure/cognitive-services/QnAMaker/index">Microsoft QnA Maker</a> - documentation</li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+    <h3>Tracking</h3>
+    <p>This node is likely to display an error message if no key is configured in the VISEO Bot Maker project.
+        If such an error appears, please get a key <a href="https://key.bot.viseo.io/">here</a>.  
+    </p>
+</script>

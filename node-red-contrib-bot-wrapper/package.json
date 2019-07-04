@@ -1,0 +1,26 @@
+{
+    "name"          : "node-red-contrib-viseo-bot-wrapper",
+    "version"       : "0.0.1",
+    "description"   : "VISEO Bot Maker - Simulates/tests a channel connector",
+    "dependencies"  : {
+        "node-red-viseo-helper"      : "0.2.0-alpha.10",
+        "node-red-viseo-bot-manager" : "~0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-bot-wrapper"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "viseo",
+        "sarah",
+        "node-red",
+        "chatbot",
+        "bot"
+    ],
+    "node-red": {
+        "nodes": {
+            "bot-wrapper": "bot-wrapper.js"
+        }
+    }
+}
