@@ -20,7 +20,7 @@
 ---
  
  
-### About VISEO Bot Maker
+## The VISEO Bot Maker
 
 VISEO Bot Maker is a framework built on top of Node-RED. The project's repository is available [here](https://github.com/NGRP/node-red-viseo-bot/).
 
