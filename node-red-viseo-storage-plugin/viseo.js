@@ -59,7 +59,7 @@ var viseo = {
 
                 		log.warn("Local changes found. Packages update aborted");
 			            res.sendStatus(200);
-            		} if(err === "version-unknown") {
+            		} else if(err === "version-unknown") {
 
             			runtime.events.emit("runtime-event",{
 			                id:"viseo-error",
@@ -76,8 +76,18 @@ var viseo = {
                 		log.warn("VISEO Bot Maker version unknown. Packages update aborted");
 			            res.sendStatus(200);
             		} else {
-
             			log.error(err);
+            			runtime.events.emit("runtime-event",{
+			                id:"viseo-error",
+			                payload:{
+			                    type:"error",
+			                    error:"viseo-error-unknown",
+			                    text:"An error occured during update. Please read the logs for further details.",
+			                    timeout:8200
+			                },
+			                retain:false
+			            });
+
             			res.sendStatus(500);
             		}
             	});
@@ -102,7 +112,6 @@ var viseo = {
 			}
 
 			semversort.asc(versions);
-
 
 			// filter only upgrades: 
 			let packagejsonPath = fspath.join(process.env.FRAMEWORK_ROOT, 'package.json');
@@ -149,7 +158,7 @@ var viseo = {
 
 				for(let file of Object.keys(files)) {
 					if(files[file].status === ' M') {
-						reject("local-changes");
+						return reject("local-changes");
 					}
 				}
 
@@ -171,7 +180,7 @@ var viseo = {
 			} catch(err) {
 
 				if(/did not match any file\(s\) known to git/i.test(err.stderr)) {
-					reject("version-unknown");
+					return reject("version-unknown");
 				}
 
 				reject(err);
@@ -185,7 +194,7 @@ const execUpdateProcess = () => {
 
 	return new Promise((resolve, reject) => {
 
-		var child = spawn("node "+process.env.FRAMEWORK_ROOT+"/update_projects.js", {}, {cwd:cwd, detached:true, env:env});
+		var child = spawn("node", ["update_projects.js"], {cwd:process.env.FRAMEWORK_ROOT, detached:true, env:process.env});
 		var stdout = "";
 		var stderr = "";
 
@@ -205,7 +214,7 @@ const execUpdateProcess = () => {
 		        err.stdout = stdout;
 		        err.stderr = stderr;
 		        
-		        reject(err);
+		        return reject(err);
 		    }
 
 		    resolve(stdout);
