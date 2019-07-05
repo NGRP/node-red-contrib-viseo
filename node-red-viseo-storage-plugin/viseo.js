@@ -76,6 +76,8 @@ var viseo = {
                 		log.warn("VISEO Bot Maker version unknown. Packages update aborted");
 			            res.sendStatus(200);
             		} else {
+
+            			log.error(err);
             			res.sendStatus(500);
             		}
             	});
