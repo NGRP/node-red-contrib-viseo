@@ -113,7 +113,7 @@ var viseo = {
 				let packagejson = require(packagejsonPath);
 				let search = 'v'+packagejson.version;
 
-				while(versions[0] !== search) {
+				while(versions.length > 0 && versions[0] !== search) {
 					versions.shift();
 				}
 				if(versions.length > 0 && versions[0] === search) {
