@@ -1,21 +1,10 @@
-
-
 <script type="text/javascript">
-    var setProject = function(value){
-        $('SPAN.logo SPAN').text(value || 'VISEO Framework')
-    }
-
-    RED.events.on("nodes:add", function(node){ 
-        if (node.type !== 'bot') return;
-        setProject(node.project);
-    });
 
     RED.nodes.registerType('bot',{
         category: '📻_channels',
         color: '#8accff',
         defaults:  { 
             name:          { value: undefined },
-            project:       { value: undefined },
             port:          { value: undefined },
             resetCommand:  { value: "/^reset/i" },
             delay:         { value: undefined }
@@ -29,9 +18,7 @@
         icon: "azure.png", 
         align: "left",
         paletteLabel: "BotBuilder",
-        oneditsave:    function(){ var node = this; setTimeout(function(){ setProject(node.project) },1) },
         oneditprepare: function(){ 
-            $("#node-input-project").typedInput({     default: 'str', types: ['str'], type: 'str' });
             $("#node-input-port").typedInput({        default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appId").typedInput({       default: 'str', types: ['str'], type: 'str' });
             $("#node-input-appPassword").typedInput({ default: 'str', types: ['str'], type: 'str' });
@@ -44,8 +31,6 @@
                     $("#node-input-delay").val(200);
                 }
             }).val(this.delay || 2000);
-
-            setProject(this.project);
         },
         label: function() { return this.name || "BotBuilder"; },
     });
@@ -59,12 +44,10 @@
 
     <br>
     <b>Microsoft Bot Builder settings </b>
+
     <div class="form-row">
+
         <br>
-        <label for="node-input-project"><i class="fa fa-list-ul"></i> Project</label>
-        <input type="text" id="node-input-project" placeholder="Project" style="width:70%;">
-    </div>
-    <div class="form-row">
         <label for="node-input-port"><i class="fa fa-globe"></i> Port</label>
         <input type="text" id="node-input-port" placeholder="3978" style="width:70%;">
     </div>
@@ -107,7 +90,6 @@
     <p>Properties</p>
     <p>This node uses the <code>/api/v1/messsages</code> route to connect with Botbuilder.</p>
     <dl class="message-properties">
-        <dt>Project <span class="property-type">string</span></dt>
         <dd>name to be displayed in the Node-RED UI (top left)</dd>
         <dt>Port <span class="property-type">number</span></dt>
         <dd>the port number (if empty, uses Node-RED server) </dd>
