@@ -118,8 +118,10 @@ function init(_settings, _runtime) {
                     Projects.init(settings,runtime);
                     sshTools.init(settings,runtime);
 
+
                     projectsDir = settings.projectsDir || fspath.join(settings.userDir, 'projects');
                     
+
                     if (!settings.readOnly) {
                         return fs.ensureDir(projectsDir)
                         //TODO: this is accessing settings from storage directly as settings
@@ -198,6 +200,8 @@ function getBackupFilename(filename) {
 }
 
 function loadProject(name) {
+
+
     var projectPath = name;
     if (projectPath.indexOf(fspath.sep) === -1) {
         projectPath = fspath.join(projectsDir,name);
@@ -468,6 +472,7 @@ function createProject(user, metadata) {
             metadata.files.credentialSecret = currentEncryptionKey;
         }
     }
+
     metadata.path = fspath.join(projectsDir,metadata.name);
 
     return Projects.create(user, metadata).then(function(p) {

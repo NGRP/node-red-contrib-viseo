@@ -637,7 +637,6 @@ Project.prototype.pull = function (user,remoteBranchName,setRemote,allowUnrelate
         })
     } else {
         var remote = this.parseRemoteBranch(remoteBranchName);
-        console.log(remote);
         return gitTools.pull(this.path, remote.remote, remote.branch, allowUnrelatedHistories, authCache.get(this.name,this.remotes[remote.remote||self.currentRemote].fetch,username),getGitUser(user));
     }
 };

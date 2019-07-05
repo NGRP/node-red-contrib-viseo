@@ -25,12 +25,16 @@ var sessions = require("./sessions");
 var runtimeSettings = require("./settings");
 var projects = require("./projects");
 
+var viseo = require("./viseo");
+
 var initialFlowLoadComplete = false;
 var settings;
 
 var localfilesystem = {
     init: function(_settings, runtime) {
         settings = _settings;
+
+        viseo.init(settings, runtime);
 
         var promises = [];
 
@@ -79,6 +83,7 @@ var localfilesystem = {
                 return true;
             }
         }
+
         return when.all(promises).then(packagePromise);
     },
 
