@@ -478,8 +478,19 @@ function createProject(user, metadata) {
     return Projects.create(user, metadata).then(function(p) {
 
         if(activeProject == metadata.name) {
-            setActiveProject(user, activeProject)
+            runtime.events.emit("runtime-event",{
+                id:"viseo-success",
+                payload:{
+                    type:"success",
+                    error:"project-created",
+                    text:"Project "+p.name+" created. Press F5 to reload it.",
+                },
+                retain:true
+            });
 
+            setTimeout(() => {
+                process.exit();//kill to restart and reload everything
+            }, 1000)
         } else {
             
             runtime.events.emit("runtime-event",{
