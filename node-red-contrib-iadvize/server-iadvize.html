@@ -4,11 +4,12 @@
         color: '#a1f2b9',
         defaults: { 
             name: { value: undefined },
-            delay: { value: 1 },
+            delay: { value: 1 }
         },
         credentials: {
             botName: { type: "text" },
             botID: { type: "text" },
+            botToken: { type : "text" },
             uiUrl: { type : "text" }
         },
         inputs:  0,
@@ -19,6 +20,7 @@
         label: function() { return this.name || "iAdvize"; },
         oneditprepare: function() {
             $("#node-input-name").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-botToken").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-botName").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-botID").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-uiUrl").typedInput({ default: 'str', types: ['str'], type: 'str' });
@@ -45,6 +47,11 @@
     <div class="form-row">
         <label for="node-input-botID"><i class="fa fa-tag"></i> ID</label>
         <input type="text" id="node-input-botID" placeholder="bot" style="width: 70%;">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-botToken"><i class="fa fa-lock"></i> Token</label>
+        <input type="text" id="node-input-botToken" style="width: 70%;">
     </div>
 
     <br><b>Conversation</b>
