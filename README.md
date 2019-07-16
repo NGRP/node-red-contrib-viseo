@@ -1,7 +1,6 @@
 
 <h3 align="center">- Node-RED open-source nodes -</h3>
 
-
 <h1 align="center">
   <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Home">
     <img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/header.png" alt="VISEO Bot Maker" width="100%">

@@ -58,7 +58,7 @@ const input = (node, data, config) => {
         helper.emitAsyncEvent('reply', node, beforeData, config, (newData) => {
             helper.emitAsyncEvent('replied', node, newData, config, () => {})
             if (node.prompt) return; 
-            node.send(data)
+            node.send(data);
         });
     });
 };
