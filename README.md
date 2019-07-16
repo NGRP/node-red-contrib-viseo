@@ -1,14 +1,13 @@
 
 <h3 align="center">- Node-RED open-source nodes -</h3>
 
-
 <h1 align="center">
   <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Home">
-    <img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/header.png" alt="VISEO Bot Maker" width="100%">
+    <img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/header.png" alt="VISEO Bot Maker" width="100%">
   </a>
-  <a href="https://bot.viseo.io/"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_doc.png" alt="VISEO Bot Maker" width="120"></a>
-  <a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/icon_mail.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://bot.viseo.io/"><img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/icon_web.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started"><img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/icon_doc.png" alt="VISEO Bot Maker" width="120"></a>
+  <a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/wiki/NGRP/node-red-viseo-bot/img/doc/icon_mail.png" alt="VISEO Bot Maker" width="120"></a>
 </h1>
 
 <p align="center">
@@ -20,38 +19,9 @@
 ---
  
  
-## About VISEO Bot Maker
-### Features
+## The VISEO Bot Maker
 
-VISEO Bot Maker is a framework built on top of Node-RED. This is also the full re-engineering V5 of the smart-home assistant [SARAH](http://sarah.encausse.net), architectured by [@jpencausse](https://twitter.com/jpencausse) in 2012.
-
-<br>
-<img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/framework.jpg" alt="VISEO Bot Maker channels" width="100%">
-<br>
-
-Different **bot Servers** nodes act as adapters between the flow and text or voice channels, allowing your program to behave independently of the channel. 
-
-As Node-RED is a graphical programming tool, it makes easy for both developers and administrators to create complete conversationnal flows and to connect to multiple channels.
-
-
-
-### Development
-
-
-The roadmap is available on [this GitHub Project](https://github.com/NGRP/node-red-contrib-viseo/projects/1).
-
-[VISEO](http://www.viseo.com/) is not a Software Editor but a Consulting Company. As technologies are not mature, we have made the choice of **focusing on User Exprience** and making our code and tools available to everyone. Note that:
-- we selected Node-RED platform to let managers and developers easily switch between modules (NLP, Computer Vision, etc.)
-- we open-sourced this project to share our state-of-the-art work to and between our customers
-
-<a href="mailto:contact@viseo.io"><img src="https://raw.githubusercontent.com/NGRP/node-red-contrib-viseo/migration-0.19/doc/mailus.png" alt="Contact us at contact(at)viseo(.)io"/></a>
-
----
-
-## Developers
-### Getting Started
-
-A documentation is available on [this GitHub Wiki](https://github.com/NGRP/node-red-contrib-viseo/wiki/Getting-started).
+VISEO Bot Maker is a framework built on top of Node-RED. The project's repository is available [here](https://github.com/NGRP/node-red-viseo-bot/).
 
 
 ### Getting Help
@@ -65,7 +35,6 @@ For bug reports, feature requests, further help or general discussion, please us
 
 This project adheres to the Contributor Covenant 1.4. Before raising a pull-request, please read [this code of conduct](https://www.contributor-covenant.org/). By participating, you are expected to uphold this code. Please report unacceptable behavior to any of the project's core team.
 
---- 
 
 ## Copyright and license
 

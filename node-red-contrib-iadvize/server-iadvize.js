@@ -1,9 +1,11 @@
 const helper  = require('node-red-viseo-helper')
 const botmgr  = require('node-red-viseo-bot-manager')
 const uuidv4  = require('uuid/v4');
+const cryptoJS = require("crypto-js");
 const EventEmitter = require('events');
 
 const CARRIER = "iAdvize"
+const VERBOSE = true;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -15,25 +17,32 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        start(RED, node, config);
         config.uiUrl = node.credentials.uiUrl;
         config.botName = node.credentials.botName;
         config.botID = node.credentials.botID;
+        config.botToken = node.credentials.botToken;
+
+        start(RED, node, config);
         this.on('close', (done)  => { stop(node, config, done) });
     }
     RED.nodes.registerType("server-iadvize", register, { credentials : {
         botName: { type: "text" },
         botID: { type: "text" },
+        botToken: { type : "text" },
         uiUrl: { type : "text" }
     }});
 }
 
 let emitter;
+let token;
 let LISTENERS_REPLY = {};
 let LISTENERS_TRANSFER = {};
 let DELAY = 1000;
 
 const start = (RED, node, config) => {
+
+    // Token
+    if (config.botToken) token = config.botToken;
 
     // Delay
     if (config.delay) DELAY = Number(config.delay) || 1000;
@@ -45,10 +54,27 @@ const start = (RED, node, config) => {
     /**  --------------------------
      *     EXTERNAL BOT ENDPOINTS
      *   -------------------------- */
+
+    /* 0 - Health verification */
+
+    RED.httpNode.use('/iadvize/health', function(req, res) {
+        if (VERBOSE) console.log('[iAdvize] get /health');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
+        res.send({"status": "UP"});
+    });
     
     /* 1 - Get external bots */
     RED.httpNode.use('/iadvize/external-bots', function(req, res) {
-        console.log('[iAdvize] get /external-bots')
+        if (VERBOSE) console.log('[iAdvize] get /external-bots');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
         res.send([{
             "idBot": config.botID || "bot",
             "name": config.name || "bot",
@@ -58,7 +84,12 @@ const start = (RED, node, config) => {
 
     /* 2 - Put bot */
     RED.httpNode.put('/iadvize/bots/:idOperator', function(req, res) {
-        console.log('[iAdvize] put /bots/:idOperator')
+        if (VERBOSE) console.log('[iAdvize] put /bots/:idOperator');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
         let now = (new Date()).toISOString();
         res.send({
             "idOperator": req.params.idOperator,
@@ -75,7 +106,12 @@ const start = (RED, node, config) => {
 
     /* 3 - Get bot */
     RED.httpNode.use('/iadvize/bots/:idOperator', function(req, res) {
-        console.log('[iAdvize] get /bots/:idOperator')
+        if (VERBOSE) console.log('[iAdvize] get /bots/:idOperator');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
         let now = (new Date()).toISOString();
         res.send({
             "idOperator": req.params.idOperator,
@@ -92,7 +128,12 @@ const start = (RED, node, config) => {
 
     /* 4 - Get availibility strategies */
     RED.httpNode.use('/iadvize/availability-strategies', function(req, res) {
-        console.log('[iAdvize] get /availability-strategies')
+        if (VERBOSE) console.log('[iAdvize] get /availability-strategies');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
         res.send([
             {
                 "strategy": "customAvailability",
@@ -107,7 +148,11 @@ const start = (RED, node, config) => {
 
     /* 1 - Post conversation */
     RED.httpNode.post('/iadvize/conversations', function(req, res) {
-        console.log('[iAdvize] post /conversations, ', req.body.idOperator)
+        if (VERBOSE) console.log('[iAdvize] post /conversations, ', req.body.idOperator);
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
 
         let now = (new Date()).toISOString();
         res.send({
@@ -122,13 +167,23 @@ const start = (RED, node, config) => {
 
     /* 2 - Post message */
     RED.httpNode.post('/iadvize/conversations/:conversationId/messages', function(req, res) {
-        console.log('[iAdvize] post /conversations/:conversationId/messages')
+        if (VERBOSE) console.log('[iAdvize] post /conversations/:conversationId/messages');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
         receive(node,config, req, res);
     });
 
     /* 3 - Get conversation */
     RED.httpNode.use('/iadvize/conversations/:conversationId', function(req, res) {
-        console.log('[iAdvize] get /conversations/:conversationId');
+        if (VERBOSE) console.log('[iAdvize] get /conversations/:conversationId');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
         res.sendStatus(200).end();
     });
 
@@ -137,7 +192,12 @@ const start = (RED, node, config) => {
      *   -------------------------- */
 
     RED.httpNode.use('/iadvize/callback', function(req, res) {
-        console.log('[iAdvize] get /callback')
+        if (VERBOSE) console.log('[iAdvize] get /callback');
+        if (!isValidSignature(req.header('X-iAdvize-Signature'), req.body)) {
+            if (VERBOSE) console.log('[iAdvize] Security issue: bad signature');
+            return res.sendStatus(403).end();
+        }
+
         node.send([{ "callback": req.body }, undefined]);
         if (req.body.eventType === "v2.conversation.pushed") emitter.emit('messsage_transfer');
         res.sendStatus(200).end();
@@ -153,6 +213,19 @@ const stop = (node, done) => {
     helper.removeListener('reply', listenerReply);
 
     done();
+}
+
+function isValidSignature(receivedSignature, receivedPayload) {
+    if (!receivedSignature || !token) return false;
+    let signature = receivedSignature.split('=', 2);
+    let algo = signature[0].toUpperCase();
+    let hash = cryptoJS['Hmac' + algo](JSON.stringify(receivedPayload), token).toString()
+    let recSignLen = signature[1].length;
+    let hashLen = hash.length;
+
+    if (recSignLen != hashLen) return false;
+    for (let i = 0; i < hashLen; ++i) if (hashLen[i] != recSignLen[i]) return false;
+    return true;
 }
 
 // ------------------------------------------
@@ -247,6 +320,7 @@ const reply = (node, data, config) => {
     // Building the message
     let now = (new Date()).toISOString();
     let replies = getMessages(data.reply);
+
     let msg = {
         "idConversation": req.params.conversationId,
         "idOperator": req.body.idOperator,
@@ -276,12 +350,9 @@ const reply = (node, data, config) => {
 
 // ------------------------------------------
 //  MESSAGES
-//  https://github.com/api-ai/fulfillment-webhook-nodejs/blob/master/functions/index.js
+//  https://developers.iadvize.com/documentation/test/AAA-EPIC-Rich-Content-Documentation#external-bot
 // ------------------------------------------
 
-// https://api.ai/docs/fulfillment#response
-// doc : https://actions-on-google.github.io/actions-on-google-nodejs/modules/conversation_response.html
-// doc : https://actions-on-google.github.io/actions-on-google-nodejs/modules/conversation_question.html
 
 const getMessages = exports.getMessage = (replies) => {
     let messages = [];
@@ -289,8 +360,20 @@ const getMessages = exports.getMessage = (replies) => {
     let transfer = false;
     let prompt = false;
     let event = false;
+    let carouselDone = false;
 
     let trueReplies = [];
+    let carousel = [];
+    for (let reply of replies) {
+        if (reply.type === "confirm" || 
+            reply.type === "adaptiveCard" || 
+            reply.type === "signin") {
+            continue;
+        }
+        if (reply.type === "card") carousel.push(reply)
+        else trueReplies.push(reply)
+    }
+
     let delayMsg = {
         "type": "await",
         "duration": {
@@ -300,17 +383,12 @@ const getMessages = exports.getMessage = (replies) => {
     }
 
     for (let reply of replies) {
-        if (reply.type === "quick" || 
-            reply.type === "text" ||
-            reply.type === "transfer" ||
-            reply.type === "event"
-         ) trueReplies.push(reply);
-    }
 
-    for (let i=0; i<trueReplies.length; i++) {
-        let reply = trueReplies[i];
-        if (reply.prompt) prompt = true;
-
+        let message =  {
+            "type": "message",
+            "payload": {}
+        };
+        
         if (reply.type === "transfer") {
             messages.pop();
             messages.push(reply);
@@ -326,7 +404,7 @@ const getMessages = exports.getMessage = (replies) => {
             continue;
         }
 
-        if (reply.type === "event") {
+        else if (reply.type === "event") {
             messages.pop();
             variables.push({
                 "key": reply.event.name,
@@ -337,15 +415,13 @@ const getMessages = exports.getMessage = (replies) => {
             continue;
         }
 
-        let message =  {
-            "type": "message",
-            "payload": {
-                "contentType": "text",
-                "value": reply.text
-            }
-        };
+        else if (reply.type === 'text'){
+            message.payload.contentType = "text";
+            message.payload.value = reply.text
+        }
 
-        if (reply.type === 'quick'){
+        else if (reply.type === 'quick'){
+            message.payload.contentType = "text";
             message.payload.value = reply.quicktext;
             message.quickReplies = [];
 
@@ -358,10 +434,60 @@ const getMessages = exports.getMessage = (replies) => {
             }
         }
 
+        else if (reply.type === 'media'){
+            message.payload = {
+                "contentType": "file",
+                "fileName": "Cliquez pour télécharger",
+                "mimeType": reply.mediaContentType,
+                "url": reply.media
+            }
+        }
+
+        else if (reply.type === 'card' && !carouselDone){
+            carouselDone = true;
+            let _cards = [];
+            
+            for (let _card of carousel) {
+                let _obj = {
+                    "contentType": "card/content",
+                    "title": _card.title,
+                    "text": _card.subtitle,
+                    "actions": []
+                }
+                if (_card.attach) {
+                    _obj.image = {
+                        "url": _card.attach,
+                        "description": _card.subtext
+                    }
+                }
+                for (let button of _card.buttons){
+                    _obj.actions.push({
+                        "type": "LINK",
+                        "name": button.title,
+                        "url": button.value
+                    })
+                }
+               _cards.push(_obj);
+            }
+            if (_cards.length > 1) {
+                message.payload = {
+                    "contentType": "bundle/card",
+                    "cards": _cards
+                }
+            }
+            else {
+                message.payload = _cards[0];
+            }
+        }
+
+        else continue;
+
+        if (reply.prompt) prompt = true;
         messages.push(message);
-        if (i !== trueReplies.length-1) messages.push(delayMsg)
+        messages.push(delayMsg);
     }
 
+    messages.pop();
     if (!prompt && !transfer && !event) messages.push({ "type": "close" });
     return { replies: messages, transfer: transfer, variables: variables };
 }

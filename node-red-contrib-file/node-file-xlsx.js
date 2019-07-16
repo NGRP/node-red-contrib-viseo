@@ -88,13 +88,12 @@ async function input(RED, node, data, config) {
   }
   catch(ex) {
     node.warn(ex);
-    helper.setContextValue(RED, node, data, config.output || "payload" , { "error": ex}, config.outputType);
-    return node.send(data);
+    helper.setContextValue(RED, node, data, config.output || "payload" , ex, config.outputType);
+    return node.send([undefined,data]);
   }
 
   helper.setContextValue(RED, node, data, config.output || "payload" , res, config.outputType);
-  return node.send(data);
-
+  return node.send([data, undefined]);
 }
 
 
