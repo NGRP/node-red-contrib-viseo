@@ -3,7 +3,7 @@
     "version": "0.1.0-alpha.2",
     "description": "VISEO Bot Maker - Searches a value in an object",
     "dependencies": {
-        "node-red-viseo-helper": "~0.1"
+        "node-red-viseo-helper": "~0.1.0"
     },
     "repository": {
         "type": "git",

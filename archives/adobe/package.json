@@ -3,10 +3,10 @@
 	"version": "0.0.4",
 	"description": "VISEO Bot Maker - Adobe Analytics",
 	"dependencies": {
-		"node-red-viseo-helper": "~0.1",
-		"request": "^2.87.0",
-		"request-promise": "4.2.2",
-		"xml2js": "0.4.19"
+		"node-red-viseo-helper" : "~0.3.0",
+		"request" : "^2.34.0",
+		"request-promise" : "^4.2.4",
+		"xml2js": "~0.4.19"
 	},
 	"repository": {
 		"type": "git",

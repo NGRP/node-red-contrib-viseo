@@ -1,17 +1,26 @@
-# Node-RED
+# Deprecated package
 
-Some nodes to add AI to your chatbot, connected to Microsoft Cognitive Services API.
-These are nodes related to IRMA, an Image Recognition Magic App available [here](irma.viseo.io). 
+This package has been deprecated. All the nodes are now available in different packages: 
+- node-red-contrib-viseo-ms-language 
+- node-red-contrib-viseo-ms-decision
+- node-red-contrib-viseo-ms-search
+- node-red-contrib-viseo-ms-speech
+- node-red-contrib-viseo-ms-vision 
 
-This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the nodes documentations in the Node-RED info tab. 
-
-Here is a [French Article](https://goo.gl/DMfJk1) on Bot Ecosystem and more.
-
+Please find more information in this project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo).
 
 ## Quick Start
 
 ```
-npm install node-red-contrib-viseo-ms-oxford
+npm install node-red-contrib-viseo-ms-language
+
+npm install node-red-contrib-viseo-ms-decision
+
+npm install node-red-contrib-viseo-ms-search
+
+npm install node-red-contrib-viseo-ms-speech
+
+npm install node-red-contrib-viseo-ms-vision
 ```
 
 ## Getting Help
@@ -19,24 +28,6 @@ npm install node-red-contrib-viseo-ms-oxford
 For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
 - Your message is a question / discussion
 - The module or node name
-
-## Contributing
-
-Before raising a pull-request, please read our contributing guide.
-
-This project adheres to the Contributor Covenant 1.4. By participating, 
-you are expected to uphold this code. 
-Please report unacceptable behavior to any of the project's core team.
-
-## Authors
-
-This project is a creation of [VISEO](http://www.viseo.com) Technology.
-
-- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
-- Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
-- Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
-- Klervi Menoret [@klervix](https://twitter.com/klervix)
-- To-Thi Hoang 
 
 ## Copyright and license
 
