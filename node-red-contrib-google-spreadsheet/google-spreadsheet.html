@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('google-spreadsheet',{
         category: '💾_data',
-        color: '#f9c6c3',
+        color: '#bce4d0',
         defaults: { 
             name:    { value: undefined },
             auth:    { value: undefined, type: 'google-service-account', required: true },
@@ -30,10 +30,10 @@
         },
         inputs:  1,
         outputs: 2,
-        icon: "gcc.png",
+        icon: "sheets.png",
         align: "left",
-        paletteLabel: 'Spreadsheet',
-        label: function() { return this.name || "Google Spreadsheet"; },
+        paletteLabel: 'Sheets',
+        label: function() { return this.name || "Google Sheets"; },
         oneditprepare: function() {
             $("#node-input-name").typedInput({  default: 'str',  types: ['str'],  type:'str' });
             $("#node-input-sheet").typedInput({  default: 'str',  types: ['str','msg','global'],  typeField: $("#node-input-sheetType") });

@@ -19,27 +19,24 @@ npm install node-red-contrib-viseo-mongodb
 
 ## Getting Help
 
+A documentation is available on [this Wiki](https://github.com/NGRP/node-red-viseo-bot/wiki).
+
 For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
 - Your message is a question / discussion
 - The module or node name
 
 ## Contributing
 
-Before raising a pull-request, please read our contributing guide.
-
-This project adheres to the Contributor Covenant 1.4. By participating, 
-you are expected to uphold this code. 
-Please report unacceptable behavior to any of the project's core team.
+This project adheres to the Contributor Covenant 1.4. By participating, you are expected to uphold [this code](https://www.contributor-covenant.org/). Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
 This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
-- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Klervi Menoret [@klervix](https://github.com/klervix)
+- To-Thi Hoang
 - Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
-- Klervi Menoret [@klervix](https://twitter.com/klervix)
-- To-Thi Hoang 
 
 ## Copyright and license
 

@@ -1,5 +1,4 @@
 const request = require('request-promise');
-const extend  = require('extend');
 const helper  = require('node-red-viseo-helper');
 
 // --------------------------------------------------------------------------

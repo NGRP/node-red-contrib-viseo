@@ -1,5 +1,4 @@
 const helper = require('node-red-viseo-helper');
-const request = require('request-promise');
 const XLSX = require('xlsx');
 
 // --------------------------------------------------------------------------

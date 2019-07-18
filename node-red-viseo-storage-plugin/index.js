@@ -27,7 +27,6 @@ var projects = require("./projects");
 
 var viseo = require("./viseo");
 
-var initialFlowLoadComplete = false;
 var settings;
 
 var localfilesystem = {

@@ -1,11 +1,11 @@
 {
     "name": "node-red-contrib-viseo-file",
-    "version": "0.3.0-alpha.5",
+    "version": "0.3.0",
     "description": "VISEO Bot Maker - Manage data with files",
     "dependencies": {
-        "node-red-viseo-helper": "~0.1",
-        "readline-promise":"~0.0",
-        "xlsx": "~0.8"
+        "node-red-viseo-helper": "~0.3.0",
+        "readline-promise":"~0.0.0",
+        "xlsx": "~0.8.0"
     },
     "repository": {
         "type": "git",

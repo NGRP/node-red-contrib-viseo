@@ -3,8 +3,6 @@
 const MongoDBManager = require('./lib/mongodb-manager.js');
 const dbRegistry = require('node-red-contrib-viseo-nosql-manager').dbRegistry;
 
-
-
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------

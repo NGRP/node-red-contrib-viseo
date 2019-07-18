@@ -1,10 +1,10 @@
 {
     "name": "node-red-contrib-viseo-soap",
-    "version": "0.0.6",
+    "version": "0.1.0",
     "description": "VISEO Bot Maker - SOAP",
     "dependencies": {
-        "node-red-viseo-helper": "~0.1",
-        "soap": "~0.27"
+        "node-red-viseo-helper": "~0.3.0",
+        "soap": "~0.27.0"
     },
     "repository": {
         "type": "git",

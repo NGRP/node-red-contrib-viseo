@@ -1,4 +1,3 @@
-const fs = require('fs');
 const helper = require('node-red-viseo-helper');
 const { google } = require('googleapis');
 let sheets;

@@ -5,7 +5,8 @@
     "dependencies": {
        "mustache":"^2.3.0",
        "uuid": "^3.3.2",
-       "request-promise": "^4.1.1"
+       "request"   : "^2.34.0",
+       "request-promise" : "^4.2.4"
     },
     "repository": {
         "type": "git",

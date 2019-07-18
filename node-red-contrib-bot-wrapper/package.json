@@ -1,10 +1,10 @@
 {
     "name"          : "node-red-contrib-viseo-bot-wrapper",
-    "version"       : "0.0.1",
+    "version"       : "0.1.0",
     "description"   : "VISEO Bot Maker - Simulates/tests a channel connector",
     "dependencies"  : {
-        "node-red-viseo-helper"      : "0.2.0-alpha.10",
-        "node-red-viseo-bot-manager" : "~0.0"
+        "node-red-viseo-helper"      : "~0.3.0",
+        "node-red-viseo-bot-manager" : "~0.1.0"
     },
     "repository": {
         "type": "git",

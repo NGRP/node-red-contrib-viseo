@@ -1,12 +1,12 @@
 {
     "name"          : "node-red-contrib-viseo-ms-speech",
-    "version"       : "0.0.1",
+    "version"       : "0.1.0",
     "description"   : "VISEO Bot Maker - Microsoft Cognitive Services Speech",
     "dependencies"  : {  
-        "node-red-contrib-viseo-ms-authentication" : "~0.0",
-        "node-red-viseo-helper" : "0.2.0-alpha.8",
-        "request"   : "^2.76.0",
-		"request-promise" : "^4.1.1" 
+        "node-red-contrib-viseo-ms-authentication" : "~0.0.0",
+        "node-red-viseo-helper" : "~0.3.0",
+        "request"   : "^2.34.0",
+        "request-promise" : "^4.2.4"
     },
     "repository" : {
         "type":"git",

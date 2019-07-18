@@ -1,4 +1,3 @@
-const fs = require('fs');
 const spawn = require('child_process').spawn;
 const helper  = require('node-red-viseo-helper');
 

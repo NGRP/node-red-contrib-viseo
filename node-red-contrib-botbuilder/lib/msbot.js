@@ -1,7 +1,5 @@
 "use strict";
 
-const fs      = require("fs");
-const builder = require('botbuilder');
 const helper  = require('node-red-viseo-helper');
 const botmgr  = require('node-red-viseo-bot-manager');
 

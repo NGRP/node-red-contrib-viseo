@@ -1,10 +1,11 @@
 {
     "name"          : "node-red-contrib-viseo-blink",
-    "version"       : "0.2.0-alpha.5",
+    "version"       : "0.2.0",
     "description"   : "VISEO Bot Maker - Blink for Home",
     "dependencies"  : {
-        "node-red-viseo-helper"      : "0.2.0-alpha.8",
-        "request-promise"   : "4.2.1"
+        "node-red-viseo-helper" : "~0.3.0",
+        "request" : "^2.34.0",
+        "request-promise" : "^4.2.4" 
     },
     "repository" : {
         "type":"git",

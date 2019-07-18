@@ -16,8 +16,6 @@
 
 var fs = require('fs-extra');
 var when = require('when');
-var nodeFn = require('when/node/function');
-
 var log = require("node-red/red/runtime/log");
 
 function parseJSON(data) {

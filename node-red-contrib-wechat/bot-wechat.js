@@ -2,10 +2,8 @@
 
 const botmgr    = require('node-red-viseo-bot-manager')
 const helper    = require('node-red-viseo-helper');
-//const msbot     = require('../../lib/msbot.js');
-//const srv       = require('../../lib/server.js');
-const wechat       = require('wechat'),
-      WechatAPI    = require('wechat-api');
+const wechat       = require('wechat');
+const WechatAPI    = require('wechat-api');
 
 // --------------------------------------------------------------------------
 //  NODE-RED

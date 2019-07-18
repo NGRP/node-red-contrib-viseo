@@ -2,7 +2,6 @@
 
 const chatbaseFactory = require('./lib/chatbase-api-factory.js');
 
-
 module.exports = function(RED) {
 
     const register = function(config) {

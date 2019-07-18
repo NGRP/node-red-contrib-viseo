@@ -1,6 +1,6 @@
 # Node-RED
 
-Performs an OAuth2 Authentication with [Microsoft Graph](https://developer.microsoft.com/en-us/graph), and then uses the API such as Excel.
+Microsoft Graph nodes: authentication and Excel.
 
 This node is part of project [node-red-contrib-viseo](https://github.com/NGRP/node-red-contrib-viseo) powered by [VISEO](http://www.viseo.com) Technologies. Please find the node documentation in the Node-RED info tab. 
 
@@ -26,12 +26,6 @@ npm install node-red-contrib-viseo-ms-graph
 8. Enter https://server.url:1880/callback-auth as the Redirect URI.
 9. Choose Save.
 
-### Build the Node-RED Flow
-
-This [sample](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-ms-graph/doc/flow.json) demonstrate an authentication throught a ChatBot.
-
-![Flow](https://github.com/NGRP/node-red-contrib-viseo/raw/master/node-red-contrib-ms-graph/doc/flow.jpg)
-
 #### Sign-In
 
 The first row build an URL to `https://login.microsoftonline.com/common` with credentials then send a ChatBot Sign-In Card
@@ -47,8 +41,9 @@ The second row
 
 The third row try to retrieve the microsoft profile with an HTTP request to `https://graph.microsoft.com/v1.0/me`
 
-
 ## Getting Help
+
+A documentation is available on [this Wiki](https://github.com/NGRP/node-red-viseo-bot/wiki).
 
 For further help, or general discussion, please use the [github issue tracker](https://github.com/NGRP/node-red-contrib-viseo/issues) and in order to be labeled with `question` tag please specify :
 - Your message is a question / discussion
@@ -56,21 +51,16 @@ For further help, or general discussion, please use the [github issue tracker](h
 
 ## Contributing
 
-Before raising a pull-request, please read our contributing guide.
-
-This project adheres to the Contributor Covenant 1.4. By participating, 
-you are expected to uphold this code. 
-Please report unacceptable behavior to any of the project's core team.
+This project adheres to the Contributor Covenant 1.4. By participating, you are expected to uphold [this code](https://www.contributor-covenant.org/). Please report unacceptable behavior to any of the project's core team.
 
 ## Authors
 
 This project is a creation of [VISEO](http://www.viseo.com) Technology.
 
-- Eric Brulatout [@ebrulato](https://twitter.com/ebrulato)
 - Jean-Philippe Encausse [@jpencausse](https://twitter.com/jpencausse)
+- Klervi Menoret [@klervix](https://github.com/klervix)
+- To-Thi Hoang
 - Alice Vasseur [@Alice_Vasseur](https://twitter.com/Alice_Vasseur)
-- Klervi Menoret [@klervix](https://twitter.com/klervix)
-- To-Thi Hoang 
 
 ## Copyright and license
 

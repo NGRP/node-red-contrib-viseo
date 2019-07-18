@@ -1,12 +1,12 @@
 {
   "name": "node-red-contrib-viseo-chatbase",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "VISEO Bot Maker - Chatbase",
   "dependencies": {
-    "request-promise": "^4.1.1",
+    "request"   : "^2.34.0",
+    "request-promise" : "^4.2.4" ,
     "moment"    : "^2.15.2",
-    "node-red-viseo-helper": "~0.1",
-    "request": "^2.88.0"
+    "node-red-viseo-helper": "~0.3.0"
   },
   "repository": {
     "type": "git",

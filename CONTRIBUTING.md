@@ -5,8 +5,8 @@ We welcome contributions, but request you follow these guidelines.
  - [Raising issues](#raising-issues)
  - [Feature requests](#feature-requests)
  - [Pull-Requests](#pull-requests)
-   - [Coding standards](#coding-standards)
-   - [Best practices](#best-practices)
+ - [Coding standards](#coding-standards)
+ - [Best practices](#best-practices)
 
 This project adheres to the [Contributor Covenant 1.4](http://contributor-covenant.org/version/1/4/).
 By participating, you are expected to uphold this code. Please report unacceptable behavior to the core team.
@@ -32,7 +32,6 @@ For feature requests, please raise them in issues and describe it at a feature t
 If you want to raise a pull-request with a new feature, or a refactoring
 of existing code, it may well get rejected if you haven't discussed it on
 the GitHub issues first.
-
 
 ## Coding standards
 
