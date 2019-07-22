@@ -5,7 +5,7 @@ const restify = require('restify');
 const builder = require('botbuilder');
 
 let bot;
-let verbose = CONFIG.server.verbose;
+let verbose = (CONFIG.server || {}).verbose;
 
 const route = (callback, options, server) => {
     let opt = options || {};
@@ -110,7 +110,7 @@ const createServer = (callback, options, RED) => {
     });
 
     // Start listening on port
-    server.listen(opt.port || CONFIG.server.port, ()  => {
+    server.listen(opt.port || (CONFIG.server || {}).port, ()  => {
         if (verbose) info('Server "' + server.name + '" listening to ' + server.url);
 
         // Serve static files
