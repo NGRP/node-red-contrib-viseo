@@ -65,7 +65,7 @@ const stop = (node, config, done) => {
 const LRUMap = require('./lru.js').LRUMap;
 
 // Should it be init in start() ?
-let _CONTEXTS    = new LRUMap(CONFIG.server.contextLRU || 10000);
+let _CONTEXTS    = new LRUMap((CONFIG.server || {}).contextLRU || 10000);
 let _CONTEXT_KEY = 'contextId';
 
 const getMessageContext = (message) => {
