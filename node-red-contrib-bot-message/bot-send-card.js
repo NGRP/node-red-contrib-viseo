@@ -523,6 +523,7 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
     let subtext = config.textAdaptiveCard;
     let separator = config.containerSeparatorAdaptiveCard;
     let displayedTextSize = config.displayedTextSizeAdaptiveCard;
+    let titleShowCardAction = config.titleShowCardAction || 'More';
    
     if (!separator) {
         separator = "**";
@@ -531,6 +532,20 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
     if (!displayedTextSize) {
         // if not defined value, then don't wrap, display up to 100k characters.
         displayedTextSize = 100000;
+    }
+
+    switch (config.titleShowCardActionType) {
+        case 'str':
+            titleShowCardAction = marshall(locale, titleShowCardAction,  data, '');
+            break;
+        case 'global':
+            titleShowCardAction = helper.getByString(node.context().global, titleShowCardAction);
+            break;
+        case 'flow':
+            titleShowCardAction = helper.getByString(node.context().flow, titleShowCardAction);
+            break;
+        default:
+            titleShowCardAction = 'More';
     }
 
     if (!config.titleTypeAdaptiveCard) title = marshall(locale, title,  data, '');
@@ -579,7 +594,7 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         tmp = textToShow.substring(attrIndex);
 
         //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
-        reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": []}});
+        reply.actions.push({"type": "Action.ShowCard", "title": titleShowCardAction, "card": {"type": 'AdaptiveCard', "body": []}});
         buildAdaptiveCardJson(tmp, reply.actions[0].card.body, separator);
         
     } else {
