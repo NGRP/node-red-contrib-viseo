@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-ms-vision",
-    "version"       : "0.1.0",
+    "version"       : "0.1.1",
     "description"   : "VISEO Bot Maker - Microsoft Cognitive Services Vision",
     "dependencies"  : { 
         "node-red-contrib-viseo-ms-authentication" : "~0.0.0",

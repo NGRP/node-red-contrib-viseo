@@ -11,8 +11,13 @@ module.exports = function(RED) {
         let node = this;
 
         node.status({fill:"red", shape:"ring", text: 'Missing credential'});
-        this.facecreds = RED.nodes.getCredentials(config.facekey);
-        if (this.facecreds) node.status({});
+        try {
+            this.facecreds = RED.nodes.getNode(config.facekey).credentials;
+            if (this.facecreds) node.status({});
+        }
+        catch(err) {
+            this.facecreds = {};
+        }
         
         this.on('input', (data)  => { input(node, data, config)  });
     }
