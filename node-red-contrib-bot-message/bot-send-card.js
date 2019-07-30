@@ -523,7 +523,7 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
     let subtext = config.textAdaptiveCard;
     let separator = config.containerSeparatorAdaptiveCard;
     let displayedTextSize = config.displayedTextSizeAdaptiveCard;
-    let titleShowCardAction = config.titleShowCardAction || 'More';
+    let titleShowCardAction = config.titleShowCardAction;
    
     if (!separator) {
         separator = "**";
@@ -534,31 +534,16 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         displayedTextSize = 100000;
     }
 
-    switch (config.titleShowCardActionType) {
-        case 'str':
-            titleShowCardAction = marshall(locale, titleShowCardAction,  data, '');
-            break;
-        case 'global':
-            titleShowCardAction = helper.getByString(node.context().global, titleShowCardAction);
-            break;
-        case 'flow':
-            titleShowCardAction = helper.getByString(node.context().flow, titleShowCardAction);
-            break;
-        default:
-            titleShowCardAction = 'More';
-    }
 
-    if (!config.titleTypeAdaptiveCard) title = marshall(locale, title,  data, '');
-    else if (config.titleTypeAdaptiveCard !== 'str') {
-        let loc = (config.titleTypeAdaptiveCard === 'global') ? node.context().global : data;
-        title = helper.getByString(loc, title);
-    }
+    titleShowCardAction = helper.getContextValue(RED, node, data, titleShowCardAction || 'More', config.titleShowCardActionType || 'str');
+    titleShowCardAction = marshall(locale, titleShowCardAction,  data, '');
 
-    if (!config.attachTypeAdaptiveCard) attach = marshall(locale, attach,  data, '');
-    else if (config.attachTypeAdaptiveCard !== 'str') {
-        let loc = (config.attachTypeAdaptiveCard === 'global') ? node.context().global : data;
-        attach = helper.getByString(loc, attach);
-    }
+    title = helper.getContextValue(RED, node, data, title || '', config.titleTypeAdaptiveCard || 'str');
+    title = marshall(locale, title,  data, '');
+
+    attach = helper.getContextValue(RED, node, data, attach || '', config.attachTypeAdaptiveCard || 'str');
+    titattachle = marshall(locale, attach,  data, '');
+
 
     reply.type = 'AdaptiveCard';
     reply.title = title;
