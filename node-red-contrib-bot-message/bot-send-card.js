@@ -103,7 +103,6 @@ const input = (RED, node, data, config, reply) => {
     if (config.prompt){
         botmgr.delayCallback(convId, (prompt) => {
             data.prompt = prompt
-            node.warn({ prompt: data})
             sendData(node, data, config)
         })
     }
@@ -144,6 +143,7 @@ const input = (RED, node, data, config, reply) => {
                 data.metadata = JSON.parse(config.metadata);
                 break;
         }
+        data.metadataType = config.metadataType;
     }
 
     helper.emitAsyncEvent('before-reply', node, data, config, (beforeData) => {
