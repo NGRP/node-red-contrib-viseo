@@ -139,19 +139,28 @@ async function input (node, data, config) {
         }
 
         image.crop(cropRect.left, cropRect.top, cropRect.width, cropRect.height);
-        image.write(pathOut);
-        
     }
 
-    try { 
-        image.write(pathOut);
-        return node.send([data, null]);
-    }
-    catch (err) {
-        node.error(err);
-        return node.send([null, data])
+    // 1. pathOut is a file (regular usage)
+    if ((/\.(jpg|png|gif|jpeg|tiff|bmp)/gi).test(pathOut)){
+        try {
+            image.write(pathOut)
+            return node.send([data, null])
+        } catch(ex){
+            node.error(ex);
+            return node.send([null, data])
+        }
     }
 
+    // 2. otherwise set the buffer in the flow in PNG
+    image.getBuffer(Jimp.MIME_PNG, (err, buffer) => { 
+        if (err) {
+            node.error(err);
+            return node.send([null, data])
+        }
+        helper.setByString(data, pathOut, buffer)
+        return node.send([data, null])
+    });
 }
 
 
