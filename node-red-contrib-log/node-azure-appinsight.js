@@ -37,20 +37,21 @@ const close = (done) => {
 
 // See https://github.com/Microsoft/ApplicationInsights-node.js/tree/master
 const input = (node, data, config) => {
+    if (client) {
+        let log =  config.log || "payload";
+        if (config.logType === "msg") log = helper.getByString(data, log) ;
+        let name = (config.evtnameType === "msg") ?  helper.getByString(data, config.evtname) : config.evtname;
+        let type = config.evttype || 'event';
 
-    let log =  config.log || "payload";
-    if (config.logType === "msg") log = helper.getByString(data, log) ;
-    let name = (config.evtnameType === "msg") ?  helper.getByString(data, config.evtname) : config.evtname;
-    let type = config.evttype || 'event';
-
-    if (type === 'event'){
-        client.trackEvent(name, log);
-    } else if (type === 'metric'){
-        client.trackMetric(name, parseInt(log));
-    } else if (type === 'trace'){
-        client.trackTrace(log);
-    } else if (type === 'error'){
-        client.trackException(new Error(log));
+        if (type === 'event'){
+            client.trackEvent(name, log);
+        } else if (type === 'metric'){
+            client.trackMetric(name, parseInt(log));
+        } else if (type === 'trace'){
+            client.trackTrace(log);
+        } else if (type === 'error'){
+            client.trackException(new Error(log));
+        }
     }
 
     node.send(data);

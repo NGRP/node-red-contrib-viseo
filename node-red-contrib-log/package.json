@@ -1,29 +1,38 @@
 {
-    "name"          : "node-red-contrib-viseo-log",
-    "version"       : "0.3.0",
-    "description"   : "VISEO Bot Maker - Logging nodes",
-    "dependencies"  : { 
-        "winston"               : "~2.3.1",
-        "applicationinsights"   : "~0.18.0",
-        "logstash-client"       : "~1.1.1",
-        "request"               : "^2.34.0",
-        "node-red-viseo-helper" : "~0.3.0",
-        "sqlite3"               : "~4.0.0"
-    },
-    "repository" : {
-        "type":"git",
-        "url":"https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-log"
-    },
-    "license": "Apache-2.0",
-    "keywords": [ "viseo", "sarah", "node-red", "logs", "xiti", "logstash", "azure", "insights", "file" ],
-    "node-red" : {
-        "nodes": {
-            "log-file":               "node-log-file.js",
-            "log-azure-appinsight":   "node-azure-appinsight.js",
-            "log-xiti":               "node-log-xiti.js",
-            "log-logstach":           "node-logstach.js",
-            "log-sqlite":             "node-log-sqlite.js"
-        }
+  "name": "node-red-contrib-viseo-log",
+  "version": "0.4.0",
+  "description": "VISEO Bot Maker - Logging nodes",
+  "dependencies": {
+    "winston": "~2.3.1",
+    "applicationinsights": "~0.18.0",
+    "logstash-client": "~1.1.1",
+    "request": "^2.34.0",
+    "node-red-viseo-helper": "~0.3.0",
+    "sqlite3": "~4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-log"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "logs",
+    "xiti",
+    "logstash",
+    "azure",
+    "insights",
+    "file"
+  ],
+  "node-red": {
+    "nodes": {
+      "log-file": "node-log-file.js",
+      "log-azure-appinsight": "node-azure-appinsight.js",
+      "log-xiti": "node-log-xiti.js",
+      "log-logstash": "node-logstash.js",
+      "log-sqlite": "node-log-sqlite.js"
     }
+  }
 }
-
