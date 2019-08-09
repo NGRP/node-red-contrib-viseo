@@ -14,7 +14,7 @@
             'draw-logo': { value: undefined },
             'draw-logoType':  { value: 'msg'},
             'crop-rect': { value: undefined },
-            'crop-rectType':  { value: 'msg'}
+            'crop-rectType':  { value: 'msg'},
         },
         inputs:  1,
         outputs: 2,
@@ -45,6 +45,9 @@
                         $(".draw").show();
                         $("#node-input-draw-rect").typedInput('show');
                         $("#node-input-draw-logo").typedInput('show');
+                        break;
+                    case "read":
+                        $(".read").show()
                         break;
                 }
             }
@@ -81,6 +84,7 @@
         <br>
         <label for="node-input-action"><i class="fa fa-navicon"></i> Action</label>
         <select id="node-input-action" style="width:70%;">
+            <option value="read">Read image</option>
             <option value="crop">Crop rectangle</option>
             <option value="draw">Draw rectangles</option>
         </select>

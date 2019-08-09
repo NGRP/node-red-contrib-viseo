@@ -15,8 +15,9 @@ module.exports = function(RED) {
     RED.nodes.registerType("jimp", register, {});
 }
 
+
 async function input (node, data, config) {
-    
+
     let pathIn  = (config.pathInType  === "msg") ? helper.getByString(data, config.pathIn)  : config.pathIn  || 'data/input.jpg' ;
     let pathOut = (config.pathOutType === "msg") ? helper.getByString(data, config.pathOut) : config.pathOut || 'data/output.jpg';
     let action =  config.action || "crop";
@@ -30,7 +31,13 @@ async function input (node, data, config) {
         return node.send([null, data])
     }
 
-    if (action === "draw") {
+    if (action === "read") {
+        data._Jimp = Jimp
+	helper.setByString(data, pathOut, image)
+        return node.send([data, null])
+
+    } 
+    else if (action === "draw") {
         let drawRect = (config['draw-rectType'] === "msg") ? helper.getByString(data, config['draw-rect'] || 'payload') : config['draw-rect'];
         let drawLogo = (config['draw-logoType'] === "msg" && config['draw-logo']) ? helper.getByString(data, config['draw-logo']) : config['draw-logo'];
 
@@ -120,9 +127,6 @@ async function input (node, data, config) {
 
     }
 
-
-
-
     else if (action === "crop") {
         let cropRect = (config['crop-rectType'] === "msg") ? helper.getByString(data, config['crop-rect'] || 'payload') : config['crop-rect'];
 
@@ -162,10 +166,6 @@ async function input (node, data, config) {
         return node.send([data, null])
     });
 }
-
-
-
-
 
 // border 
 async function black_iterator(x, y, offset) { 
