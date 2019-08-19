@@ -1,10 +1,10 @@
 {
   "name": "node-red-contrib-viseo-log",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "VISEO Bot Maker - Logging nodes",
   "dependencies": {
     "winston": "~2.3.1",
-    "applicationinsights": "~0.18.0",
+    "applicationinsights": "~1.4.0",
     "logstash-client": "~1.1.1",
     "request": "^2.34.0",
     "node-red-viseo-helper": "~0.3.0",
@@ -30,6 +30,7 @@
     "nodes": {
       "log-file": "node-log-file.js",
       "log-azure-appinsight": "node-azure-appinsight.js",
+      "log-azure-appinsight-config": "node-azure-appinsight-config.js",
       "log-xiti": "node-log-xiti.js",
       "log-logstash": "node-logstash.js",
       "log-sqlite": "node-log-sqlite.js"

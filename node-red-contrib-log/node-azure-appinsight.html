@@ -4,7 +4,7 @@
         color: '#3FADB5',
         defaults: { 
             name:    { value: undefined },
-            key:     { value: undefined },
+            configuration:     { value: undefined, type: "log-azure-appinsight-config" },
             log:     { value: undefined },
             evttype: { value: "event" },
             evtname: { value: undefined },
@@ -18,11 +18,9 @@
         paletteLabel: 'to Azure',
         label: function() { return this.name || "to Azure"; },
         oneditprepare: function() {
-            $("#node-input-key").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-evtname").typedInput({ default: 'str', types: ['str', 'msg'], typeField: $("#node-input-evtnameType") });
             $("#node-input-log").typedInput({ default: 'msg', types: ['str', 'msg'], typeField: $("#node-input-logType") });
-        },
-        oneditsave: function(){}
+        }
     });
 </script>
 
@@ -32,11 +30,13 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
+    <br>
     <div class="form-row">
-        <label for="node-input-key"><i class="fa fa-lock"></i> Key</label>
-        <input type="text" id="node-input-key" style="width:70%;" placeholder="">
+        <label for="node-input-server"><i class="fa fa-tag"></i> Configuration</label>
+        <input type="text" id="node-input-configuration">
     </div>
 
+    <br>
     <div class="form-row">
         <label for="node-input-evttype"><i class="fa fa-sliders"></i> Event Type</label>
         <select id="node-input-evttype" style="width:70%;">

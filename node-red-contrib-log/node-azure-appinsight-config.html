@@ -1,0 +1,86 @@
+<script type="text/javascript">
+    RED.nodes.registerType('log-azure-appinsight-config',{
+        category: 'config',
+        defaults: {
+            name: { value: undefined },
+            autoDependencyCorrelation: { value: false },
+            autoCollectRequests: { value: false },
+            autoCollectPerformance: { value: false },
+            autoCollectExceptions: { value: false },
+            autoCollectDependencies: { value: false },
+            autoCollectConsole: { value: false },
+            useDiskRetryCaching: { value: false },
+            sendLiveMetrics: { value: false },
+            distributedTracingTracingMode: { value: "0" }
+        },
+        credentials: {
+            key: { type: 'text' }
+        },
+        label: function() {
+            return this.name || "Application insights config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="log-azure-appinsight-config">
+    <div class="form-row">
+        <label for="node-config-input-name" style="width:35%;"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="Name" style="width: 60%;">
+    </div>
+
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-key" style="width: 35%;"><i class="fa fa-lock"></i> Instrumentation key</label>
+        <input type="text" id="node-config-input-key" placeholder="Instrumentation key" style="width: 60%;">
+    </div>
+
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-autoDependencyCorrelation" style="width: 50%;">Auto dependency correlation</label>
+        <input type="checkbox" id="node-config-input-autoDependencyCorrelation" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-autoCollectRequests" style="width: 50%;">Auto collect requests</label>
+        <input type="checkbox" id="node-config-input-autoCollectRequests" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-autoCollectPerformance" style="width: 50%;">Auto collect performance</label>
+        <input type="checkbox" id="node-config-input-autoCollectPerformance" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-autoCollectExceptions" style="width: 50%;">Auto collect exceptions</label>
+        <input type="checkbox" id="node-config-input-autoCollectExceptions" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-autoCollectDependencies" style="width: 50%;">Auto collect dependencies</label>
+        <input type="checkbox" id="node-config-input-autoCollectDependencies" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-autoCollectConsole" style="width: 50%;">Auto collect console</label>
+        <input type="checkbox" id="node-config-input-autoCollectConsole" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-useDiskRetryCaching" style="width: 50%;">Use disk retry caching</label>
+        <input type="checkbox" id="node-config-input-useDiskRetryCaching" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-sendLiveMetrics" style="width: 50%;">Send live metrics</label>
+        <input type="checkbox" id="node-config-input-sendLiveMetrics" style="width: auto;">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-distributedTracingTracingMode" style="width:50%;">Distributed tracing mode</label>
+        <select id="node-config-input-distributedTracingTracingMode" style="width: auto;">
+            <option value="0">AI</option>
+            <option value="1">AI_AND_W3C</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="log-azure-appinsight-config">
+    <p>Configuration for Microsoft Application Insights. </p>
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/Microsoft/ApplicationInsights-node.js#readme">Application Insights Node.js SDK</a></li>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>
