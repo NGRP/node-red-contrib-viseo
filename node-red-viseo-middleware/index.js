@@ -74,13 +74,19 @@ module.exports = function() {
         //get access token
         let scope = requestedUrl.match(scopeTest)[1];
         let ssid = req.cookies[scope];
+
         if(ssid) {
             if(AUTHORIZED_TOKENS[ssid] && AUTHORIZED_TOKENS[ssid].expires > Date.now()) {
                 return next();
             } else {
                 delete AUTHORIZED_TOKENS[ssid];
+                if(req.headers["x-requested-with"] === "XMLHttpRequest") {
+                    res.sendStatus(401);
+                }
             }
         }
+
+
 
         //check access token
 
