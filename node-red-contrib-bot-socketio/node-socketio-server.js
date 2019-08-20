@@ -44,7 +44,7 @@ module.exports = function(RED) {
         this.on('close', (done)  => { removeListeners(node, done) });
     }
 
-    RED.nodes.registerType("socketio-server-config", registerConfig);    
+    RED.nodes.registerType("socketio-server-config", registerConfig);
     RED.nodes.registerType("socketio-server",        registerNode, { credentials: { secret: {type: "text"}} });
 }
 
@@ -76,13 +76,13 @@ const startIOServer = (RED) => {
     io = new Server(RED.server);
 }
 
-const bindIOServer = (node, config) => {  
+const bindIOServer = (node, config) => {
     if (!io) { return log("WebSocket server not available..."); }
 
     let namespace = config.namespace || 'assistant';
     log("Bind WebSocket server on " + namespace);
 
-    io.on('connection', (socket) => { 
+    io.on('connection', (socket) => {
         let client = { "socket" : socket, replies : {} }
         CLIENTS[client.socket.id] = client;
 
@@ -130,23 +130,25 @@ const receive = (node, config, client, message) => {
         }
     }
 
+    // Set the convId to the socketId 
+    message.socket = client.socket.id
+
     // Bind ClientID to socket's data (if provided)
     if (message._client_id){
         client._client_id = message._client_id
+        message.socket = client._client_id // override the convId with a generic reference
     }
 
-    message.socket = client.socket.id
-
     let data = botmgr.buildMessageFlow({ "message" : message }, {
-        userId:     'message._client_id', 
+        userId:     'message._client_id',
         convId:     'message.socket',
         payload:    'message.content',
         inputType:  'message.type',
         source:     CARRIER
     })
-    
+
     // Handle Prompt
-    let convId  = botmgr.getConvId(data)
+    let convId  = botmgr.getConvId(data);
     if (botmgr.hasDelayedCallback(convId, data.message)) return;
 
     // Trigger received message
@@ -162,7 +164,7 @@ const receive = (node, config, client, message) => {
 const reply = (node, data, config) => {
 
     let namespace = config.namespace || 'assistant';
-    
+
     try {
 
         let address = botmgr.getUserAddress(data)
@@ -175,27 +177,30 @@ const reply = (node, data, config) => {
         // Emit the message
         let socket  = botmgr.getConvId(data);
         let client  = CLIENTS[socket];
-        if (!client){ 
+        if (!client){
             let userId = data.user.id
             if (!userId){ return node.warn('Client SocketId ' + socket + ' not found ')}
-            
+
             // Find the first client matching given userID has a fallback
             for (let sock of Object.keys(CLIENTS)){
                 let c = CLIENTS[sock]
                 if (c._client_id === userId){
-                    client = c; 
+                    client = c;
+                    // node.warn('Override Conversation ID: ' + client.socket.id)
+                    // helper.setByString(data, 'user.address.conversation.id', client.socket.id)
+                    node.warn('Conversation ID custom: ' +  botmgr.getConvId(data))
                     break;
                 }
             }
 
-            if (!client){ 
+            if (!client){
                 node.warn('Client SocketId ' + socket + ' not found for userId '+ userId)
                 return;
             }
         }
 
         // Store a replyId x data to a given Socket
-        // and wait client acknowledge message 
+        // and wait client acknowledge message
         // to call: helper.fireAsyncCallback(data);
         let replyId = uuidv4();
         client.replies[replyId] = data;
