@@ -188,7 +188,7 @@ const reply = (node, data, config) => {
                     client = c;
                     // node.warn('Override Conversation ID: ' + client.socket.id)
                     // helper.setByString(data, 'user.address.conversation.id', client.socket.id)
-                    node.warn('Conversation ID custom: ' +  botmgr.getConvId(data))
+                    // node.warn('Conversation ID custom: ' +  botmgr.getConvId(data))
                     break;
                 }
             }
