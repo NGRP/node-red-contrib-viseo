@@ -1,0 +1,27 @@
+{
+  "name": "node-red-contrib-viseo-airtable",
+  "version": "0.1.0",
+  "description": "VISEO Bot Maker - Airtable",
+  "dependencies": {
+    "node-red-viseo-helper": "~0.3.0",
+    "airtable": "~0.7.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-airtable"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "airtable",
+    "table"
+  ],
+  "node-red": {
+    "nodes": {
+      "node-airtable": "node-airtable.js",
+      "config-airtable": "config-airtable.js"
+    }
+  }
+}

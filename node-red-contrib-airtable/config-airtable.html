@@ -1,0 +1,40 @@
+<script type="text/javascript">
+  RED.nodes.registerType("node-config-airtable", {
+    category: "config",
+    defaults: {
+      name: { value: undefined }
+    },
+    credentials: {
+      app: { value: undefined },
+      key: { value: undefined }
+    },
+    label: function() {
+      return this.name || "Aitable key";
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="node-config-airtable">
+  <div class="form-row">
+      <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+      <input type="text" id="node-config-input-name" placeholder="Name">
+  </div>
+  <br>
+  <div class="form-row">
+        <label for="node-config-input-app"><i class="fa fa-tag"></i> App ID</label>
+        <input type="text" id="node-config-input-app">
+    </div>
+  <div class="form-row">
+      <label for="node-config-input-key"><i class="fa fa-lock"></i> API Key</label>
+      <input type="text" id="node-config-input-key">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-config-airtable">
+  <p>Set an Airtable key for a specific app.</p>
+
+  <h3>References</h3>
+  <ul>
+      <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+  </ul>
+</script>

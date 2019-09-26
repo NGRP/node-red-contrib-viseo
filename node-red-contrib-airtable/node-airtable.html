@@ -1,0 +1,150 @@
+<script type="text/javascript">
+  RED.nodes.registerType("node-airtable", {
+    category: "💾_data",
+    color: "#fab2c5",
+    defaults: {
+      name: { value: undefined },
+      auth: { value: undefined, type: "node-config-airtable", required: true },
+      table: { value: undefined, required: true },
+      tableType: { value: "msg" },
+      action: { value: "list" },
+      filter: { value: undefined, required: false },
+      filterType: { value: "msg" },
+      record: { value: undefined, required: false },
+      recordType: { value: "msg" },
+      records: { value: undefined, required: false },
+      recordsType: { value: "msg" },
+      output: { value: undefined, required: false }
+    },
+    inputs: 1,
+    outputs: 2,
+    icon: "airtable.png",
+    align: "left",
+    paletteLabel: "Airtable",
+    label: function() {
+      return this.name || "Airtable";
+    },
+    oneditprepare: function() {
+      $("#node-input-name").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-table").typedInput({
+        default: "msg",
+        types: ["str", "msg"],
+        typeField: $("#node-input-tableType")
+      });
+      $("#node-input-filter").typedInput({
+        default: "msg",
+        types: ["msg", "json", "str"],
+        typeField: $("#node-input-filterType")
+      });
+      $("#node-input-record").typedInput({
+        default: "msg",
+        types: ["msg", "json", "str"],
+        typeField: $("#node-input-recordType")
+      });
+      $("#node-input-records").typedInput({
+        default: "msg",
+        types: ["msg", "json", "str"],
+        typeField: $("#node-input-recordsType")
+      });
+      $("#node-input-output").typedInput({
+        default: "msg",
+        types: ["msg"],
+        type: "msg"
+      });
+
+      $("#node-input-action").change(function() {
+        $(".list, .get, .post, .put, .delete").hide();
+        let actionValue = $(this).val();
+        $("." + actionValue).show();
+
+        switch (actionValue) {
+          case "list":
+            $("#node-input-filter").typedInput("show");
+            break;
+          case "get":
+          case "post":
+            $("#node-input-record").typedInput("show");
+            break;
+          case "put":
+          case "delete":
+            $("#node-input-records").typedInput("show");
+            break;
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .input-info {
+    font-size: 12px;
+    padding-left: 104px;
+    font-style: italic;
+  }
+</style>
+
+<script type="text/x-red" data-template-name="node-airtable">
+  <div class="form-row" style="min-width:600px;">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+  </div>
+
+  <br>
+  <b>Airtable settings</b>
+
+  <div class="form-row">
+      <br>
+      <label for="node-input-auth"><i class="fa fa-lock"></i> Config</label>
+      <input type="text" id="node-input-auth" style="width: 70%" placeholder="">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-table"><i class="fa fa-table"></i> Table</label>
+      <input type="text" id="node-input-table" style="width: 70%" placeholder="">
+      <input type="hidden" id="node-input-tableType">
+  </div>
+
+  <br>
+  <b>Request settings</b>
+
+  <div class="form-row">
+      <br>
+      <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
+      <select id="node-input-action" style="width: 34%">
+          <option value="list">List records</option>
+          <option value="get">Retrieve a record</option>
+          <option value="post">Create records</option>
+          <option value="put">Update (put) records</option>
+          <option value="delete">Delete records</option>
+      </select>
+  </div>
+
+  <div class="form-row list">
+    <label for="node-input-filter"><i class="fa fa-sign-in"></i> Filter</label>
+    <input type="text" id="node-input-filter" style="width: 70%" placeholder="payload"/>
+    <input type="hidden" id="node-input-filterType">
+  </div>
+
+  <div class="form-row get post">
+    <label for="node-input-record"><i class="fa fa-sign-in"></i> Record</label>
+    <input type="text" id="node-input-record" style="width: 70%" placeholder="payload"/>
+    <input type="hidden" id="node-input-recordType">
+  </div>
+
+  <div class="form-row delete put">
+    <label for="node-input-records"><i class="fa fa-sign-in"></i> Records</label>
+    <input type="text" id="node-input-records" style="width: 70%" placeholder="payload"/>
+    <input type="hidden" id="node-input-recordsType">
+  </div>
+
+  <div class="form-row">
+      <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+      <input type="text" id="node-input-output" style="width: 70%" placeholder="payload"/>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-airtable"></script>
