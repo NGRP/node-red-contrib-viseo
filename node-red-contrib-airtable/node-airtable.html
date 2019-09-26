@@ -147,4 +147,47 @@
   </div>
 </script>
 
-<script type="text/x-red" data-help-name="node-airtable"></script>
+<script type="text/x-red" data-help-name="node-airtable">
+  p>Manipulate a Google spreadhseet with Sheets API. </p>
+
+  <h3>Details</h3>
+  <p>Properties</p>
+  <dl class="message-properties">
+      <dt>Config <span class="property-type">config</span></dt>
+      <dd>information from an Airtable app: ID and API key</dd>
+      <dt>Table <span class="property-type">string</span></dt>
+      <dd>ID of the target app, such as "appXXXXXXXXXXXXXX"</dd>
+      <dt>Output <span class="property-type">string</span></dt>
+      <dd>where to store the results</dd>
+  </dl>
+
+  <h3>Methods</h3>
+  <p>
+    <code>List records</code> returns all the records of the table. The <i>Filter</i> input has to be a <b>string</b> formula, eg <i>ID="myValue"</i>.
+  </p>
+  <p>
+    <code>Get record</code> returns the target record, given its ID. The <i>Record</i> input has to be a <b>string</b> record ID, eg <i>ID="recXXXXXXXX"</i>.
+  </p>
+  <p>
+      <code>Create records</code> adds new records and returns them. The <i>Records</i> has to be an <b>array</b> of Record fields <b>objects</b> or a Record fields <b>object</b>.
+      A Record fields object contains keys and values of the table fields, eg <i>{ "id": 1, "name": "one" }</i>.
+  </p>
+  <p>
+      <code>Update records</code> updates records in a destructive way and returns them. The <i>Records</i> has to be an <b>array</b> of Record <b>objects</b>.
+      A Record object contains a Record ID and a Record fields object, eg <i>[{ "id": "recJ5xmQgrmsMKkbD", "fields": { "id": 1, "name": "two" }}]</i>.
+  </p>
+  <p>
+    <code>Delete records</code> delete records and returns them. The <i>Records</i> has to be an <b>array</b> of Record ID <b>string</b>, eg <i>["recJ5xmQgrmsMKkbD"]</i>.
+  </p>
+
+  <h3>References</h3>
+  <ul>
+      <li><a href="https://airtable.com/api">Airtable</a> - API reference</li>
+      <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+  </ul>
+
+  <h3>Tracking</h3>
+  <p>This node is likely to display an error message if no key is configured in the VISEO Bot Maker project.
+      If such an error appears, please get a key <a href="https://key.bot.viseo.io/">here</a>.
+  </p>
+</script>
