@@ -71,7 +71,12 @@ async function input(RED, node, data, config) {
         break;
       case "delete":
         let recordsIds = resolveParameter("records");
-        results = await deleteRecords(airtableBase, table, recordsIds);
+        if (!recordsIds.length || recordsIds.length < 10) {
+          results = await deleteRecords(airtableBase, table, recordsIds);
+        }
+        else {
+          results = await deleteArraysOfRecords(airtableBase, table, recordsIds);
+        }
         break;
     }
 
@@ -163,6 +168,29 @@ async function deleteRecords(airtable, table, recordsIds) {
       reject(err);
     }
   });
+}
+
+async function deleteArraysOfRecords(airtable, table, recordsIds) {
+    try {
+      let results = [];
+      let arrayOfRecordsIds = [];
+      let tempArrayOfTen = [];
+      for (recordId of recordsIds) {
+        tempArrayOfTen.push(recordId);
+        if (tempArrayOfTen.length >= 10) {
+          arrayOfRecordsIds.push(tempArrayOfTen);
+          tempArrayOfTen =[];
+        }
+      }
+      for (let array of arrayOfRecordsIds) {
+        
+        let res = await deleteRecords(airtable, table, array);
+        results.push(res);
+      }
+      return results;
+    } catch (err) {
+      throw(err)
+    }
 }
 
 function cleanRecords(records) {
