@@ -5,9 +5,6 @@ const path = require('path')
 const request = require('request-promise')
 const mustache = require('mustache')
 const uuidv4 = require('uuid/v4');
-
-
-
 const authPath = '/restricted/authenticate';
 
 var AUTHORIZED_TOKENS = {};
@@ -17,18 +14,19 @@ module.exports = function() {
     return function(req, res, next) {
 
         let scopeTest = /^\/restricted\/([a-z]+\.[a-z]+)\//
-        let requestedUrl = req.url;
+        let requestedRoute = req.url;
         let port = req.socket.localPort;
+        let host = 'https://' + req.headers.host;
 
-
-    	if(scopeTest.test(requestedUrl) === false) {
+    	if (!scopeTest.test(requestedRoute)) {
     		next();
             return;
     	}
 
     	req.app.post(authPath, async (req, res) => {
             //wrong scope
-            let scope = req.body['requested-url'].match(scopeTest)[1];
+            let requestedUrl = req.body['requested-url'];
+            let scope = requestedUrl.match(scopeTest)[1];
 
             //get access_token
             try {
@@ -54,7 +52,7 @@ module.exports = function() {
 
                 //redirect
                 res.cookie(scope, ssid, 30 * 60);
-                res.send({redirection: global.CONFIG.server.host+req.body['requested-url']});
+                res.send({ redirection: host + requestedUrl });
 
 
             } catch(e) {
@@ -72,8 +70,8 @@ module.exports = function() {
         });
 
         //get access token
-        let scope = requestedUrl.match(scopeTest)[1];
-        let ssid = req.cookies[scope];
+        let scope = requestedRoute.match(scopeTest)[1];
+        let ssid  = req.cookies[scope];
 
         if(ssid) {
             if(AUTHORIZED_TOKENS[ssid] && AUTHORIZED_TOKENS[ssid].expires > Date.now()) {
@@ -86,20 +84,14 @@ module.exports = function() {
             }
         }
 
-
-
         //check access token
-
     	var template = fs.readFileSync(path.join(__dirname, "template","login.html"),"utf8");
-
     	var data = {
     		login : fs.readFileSync(path.join(__dirname, "template","login.js"),"utf8"),
-    		url: global.CONFIG.server.host + authPath,
-            requested_url: requestedUrl
-    	}
-
+    		url: host + authPath,
+            requested_url: requestedRoute
+        }
     	res.send(mustache.render(template, data));
-
     }
 }
 

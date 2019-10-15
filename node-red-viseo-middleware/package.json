@@ -1,6 +1,6 @@
 {
 	"name": "node-red-viseo-middleware",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Middleware for node-red http in",
     "dependencies": {
        "mustache":"^2.3.0",
