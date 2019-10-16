@@ -13,20 +13,20 @@ module.exports = function() {
 
     return function(req, res, next) {
 
-        let scopeTest = /^\/restricted\/([a-z]+\.[a-z]+)\//
-        let requestedRoute = req.url;
+        let scopeTest = /\/restricted\/([a-z]+\.[a-z]+)\//
         let port = req.socket.localPort;
-        let host = 'https://' + req.headers.host;
+        let host = 'https://' + req.headers.host + (global.CONFIG.server.path || '');
+        let requestedRoute = req.url;
+        let requestedUrl = host + requestedRoute;
 
-    	if (!scopeTest.test(requestedRoute)) {
-    		next();
-            return;
-    	}
+        let matchScope = requestedUrl.match(scopeTest);
+        if (!matchScope) return next();
+
+        let scope = matchScope[1];
 
     	req.app.post(authPath, async (req, res) => {
             //wrong scope
-            let requestedUrl = req.body['requested-url'];
-            let scope = requestedUrl.match(scopeTest)[1];
+            let scope = req.body['requested-url'].match(scopeTest)[1];
 
             //get access_token
             try {
@@ -52,7 +52,7 @@ module.exports = function() {
 
                 //redirect
                 res.cookie(scope, ssid, 30 * 60);
-                res.send({ redirection: host + requestedUrl });
+                res.send({ redirection: host + req.body['requested-url'] });
 
 
             } catch(e) {
@@ -70,18 +70,13 @@ module.exports = function() {
         });
 
         //get access token
-        let scope = requestedRoute.match(scopeTest)[1];
         let ssid  = req.cookies[scope];
-
-        if(ssid) {
-            if(AUTHORIZED_TOKENS[ssid] && AUTHORIZED_TOKENS[ssid].expires > Date.now()) {
+        if (ssid) {
+            if (AUTHORIZED_TOKENS[ssid] && 
+                AUTHORIZED_TOKENS[ssid].expires > Date.now()) {
                 return next();
-            } else {
-                delete AUTHORIZED_TOKENS[ssid];
-                if(req.headers["x-requested-with"] === "XMLHttpRequest") {
-                    res.sendStatus(401);
-                }
             }
+            delete AUTHORIZED_TOKENS[ssid];   
         }
 
         //check access token
@@ -91,7 +86,7 @@ module.exports = function() {
     		url: host + authPath,
             requested_url: requestedRoute
         }
+
     	res.send(mustache.render(template, data));
     }
 }
-
