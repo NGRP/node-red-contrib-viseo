@@ -9,21 +9,26 @@
             input:       { value: undefined },
             inputType:   { value: 'msg'},
             output:      { value: 'payload' },
-            token:          { value: 'msg'},
-            tokenType:      { value: undefined },
-            language:       { value: undefined },
-            languageType:   { value: 'str'},
-            contentType:        { value: undefined },
-            contentTypeType:    { value: 'str'},
-            region:             { value: undefined },
-            regionType:         { value: 'str'},
-            userAgent:          { value: undefined },
-            userAgentType:      { value: 'str'},
-            outputFormat:       { value: undefined },
-            outputFormatType:   { value: 'str'}
+            token:            { value: 'msg'},
+            tokenType:        { value: undefined },
+            language:         { value: undefined },
+            languageType:     { value: 'str'},
+            contentType:      { value: undefined },
+            contentTypeType:  { value: 'str'},
+            userAgent:        { value: undefined },
+            userAgentType:    { value: 'str'},
+            ttsLang:          { value: undefined },
+            ttsLangType:      { value: 'str'},
+            ttsGender:        { value: undefined },
+            ttsGenderType:    { value: 'str'},
+            ttsName:          { value: undefined },
+            ttsNameType:      { value: 'str'},
+            outputFormat:     { value: undefined },
+            outputFormatType: { value: 'str'}
+
         },
         inputs:  1,
-        outputs: 2,
+        outputs: 1,
         icon: "azure.png",
         align: "left",
         paletteLabel: 'Speech',
@@ -36,8 +41,10 @@
             $("#node-input-token").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-tokenType") });
             $("#node-input-language").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-languageType") });
             $("#node-input-contentType").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-contentTypeType") });
-            $("#node-input-region").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-regionType") });
             $("#node-input-userAgent").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-userAgentType") });
+            $("#node-input-ttsLang").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-ttsLangType") });
+            $("#node-input-ttsGender").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-ttsGenderType") });
+            $("#node-input-ttsName").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-ttsNameType") });
             $("#node-input-outputFormat").typedInput({ default: 'str', types: ['msg', 'str'], typeField: $("#node-input-outputFormatType") });
 
             $("#node-input-api").change( function() {
@@ -108,15 +115,27 @@
     </div>
 
     <div class="form-row tts">
-        <label for="node-input-region" style="margin-left:15px; width: 85px; color:#848484"> Region</label>
-        <input type="text" id="node-input-region" style="width: 70%" placeholder="westus">
-        <input type="hidden" id="node-input-regionType">
-    </div>
-
-    <div class="form-row tts">
         <label for="node-input-userAgent" style="margin-left:15px; width: 85px; color:#848484"> User-Agent</label>
         <input type="text" id="node-input-userAgent" style="width: 70%" placeholder="">
         <input type="hidden" id="node-input-userAgentType">
+    </div>
+
+    <div class="form-row tts">
+        <label for="node-input-ttsLang" style="margin-left:15px; width: 85px; color:#848484"> Language</label>
+        <input type="text" id="node-input-ttsLang" style="width: 70%" placeholder="fr-FR">
+        <input type="hidden" id="node-input-ttsLangType">
+    </div>
+
+    <div class="form-row tts">
+        <label for="node-input-ttsGender" style="margin-left:15px; width: 85px; color:#848484"> Gender</label>
+        <input type="text" id="node-input-ttsGender" style="width: 70%" placeholder="Female">
+        <input type="hidden" id="node-input-ttsGenderType">
+    </div>
+
+    <div class="form-row tts">
+        <label for="node-input-ttsName" style="margin-left:15px; width: 85px; color:#848484"> Voice Name</label>
+        <input type="text" id="node-input-ttsName" style="width: 70%" placeholder="fr-FR-Julie-Apollo">
+        <input type="hidden" id="node-input-ttsNameType">
     </div>
 
     <div class="form-row tts">
@@ -157,13 +176,17 @@
     <p>TTS properties</p>
     <dl class="message-properties">
         <dt>Input<span class="property-type">string</span></dt>
-        <dd>should be a SSML tag string</dd>
+        <dd>should be a SSML tag string with lang, gender and voice name</dd>
         <dt>Token<span class="property-type">string</span></dt>
         <dd>an access token, leave empty to get a new one</dd>
-        <dt>Region<span class="property-type">string</span></dt>
-        <dd>the region specified in the Azure Portal</dd>
         <dt>User-Agent<span class="property-type">string</span></dt>
         <dd>the service label</dd>
+        <dt>Language<span class="property-type">string</span></dt>
+        <dd>the language code to build SSML</dd>
+        <dt>Gender<span class="property-type">string</span></dt>
+        <dd>the voice gender to build SSML</dd>
+        <dt>Voice Name<span class="property-type">string</span></dt>
+        <dd>the voice name to build SSML</dd>
         <dt>Format<span class="property-type">string</span></dt>
         <dd>output audio format, such as <i>riff-16khz-16bit-mono-pcm</i></dd>
     </dl>
