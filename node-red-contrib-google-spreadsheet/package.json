@@ -1,11 +1,11 @@
 {
     "name": "node-red-contrib-viseo-google-spreadsheet",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "description": "VISEO Bot Maker - Google Sheets",
     "dependencies": {
         "node-red-contrib-viseo-google-authentication": "~0.1.0",
         "node-red-viseo-helper": "~0.3.0",
-        "googleapis": "~27.0.0"
+        "googleapis": "~44.0.0"
     },
     "repository": {
         "type": "git",
