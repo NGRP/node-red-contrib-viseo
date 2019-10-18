@@ -16,7 +16,7 @@
 
 var fs = require('fs-extra');
 var when = require('when');
-var log = require("node-red/red/runtime/log");
+var log = require("@node-red/util/lib/log");
 
 function parseJSON(data) {
     if (data.charCodeAt(0) === 0xFEFF) {

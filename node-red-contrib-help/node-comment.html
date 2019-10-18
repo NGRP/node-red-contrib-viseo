@@ -1,0 +1,93 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-comment',{
+        category: '🛠️_tools',
+        color: '#3FADB5',
+        defaults: { 
+            comment: { value: "" },
+            background:  { value: "#3FADB5" },
+            color: { value: "black" },
+        },
+        inputs:  0,
+        outputs: 0,
+        align: "left",
+        paletteLabel: "Comment",
+        label: function() { 
+            let thisNode = this;
+            setTimeout(function(){
+                repaintNode(thisNode);
+            }, 1);
+            return this.comment;
+        },
+        oneditprepare: function() {
+            let thisNode = this;
+            $("#node-input-comment").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-background").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-background").change( function() {
+                let newColor = $(this).val();
+                thisNode.background = newColor;
+                repaintNode(thisNode);
+            })       
+        }
+    });
+
+    function repaintNode(node) {
+        let id = node.id.split('.');
+        let escapedId = id[0] + "\\." + id[1]; 
+        let $node = $(document).find('#' + escapedId)
+        let background = node.background;
+        let color = node.color;
+        fillHTMLNode($node, background);
+        translateText($node, color === 'white');
+    }
+
+    function fillHTMLNode($node, color) {
+        $node.find('.red-ui-flow-node').attr('fill', color);
+    }
+
+    function translateText($node, isWhite) {
+        $node.find('.red-ui-flow-node-label').attr('x', '14');
+        if (isWhite) $node.find('.red-ui-flow-node-label').attr('style', 'fill: #fff');
+    }
+
+   </Script>
+
+<script type="text/x-red" data-template-name="node-comment">
+    <div class="form-row">
+        <label for="node-input-comment"><i class="fa fa-pencil"></i> Comment</label>
+        <input type="text" id="node-input-comment" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-background"><i class="fa fa-square"></i> Background</label>
+        <input type="text" id="node-input-background" placeholder="#FFFFFF" style="width:70%;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-color"><i class="fa fa-font"></i> Color</label>
+        <select id="node-input-color" style="width:70%;">
+            <option value="black">Black</option>
+            <option value="white">White</option>
+        </select>
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="node-comment">
+    <p>An HTML node to display information in the flow. </p>
+
+    <h3>Details</h3>
+    <p>Properties</p>
+    <dl class="message-properties">
+        <dt>Comment <span class="property-type">string</span></dt>
+        <dd>comment to display</dd>
+        <dt>height <span class="property-type">number</span></dt>
+        <dd>element's height in pixels</dd>
+        <dt>Background <span class="property-type">string</span></dt>
+        <dd>color in hexa</dd>
+        <dt>Content <span class="property-type">html</span></dt>
+        <dd>html content to display</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+</script>
