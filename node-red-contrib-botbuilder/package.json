@@ -1,12 +1,12 @@
 {
     "name"          : "node-red-contrib-viseo-botbuilder",
-    "version"       : "0.9.2",
+    "version"       : "0.9.3",
     "description"   : "VISEO Bot Maker - Microsoft BotBuilder and tools",
     "dependencies"  : {
         "botbuilder"  : "^3.0.0",
         "node-red-viseo-helper" : "~0.3.0",
         "node-red-viseo-bot-manager" : "~0.1.0",
-        "restify" : "~8.4.0",
+        "restify" : "~5.0.0",
         "offline-directline": "~1.2.0",
         "node-xlsx" : "^0.7.4",
         "request" : "~2.88.0",
