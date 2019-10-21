@@ -49,7 +49,7 @@ async function input(RED, node, data, config) {
   try {
     let airtableBase = config.app;
     let action = config.action;
-    let table = config.table;
+    let table = resolveParameter("table");
     if (!table) throw "Table label missing";
 
     switch (action) {

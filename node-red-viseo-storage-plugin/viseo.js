@@ -18,13 +18,13 @@ var viseo = {
 		runtime = _runtime;
 		log = _runtime.log
 
-        runtime.adminApi.adminApp.get('/viseo-bot-framework/versions', async function(req, res) {
+        runtime.adminApi.httpAdmin.get('/viseo-bot-framework/versions', async function(req, res) {
 
             let versions = await viseo.getFrameworkVersions();
             res.send({updates: versions});
         });
 
-        runtime.adminApi.adminApp.post("/viseo-bot-framework/update", function(req, res) {
+        runtime.adminApi.httpAdmin.post("/viseo-bot-framework/update", function(req, res) {
         	let version = req.body.version;
 
             viseo.updateFrameworkVersion(version)

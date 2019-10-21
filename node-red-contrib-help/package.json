@@ -1,6 +1,6 @@
 {
     "name"          : "node-red-contrib-viseo-help",
-    "version"       : "0.2.1",
+    "version"       : "1.0.0",
     "description"   : "VISEO Bot Maker - Node red helper",
     "dependencies"  : { 
         "node-red-viseo-helper" : "~0.3.0",
@@ -16,9 +16,9 @@
     "keywords": [ "viseo", "sarah", "node-red", "tools", "help", "diff", "auth" ],
     "node-red" : {
         "nodes": {
+            "node-comment": "node-comment.js",
             "help": "node-html.js",
             "nodes": "node-nodes.js",
-            "node-diff3": "node-diff3.js",
             "nodes-config": "node-nodes-config.js"
         }
     }
