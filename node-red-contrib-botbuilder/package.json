@@ -1,38 +1,32 @@
 {
-    "name"          : "node-red-contrib-viseo-botbuilder",
-    "version"       : "0.9.5",
-    "description"   : "VISEO Bot Maker - Microsoft BotBuilder and tools",
-    "dependencies"  : {
-        "botbuilder"  : "^3.0.0",
-        "node-red-viseo-helper" : "~0.3.0",
-        "node-red-viseo-bot-manager" : "~0.1.0",
-        "restify" : "~4.1.1",
-        "offline-directline": "~1.2.0",
-        "node-xlsx" : "^0.7.4",
-        "request" : "~2.88.0",
-        "request-promise-native" : "^1.0.7"        
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-botbuilder"
-    },
-    "license": "Apache-2.0",
-    "keywords": [
-        "viseo",
-        "sarah",
-        "node-red",
-        "microsoft",
-        "azure",
-        "botbuilder",
-        "chatbot",
-        "vocal",
-        "bot"
-    ],
-    "node-red": {
-        "nodes": {
-            "msbot-connect": "nodes/msbot-connect.js",
-            "msbot-directline-token": "nodes/msbot-directline-token.js",
-            "msbot-offline": "nodes/directline-offline.js"
-        }
+  "name": "node-red-contrib-viseo-botbuilder",
+  "version": "1.0.0-alpha.1",
+  "description": "VISEO Bot Maker - Microsoft BotBuilder and tools",
+  "dependencies": {
+    "botbuilder": "^4.0.0",
+    "botbuilder-dialogs": "^4.0.0",
+    "node-red-viseo-helper": "~0.3.0",
+    "node-red-viseo-bot-manager": "~0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-botbuilder"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "microsoft",
+    "azure",
+    "botbuilder",
+    "chatbot",
+    "vocal",
+    "bot"
+  ],
+  "node-red": {
+    "nodes": {
+      "msbot-connect": "msbot-connect.js"
     }
+  }
 }
