@@ -1,4 +1,8 @@
-const { ComponentDialog } = require("botbuilder-dialogs");
+const {
+  ComponentDialog,
+  DialogSet,
+  DialogTurnStatus
+} = require("botbuilder-dialogs");
 
 class VBMDialog extends ComponentDialog {
   constructor() {
