@@ -13,9 +13,7 @@
         paletteLabel: "Comment",
         label: function() { 
             let thisNode = this;
-            setTimeout(function(){
-                repaintNode(thisNode);
-            }, 1);
+            repaintNode(thisNode);
             return this.comment;
         },
         oneditprepare: function() {
