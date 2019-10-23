@@ -385,7 +385,7 @@ function input (RED, node, data, config) {
                 helper.setContextValue(RED, node, data, config.output || "payload", "Not found", config.outputType);
             }
             else {
-                helper.setContextValue(RED, node, data, config.output || "payload", response[l][c], config.outputType);
+                helper.setContextValue(RED, node, data, config.output || "payload", response.values[l][c], config.outputType);
             }
             return node.send([ data, undefined ]);
         });
