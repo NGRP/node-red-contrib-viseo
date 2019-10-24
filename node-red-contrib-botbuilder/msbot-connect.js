@@ -2,8 +2,7 @@
 
 // Retrieve server
 const helper = require("node-red-viseo-helper");
-const server = require("./msbot/server.js");
-const { receive, reply } = require("./msbot/actions.js");
+const { initConnector } = require("./msbot/actions.js");
 
 const DEFAULT_TYPING_DELAY = 2000;
 const MINIMUM_TYPING_DELAY = 200;
@@ -46,35 +45,31 @@ module.exports = function(RED) {
 // ------------------------------------------
 
 let REPLY_HANDLER = {};
+let server;
+
 async function start(node, config, RED) {
-  // Restart server
 
-  if (REPLY_HANDLER[node.id])
+  if (REPLY_HANDLER[node.id]) {
     helper.removeListener("reply", REPLY_HANDLER[node.id]);
-  server.stop();
+  }
+  
+  server = RED.httpNode;
 
-  // Main behavior
-  let bot = await server.start(config, node, RED);
-  node.status({ fill: "green", shape: "dot", text: "connected" });
+  let { handleReceive, reply } = await initConnector(config, node, config.startCmd)
 
-  // Handle incoming message
-  bot.onMessage(async (context, next) => {
-    await new Promise(function(resolve, reject) {
-      receive(node, config, context, next, resolve, reject);
-    });
+  server.get("/server-botbuilder", (req, res, next) => {
+    res.send("Hello I'm a Bot !");
+    return next();
   });
 
-  // Handle all replies
+  server.post("/server-botbuilder", (req, res) => {
+    handleReceive(req, res);
+  });
+  
+  node.status({ fill: "green", shape: "dot", text: "connected" });
+
   REPLY_HANDLER[node.id] = (node, data, globalTypingDelay) => {
-    reply(node, data, globalTypingDelay)
-      .then(function(context) {
-        helper.fireAsyncCallback(data);
-        context.resolve();
-        context.next();
-      })
-      .catch(function(err) {
-        console.log("[BotBuilder]", err);
-      });
+    reply(node, data, globalTypingDelay);
   };
   helper.listenEvent("reply", REPLY_HANDLER[node.id]);
 }
@@ -82,6 +77,5 @@ async function start(node, config, RED) {
 // Stop server
 const stop = (node, done) => {
   helper.removeListener("reply", REPLY_HANDLER[node.id]);
-  server.stop();
   done();
 };
