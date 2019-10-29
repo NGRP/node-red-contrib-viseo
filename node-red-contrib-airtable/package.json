@@ -4,7 +4,7 @@
   "description": "VISEO Bot Maker - Airtable",
   "dependencies": {
     "node-red-viseo-helper": "~0.3.0",
-    "airtable": "~0.7.1"
+    "airtable": "~0.7.2"
   },
   "repository": {
     "type": "git",
