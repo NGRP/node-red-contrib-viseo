@@ -1,0 +1,78 @@
+<script type="text/javascript">
+
+RED.nodes.registerType('file-operation',{
+        category: 'storage',
+        defaults: {
+            name: {value:""},
+            location: {value:""},
+            locationType: {value:"str"},
+            output: {value:""},
+            outputType: {value:"msg"},
+            operation: {value:"exists"}
+        },
+        color:"BurlyWood",
+        icon: "file.svg",
+        inputs:1,
+        outputs:2,
+        outputLabels: ["stdout", "stderr"],
+        paletteLabel: "file operation",
+        label: function() {
+            return (this.operation + ' ' + (this.location || "file"));
+        },
+        oneditprepare: function() {
+            $("#node-input-location").typedInput({ default: 'str', types: ['msg','str'],  typeField: $("#node-input-locationType")  });
+            $("#node-input-output").typedInput({ default: 'msg', types: ['msg'],  type: "msg" });
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="file-operation">
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width: 70%" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-location"><i class="fa fa-tag"></i> File/dir</label>
+        <input type="text" id="node-input-location" style="width: 70%" placeholder="File or directory name">
+        <input type="hidden" id="node-input-locationType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-operation"><i class="fa fa-navicon"></i> Operation</label>
+        <select id="node-input-operation" style="width: 70%">
+            <option value="stats">File stats</option>
+            <option value="list">List files in directory</option>
+        </select>
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-sign-out"></i> Output</label>
+        <input type="text" id="node-input-output" style="width: 70%" placeholder="File or directory name">
+    </div>
+
+</script>
+
+
+<script type="text/x-red" data-help-name="file-operation">
+
+    <p>Use 'fs' library to process operation on files or directories.</p>
+
+    <h3>Outputs</h3>
+     <ol class="node-ports">
+         <li>Standard output
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">string</span></dt>
+                 <dd>the standard output of the command.</dd>
+             </dl>
+         </li>
+         <li>Standard error
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">string</span></dt>
+                 <dd>the standard error of the command.</dd>
+             </dl>
+         </li>
+     </ol>
+
+</script>
