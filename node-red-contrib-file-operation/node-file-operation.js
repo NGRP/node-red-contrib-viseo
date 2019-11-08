@@ -12,19 +12,19 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         let node = this;
         this.on('input', (data)  => { 
-            input(node, data, config)
+            input(RED, node, data, config)
         })
     }
     RED.nodes.registerType("file-operation", register, {})
 }
 
-async function input(node, data, config) {
+async function input(RED, node, data, config) {
 
     let location = helper.getContextValue(RED, node, data, config.location, config.locationType);
     let result;
 
     try {
-        switch(operation) {
+        switch(config.operation) {
             case "stats":
                 result = await fileStats(location); 
                 break;
@@ -33,7 +33,7 @@ async function input(node, data, config) {
                 break;
         }
 
-        if (result) helper.setByString(data, config.output, result);
+        if (result) helper.setByString(data, config.output || "payload", result);
         return node.send([data, undefined]);
     }
     catch(err) {
