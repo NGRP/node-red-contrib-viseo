@@ -60,15 +60,15 @@ const start = (RED, node, config) => {
   /* 0 - Health verification */
 
   RED.httpNode.use("/iadvize/health", function(req, res) {
-    if (VERBOSE) console.log("[iAdvize] get /health");
+    if (VERBOSE) node.log("get /health");
     res.send({ status: "UP" });
   });
 
   /* 1 - Get external bots */
   RED.httpNode.use("/iadvize/external-bots", function(req, res) {
-    if (VERBOSE) console.log("[iAdvize] get /external-bots");
+    if (VERBOSE) node.log("get /external-bots");
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -83,9 +83,9 @@ const start = (RED, node, config) => {
 
   /* 2 - Put bot */
   RED.httpNode.put("/iadvize/bots/:idOperator", function(req, res) {
-    if (VERBOSE) console.log("[iAdvize] put /bots/:idOperator");
+    if (VERBOSE) node.log("put /bots/:idOperator");
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -105,9 +105,9 @@ const start = (RED, node, config) => {
 
   /* 3 - Get bot */
   RED.httpNode.use("/iadvize/bots/:idOperator", function(req, res) {
-    if (VERBOSE) console.log("[iAdvize] get /bots/:idOperator");
+    if (VERBOSE) node.log("get /bots/:idOperator");
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -127,9 +127,9 @@ const start = (RED, node, config) => {
 
   /* 4 - Get availibility strategies */
   RED.httpNode.use("/iadvize/availability-strategies", function(req, res) {
-    if (VERBOSE) console.log("[iAdvize] get /availability-strategies");
+    /* if (VERBOSE) node.log("get /availability-strategies"); */
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -149,9 +149,9 @@ const start = (RED, node, config) => {
   RED.httpNode.post("/iadvize/conversations", function(req, res) {
     if (!req.body) res.status(400).send({ error: "empty body" });
     if (VERBOSE)
-      console.log("[iAdvize] post /conversations, ", req.body.idOperator);
+      node.log("post /conversations, ", req.body.idOperator);
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -172,10 +172,11 @@ const start = (RED, node, config) => {
     res
   ) {
     if (!req.body) res.status(400).send({ error: "empty body" });
-    if (VERBOSE)
-      console.log("[iAdvize] post /conversations/:conversationId/messages");
+    if (VERBOSE) {
+      /*node.log("post /conversations/:conversationId/messages");*/
+    }
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -187,9 +188,9 @@ const start = (RED, node, config) => {
     req,
     res
   ) {
-    if (VERBOSE) console.log("[iAdvize] get /conversations/:conversationId");
+    if (VERBOSE) node.log("get /conversations/:conversationId");
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -201,9 +202,9 @@ const start = (RED, node, config) => {
    *   -------------------------- */
 
   RED.httpNode.use("/iadvize/callback", function(req, res) {
-    if (VERBOSE) console.log("[iAdvize] get /callback");
+    if (VERBOSE) node.log("get /callback");
     if (!isValidSignature(req.header("X-iAdvize-Signature"), req.body)) {
-      if (VERBOSE) console.log("[iAdvize] Security issue: bad signature");
+      if (VERBOSE) node.log("Security issue: bad signature");
       return res.sendStatus(403).end();
     }
 
@@ -288,6 +289,7 @@ const receive = (node, config, req, res) => {
       createdAt: now,
       updatedAt: now
     };
+    node.log('answered message to ' + msg.idConversation);
     return res.send(msg);
   }
 
@@ -324,6 +326,7 @@ const receive = (node, config, req, res) => {
 
   // Trigger received message
   helper.emitEvent("received", node, data, config);
+  node.log('received message for ' + req.body.message.author.id);
   node.send([undefined, data]);
 };
 
@@ -509,3 +512,7 @@ const getMessages = (exports.getMessage = replies => {
   if (!prompt && !transfer && !event) messages.push({ type: "close" });
   return { replies: messages, transfer: transfer, variables: variables };
 });
+
+// ------------------------------------------
+//  LOGGER
+// ------------------------------------------
