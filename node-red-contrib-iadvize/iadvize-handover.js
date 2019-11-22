@@ -38,7 +38,6 @@ async function input (node, data, config) {
     }]
 
     helper.emitAsyncEvent('reply', node, data, config, (newData) => {
-        node.warn(newData)
         return (newData.error) ? node.send([null, newData]) : node.send([newData, null])
     });
 };
