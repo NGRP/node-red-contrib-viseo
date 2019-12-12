@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "VISEO Bot Maker - Google Actions",
     "dependencies": {
-        "node-red-contrib-viseo-google-authentication": "~0.1.0",
+        "node-red-contrib-viseo-google-authentication": "~0.1.1",
         "node-red-viseo-helper": "~0.3.0",
         "request" : "^2.34.0",
         "request-promise" : "^4.2.4"         
