@@ -249,7 +249,7 @@ const buildReply = (RED, node, data, config) => {
             if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
         }
         else if (config.sendType === 'adaptiveCard') {
-            buildReplyAdaptiveCard(locale, data, config, reply);
+            buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
 
         }
     }
@@ -390,6 +390,57 @@ const sendData = (node, data, config) => {
 }
 
 /**
+ * Render text block to AdaptiveCard
+ * @param {String} textToShow text populated to card
+ * @param {Array} body AdaptiveCard body
+ */
+const addTextBlockToAdaptiveCard = (textToShow, body) => {
+    const textBlock = {
+        "type": "TextBlock",
+        "wrap": true,
+        "size": "default",
+        "text": textToShow
+    }
+    body.push({
+        "type": "Container",
+        "items": [ textBlock ]
+    });
+};
+
+/**
+ * Add button to AdaptiveCard
+ * @param {String} textToShow button text to display, by default with a prefix and won't show the first 4 characters
+ * @param {Array} body AdaptiveCard reply body
+ */
+const addButtonToAdaptiveCard = (prefix, textToShow, body) => {
+    const textBlock = {
+        "type": "TextBlock",
+        "wrap": true,
+        "size": "default",
+        "text": textToShow						
+    };
+    let button;
+    const btnVal = textToShow.substring(4).trim(); // remove '   - ' ahead of string
+    if (btnVal && btnVal !== '') {
+        button = {
+            "type": "Action.Submit",
+            "title": "cool link",
+            "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": `${prefix + btnVal}`}
+        };
+        body.push({
+            "type": "Container",
+            "items": [ textBlock],
+            "selectAction": button
+        });
+    } else {
+        body.push({
+            "type": "Container",
+            "items": [ textBlock]
+        });
+    }
+};
+
+/**
  * Takes the "whole" text and builds a "body" for the adaptive card.
  * @param {*} whole The whole text to process
  * @param {*} body The parameter in which to put the processed text, see adaptive card documentation
@@ -445,78 +496,55 @@ const buildAdaptiveCardJson = function(whole, body, separator) {
            whole.split(' '+ separator).forEach((part, index) => {
             if (index === 0) {
                 // begins with title directly
-                if (part.startsWith(' '+ separator, 0)) { 
-                    body.push({
-                      "type": "Container",
-                      "items": [
-                          {
-                              "type": "TextBlock",
-                              "wrap": true,
-                              "size": "default",
-                              "text": part //  here is what I found...
-                          }	
-                      ]
-                  });
+                if (part.startsWith(' '+ separator, 0)) {
+                  addTextBlockToAdaptiveCard(`${part}`, body);
                 } else { 
                     // Otherwise, begin with attributes belong to last title
                     part.split('\n').forEach((line, i) => {
-                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                        body.push({
-                                  "type": "Container",
-                                  "items": [
-                                      {
-                                          "type": "TextBlock",
-                                          "wrap": true,
-                                          "size": "default",
-                                          "text": line						
-                                      }
-                                  ],
-                                  "selectAction": {
-                                      "type": "Action.Submit",
-                                      "title": "cool link",
-                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
-                                  }
-                                });
-                            });
+                        addButtonToAdaptiveCard('FindSku_', line, body);
+                    });
               }
             } else {
                 part.split('\n').forEach((line, i) => {
                     if (i === 0) {
-                        body.push({
-                          "type": "Container",
-                          "items": [
-                              {
-                                  "type": "TextBlock",
-                                  "wrap": true,
-                                  "size": "default",
-                                  "text": separator + line // memory
-                              }
-                          ]});
+                        addTextBlockToAdaptiveCard(`${separator + line}`, body);
                     } else {
-                        let btnVal = line.substring(4).trim(); // remove '   - ' ahead of string
-                        body.push({
-                                  "type": "Container",
-                                  "items": [
-                                      {
-                                          "type": "TextBlock",
-                                          "wrap": true,
-                                          "size": "default",
-                                          "text": line						
-                                      }
-                                  ],
-                                  "selectAction": {
-                                      "type": "Action.Submit",
-                                      "title": "cool link",
-                                      "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": 'FindSku_' + btnVal}
-                                  }
-                                });
+                        addButtonToAdaptiveCard('FindSku_', line, body);
                     }
             });
         }
     });
 }
 
-const buildReplyAdaptiveCard = (locale, data, config, reply) => {
+/**
+ * Add image to AdaptiveCard, by default the image will be appended to the 1st Container
+ * @param {*} imageUrl image URL
+ * @param {Array} itemsOfFirstContainer items Array of the first container inside AdaptiveCard JSON schema,
+ *                         an exmple of which via https://docs.microsoft.com/en-us/adaptive-cards/getting-started/bots
+ *                         Document image https://adaptivecards.io/explorer/Image.html
+ */
+const addImageToAdaptiveCard = (imageUrl, body) => {
+    const image = {
+        type: "Image",
+        url: imageUrl,
+        style: "default",
+        size: "auto" // possible values: "auto", "stretch", "small", "medium", "large"
+    };
+    const firstContainer = body[0].type === "Container" ? body[0] : null;
+    
+    // If there exists a Container: append image directly to tail of Array ${items} inside the first Container 
+    if (firstContainer) {
+        firstContainer.items.push(image);
+    } else {
+        // If there is no Container yet: create a Container; then fold image into this Container; finally append it to ${body}
+        body.push({
+            "type": "Container",
+            "items": [ image ]
+        });
+    }
+};
+
+const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     //--- same as card
     let title = config.titleAdaptiveCard;
     let attach = config.attachAdaptiveCard;
@@ -547,7 +575,6 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
 
     reply.type = 'AdaptiveCard';
     reply.title = title;
-    reply.attach = attach;
     reply.version = "1.0";
     reply.body = [];
     /*customized text to display*/
@@ -574,6 +601,7 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         let attrIndex = (tmp.lastIndexOf("\n") < linkBegin + linkEnd + 1) ? (linkBegin + linkEnd + 1) : tmp.lastIndexOf("\n");
         tmp = textToShow.substring(0, attrIndex);
         buildAdaptiveCardJson(tmp, reply.body, separator); //reply.body.push({"type": "TextBlock", "text": tmp, "size": "default", "wrap": true});
+        if (attach) addImageToAdaptiveCard(attach, reply.body);
 
         reply.actions = [];
         tmp = textToShow.substring(attrIndex);
@@ -586,5 +614,6 @@ const buildReplyAdaptiveCard = (locale, data, config, reply) => {
         // otherwise show all the text
         //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
         buildAdaptiveCardJson(textToShow, reply.body, separator);
+        if (attach) addImageToAdaptiveCard(attach, reply.body);
     }
 }
