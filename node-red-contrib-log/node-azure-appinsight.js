@@ -58,7 +58,10 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         const node = this;
         const conf = RED.nodes.getNode(config.configuration);
-        node.status({ fill: 'red', shape: 'ring', text: 'Missing configuration' });
+        
+        if (!conf) {
+            node.status({ fill: 'red', shape: 'ring', text: 'Missing configuration' });
+        }
 
         if (!conf || !conf.credentials.key) return;
 
