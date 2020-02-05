@@ -143,7 +143,7 @@ function getSuggestions(reply) {
             continue;
         } 
         if (button.action && button.action === 'askIdentity') {
-            allMessages.push(new Permission({context: text || '', permissions: ["NAME", "EAP_ONLY_EMAIL"] }));
+            allMessages.push(new Permission({context: text || '', permissions: ["NAME", "EMAIL"] }));
             continue;
         }
 
