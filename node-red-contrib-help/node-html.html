@@ -47,7 +47,6 @@
     RED.events.on("workspace:change", function(){ repaintAll(); });
     RED.events.on("nodes:add", function(node){
         if (node.type !== 'help-html') return;
-        console.log(node)
         setTimeout(function(){ repaintAll(); }, 1);
     });
 
@@ -64,7 +63,7 @@
 
     var repaintAll = function(){
         $(document).find('.node-help-html').each(function(idx, elm){
-            repaint($(elm).closest('.nodegroup'));
+            repaint($(elm).closest('.red-ui-flow-node-group'));
         })
     }
     var repaint = function($node){
@@ -75,9 +74,9 @@
         var w = parseInt(nodeRED.width) 
         var h = parseInt(nodeRED.height)
 
-        var $rect = $node.find('.node').first().attr('width', w).attr('height', h).attr("fill-opacity","0")
+        var $rect = $node.find('.red-ui-flow-node').first().attr('width', w).attr('height', h).attr("fill-opacity","0")
         $node.find('.node_icon_group').hide()
-        $node.find('.node_label').hide()
+        $node.find('.red-ui-flow-node-label').hide()
 
         $node.find('.port_output').each(function(){
             var $this = $(this);
