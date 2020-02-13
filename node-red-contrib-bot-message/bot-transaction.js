@@ -14,7 +14,7 @@ module.exports = function(RED) {
         start(RED, node, config);
 
         this.on('input', (data) => {
-            input(node, data, config);
+            input(RED, node, data, config);
         });
         
         this.on('close', (done) => {
@@ -32,7 +32,7 @@ const start = (RED, node, config) => {
 
 };
 
-const input = (node, data, config) => {
+const input = (RED, node, data, config) => {
 
     let convId = botmgr.getConvId(data)
 
@@ -46,7 +46,7 @@ const input = (node, data, config) => {
     }
 
     // Retrieve replies
-    let reply = buildReply(node, data, config);
+    let reply = buildReply(RED, node, data, config);
     if (!reply){ 
         node.send(data)
         return;
@@ -63,7 +63,7 @@ const input = (node, data, config) => {
     });
 };
 
-const buildReply = (node, data, config) => {
+const buildReply = (RED, node, data, config) => {
 
     let reply = {
         type: "transaction",
@@ -79,13 +79,14 @@ const buildReply = (node, data, config) => {
 
     if(config.intent == "receipt") {
         let receipt = {
-            'carrierId': helper.getByString(data, config.carrierId, config.carrierId),
+            'order': helper.getByString(data, config.order, config.order),
+            'orderItemNames': helper.getContextValue(RED, node, data, config.orderItemNames, config.orderItemNamesType),
             'orderState': config.receiptStatus,
             'orderStateName': config.receiptStatusName,
-            'orderId': helper.getByString(data, config.orderId, config.orderId),
+            'orderReason': config.receiptReason,
             'orderActions': helper.getByString(data, config.orderActions, [])
         }
-        if(receipt.carrierId !== undefined) {
+        if(receipt.order !== undefined) {
             data._receipt = receipt //save to be sent along the next message
         }
 

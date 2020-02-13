@@ -206,6 +206,8 @@ const reply = (node, data, config) => {
 
         // Building the message
         let message = new Message(data.reply);
+
+        console.log(message.messages);
             message.send(conv);
         
         // Trap the event in order to continue
