@@ -10,10 +10,12 @@
             merchant:           { value: undefined },
             orderId:            { value: undefined },
             orderIdType:        { value: 'msg' },
-            carrierId:          { value: undefined },
-            carrierIdType:      { value: 'msg' },
+            order:              { value: undefined },
+            orderItemNames :    { value: undefined },
+            orderItemNamesType: { value: undefined },
             receiptStatus:      { value: undefined },
             receiptStatusName : { value: undefined },
+            receiptReason:      { value: undefined },
             orderActions:       { value: undefined },
             orderActionsType:   { value: 'msg' }, 
         },
@@ -51,9 +53,11 @@
             $('#node-input-orderItems').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderItemsType") });
             $('#node-input-orderActions').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderActionsType") });
             $('#node-input-orderId').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-orderIdType") });
-            $('#node-input-carrierId').typedInput({ default: 'msg', types: ['msg'], typeField: $("#node-input-carrierIdType") });
+            $('#node-input-order').typedInput({ default: 'msg', types: ['msg'] });
 
+            $("#node-input-orderItemNames").typedInput({default: 'json', types:['json', 'msg'], 'type': 'json', typeField: $("#node-input-orderItemNamesType")});
 
+            $('#node-input-receiptReason').typedInput({default: 'str', types: ['str'], type:'str'});
         }
     });
 </script>
@@ -76,7 +80,7 @@
         <label for="node-input-merchant"><i class="fa fa-globe"></i> Merchant</label>
         <input type="text" id="node-input-merchant" style="width:70%;" placeholder="Merchant name">
     </div>
-    <div class="form-row row-for-transaction row-after-transaction">
+    <div class="form-row row-for-transaction">
         <label for="node-input-orderId"><i class="fa fa-tag"></i> Order ID</label>
         <input type="text" id="node-input-orderId" style="width:70%;" placeholder="msg.id">
         <input type="hidden" id="node-input-orderIdType"/>
@@ -87,20 +91,28 @@
         <input type="hidden" id="node-input-orderItemsType"/>
     </div>
     <div class="form-row row-after-transaction">
-        <label for="node-input-carrierId"><i class="fa fa-tag"></i> Carrier ID</label>
-        <input type="text" id="node-input-carrierId" style="width:70%;" placeholder="msg.id">
-        <input type="hidden" id="node-input-carrierIdType"/>
+        <label for="node-input-order"><i class="fa fa-tag"></i> Order</label>
+        <input type="text" id="node-input-order" style="width:70%;">
+    </div>
+     <div class="form-row row-after-transaction">
+        <label for="node-input-orderItemNames"><i class="fa fa-tag"></i> Order Item Names</label>
+        <input type="text" id="node-input-orderItemNames" style="width:70%;" placeholder="['item1', 'item2']">
+        <input type="hidden" id="node-input-orderItemNamesType"/>
     </div>
     <div class="form-row row-after-transaction">
         <label for="node-input-receiptStatus"><i class="fa fa-flag"></i> Receipt status</label>
         <select id="node-input-receiptStatus" style="width:70%;">
-            <option value="CREATED">CREATED</option>
+            <option value="PENDING">PENDING</option>
             <option value="CONFIRMED">CONFIRMED</option>
         </select>
     </div>
     <div class="form-row row-after-transaction">
         <label for="node-input-receiptStatusName"><i class="fa fa-flag"></i> Receipt status name</label>
         <input type="text" id="node-input-receiptStatusName" style="width:70%;" placeholder="">
+    </div>
+    <div class="form-row row-after-transaction">
+        <label for="node-input-receiptReason"><i class="fa fa-flag"></i> Receipt reason</label>
+        <input type="text" id="node-input-receiptReason" style="width:70%;" placeholder="confirmation of reservation">
     </div>
      <div class="form-row row-after-transaction">
         <label for="node-input-orderActions"><i class="fa fa-edit"></i> Order Actions</label>

@@ -69,24 +69,23 @@ class Message {
 
             if (reply.receipt !== undefined) {
 
-                let orderUpdateObject = {
-                    actionOrderId: reply.receipt.orderId, 
-                    orderState: { 
-                        label: reply.receipt.orderStateName, 
-                        state: reply.receipt.orderState
-                    },
-                    orderManagementActions: [],
-                    updateTime: new Date().toISOString(),
-                    receipt: {
-                        userVisibleOrderId: reply.receipt.orderId 
+                const reservation = reply.receipt.order;
+                reservation.lastUpdateTime = new Date().toISOString();
+
+                for(let lineItem of reservation.contents.lineItems) {
+                    if(reply.receipt.orderItemNames.indexOf(lineItem.name) !== -1) {
+                        lineItem.reservation.status = reply.receipt.orderState;
+                        lineItem.reservation.confirmationCode = reservation.userVisibleOrderId;
+                        lineItem.reservation.userVisibleStatusLabel = reply.receipt.orderStateName;
                     }
-                };
-    
-                for (let action of reply.receipt.orderActions) {
-                    orderUpdateObject.orderManagementActions.push({button: {openUrlAction: {url: action.url}, title: action.title}, type: action.type})
                 }
-    
-                messages.push(new OrderUpdate(orderUpdateObject));
+
+                messages.push(new OrderUpdate({
+                    type: 'SNAPSHOT',
+                    reason: reply.receipt.orderReason,
+                    order: reservation
+                }))
+
             }}
         
         return messages;
@@ -265,7 +264,9 @@ function getConfirmation(reply) {
                 reservationTime: {
                     timeIso8601: item.reservationTime
                 },
-                status: 'CONFIRMED',
+                status: 'PENDING',
+                  userVisibleStatusLabel: "Reservation is pending",
+                  type: 'RESERVATION_TYPE_UNSPECIFIED',
                 location: item.address
             }
           }
