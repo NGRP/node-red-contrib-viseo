@@ -570,8 +570,7 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     title = marshall(locale, title,  data, '');
 
     attach = helper.getContextValue(RED, node, data, attach || '', config.attachTypeAdaptiveCard || 'str');
-    titattachle = marshall(locale, attach,  data, '');
-
+    attach = marshall(locale, attach,  data, '');
 
     reply.type = 'AdaptiveCard';
     reply.title = title;
