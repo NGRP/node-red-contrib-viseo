@@ -6,7 +6,7 @@
             name:    { value: undefined },
             auth:    { value: undefined, type: 'google-service-account', required: true },
             input:   { value: undefined, required: false },
-            action:  { value: 'send' },
+            action:  { value: 'token' },
             output:  { value: undefined, required: false },
             inputType:  {value: 'msg'}
         },
@@ -53,7 +53,6 @@
         <label for="node-input-action"><i class="fa fa-tasks"></i> Action</label>
         <select id="node-input-action" style="width: 70%">
             <option value="token">Get token</option>
-            <option value="send">conversations:send</option>
         </select>
     </div>
 

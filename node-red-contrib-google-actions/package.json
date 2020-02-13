@@ -1,12 +1,13 @@
 {
     "name": "node-red-contrib-viseo-google-actions",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "VISEO Bot Maker - Google Actions",
     "dependencies": {
         "node-red-contrib-viseo-google-authentication": "~0.1.1",
         "node-red-viseo-helper": "~0.3.0",
         "request" : "^2.34.0",
-        "request-promise" : "^4.2.4"         
+        "request-promise" : "^4.2.4",
+        "actions-on-google" : "2.6.0"
     },
     "repository": {
         "type": "git",
@@ -27,7 +28,8 @@
     ],
     "node-red": {
         "nodes": {
-            "google-actions": "google-actions.js"
+            "google-actions": "google-actions.js",
+            "google-order-update": "order-update.js"
         }
     }
 }

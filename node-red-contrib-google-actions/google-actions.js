@@ -32,41 +32,8 @@ function input (RED, node, data, config) {
                     helper.setByString(data, config.output || "payload", auth.credentials);
                     return node.send(data);
                 }
-                else {
-                    // input
-                    let input = helper.getContextValue(RED, node, data, config.input, config.inputType);
-                    if (input.customPushMessage) input = input.customPushMessage;
-                    if (!input.orderUpdate)      input = { orderUpdate: input };
-
-                    send(auth, input)
-                    .then( function (res) {
-                        helper.setByString(data, config.output || "payload", res);
-                        return node.send(data);
-                    })
-                    .catch(function (err) {
-                        return node.error(err); 
-                    })
-                }
             }
             return node.send(data);
         })
     } catch (ex){ console.log(ex); }
-}
-
-function send(auth, content, cb) {
-
-    let req = {
-        uri: "https://actions.googleapis.com/v2/conversations:send/",
-        method: 'POST',
-        body: {
-            customPushMessage: content
-        },
-        headers: {  
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + auth.credentials["access_token"]
-        },
-        json:true
-    }
-
-    return request(req);
 }

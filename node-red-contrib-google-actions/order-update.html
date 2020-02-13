@@ -1,0 +1,165 @@
+<script type="text/javascript">
+    RED.nodes.registerType('google-order-update',{
+        category: '🃏_miscellaneous',
+        color: '#f9c6c3',
+        defaults: { 
+            name:    { value: undefined },
+            auth:    { value: undefined, type: 'google-service-account', required: true },
+
+            order: { value: undefined},
+            orderItemNames :    { value: undefined },
+            orderItemNamesType: { value: undefined },
+
+            orderStatus: {value: undefined},
+            statusLabel: {value: undefined},
+            reason: {value: undefined},
+
+            hasNotification: {value: false},
+            notificationTitle: {value: undefined},
+            notificationText: {value: undefined}
+
+        },
+        inputs:  1,
+        outputs: 2,
+        icon: "gcc.png",
+        align: "left",
+        paletteLabel: 'Order Update',
+        label: function() { return this.name || "Google Order Update"; },
+        oneditprepare: function() {
+
+            $("#node-input-name").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+            $("#node-input-order").typedInput({   default: 'msg',  types: ['msg']});
+
+            $("#node-input-statusLabel").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+            $("#node-input-reason").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+
+            $("#node-input-orderItemNames").typedInput({default: 'json', types:['json', 'msg'], 'type': 'json', typeField: $("#node-input-orderItemNamesType")});
+
+
+            $('#node-input-hasNotification').change(function() {
+
+                if(this.checked) {
+                    $('#notificationInfo').show();
+                    $("#node-input-notificationTitle").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+                    $("#node-input-notificationText").typedInput({  default: 'str',  types: ['str'],  type:'str' });
+                } else {
+                    $('#notificationInfo').hide();
+                }
+            })
+
+            if(this.hasNotification) {
+                $('#node-input-hasNotification').attr("checked", true);
+            }
+
+        },
+        oneditsave: function(){ }
+    });
+</script>
+
+<style>
+    .input-info { font-size: 12px; padding-left: 104px; font-style: italic; }
+    textarea { resize: vertical; }
+</style>
+
+<script type="text/x-red" data-template-name="google-order-update">
+    <div class="form-row" style="min-width:600px;">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+
+    <br>
+    <b>Settings</b>
+
+    <div class="form-row">
+        <br>
+        <label for="node-input-auth"><i class="fa fa-lock"></i> Credentials</label>
+        <input type="text" id="node-input-auth" style="width: 70%" placeholder="">
+    </div>
+
+    <br>
+    <b>Order settings</b>
+
+    <div class="form-row">
+        <label for="node-input-order"><i class="fa fa-barcode"></i> Order</label>
+        <input type="text" id="node-input-order" style="width: 70%" >
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-orderItemNames"><i class="fa fa-tag"></i> Order Item Names</label>
+        <input type="text" id="node-input-orderItemNames" style="width:70%;" placeholder="['item1', 'item2']">
+        <input type="hidden" id="node-input-orderItemNamesType"/>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-orderStatus"><i class="fa fa-info"></i> Status</label>
+        <select id="node-input-orderStatus" style="width: 70%">
+            <option value="PENDING">PENDING</option>
+            <option value="CONFIRMED">CONFIRMED</option>
+            <option value="CANCELLED">CANCELLED</option>
+            <option value="FULFILLED">FULFILLED</option>
+            <option value="CHANGE_REQUESTED">CHANGE_REQUESTED</option>
+            <option value="REJECTED">REJECTED</option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-statusLabel"><i class="fa fa-tag"></i> Status Label</label>
+        <input type="text" id="node-input-statusLabel" style="width: 70%">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-reason"><i class="fa fa-comment-dots"></i> Reason</label>
+        <input type="text" id="node-input-reason" style="width: 70%">
+    </div>
+
+    <br>
+    <b>Notification settings</b>
+
+
+     <div class="form-row">
+        <label for="node-input-hasNotification"> Sends notification</label>
+        <input type="checkbox" value="1" id="node-input-hasNotification"/>
+    </div>
+
+    <div id="notificationInfo">
+
+        <div class="form-row">
+            <label for="node-input-notificationTitle"><i class="fa fa-align-justify"></i> Titre</label>
+            <input type="text" id="node-input-notificationTitle" style="width: 70%"/>
+        </div>
+        <div class="form-row">
+            <label for="node-input-notificationText"><i class="fa fa-align-justify"></i> Texte</label>
+            <input type="text" id="node-input-notificationText" style="width: 70%" />
+        </div>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="google-order-update">
+
+    <p>Sends actions to Google. </p>
+
+    <h3>Details</h3>
+    <dl class="message-properties">
+        <dt>Credentials <span class="property-type">config</span></dt>
+        <dd>informations from a Google service account</dd>
+        <dt>Order <span class="property-type">object</span></dt>
+        <dd>Order object built for google or returned from google. The id of each item of the order contents should be set</dd>
+        <dt>Order Item Names<span class="property-type">array</span></dt>
+        <dd>Item names for which the update should occur.</dd>
+        <dt>Status<span class="property-type">enum</span></dt>
+        <dd>Status of the order</dd>
+        <dt>Status Label<span class="property-type">string</span></dt>
+        <dd>Visible status of the order</dd>
+        <dt>Reason<span class="property-type">string</span></dt>
+        <dd>Reason for updating the status. This will be displayed in the order history in Google assistant</dd>
+        <dt>Sends Notification<span class="property-type">bool</span></dt>
+        <dd>Whether the user should be notified of the change of status on his phone</dd>
+    </dl>
+
+    <h3>References</h3>
+    <ul>
+        <li><a href="https://developers.google.com/assistant/transactions/reference/physical/rest/v3/orders/patch">Google order updates</a>
+        <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+    </ul>
+
+</script>
