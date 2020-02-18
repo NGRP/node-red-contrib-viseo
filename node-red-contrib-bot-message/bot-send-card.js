@@ -412,7 +412,7 @@ const addTextBlockToAdaptiveCard = (textToShow, body) => {
  * @param {String} textToShow button text to display, by default with a prefix and won't show the first 4 characters
  * @param {Array} body AdaptiveCard reply body
  */
-const addButtonToAdaptiveCard = (prefix, textToShow, body) => {
+const addButtonToAdaptiveCard = (textButtonMarker, prefix, textToShow, body) => {
     const textBlock = {
         "type": "TextBlock",
         "wrap": true,
@@ -420,7 +420,7 @@ const addButtonToAdaptiveCard = (prefix, textToShow, body) => {
         "text": textToShow						
     };
     let button;
-    const btnVal = textToShow.substring(4).trim(); // remove '   - ' ahead of string
+    const btnVal = textToShow.substring(textButtonMarker.length).trim(); // remove text marker ('- ') ahead of string
     if (btnVal && btnVal !== '') {
         button = {
             "type": "Action.Submit",
@@ -441,78 +441,40 @@ const addButtonToAdaptiveCard = (prefix, textToShow, body) => {
 };
 
 /**
- * Takes the "whole" text and builds a "body" for the adaptive card.
- * @param {*} whole The whole text to process
+ * Takes the "wholeText" text and builds a "body" for the adaptive card.
+ * @param {*} wholeText The wholeText text to process
  * @param {*} body The parameter in which to put the processed text, see adaptive card documentation
  * @param {*} separator The parameter used as a section separator. Each line of text is finally a container, with title containers non-clickable and item container clickable.
  */
-const buildAdaptiveCardJson = function(whole, body, separator) {
-    /**Original text is:
-     **Memory**:
-     - 1. Item memory 1
-     **Storage**:
-      - 1. Item storage 1
-      - 2. Item storage 2
-     **Note**:
-      - 1. Item Note 1
-     **Standard**:
-      - 1. Item Standard 1
-    -----------------------------------------       
+const buildAdaptiveCardJson = function(wholeText, body, separator, textButtonMarker, textButtonPrefix) {
+    /**
+    textButtonMarker = '- ', Original text is:
     
-    part is:  with index: 0
-     line is:  with index: 0
-     ---------------
-     part is: Memory**:
-      - 1. Item memory 1
-      with index: 1
-     line is: Memory**: with index: 0
-     line is:  - 1. Item memory 1 with index: 1
-     line is:  with index: 2
-     ---------------
-     part is: Storage**:
-       - 1. Item storage 1
-       - 2. Item storage 2
-      with index: 2
-     line is: Storage**: with index: 0
-     line is:   - 1. Item storage 1 with index: 1
-     line is:   - 2. Item storage 2 with index: 2
-     line is:  with index: 3
-     ---------------
-     part is: Note**:
-       - 1. Item Note 1
-      with index: 3
-     line is: Note**: with index: 0
-     line is:   - 1. Item Note 1 with index: 1
-     line is:  with index: 2
-     ---------------
-     part is: Standard**:
-       - 1. Item Standard 1 with index: 4
-     line is: Standard**: with index: 0
-     line is:   - 1. Item Standard 1 with index: 1
-    */
-    
-           //TODO refactor
-    
-           whole.split(' '+ separator).forEach((part, index) => {
-            if (index === 0) {
-                // begins with title directly
-                if (part.startsWith(' '+ separator, 0)) {
-                  addTextBlockToAdaptiveCard(`${part}`, body);
-                } else { 
-                    // Otherwise, begin with attributes belong to last title
-                    part.split('\n').forEach((line, i) => {
-                        addButtonToAdaptiveCard('FindSku_', line, body);
-                    });
-              }
-            } else {
-                part.split('\n').forEach((line, i) => {
-                    if (i === 0) {
-                        addTextBlockToAdaptiveCard(`${separator + line}`, body);
-                    } else {
-                        addButtonToAdaptiveCard('FindSku_', line, body);
-                    }
+    **Memory**:                       <---  this line as Text because this line do NOT start with textButtonMarker '- '
+    - 1. Item memory 1                <---  this line as Button because this line starts with textButtonMarker '- '
+    **Storage**:
+    - 1. Item storage 1               <---  Button
+    - 2. Item storage 2               <---  Button
+    **Note**:
+    - 1. Item Note 1                  <---  Button
+    **Standard**:
+    - 1. Item Standard 1              <---  Button
+    -----------------------------------------
+        Set text as button if one line contains 'clickable Text Marker ${textButtonMarker}',
+        Otherwise, pure text as it is
+    **/
+    wholeText.split(separator).forEach((section) => {
+        section.split('\n')
+            .filter(line => line !== '' && line)
+            .forEach((line) => {
+                if (line.search(textButtonMarker) === 0) {
+                    // line starts with textButtonMarker, means this line is clickable, means this line actually is a button
+                    addButtonToAdaptiveCard(textButtonMarker, textButtonPrefix, line, body);
+                } else {
+                    // line is pure text
+                    addTextBlockToAdaptiveCard(`${line}`, body);
+                }
             });
-        }
     });
 }
 
@@ -545,16 +507,35 @@ const addImageToAdaptiveCard = (imageUrl, body) => {
 };
 
 const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
-    //--- same as card
     let title = config.titleAdaptiveCard;
     let attach = config.attachAdaptiveCard;
     let subtext = config.textAdaptiveCard;
     let separator = config.containerSeparatorAdaptiveCard;
     let displayedTextSize = config.displayedTextSizeAdaptiveCard;
     let titleShowCardAction = config.titleShowCardAction;
+    let textButtonMarker = config.textButtonMarker;
+    let textButtonPrefix = config.textButtonPrefix;
    
+    /* 
+    '\n\n' is a default Section marker, '- ' is clickable text marker by default)
+    This is an exmaple of text to display:
+        {Title}
+        \n\n
+        {Subtitle1} (this is Section1)
+        - {some text}
+        - {some other text} 
+        \n\n
+        {Subtitle2} (this is Section2)
+        - {some text}
+        - {some other text}
+        \n\n 
+        {Subtitle3} (this is Section3)
+        - {some text}
+        - {some other text}
+    */
     if (!separator) {
-        separator = "**";
+        // if not defined value, then consider sections are surrounded by '\n\n'.
+        separator = "\n\n";
     }
 
     if (!displayedTextSize) {
@@ -562,6 +543,8 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
         displayedTextSize = 100000;
     }
 
+    textButtonMarker = helper.getContextValue(RED, node, data, textButtonMarker || '- ', 'str');
+    textButtonPrefix = helper.getContextValue(RED, node, data, textButtonPrefix || '', config.textButtonPrefixType || 'str');
 
     titleShowCardAction = helper.getContextValue(RED, node, data, titleShowCardAction || 'More', config.titleShowCardActionType || 'str');
     titleShowCardAction = marshall(locale, titleShowCardAction,  data, '');
@@ -576,43 +559,37 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     reply.title = title;
     reply.version = "1.0";
     reply.body = [];
-    /*customized text to display*/
-    
-    let textToShow = marshall(locale, subtext,  data, '');
 
-    // if textToShow is too big and has to be wrapped up to <displayedTextSize> characters
+    /*customized text to display*/
+    const textToShow = marshall(locale, subtext,  data, '');
+
     if (textToShow.length > displayedTextSize) {
+        // if textToShow is too big and has to be wrapped up to <displayedTextSize> characters
         let tmp = textToShow.substring(0, displayedTextSize);
 
-        // in case Markdown Emphasis got truncated...
-        let empIndex = tmp.lastIndexOf(" "+ separator);
-        if (empIndex> 0 && tmp.substring(empIndex+ 2).lastIndexOf(separator) < 0) tmp += separator;
+        // To avoid displaying the UNCOMPLETED N th item, display onlt the (N - 1)th item
+        /* For exmaple: 
+                tmp = "productbot.before_colon_series\n\n**Processor**:
+                - 1. Intel® Xeon® Gold 5222 (3.8 GHz base frequency, up to 3.9 GHz with Intel® Turbo Boost Technology, 16.5 MB cache, 4 cores)
+                - 2. Intel® Xeon® Silver 4114 (2.2 GHz base freque";
 
-        // in case hiperlink got truncated...
-        let linkBegin = tmp.lastIndexOf("](http");
-        let linkEnd;
-        if (linkBegin > 0) {
-          linkEnd = textToShow.substring(linkBegin).indexOf(")");
-          if (linkEnd > 0) tmp = textToShow.substring(0, linkBegin + linkEnd + 1);
-        }
-
-        // assure attribute complete
-        let attrIndex = (tmp.lastIndexOf("\n") < linkBegin + linkEnd + 1) ? (linkBegin + linkEnd + 1) : tmp.lastIndexOf("\n");
+            To avoid displaying the 2nd item(which is uncomplete), display onlt the 1st item
+        */
+        const attrIndex = tmp.lastIndexOf('\n');
         tmp = textToShow.substring(0, attrIndex);
-        buildAdaptiveCardJson(tmp, reply.body, separator); //reply.body.push({"type": "TextBlock", "text": tmp, "size": "default", "wrap": true});
+
+        // primary card
+        buildAdaptiveCardJson(tmp, reply.body, separator, textButtonMarker, textButtonPrefix);
         if (attach) addImageToAdaptiveCard(attach, reply.body);
 
+        // expandable card
         reply.actions = [];
         tmp = textToShow.substring(attrIndex);
-
-        //reply.actions.push({"type": "Action.ShowCard", "title": "More", "card": {"type": 'AdaptiveCard', "body": [{"type": "TextBlock", "text": tmp, "size": "default", "wrap": true}]}});
         reply.actions.push({"type": "Action.ShowCard", "title": titleShowCardAction, "card": {"type": 'AdaptiveCard', "body": []}});
-        buildAdaptiveCardJson(tmp, reply.actions[0].card.body, separator);
-        
+        buildAdaptiveCardJson(tmp, reply.actions[0].card.body, separator, textButtonMarker, textButtonPrefix);
     } else {
-        // otherwise show all the text
-        //reply.body.push({"type": "TextBlock", "text": textToShow, "size": "default", "wrap": true});
-        buildAdaptiveCardJson(textToShow, reply.body, separator);
+        // otherwise show all the text within the primary card, no expandable card
+        buildAdaptiveCardJson(textToShow, reply.body, separator, textButtonMarker, textButtonPrefix);
         if (attach) addImageToAdaptiveCard(attach, reply.body);
     }
 }
