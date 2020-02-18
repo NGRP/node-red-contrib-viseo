@@ -77,11 +77,14 @@
             attachAdaptiveCard: { value: undefined },
             attachTypeAdaptiveCard: { value: "str" },
             displayedTextSizeAdaptiveCard: {value: undefined},
-            containerSeparatorAdaptiveCard: {value: "##"},
+            containerSeparatorAdaptiveCard: {value: undefined},
             metadata : { value : undefined },
             metadataType : { value : "str" },
             titleShowCardAction: { value: undefined },
-            titleShowCardActionType: { value: "str" }
+            titleShowCardActionType: { value: "str" },
+            textButtonMarker: { value: undefined },
+            textButtonPrefix: { value: undefined },
+            textButtonPrefixType: { value: 'str' }
         },
         inputs:  1,
         outputs: 1,
@@ -115,6 +118,8 @@
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
             $("#node-input-metadata").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json'], typeField: $("#node-input-metadataType")});
             $("#node-input-titleShowCardAction").typedInput({default: 'str', types: ['msg','global','str','flow'], typeField: $("#node-input-titleShowCardActionType")});
+            $("#node-input-textButtonMarker").typedInput({   types: ['str'], type:'str'});
+            $("#node-input-textButtonPrefix").typedInput({default: 'str', types: ['str', 're', 'msg','global','flow' ], typeField: $("#node-input-textButtonPrefixType")});
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -684,20 +689,32 @@
             </div>
             <!--<div class="form-row">
                 <label for="node-input-subtextAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
-                <textarea id="node-input-subtextAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
+                <textarea id="node-input-subtextAdaptiveCard" rows="4" placeholder="Text to send" style="width:80%;"></textarea>
             </div>-->
             <div class="form-row">
                 <label for="node-input-textAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
-                <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send"></textarea>
+                <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send" style="width:80%;"></textarea>
             </div>
             <div class="form-row">
-                <label  for="node-input-displayedTextSizeAdaptiveCard"> Wrap text up to </label>
-                <input type="number" id="node-input-displayedTextSizeAdaptiveCard">
+                <label  for="node-input-displayedTextSizeAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Wrap text up to </label>
+                <input type="number" id="node-input-displayedTextSizeAdaptiveCard" style="width:80%;">
             </div>
             <div class="form-row">
-                <label for="node-input-containerSeparatorAdaptiveCard"> Container separator </label>
-                <input type="text" id="node-input-containerSeparatorAdaptiveCard">
+                <label for="node-input-containerSeparatorAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Container separator </label>
+                <input type="text" id="node-input-containerSeparatorAdaptiveCard" style="width:80%;">
             </div>
+            <hr>
+            <b>Clickable text</b>
+            <div class="form-row">
+                <label for="node-input-textButtonMarker"><i class="fa fa-pencil-square-o"></i> Text marker </label>
+                <input type="text" id="node-input-textButtonMarker" style="width:80%;">
+            </div>
+            <div class="form-row">
+                <label for="node-input-textButtonPrefix"><i class="fa fa-pencil-square-o"></i> Value prefix </label>
+                <input type="text" id="node-input-textButtonPrefix" style="width:80%;">
+                <input type="hidden" id="node-input-textButtonPrefixType">
+            </div>
+            <hr>
             <div class="form-row">
                 <label for="node-input-titleShowCardAction"><i class="fa fa-pencil-square-o"></i> Show card button title</label>
                 <input type="text" id="node-input-titleShowCardAction"  style="width:80%;">
@@ -892,11 +909,19 @@
         <dd>sends a card to the user, with possible image, text and buttons; if <i>Carousel</i> is checked, the card will not be sent;
             the program will wait for another card (with the option unchecked) to send all the cards as a carousel </dd>
         <dt>AdaptiveCard</dt>
-        <dd>sends a card to the user, with possible image, text and buttons; The card can trim the content with a <i>More</i> button,
+        <dd><p>sends a card to the user, with possible image, text and buttons; The card can trim the content with a <i>More</i> button,
             if the option <i>Wrap text up to</i> is filled in with the number of characters to display (i.e.
-            If you only want to display 200 characters in the card, fill <i>Wrap text up to</i> with <i>200</i>).
-            This card can also interpret Markdown text, creating buttons (containers) in the card for each Markdown section. To define a Markdown section,
-            fill in the field <i>Container separator</i> with the character separating each section. For more details, see the 
+            If you only want to display 200 characters in the card, fill <i>Wrap text up to</i> with <i>200</i>).</p>
+            <p>This card can also interpret Markdown text, creating containers in the card for each Markdown section.
+            Each section composes one title, and several Markdown line items.
+            The field <i>Container separator</i> works as a section marker, by which sections are identified as separated blocks.     
+            By default, The sections are separated by double Newlines '\n\n' if the field <i>Container separator</i> is not configured.</p>
+            <p>Within one section/block, the line items could be pure texts or buttons. 
+            In case of buttons, line item is clickable and its button value could have a customized prefix via the field <i>textButtonPrefix</i>.
+            Each clickable items is identified by the field <i>textButtonMarker</i>.
+            By default, '- ' is clickable text marker if <i>textButtonMarker</i> is not set.
+            If line items do not starts with <i>textButtonMarker</i>, they are displayed as it is and unclickable.</p>
+            For more details, see the 
             <a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards Documentation</a>.
         </dd>
         <dt>SignIn</dt>
