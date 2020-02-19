@@ -707,7 +707,7 @@
                 <input type="text" id="node-input-textButtonMarker" style="width:80%;">
             </div>
             <div class="form-row">
-                <label for="node-input-textButtonPrefix"><i class="fa fa-pencil-square-o"></i> Value prefix </label>
+                <label for="node-input-textButtonPrefix"><i class="fa fa-pencil-square-o"></i> Prefix when clicked </label>
                 <input type="text" id="node-input-textButtonPrefix" style="width:80%;">
                 <input type="hidden" id="node-input-textButtonPrefixType">
             </div>
@@ -906,18 +906,30 @@
         <dd>sends a card to the user, with possible image, text and buttons; if <i>Carousel</i> is checked, the card will not be sent;
             the program will wait for another card (with the option unchecked) to send all the cards as a carousel </dd>
         <dt>AdaptiveCard</dt>
-        <dd><p>sends a card to the user, with possible image, text and buttons; The card can trim the content with a <i>More</i> button,
+        <dd>
+            <p>sends a card to the user, with possible image, text and buttons; The card can trim the content with a <i>More</i> button,
             if the option <i>Wrap text up to</i> is filled in with the number of characters to display (i.e.
             If you only want to display 200 characters in the card, fill <i>Wrap text up to</i> with <i>200</i>).</p>
+            
             <p>This card can also interpret Markdown text, creating containers in the card for each Markdown section.
             Each section composes one title, and several Markdown line items.
             The field <i>Container separator</i> works as a section marker, by which sections are identified as separated blocks.     
-            By default, The sections are separated by double Newlines '\n\n' if the field <i>Container separator</i> is not configured.</p>
-            <p>Within one section/block, the line items could be pure texts or buttons. 
-            In case of buttons, line item is clickable and its button value could have a customized prefix via the field <i>textButtonPrefix</i>.
-            Each clickable items is identified by the field <i>textButtonMarker</i>.
-            By default, '- ' is clickable text marker if <i>textButtonMarker</i> is not set.
-            If line items do not starts with <i>textButtonMarker</i>, they are displayed as it is and unclickable.</p>
+            By default, the sections are separated by double Newlines '\n\n' if the field <i>Container separator</i> is not configured.</p>
+            
+            <p>Within one section/block, all the line items could be displayed as plain texts or buttons, according to the value of field <i>textButtonMarker</i>.
+            
+            <p>The criteria whether a line item is displayed as clickable button is:  
+            for any line items which start with this <i>textButtonMarker</i>, they will be displayed as button; 
+            Otherwise, if line items do not starts with <i>textButtonMarker</i>, they are displayed as texts and unclickable.
+            '- ' is the default value of the field <i>textButtonMarker</i>.
+            </p>
+
+            <p>In case of buttons, line item is clickable and its value attribute will be set to its text by default.
+            The value attribute could also have a customized prefix via the field <i>textButtonPrefix</i>. 
+            When the field <i>textButtonPrefix</i> is set, the value attribute of each line item will be the combination of 
+            <i>textButtonPrefix</i> and its original text, When a line item gets clicked.</p>
+            
+            
             For more details, see the 
             <a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards Documentation</a>.
         </dd>
