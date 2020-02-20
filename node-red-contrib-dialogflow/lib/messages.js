@@ -1,5 +1,5 @@
 const {dialogflow, NewSurface, SimpleResponse, Carousel, SignIn, TransactionDecision, TransactionRequirements, OrderUpdate, Button, BasicCard, Permission, Suggestions, Image, Confirmation} = require('actions-on-google');
-
+const helper = require('node-red-viseo-helper');
 
 class Message {
 
@@ -48,7 +48,11 @@ class Message {
                     break;
                 case 'card':
                     let options = cardOptions(reply)
-                    if (options.image) options.display = 'CROPPED';
+                    if (options.image) {
+                        options.display = 'CROPPED';
+                    } else {
+                        options.formattedText = options.subtitle || options.title;
+                    }
                     let basicCard = new BasicCard(options)
                     messages.push(basicCard);
                     break;
@@ -87,7 +91,6 @@ class Message {
                 }))
 
             }}
-        
         return messages;
     }
 
@@ -112,10 +115,11 @@ class Message {
 module.exports.Message = Message;
 
 function isCaroussel(arrayOfReplies) {
-    if (arrayOfReplies.length < 2) return false;
-    let firstReply = arrayOfReplies.shift();
+    if (arrayOfReplies.length < 3) return false;
+    let firstReply = arrayOfReplies[0];
 
-    for (let reply of arrayOfReplies) {
+    for (let i = 1; i < arrayOfReplies.length; i++) {
+        let reply = arrayOfReplies[1];
         if (reply.type !== "card") {
             return false;
         }
@@ -171,7 +175,7 @@ function buildCaroussel(arrayOfReplies) {
         caroussel.push(item) ;
     }
 
-    return (new Carousel({ imageDisplayOptions: 'DEFAULT', items: caroussel }));
+    return (new Carousel({ title: 'Selection', imageDisplayOptions: 'DEFAULT', items: caroussel }));
 }
 
 function buidSimpleMessage(reply) {

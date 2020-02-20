@@ -207,6 +207,20 @@ const reply = (node, data, config) => {
         // Building the message
         let message = new Message(data.reply);
             message.send(conv);
+
+
+        node.log('REPLY: '+ JSON.stringify({
+            user : {
+                id: data.user.id,
+                locale: data.user.locale
+            },
+            conversation: {
+                id: data.user.address.conversation.id
+            },
+            surfaces: data.message.surface.capabilities.list,
+            response: data.reply,
+            timestamp: Date.now()
+        }));
         
         // Trap the event in order to continue
         helper.fireAsyncCallback(data);
