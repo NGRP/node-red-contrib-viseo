@@ -76,6 +76,7 @@
             subtextAdaptiveCard: { value: undefined },
             attachAdaptiveCard: { value: undefined },
             attachTypeAdaptiveCard: { value: "str" },
+            attachSizeAdaptiveCard: { value: "auto" },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: undefined},
             metadata : { value : undefined },
@@ -715,15 +716,28 @@
                 <input type="hidden" id="node-input-textButtonPrefixType">
             </div>
             <hr>
-            <div class="form-row">
-                <label for="node-input-titleShowCardAction"><i class="fa fa-pencil-square-o"></i> Show card button title</label>
-                <input type="text" id="node-input-titleShowCardAction"  style="width:80%;">
-                <input type="hidden" id="node-input-titleShowCardActionType">
-            </div>
+            <b>Attachment</b>
             <div class="form-row">
                 <label for="node-input-attachAdaptiveCard"><i class="fa fa-image"></i> Image</label>
                 <input type="text" id="node-input-attachAdaptiveCard" style="width:80%;" placeholder="http://path/to/card/image">
                 <input type="hidden" id="node-input-attachTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-attachSizeAdaptiveCard"><i class="fa fa-image"></i> Image size</label>
+                <select id="node-input-attachSizeAdaptiveCard">
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="stretch">Stretch</option>
+                    <option value="auto">Auto</option>
+                </select>
+            </div>
+            <hr>
+            <b>Expandable card</b>
+            <div class="form-row">
+                <label for="node-input-titleShowCardAction"><i class="fa fa-pencil-square-o"></i> Button to expand card</label>
+                <input type="text" id="node-input-titleShowCardAction"  style="width:80%;">
+                <input type="hidden" id="node-input-titleShowCardActionType">
             </div>
         </section>
 
