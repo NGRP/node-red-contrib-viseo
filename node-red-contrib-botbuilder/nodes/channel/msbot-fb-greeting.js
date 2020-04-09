@@ -79,7 +79,7 @@ const facebookAPI = (node, config, json) => {
     if (!token) return;
 
     var req = {
-        uri: 'https://graph.facebook.com/v2.6/me/messenger_profile?access_token='+token,
+        uri: 'https://graph.facebook.com/v6.0/me/messenger_profile?access_token='+token,
         method: 'POST',
         body: json,
         json: true
