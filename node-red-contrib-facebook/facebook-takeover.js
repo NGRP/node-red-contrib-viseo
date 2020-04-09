@@ -31,7 +31,7 @@ const input = (node, data, config) => {
 
     request({
             method: "POST",
-            url: 'https://graph.facebook.com/v2.6/me/take_thread_control?access_token='+ node.pageToken.token,
+            url: 'https://graph.facebook.com/v6.0/me/take_thread_control?access_token='+ node.pageToken.token,
             headers: {'Content-Type': 'application/json'},
             body: {
                 recipient : { "id" : userId },

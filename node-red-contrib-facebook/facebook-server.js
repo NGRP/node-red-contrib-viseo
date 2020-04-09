@@ -181,7 +181,7 @@ async function reply(node, data, config) {
 
         // Write the message 
         let req = {
-            uri: "https://graph.facebook.com/v2.6/me/messages?access_token=" + config.pageToken,
+            uri: "https://graph.facebook.com/v6.0/me/messages?access_token=" + config.pageToken,
             method: 'POST',
             body: message,
             json: true

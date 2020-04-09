@@ -37,7 +37,7 @@ const start = (RED, node, config) => {
     request(
         {
             method: "GET",
-            url: 'https://graph.facebook.com/v2.6/me/secondary_receivers?fields=id,name&access_token=' + node.pageToken.token,
+            url: 'https://graph.facebook.com/v6.0/me/secondary_receivers?fields=id,name&access_token=' + node.pageToken.token,
             headers: {'Content-Type': 'application/json'}
         },
         function (err, response, body) { 
@@ -67,7 +67,7 @@ const input = (node, data, config) => {
 
     request ({
             method: "POST",
-            url: 'https://graph.facebook.com/v2.6/me/pass_thread_control?access_token=' + node.pageToken.token,
+            url: 'https://graph.facebook.com/v6.0/me/pass_thread_control?access_token=' + node.pageToken.token,
             headers: {'Content-Type': 'application/json'},
             body: {
                 recipient : { "id" : userId },

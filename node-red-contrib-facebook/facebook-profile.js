@@ -72,7 +72,7 @@ const input = (node, data, config) => {
 //  FACEBOOK API
 // --------------------------------------------------------------------------
 
-const URL = "https://graph.facebook.com/v2.6/";
+const URL = "https://graph.facebook.com/v6.0/";
 const QS  = "?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=";
 
 const getFBProfile = exports.getUserProfile = (uid, token, callback) => {
