@@ -480,18 +480,23 @@ const buildAdaptiveCardJson = function(wholeText, body, separator, textButtonMar
 
 /**
  * Add image to AdaptiveCard, by default the image will be appended to the 1st Container
- * @param {*} imageUrl image URL
+ * @param {String} imageUrl image URL
+ * @param {String} imageSize image size, possible values: "auto", "stretch", "small", "medium", "large"
+ * @param {String} imageWidth image width, this overrides the size property.
+ * @param {String} imageHeight image height, this overrides the size property.
  * @param {Array} itemsOfFirstContainer items Array of the first container inside AdaptiveCard JSON schema,
  *                         an exmple of which via https://docs.microsoft.com/en-us/adaptive-cards/getting-started/bots
  *                         Document image https://adaptivecards.io/explorer/Image.html
  */
-const addImageToAdaptiveCard = (imageUrl, imageSize, body) => {
+const addImageToAdaptiveCard = (imageUrl, imageSize, imageWidth, imageHeight, body) => {
     const image = {
         type: "Image",
         url: imageUrl,
         style: "default",
         horizontalAlignment: "center",
-        size: imageSize // possible values: "auto", "stretch", "small", "medium", "large"
+        size: imageSize,
+        width: imageWidth,
+        height: imageHeight
     };
     const firstContainer = body[0].type === "Container" ? body[0] : null;
     
@@ -511,6 +516,8 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     let title = config.titleAdaptiveCard;
     let attach = config.attachAdaptiveCard;
     let attachSize = config.attachSizeAdaptiveCard;
+    let imageWidth = config.attachWidthAdaptiveCard;
+    let imageHeight = config.attachHeightAdaptiveCard;
     let subtext = config.textAdaptiveCard;
     let separator = config.containerSeparatorAdaptiveCard;
     let displayedTextSize = config.displayedTextSizeAdaptiveCard;
@@ -584,7 +591,7 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
 
         // primary card
         buildAdaptiveCardJson(tmp, reply.body, separator, textButtonMarker, textButtonPrefix);
-        if (attach) addImageToAdaptiveCard(attach, attachSize, reply.body);
+        if (attach) addImageToAdaptiveCard(attach, attachSize, imageWidth, imageHeight, reply.body);
 
         // expandable card
         reply.actions = [];
@@ -594,6 +601,6 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     } else {
         // otherwise show all the text within the primary card, no expandable card
         buildAdaptiveCardJson(textToShow, reply.body, separator, textButtonMarker, textButtonPrefix);
-        if (attach) addImageToAdaptiveCard(attach, attachSize, reply.body);
+        if (attach) addImageToAdaptiveCard(attach, attachSize, imageWidth, imageHeight, reply.body);
     }
 }

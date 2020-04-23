@@ -77,6 +77,8 @@
             attachAdaptiveCard: { value: undefined },
             attachTypeAdaptiveCard: { value: "str" },
             attachSizeAdaptiveCard: { value: "auto" },
+            attachWidthAdaptiveCard: { value: "240px" },
+            attachHeightAdaptiveCard: { value: "180px" },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: undefined},
             metadata : { value : undefined },
@@ -724,13 +726,20 @@
             </div>
             <div class="form-row">
                 <label for="node-input-attachSizeAdaptiveCard"><i class="fa fa-image"></i> Image size</label>
-                <select id="node-input-attachSizeAdaptiveCard">
+                <select id="node-input-attachSizeAdaptiveCard" style="width:80%;">
+                    <option value="" selected="selected"></option>
+                    <option value="auto">Auto</option>
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
                     <option value="large">Large</option>
                     <option value="stretch">Stretch</option>
-                    <option value="auto">Auto</option>
                 </select>
+            </div>
+            <div class="form-row" style="display: flex;align-items: center;">
+                <label for="node-input-attachWidthAdaptiveCard"> Width</label>
+                <input type="text" id="node-input-attachWidthAdaptiveCard" style="width:35%;" placeholder="e.g. 240px">
+                <label for="node-input-attachHeightAdaptiveCard"> Height</label>
+                <input type="text" id="node-input-attachHeightAdaptiveCard" style="width:35%;" placeholder="e.g. 180px">
             </div>
             <hr>
             <b>Expandable card</b>
