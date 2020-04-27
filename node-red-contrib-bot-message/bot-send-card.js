@@ -496,7 +496,8 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageWidth, imageHeight, bo
         horizontalAlignment: "center"
     };
     if (imageSize) image.size = `${imageSize}`;
-    // {number} pixelWidth & {number} pixelHeight, refer to funciton applySize() in:
+    // {number} pixelWidth & {number} pixelHeight, refer to funciton toJSON() n applySize() in:
+    // pixelWidth and pixelHeight are only parsed for backwards compatibility.
     // https://github.com/microsoft/AdaptiveCards/blob/f9b405a4c2090dfefc7aafa88b2817582a5fa2fd/source/nodejs/adaptivecards/src/card-elements.ts
     if (imageWidth) {
         image.width = `${imageWidth}px`;
