@@ -493,13 +493,22 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageWidth, imageHeight, bo
         type: "Image",
         url: imageUrl,
         style: "default",
-        horizontalAlignment: "center",
-        size: imageSize,
-        width: imageWidth,
-        height: imageHeight
+        horizontalAlignment: "center"
     };
+    if (imageSize) image.size = `${imageSize}`;
+    // {number} pixelWidth & {number} pixelHeight, refer to funciton applySize() in:
+    // https://github.com/microsoft/AdaptiveCards/blob/f9b405a4c2090dfefc7aafa88b2817582a5fa2fd/source/nodejs/adaptivecards/src/card-elements.ts
+    if (imageWidth) {
+        image.width = `${imageWidth}px`;
+        image.pixelWidth = parseInt(imageWidth); // type Number
+    }
+    if (imageHeight) {
+        image.height = `${imageHeight}px`;
+        image.pixelHeight = parseInt(imageHeight); // type Number
+    }
+
     const firstContainer = body[0].type === "Container" ? body[0] : null;
-    
+
     // If there exists a Container: append image directly to tail of Array ${items} inside the first Container 
     if (firstContainer) {
         firstContainer.items.push(image);
@@ -564,7 +573,9 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     attach = helper.getContextValue(RED, node, data, attach || '', config.attachTypeAdaptiveCard || 'str');
     attach = marshall(locale, attach,  data, '');
 
-    attachSize = helper.getContextValue(RED, node, data, attachSize || 'auto', 'str');
+    attachSize = helper.getContextValue(RED, node, data, attachSize, 'str');
+    imageWidth = helper.getContextValue(RED, node, data, imageWidth, 'str');
+    imageHeight = helper.getContextValue(RED, node, data, imageHeight, 'str');
 
     reply.type = 'AdaptiveCard';
     reply.title = title;

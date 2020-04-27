@@ -76,9 +76,9 @@
             subtextAdaptiveCard: { value: undefined },
             attachAdaptiveCard: { value: undefined },
             attachTypeAdaptiveCard: { value: "str" },
-            attachSizeAdaptiveCard: { value: "auto" },
-            attachWidthAdaptiveCard: { value: "240px" },
-            attachHeightAdaptiveCard: { value: "180px" },
+            attachSizeAdaptiveCard: { value: undefined },
+            attachWidthAdaptiveCard: { value: undefined },
+            attachHeightAdaptiveCard: { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: undefined},
             metadata : { value : undefined },
@@ -117,6 +117,8 @@
 
             $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
+            $("#node-input-attachWidthAdaptiveCard").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-attachHeightAdaptiveCard").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
             $("#node-input-metadata").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json'], typeField: $("#node-input-metadataType")});
@@ -736,10 +738,10 @@
                 </select>
             </div>
             <div class="form-row" style="display: flex;align-items: center;">
-                <label for="node-input-attachWidthAdaptiveCard"> Width</label>
-                <input type="text" id="node-input-attachWidthAdaptiveCard" style="width:35%;" placeholder="e.g. 240px">
-                <label for="node-input-attachHeightAdaptiveCard"> Height</label>
-                <input type="text" id="node-input-attachHeightAdaptiveCard" style="width:35%;" placeholder="e.g. 180px">
+                <label for="node-input-attachWidthAdaptiveCard"> Width in picels</label>
+                <input type="text" id="node-input-attachWidthAdaptiveCard" style="width:35%;">
+                <label for="node-input-attachHeightAdaptiveCard"> Height in picels</label>
+                <input type="text" id="node-input-attachHeightAdaptiveCard" style="width:35%;">
             </div>
             <hr>
             <b>Expandable card</b>
