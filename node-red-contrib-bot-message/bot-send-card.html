@@ -77,6 +77,7 @@
             attachAdaptiveCard: { value: undefined },
             attachTypeAdaptiveCard: { value: "str" },
             attachSizeAdaptiveCard: { value: undefined },
+            attachHorizontalAlignment: { value: undefined },
             attachWidthAdaptiveCard: { value: undefined },
             attachHeightAdaptiveCard: { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
@@ -737,6 +738,15 @@
                     <option value="stretch">Stretch</option>
                 </select>
             </div>
+            <div class="form-row">
+                <label for="node-input-attachHorizontalAlignment"> Alignment</label>
+                <select id="node-input-attachHorizontalAlignment" style="width:80%;">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                </select>
+            </div>
             <div class="form-row" style="display: flex;align-items: center;">
                 <label for="node-input-attachWidthAdaptiveCard"> Width in pixels</label>
                 <input type="text" id="node-input-attachWidthAdaptiveCard" style="width:35%;">
@@ -959,6 +969,7 @@
             
             <p>In case of image, <i>Image size</i> controls the approximate size of the image, with
                 possible values as 'auto', 'stretch', 'small', 'medium', 'large'.
+                <i>Alignment</i> Controls how this element is horizontally positioned within its parent. Possilbe values: left, center, right
                 <i>Width in pixels</i> is on-screen width of the image. E.g., '50' as '50px' . This overrides the size property.
                 <i>Height in pixels</i> is on-screen height of the image. E.g., '50' as '50px'. This overrides the size property.
             </p>
