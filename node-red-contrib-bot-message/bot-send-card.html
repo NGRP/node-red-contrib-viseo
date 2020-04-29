@@ -76,6 +76,10 @@
             subtextAdaptiveCard: { value: undefined },
             attachAdaptiveCard: { value: undefined },
             attachTypeAdaptiveCard: { value: "str" },
+            attachSizeAdaptiveCard: { value: undefined },
+            attachHorizontalAlignment: { value: undefined },
+            attachWidthAdaptiveCard: { value: undefined },
+            attachHeightAdaptiveCard: { value: undefined },
             displayedTextSizeAdaptiveCard: {value: undefined},
             containerSeparatorAdaptiveCard: {value: undefined},
             metadata : { value : undefined },
@@ -114,6 +118,8 @@
 
             $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
+            $("#node-input-attachWidthAdaptiveCard").typedInput({ default: 'str', types: ['str'], type: 'str' });
+            $("#node-input-attachHeightAdaptiveCard").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-displayedTextSizeAdaptiveCard").typedInput({   types: ['num'], type:'num'});
             $("#node-input-containerSeparatorAdaptiveCard").typedInput({   types: ['str'], type:'str'});
             $("#node-input-metadata").typedInput({default: 'str', types: ['msg','flow','global','str','num','bool','json'], typeField: $("#node-input-metadataType")});
@@ -715,15 +721,44 @@
                 <input type="hidden" id="node-input-textButtonPrefixType">
             </div>
             <hr>
-            <div class="form-row">
-                <label for="node-input-titleShowCardAction"><i class="fa fa-pencil-square-o"></i> Show card button title</label>
-                <input type="text" id="node-input-titleShowCardAction"  style="width:80%;">
-                <input type="hidden" id="node-input-titleShowCardActionType">
-            </div>
+            <b>Attachment</b>
             <div class="form-row">
                 <label for="node-input-attachAdaptiveCard"><i class="fa fa-image"></i> Image</label>
                 <input type="text" id="node-input-attachAdaptiveCard" style="width:80%;" placeholder="http://path/to/card/image">
                 <input type="hidden" id="node-input-attachTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-attachSizeAdaptiveCard"><i class="fa fa-image"></i> Image size</label>
+                <select id="node-input-attachSizeAdaptiveCard" style="width:80%;">
+                    <option value="" selected="selected"></option>
+                    <option value="auto">Auto</option>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="stretch">Stretch</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="node-input-attachHorizontalAlignment"> Alignment</label>
+                <select id="node-input-attachHorizontalAlignment" style="width:80%;">
+                    <option value="" selected="selected"></option>
+                    <option value="left">Left</option>
+                    <option value="center">Center</option>
+                    <option value="right">Right</option>
+                </select>
+            </div>
+            <div class="form-row" style="display: flex;align-items: center;">
+                <label for="node-input-attachWidthAdaptiveCard"> Width in pixels</label>
+                <input type="text" id="node-input-attachWidthAdaptiveCard" style="width:35%;">
+                <label for="node-input-attachHeightAdaptiveCard"> Height in pixels</label>
+                <input type="text" id="node-input-attachHeightAdaptiveCard" style="width:35%;">
+            </div>
+            <hr>
+            <b>Expandable card</b>
+            <div class="form-row">
+                <label for="node-input-titleShowCardAction"><i class="fa fa-pencil-square-o"></i> Button to expand card</label>
+                <input type="text" id="node-input-titleShowCardAction"  style="width:80%;">
+                <input type="hidden" id="node-input-titleShowCardActionType">
             </div>
         </section>
 
@@ -932,6 +967,12 @@
             When the field <i>textButtonPrefix</i> is set, the value attribute of each line item will be the combination of 
             <i>textButtonPrefix</i> and its original text, When a line item gets clicked.</p>
             
+            <p>In case of image, <i>Image size</i> controls the approximate size of the image, with
+                possible values as 'auto', 'stretch', 'small', 'medium', 'large'.
+                <i>Alignment</i> Controls how this element is horizontally positioned within its parent. Possilbe values: left, center, right
+                <i>Width in pixels</i> is on-screen width of the image. E.g., '50' as '50px' . This overrides the size property.
+                <i>Height in pixels</i> is on-screen height of the image. E.g., '50' as '50px'. This overrides the size property.
+            </p>
             
             For more details, see the 
             <a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards Documentation</a>.

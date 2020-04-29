@@ -480,20 +480,38 @@ const buildAdaptiveCardJson = function(wholeText, body, separator, textButtonMar
 
 /**
  * Add image to AdaptiveCard, by default the image will be appended to the 1st Container
- * @param {*} imageUrl image URL
+ * @param {String} imageUrl image URL
+ * @param {String} imageSize image size, possible values: "auto", "stretch", "small", "medium", "large"
+ * @param {String} imageHorizontalAlignment Controls how this element is horizontally positioned within its parent. Possilbe values: left, center, right
+ * @param {String} imageWidth image width, this overrides the size property.
+ * @param {String} imageHeight image height, this overrides the size property.
  * @param {Array} itemsOfFirstContainer items Array of the first container inside AdaptiveCard JSON schema,
  *                         an exmple of which via https://docs.microsoft.com/en-us/adaptive-cards/getting-started/bots
  *                         Document image https://adaptivecards.io/explorer/Image.html
  */
-const addImageToAdaptiveCard = (imageUrl, body) => {
+const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, imageWidth, imageHeight, body) => {
     const image = {
         type: "Image",
         url: imageUrl,
-        style: "default",
-        size: "auto" // possible values: "auto", "stretch", "small", "medium", "large"
+        style: "default"
     };
+
+    if (imageSize) image.size = `${imageSize}`;
+    if (imageHorizontalAlignment) image.horizontalAlignment = `${imageHorizontalAlignment}`;
+    // {number} pixelWidth & {number} pixelHeight, refer to funciton toJSON() n applySize() in:
+    // pixelWidth and pixelHeight are only parsed for backwards compatibility.
+    // https://github.com/microsoft/AdaptiveCards/blob/f9b405a4c2090dfefc7aafa88b2817582a5fa2fd/source/nodejs/adaptivecards/src/card-elements.ts
+    if (imageWidth) {
+        image.width = `${imageWidth}px`;
+        image.pixelWidth = parseInt(imageWidth); // type Number
+    }
+    if (imageHeight) {
+        image.height = `${imageHeight}px`;
+        image.pixelHeight = parseInt(imageHeight); // type Number
+    }
+
     const firstContainer = body[0].type === "Container" ? body[0] : null;
-    
+
     // If there exists a Container: append image directly to tail of Array ${items} inside the first Container 
     if (firstContainer) {
         firstContainer.items.push(image);
@@ -509,6 +527,10 @@ const addImageToAdaptiveCard = (imageUrl, body) => {
 const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     let title = config.titleAdaptiveCard;
     let attach = config.attachAdaptiveCard;
+    let attachSize = config.attachSizeAdaptiveCard;
+    let imageHorizontalAlignment = config.attachHorizontalAlignment;
+    let imageWidth = config.attachWidthAdaptiveCard;
+    let imageHeight = config.attachHeightAdaptiveCard;
     let subtext = config.textAdaptiveCard;
     let separator = config.containerSeparatorAdaptiveCard;
     let displayedTextSize = config.displayedTextSizeAdaptiveCard;
@@ -555,6 +577,11 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     attach = helper.getContextValue(RED, node, data, attach || '', config.attachTypeAdaptiveCard || 'str');
     attach = marshall(locale, attach,  data, '');
 
+    attachSize = helper.getContextValue(RED, node, data, attachSize, 'str');
+    imageHorizontalAlignment = helper.getContextValue(RED, node, data, imageHorizontalAlignment, 'str');
+    imageWidth = helper.getContextValue(RED, node, data, imageWidth, 'str');
+    imageHeight = helper.getContextValue(RED, node, data, imageHeight, 'str');
+
     reply.type = 'AdaptiveCard';
     reply.title = title;
     reply.version = "1.0";
@@ -580,7 +607,7 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
 
         // primary card
         buildAdaptiveCardJson(tmp, reply.body, separator, textButtonMarker, textButtonPrefix);
-        if (attach) addImageToAdaptiveCard(attach, reply.body);
+        if (attach) addImageToAdaptiveCard(attach, attachSize, imageHorizontalAlignment, imageWidth, imageHeight, reply.body);
 
         // expandable card
         reply.actions = [];
@@ -590,6 +617,6 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     } else {
         // otherwise show all the text within the primary card, no expandable card
         buildAdaptiveCardJson(textToShow, reply.body, separator, textButtonMarker, textButtonPrefix);
-        if (attach) addImageToAdaptiveCard(attach, reply.body);
+        if (attach) addImageToAdaptiveCard(attach, attachSize, imageHorizontalAlignment, imageWidth, imageHeight, reply.body);
     }
 }
