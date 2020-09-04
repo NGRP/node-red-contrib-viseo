@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "VISEO Bot Maker - MongoDB database",
   "dependencies": {
-    "mongodb": "^2.2.29",
+    "mongodb": "^3.6.1",
     "node-red-contrib-viseo-nosql-manager": "~0.1.0"
   },
   "repository": {
