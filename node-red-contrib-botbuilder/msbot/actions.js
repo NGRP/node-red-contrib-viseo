@@ -42,9 +42,7 @@ async function initConnector(config, node, startCmd) {
 
 module.exports.initConnector = initConnector;
 
-// --------------------------------------------------------------------------
-
-
+// -------------------------------------------------------------------------
 function buildMessageFlow(activity) {
   // Fix
   let message = activity;
@@ -141,8 +139,15 @@ async function reply(node, data, globalTypingDelay) {
       timestamp == undefined
     );
     if (!message) return false;
-    message.address = address;
-    if (data.metadata) message.data.value = data.metadata;
+    // getMessage() returns an Array of messages;
+    const aMessage = message.find(m => m.type === "message");
+    if (aMessage) {
+      aMessage.address = address;
+      if (data.metadata) {
+        if (!aMessage.data) aMessage.data = {};
+        aMessage.data.value = data.metadata;
+      }
+    }
   }
 
   let reference = context.convRef;
