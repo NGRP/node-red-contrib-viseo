@@ -62,7 +62,7 @@ async function start(node, config, RED) {
     return next();
   });
 
-  server.post("/server-botbuilder", (req, res) => {
+  server.post("/api/messages", (req, res) => {
     handleReceive(req, res);
   });
   
