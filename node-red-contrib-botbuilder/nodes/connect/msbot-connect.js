@@ -112,7 +112,7 @@ const reply = (bot, node, data, config) => {
             typing.data.type = "typing";
             typing.address(address);
             bot.send(typing, (err) => {
-                if (err){ return node.warn(err); }
+                if (err){ node.warn(err); }
                 // <continue> and consume the event
                 callback();
             })
@@ -123,7 +123,7 @@ const reply = (bot, node, data, config) => {
     let doReply = () => {
         try {
             bot.send(message, (err) => {
-                if (err){ return node.warn(err); }
+                if (err){ node.warn(err); }
                 // <continue> and consume the event
                 helper.fireAsyncCallback(data);
             })
