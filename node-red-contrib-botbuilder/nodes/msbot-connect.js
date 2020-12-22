@@ -128,7 +128,10 @@ const reply = (bot, node, data, config) => {
         if (!message) return false;
 
         message.address(address);
-        if(data.metadata) message.data.value = data.metadata;
+        if(data.metadata) {
+            message.data.value = data.metadata;
+            message.data.valueType = data.metadataType;
+         }
     }
 
     let customTyping = (callback) => {
@@ -137,7 +140,7 @@ const reply = (bot, node, data, config) => {
             typing.data.type = "typing";
             typing.address(address);
             bot.send(typing, (err) => {
-                if (err){ return node.warn(err); }
+                if (err){ node.warn(err); }
                 // <continue> and consume the event
                 callback();
             })
@@ -148,7 +151,7 @@ const reply = (bot, node, data, config) => {
     let doReply = () => {
         try {
             bot.send(message, (err) => {
-                if (err){ return node.warn(err); }
+                if (err){ node.warn(err); }
                 // <continue> and consume the event
                 helper.fireAsyncCallback(data);
             })
