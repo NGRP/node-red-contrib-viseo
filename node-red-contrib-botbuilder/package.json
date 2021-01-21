@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "VISEO Bot Maker - Microsoft BotBuilder and tools",
   "dependencies": {
-    "botbuilder": "^4.0.0",
-    "botbuilder-dialogs": "^4.0.0",
+    "botbuilder": "^4.11.0",
+    "botbuilder-dialogs": "^4.11.0",
     "node-red-viseo-helper": "~0.3.0",
     "node-red-viseo-bot-manager": "~0.1.0"
   },

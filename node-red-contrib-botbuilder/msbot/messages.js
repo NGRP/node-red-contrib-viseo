@@ -135,7 +135,11 @@ function buildRawMessage(node, opts, address, isPush) {
   /* ---------------------------------------------------------- */
 
   let msg = {};
-  if (opts.prompt) msg.inputHint = "expectingInput";
+  if (opts.prompt) {
+    msg.inputHint = "expectingInput";
+  } else {
+    msg.inputHint = "acceptingInput";
+  }
 
   if (address.channelId === "facebook") {
     msg.data = {};
