@@ -2,6 +2,7 @@
 
 // Retrieve server
 const helper = require("node-red-viseo-helper");
+const botmgr = require("node-red-viseo-bot-manager");
 const { initConnector } = require("./msbot/actions.js");
 
 const DEFAULT_TYPING_DELAY = 2000;
@@ -26,8 +27,10 @@ module.exports = function(RED) {
 
     config.appId = node.credentials.appId;
     config.appPassword = node.credentials.appPassword;
+    config.allowedCallers = JSON.parse(node.credentials.allowedCallers);
 
     start(node, config, RED);
+    
     this.on("close", done => {
       stop(node, done);
     });
@@ -35,7 +38,8 @@ module.exports = function(RED) {
   RED.nodes.registerType("bot", register, {
     credentials: {
       appId: { type: "text" },
-      appPassword: { type: "text" }
+      appPassword: { type: "text" },
+      allowedCallers: { type: "json" }
     }
   });
 };
@@ -55,16 +59,19 @@ async function start(node, config, RED) {
   
   server = RED.httpNode;
 
-  let { handleReceive, reply } = await initConnector(config, node, config.startCmd)
-
-  server.get("/server-botbuilder", (req, res, next) => {
-    res.send("Hello I'm a Bot !");
-    return next();
-  });
+  let { handleReceive, reply, skillEndpoint } = await initConnector(config, node, config.startCmd);
 
   server.post("/api/messages", (req, res) => {
     handleReceive(req, res);
   });
+
+  // expose skill host endpoint
+  server.post("/api/skils/v3/conversations/:conversationId/activities/:activityId");
+
+  // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler
+  if (typeof config.rootAppId === 'undefined') {
+    skillEndpoint.register(server, '/api/skills');
+  }
   
   node.status({ fill: "green", shape: "dot", text: "connected" });
 

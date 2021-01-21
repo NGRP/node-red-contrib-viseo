@@ -5,17 +5,20 @@
     defaults: {
       name: { value: undefined },
       delay: { value: undefined },
-      startCmd: { value: undefined }
+      startCmd: { value: undefined },
+      rootAppId: { value: undefined },
+      skillHostEndpoint: { value: undefined }
     },
     credentials: {
       appId: { type: "text" },
-      appPassword: { type: "text" }
+      appPassword: { type: "text" },
+      allowedCallers: { type: "json" }
     },
     inputs: 0,
     outputs: 2,
     icon: "azure.png",
     align: "left",
-    paletteLabel: "BotBuilder",
+    paletteLabel: "BotBuilder-Skill",
     oneditprepare: function() {
       $("#node-input-name").typedInput({
         default: "str",
@@ -28,6 +31,21 @@
         type: "str"
       });
       $("#node-input-appPassword").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-rootAppId").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-allowedCallers").typedInput({
+        default: "json",
+        types: ["json"],
+        type: "json"
+      });
+      $("#node-input-skillHostEndpoint").typedInput({
         default: "str",
         types: ["str"],
         type: "str"
@@ -72,13 +90,30 @@
       <input type="text" id="node-input-startCmd" placeholder="" style="width:70%;">
   </div>
   <div class="form-row">
-      <label for="node-input-appId"><i class="fa fa-id-badge"></i> AppId</label>
+      <label for="node-input-appId"><i class="fa fa-id-badge"></i> AppId*</label>
       <input type="text" id="node-input-appId" style="width:70%;">
   </div>
   <div class="form-row">
-      <label for="node-input-appPassword"><i class="fa fa-lock"></i> AppPass</label>
+      <label for="node-input-appPassword"><i class="fa fa-lock"></i> AppPass*</label>
       <input type="text" id="node-input-appPassword" style="width:70%;">
   </div>
+  <div class="form-row">
+    <label for="node-input-allowedCallers"><i class="fa fa-pencil-square-o"></i> Allowed callers*</label>
+    <input type="text" id="node-input-allowedCallers" style="width:70%;">
+  </div>
+
+  <b>If root bot, please entre: </b>
+  <div class="form-row">
+    <label for="node-input-skillHostEndpoint"><i class="fa fa-globe"></i> Skill host endpoint</label>
+    <input type="text" id="node-input-skillHostEndpoint" style="width:60%;">
+  </div>
+
+  <b>If skill bot, please entre: </b>
+  <div class="form-row">
+    <label for="node-input-rootAppId"><i class="fa fa-id-badge"></i> Root AppId</label>
+    <input type="text" id="node-input-rootAppId" style="width:60%;">
+  </div>
+
   <br>
   <b>Global message settings </b>
   <div class="form-row">
