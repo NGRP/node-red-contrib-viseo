@@ -1,0 +1,139 @@
+<script type="text/javascript">
+  RED.nodes.registerType("bot", {
+    category: "📻_channels",
+    color: "#8accff",
+    defaults: {
+      name: { value: undefined },
+      delay: { value: undefined },
+      startCmd: { value: undefined }
+    },
+    credentials: {
+      appId: { type: "text" },
+      appPassword: { type: "text" },
+      rootAppId: { type: "text" },
+    },
+    inputs: 0,
+    outputs: 2,
+    icon: "azure.png",
+    align: "left",
+    paletteLabel: "BotBuilder",
+    oneditprepare: function() {
+      $("#node-input-name").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-appId").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-appPassword").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-rootAppId").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-startCmd").typedInput({
+        default: "str",
+        types: ["str"],
+        type: "str"
+      });
+      $("#node-input-delay").typedInput({
+        default: "num",
+        types: ["num"],
+        type: "num"
+      });
+
+      $("#node-input-delay")
+        .change(function(e) {
+          var val = $(this).val();
+          if (val && val != 0 && val < 200) {
+            $("#node-input-delay").val(200);
+          }
+        })
+        .val(this.delay || 2000);
+    },
+    label: function() {
+      return this.name || "BotBuilder";
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="bot">
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+
+  <br>
+  <b>Microsoft Bot Builder settings </b>
+  <div class="form-row">
+      <br>
+      <label for="node-input-startCmd"><i class="fa fa-list-ul"></i> Start</label>
+      <input type="text" id="node-input-startCmd" placeholder="" style="width:70%;">
+  </div>
+  <div class="form-row">
+      <label for="node-input-appId"><i class="fa fa-id-badge"></i> AppId</label>
+      <input type="text" id="node-input-appId" style="width:70%;">
+  </div>
+  <div class="form-row">
+      <label for="node-input-appPassword"><i class="fa fa-lock"></i> AppPass</label>
+      <input type="text" id="node-input-appPassword" style="width:70%;">
+  </div>
+  <div class="form-row">
+    <label for="node-input-rootAppId"><i class="fa fa-lock"></i>Root AppId</label>
+    <input type="text" id="node-input-rootAppId" style="width:70%;">
+  </div>
+  <br>
+  <b>Global message settings </b>
+  <div class="form-row">
+      <br>
+      <label for="node-input-delay"><i class="fa fa-clock-o"></i> Delay</label>
+      <input type="text" id="node-input-delay" style="width:30%;"> ms <small>(> 200 ms)</small>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="bot">
+  <p>[<b>Bot server</b>] Connects to a Microsoft Bot Channel Registration (Bot builder). </p>
+
+  <h3>Outputs</h3>
+  <dl class="message-properties">
+      <dt>payload <span class="property-type">string</span></dt>
+      <dd>the user input</dd>
+      <dt>user <span class="property-type">object</span></dt>
+      <dd>the user information</dd>
+      <dt>message <span class="property-type">object</span></dt>
+      <dd>the complete conversation information</dd>
+  </dl>
+
+  <h3>Details</h3>
+  <p>Properties</p>
+  <p>This node uses the <code>/api/v1/messsages</code> route to connect with Botbuilder.</p>
+  <dl class="message-properties">
+      <dt>Project <span class="property-type">string</span></dt>
+      <dd>name to be displayed in the Node-RED UI (top left)</dd>
+      <dt>AppId <span class="property-type">string</span></dt>
+      <dd>the Azure application ID</dd>
+      <dt>AppPass <span class="property-type">string</span></dt>
+      <dd>the Azure application password</dd>
+      <dt>Delay<span class="property-type">number</span></dt>
+      <dd>the global delay for your messages. If empty, default is 2000ms. (Minimum 200ms)</dd>
+  </dl>
+
+  <h3>References help</h3>
+  <ul>
+      <li><a href="https://dev.botframework.com/">Microsoft Bot Framework</a> - reference</li>
+      <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
+      <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
+  </ul>
+
+  <h3>Tracking</h3>
+  <p>This node is likely to display an error message if no key is configured in the VISEO Bot Maker project.
+      If such an error appears, please get a key <a href="https://key.bot.viseo.io/">here</a>.
+  </p>
+</script>
