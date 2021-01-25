@@ -1,0 +1,32 @@
+{
+  "name": "node-red-contrib-viseo-botbuilder-skill",
+  "version": "1.0.0",
+  "description": "VISEO Bot Maker - Microsoft BotBuilder and tools",
+  "dependencies": {
+    "botbuilder": "^4.0.0",
+    "botbuilder-dialogs": "^4.0.0",
+    "node-red-viseo-helper": "~0.3.0",
+    "node-red-viseo-bot-manager": "~0.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NGRP/node-red-contrib-viseo/tree/master/node-red-contrib-botbuilder"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "viseo",
+    "sarah",
+    "node-red",
+    "microsoft",
+    "azure",
+    "botbuilder",
+    "chatbot",
+    "vocal",
+    "bot"
+  ],
+  "node-red": {
+    "nodes": {
+      "msbot-connect": "msbot-connect.js"
+    }
+  }
+}
