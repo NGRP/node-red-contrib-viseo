@@ -140,7 +140,6 @@ async function reply(node, data, globalTypingDelay) {
     //   type: message.type
     // };
     message = [message];
-    console.log(`[customReply] message = ${JSON.stringify(message, null, 2)}`)
   } 
   else if (data.reply.length === 0) {
     return callback();
@@ -173,7 +172,6 @@ async function reply(node, data, globalTypingDelay) {
   }
 
   let reference = context.convRef;
-  console.log(`[context reference] context = ${JSON.stringify(context, null, 2)}`)
   await adapter.continueConversation(reference, async (_cont) => {
     await _cont.sendActivities(message);
   })

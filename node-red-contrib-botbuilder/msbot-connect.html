@@ -7,12 +7,12 @@
       delay: { value: undefined },
       startCmd: { value: undefined },
       rootAppId: { value: undefined },
-      skillHostEndpoint: { value: undefined }
+      skillHostEndpoint: { value: undefined },
+      allowedCallers: { value: undefined }
     },
     credentials: {
       appId: { type: "text" },
-      appPassword: { type: "text" },
-      allowedCallers: { type: "json" }
+      appPassword: { type: "text" }
     },
     inputs: 0,
     outputs: 2,
@@ -105,13 +105,13 @@
   <b>If root bot, please entre: </b>
   <div class="form-row">
     <label for="node-input-skillHostEndpoint"><i class="fa fa-globe"></i> Skill host endpoint</label>
-    <input type="text" id="node-input-skillHostEndpoint" style="width:60%;">
+    <input type="text" id="node-input-skillHostEndpoint" style="width:70%;">
   </div>
 
   <b>If skill bot, please entre: </b>
   <div class="form-row">
     <label for="node-input-rootAppId"><i class="fa fa-id-badge"></i> Root AppId</label>
-    <input type="text" id="node-input-rootAppId" style="width:60%;">
+    <input type="text" id="node-input-rootAppId" style="width:70%;">
   </div>
 
   <br>

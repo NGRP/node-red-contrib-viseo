@@ -27,8 +27,8 @@ module.exports = function(RED) {
 
     config.appId = node.credentials.appId;
     config.appPassword = node.credentials.appPassword;
-    config.allowedCallers = JSON.parse(node.credentials.allowedCallers);
-
+    config.allowedCallers = JSON.parse(config.allowedCallers);
+    
     start(node, config, RED);
     
     this.on("close", done => {
@@ -38,8 +38,7 @@ module.exports = function(RED) {
   RED.nodes.registerType("bot", register, {
     credentials: {
       appId: { type: "text" },
-      appPassword: { type: "text" },
-      allowedCallers: { type: "json" }
+      appPassword: { type: "text" }
     }
   });
 };
