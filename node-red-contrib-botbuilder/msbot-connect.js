@@ -60,12 +60,18 @@ async function start(node, config, RED) {
 
   let { handleReceive, reply, skillEndpoint } = await initConnector(config, node, config.startCmd);
 
+  server.get("/api/messages", (req, res, next) => {
+    res.send("Hello I'm a bot !");
+    return next();
+  });
+
+  // bot framework v4 messaing endpoint
   server.post("/api/messages", (req, res) => {
     handleReceive(req, res);
   });
 
   // expose skill host endpoint
-  server.post("/api/skils/v3/conversations/:conversationId/activities/:activityId");
+  server.post("/api/skills/v3/conversations/:conversationId/activities/:activityId");
 
   // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler
   if (typeof config.rootAppId === 'undefined') {
