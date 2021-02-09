@@ -102,13 +102,13 @@
     <input type="text" id="node-input-allowedCallers" style="width:70%;">
   </div>
 
-  <b>If root bot, please entre: </b>
+  <b>If root bot, entre: </b>
   <div class="form-row">
     <label for="node-input-skillHostEndpoint"><i class="fa fa-globe"></i> Skill host endpoint</label>
     <input type="text" id="node-input-skillHostEndpoint" style="width:70%;">
   </div>
 
-  <b>If skill bot, please entre: </b>
+  <b>If skill bot, entre: </b>
   <div class="form-row">
     <label for="node-input-rootAppId"><i class="fa fa-id-badge"></i> Root AppId</label>
     <input type="text" id="node-input-rootAppId" style="width:70%;">
@@ -138,14 +138,22 @@
 
   <h3>Details</h3>
   <p>Properties</p>
-  <p>This node uses the <code>/api/v1/messsages</code> route to connect with Botbuilder.</p>
+  <p>This node uses the <code>/api/messsages</code> route to connect with Botbuilder v4.</p>
   <dl class="message-properties">
-      <dt>Project <span class="property-type">string</span></dt>
+      <dt>Name <span class="property-type">string</span></dt>
       <dd>name to be displayed in the Node-RED UI (top left)</dd>
+      <dt>Start <span class="property-type">string</span></dt>
+      <dd>welcome message</dd>
       <dt>AppId <span class="property-type">string</span></dt>
       <dd>the Azure application ID</dd>
       <dt>AppPass <span class="property-type">string</span></dt>
       <dd>the Azure application password</dd>
+      <dt>Allowed callers <span class="property-type">json</span></dt>
+      <dd>authentication configuration json containing skills(with app IDs), from which a bot can accept activities. If you don't provide this claims validator, your bot will generate an error or exception upon receiving an activity from another bot, whether your bot is a skill or a skill consumer.</dd>
+      <dt>Skill host endpoint <span class="property-type">string</span></dt>
+      <dd>skill host endpoint of master bot, for receiving activities from a skill</dd>
+      <dt>Root AppId <span class="property-type">string</span></dt>
+      <dd>app ID of the master bot</dd>
       <dt>Delay<span class="property-type">number</span></dt>
       <dd>the global delay for your messages. If empty, default is 2000ms. (Minimum 200ms)</dd>
   </dl>
@@ -153,6 +161,7 @@
   <h3>References help</h3>
   <ul>
       <li><a href="https://dev.botframework.com/">Microsoft Bot Framework</a> - reference</li>
+      <li><a href="https://docs.microsoft.com/en-us/azure/bot-service/skills-conceptual?view=azure-bot-service-4.0">Microsoft Bot Framework v4 Skill overview</a> - reference</li>
       <li><a href="https://github.com/NGRP/node-red-contrib-viseo/wiki/FAQ#understand-how-conversations-work">VISEO BotMaker wiki</a> - about bot servers</li>
       <li><a href="https://github.com/NGRP/node-red-contrib-viseo/">VISEO BotMaker</a> - the nodes github repository</li>
   </ul>
