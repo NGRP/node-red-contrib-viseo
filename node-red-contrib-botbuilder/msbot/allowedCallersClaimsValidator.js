@@ -12,7 +12,7 @@ class AllowedCallersClaimsValidator {
     async validateClaims(claims) {
         // For security, developer must specify allowedCallers.
         if (!this.allowedCallers || this.allowedCallers.length === 0) {
-            throw new Error('AllowedCallers not specified in .env.');
+            throw new Error('AllowedCallers not specified');
         }
 
         // If allowedCallers contains '*', we allow all calls.

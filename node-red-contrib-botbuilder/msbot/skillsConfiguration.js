@@ -14,7 +14,7 @@ class SkillsConfiguration {
     }
 
     set skills(skills) {
-        this._skills = _skills;
+        this._skills = skills;
     }
 
     get hostEndpoint() {
