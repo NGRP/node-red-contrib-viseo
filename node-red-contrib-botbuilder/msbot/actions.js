@@ -32,7 +32,7 @@ async function initConnector(config, node, startCmd) {
   return new Promise( function (resolve, reject) {
     const memoryStorage = new MemoryStorage();
     const conversationState = new ConversationState(memoryStorage);
-    const ifMasterBot = ifRootBot(config.rootAppId);
+    const ifRootBot = ifRootBot(config.rootAppId);
 
     // create bot framework adapter with bot config
     authConfig = getAuthConfig(config.allowedCallers);
@@ -44,14 +44,14 @@ async function initConnector(config, node, startCmd) {
     adapter = new BotFrameworkAdapter(botbuilderConfig);
 
     // create bot
-    if (ifMasterBot) {
+    if (ifRootBot) {
       const conversationIdFactory = new SkillConversationIdFactory();
       const skillsConfig = new SkillsConfiguration(config.allowedCallers, config.skillHostEndpoint);
       const credentialProvider = new SimpleCredentialProvider(config.appId, config.appPassword);
       const skillClient = new SkillHttpClient(credentialProvider, conversationIdFactory);
       bot = new VBMBot(node, config.appId, startCmd, sendWelcomeMessage, conversationState, skillsConfig, skillClient);
 
-      // Init skills if masterbot
+      // Init skills if root bot
       const skillHandler = new SkillHandler(adapter, bot, conversationIdFactory, credentialProvider, authConfig);
       skillEndpoint = new ChannelServiceRoutes(skillHandler);
 
@@ -82,7 +82,7 @@ async function initConnector(config, node, startCmd) {
     bot.onMessage(async (context, next) => {
       const text = context.activity.text;
 
-      if (ifMasterBot) {
+      if (ifRootBot) {
         const activeSkill = bot.skillsConfig.skills[text];
         if (activeSkill) {
           await bot.sendToSkill(context.activity, activeSkill);
@@ -104,7 +104,7 @@ async function initConnector(config, node, startCmd) {
       });
     }
 
-    if (ifMasterBot) {
+    if (ifRootBot) {
       resolve({ handleReceive, reply, skillEndpoint});
     } else {
       resolve({ handleReceive, reply});
