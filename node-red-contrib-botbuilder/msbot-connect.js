@@ -2,39 +2,54 @@
 
 // Retrieve server
 const helper = require("node-red-viseo-helper");
-const botmgr = require("node-red-viseo-bot-manager");
 const { initConnector } = require("./msbot/actions.js");
 
 const DEFAULT_TYPING_DELAY = 2000;
 const MINIMUM_TYPING_DELAY = 200;
+const START_BOTBUILDER_DELAY = 10000;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
-
 module.exports = function(RED) {
   const register = function(config) {
     RED.nodes.createNode(this, config);
     var node = this;
 
     let globalTypingDelay = DEFAULT_TYPING_DELAY;
-    if (config.delay) {
-      globalTypingDelay =
-        typeof config.delay !== "number" ? Number(config.delay) : config.delay;
-      if (globalTypingDelay < MINIMUM_TYPING_DELAY)
-        globalTypingDelay = MINIMUM_TYPING_DELAY;
-    }
+      if (config.delay) {
+        globalTypingDelay =
+          typeof config.delay !== "number" ? Number(config.delay) : config.delay;
+        if (globalTypingDelay < MINIMUM_TYPING_DELAY)
+          globalTypingDelay = MINIMUM_TYPING_DELAY;
+      }
 
-    config.appId = node.credentials.appId;
-    config.appPassword = node.credentials.appPassword;
-    config.allowedCallers = JSON.parse(config.allowedCallers);
-    
-    start(node, config, RED);
-    
+    // Set timeout to make sure that the botbuilder will start only after the config is loaded
+    setTimeout(() => {
+      config.appId = node.credentials.appId;
+      config.appPassword = node.credentials.appPassword;
+      if (config.allowedCallersType) {
+        switch (config.allowedCallersType) {
+          case 'msg':
+              config.allowedCallers = data[config.allowedCallers];
+              break;
+          case 'global':
+              config.allowedCallers = node.context().global.get(config.allowedCallers);
+              break;
+          case 'json':
+              config.allowedCallers = JSON.parse(config.allowedCallers);
+              break;
+        }
+      }
+
+      start(node, config, RED);
+    }, START_BOTBUILDER_DELAY);
+
     this.on("close", done => {
       stop(node, done);
     });
   };
+
   RED.nodes.registerType("bot", register, {
     credentials: {
       appId: { type: "text" },
