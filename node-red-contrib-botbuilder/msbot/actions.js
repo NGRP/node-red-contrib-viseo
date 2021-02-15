@@ -18,7 +18,6 @@ let botbuilderConfig = {
     authConfig
 };
 
-const ifRootBot = appId => typeof appId === 'undefined' || appId === '';
 
 const getAuthConfig = (allowedSkills) => {
   const allowedCallersClaimsValidator = new AllowedCallersClaimsValidator(allowedSkills);
@@ -32,7 +31,7 @@ async function initConnector(config, node, startCmd) {
   return new Promise( function (resolve, reject) {
     const memoryStorage = new MemoryStorage();
     const conversationState = new ConversationState(memoryStorage);
-    const ifRootBot = ifRootBot(config.rootAppId);
+    const ifRootBot = typeof config.rootAppId === 'undefined' || config.rootAppId === '';
 
     // create bot framework adapter with bot config
     authConfig = getAuthConfig(config.allowedCallers);
@@ -42,7 +41,6 @@ async function initConnector(config, node, startCmd) {
       authConfig
     };
     adapter = new BotFrameworkAdapter(botbuilderConfig);
-
     // create bot
     if (ifRootBot) {
       const conversationIdFactory = new SkillConversationIdFactory();

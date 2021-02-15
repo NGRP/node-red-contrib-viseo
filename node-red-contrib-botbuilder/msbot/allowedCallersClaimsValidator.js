@@ -6,7 +6,7 @@ class AllowedCallersClaimsValidator {
             throw new Error('[botbuilder] AllowedCallersClaimsValidator: skillsConfig is undefined');
         }
 
-        this.allowedCallers = [...Object.values(skillsConfig)].map(skill => skill.appId);
+        this.allowedCallers = [...Object.values(skillsConfig)].map(skill => skill.appId).filter(skill => typeof skill !== 'undefined');
     }
 
     async validateClaims(claims) {
