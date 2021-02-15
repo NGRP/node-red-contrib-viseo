@@ -8,13 +8,14 @@
       startCmd: { value: undefined },
       rootAppId: { value: undefined },
       skillHostEndpoint: { value: undefined },
-      allowedCallers: { value: undefined }
+      allowedCallers: { value: undefined },
+      allowedCallersType: { value: undefined }
     },
     credentials: {
       appId: { type: "text" },
       appPassword: { type: "text" }
     },
-    inputs: 0,
+    inputs: 1,
     outputs: 2,
     icon: "azure.png",
     align: "left",
@@ -42,8 +43,8 @@
       });
       $("#node-input-allowedCallers").typedInput({
         default: "json",
-        types: ["json"],
-        type: "json"
+        types: ["json", "msg", "global"],
+        typeField: $("#node-input-allowedCallersType")
       });
       $("#node-input-skillHostEndpoint").typedInput({
         default: "str",
@@ -100,6 +101,7 @@
   <div class="form-row">
     <label for="node-input-allowedCallers"><i class="fa fa-pencil-square-o"></i> Allowed callers*</label>
     <input type="text" id="node-input-allowedCallers" style="width:70%;">
+    <input type="hidden" id="node-input-allowedCallersType">
   </div>
 
   <b>If root bot, entre: </b>
