@@ -48,6 +48,8 @@ function getMessage(node, address, replies, globalTypingDelay, isPush) {
 
   messages.push(activity);
   if (expectedInput) activity.inputHint = "expectingInput";
+  else activity.inputHint = "acceptingInput";
+  
   return messages;
 }
 

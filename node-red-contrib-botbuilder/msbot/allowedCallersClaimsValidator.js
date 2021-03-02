@@ -3,7 +3,7 @@ const { JwtTokenValidation, SkillValidation } = require('botframework-connector'
 class AllowedCallersClaimsValidator {
     constructor(skillsConfig) {
         if (typeof skillsConfig === undefined) {
-            throw new Error('[botbuilder] AllowedCallersClaimsValidator: skillsConfig is undefined');
+            throw new Error('[Botbuilder] AllowedCallersClaimsValidator: skillsConfig is undefined');
         }
 
         this.allowedCallers = [...Object.values(skillsConfig)].map(skill => skill.appId).filter(skill => typeof skill !== 'undefined');

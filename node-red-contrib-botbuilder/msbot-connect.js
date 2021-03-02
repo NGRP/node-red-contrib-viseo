@@ -6,44 +6,77 @@ const { initConnector } = require("./msbot/actions.js");
 
 const DEFAULT_TYPING_DELAY = 2000;
 const MINIMUM_TYPING_DELAY = 200;
-const START_BOTBUILDER_DELAY = 10000;
+
+let REPLY_HANDLER = {};
+let server;
+let allowedCallers = '';
+let ifBotStarted = false;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
+const getAllowedCallers = (node, data, config) => {
+  let result = '';
+  const bType = config.botType;
+  const ac = config.allowedCallers;
+  const acType = config.allowedCallersType;
+
+  if (bType === 'rootBot' || bType === 'skillBot') {
+    if (acType === '' || ac === '') {
+      throw new Error('[BotBuilder]  Param allowedCallers missing');
+    }
+
+    switch (acType) {
+      case 'msg':
+        result = data[ac];
+        break;
+      case 'global':
+        result = node.context().global.get(ac);
+        break;
+      case 'json':
+        result = JSON.parse(ac);
+        break;
+      case 'flow':
+        result = node.context().flow.get(ac);
+        break;
+    }
+  }
+  return result;
+};
+ 
 module.exports = function(RED) {
   const register = function(config) {
     RED.nodes.createNode(this, config);
     var node = this;
+    node.status({});
 
     let globalTypingDelay = DEFAULT_TYPING_DELAY;
-      if (config.delay) {
-        globalTypingDelay =
-          typeof config.delay !== "number" ? Number(config.delay) : config.delay;
-        if (globalTypingDelay < MINIMUM_TYPING_DELAY)
-          globalTypingDelay = MINIMUM_TYPING_DELAY;
-      }
+    if (config.delay) {
+      globalTypingDelay =
+        typeof config.delay !== "number" ? Number(config.delay) : config.delay;
+      if (globalTypingDelay < MINIMUM_TYPING_DELAY)
+        globalTypingDelay = MINIMUM_TYPING_DELAY;
+    }
+    config.appId = node.credentials.appId;
+    config.appPassword = node.credentials.appPassword;
 
-    // Set timeout to make sure that the botbuilder will start only after the config is loaded
-    setTimeout(() => {
-      config.appId = node.credentials.appId;
-      config.appPassword = node.credentials.appPassword;
-      if (config.allowedCallersType) {
-        switch (config.allowedCallersType) {
-          case 'msg':
-              config.allowedCallers = data[config.allowedCallers];
-              break;
-          case 'global':
-              config.allowedCallers = node.context().global.get(config.allowedCallers);
-              break;
-          case 'json':
-              config.allowedCallers = JSON.parse(config.allowedCallers);
-              break;
+    // require an input to start bot
+    const startDelayed = config.startDelayedbyInput;
+    if (startDelayed) {
+      this.on("input", (data) => {
+        try {
+          allowedCallers = getAllowedCallers(node, data, config);
+          start(node, config, RED);
+          node.status({ fill: "green", shape: "dot", text: "connected" });
+        } catch (error) {
+          console.error(`[Botbuilder] register: ${error}`);
+          return node.status({ fill: "red", shape: "dot", text: `${error}` });
         }
-      }
-
+      });
+    } else {
+      allowedCallers = config.allowedCallers;
       start(node, config, RED);
-    }, START_BOTBUILDER_DELAY);
+    }
 
     this.on("close", done => {
       stop(node, done);
@@ -61,19 +94,14 @@ module.exports = function(RED) {
 // ------------------------------------------
 // SERVER
 // ------------------------------------------
-
-let REPLY_HANDLER = {};
-let server;
-
 async function start(node, config, RED) {
-
   if (REPLY_HANDLER[node.id]) {
     helper.removeListener("reply", REPLY_HANDLER[node.id]);
   }
   
   server = RED.httpNode;
 
-  let { handleReceive, reply, skillEndpoint } = await initConnector(config, node, config.startCmd);
+  let { handleReceive, reply, skillEndpoint } = await initConnector(config, node, allowedCallers);
 
   server.get("/api/messages", (req, res, next) => {
     res.send("Hello I'm a bot !");
@@ -89,16 +117,16 @@ async function start(node, config, RED) {
   server.post("/api/skills/v3/conversations/:conversationId/activities/:activityId");
 
   // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler
-  if (typeof config.rootAppId === 'undefined') {
+  if (typeof config.rootAppId === 'undefined' && skillEndpoint) {
     skillEndpoint.register(server, '/api/skills');
   }
-  
-  node.status({ fill: "green", shape: "dot", text: "connected" });
 
   REPLY_HANDLER[node.id] = (node, data, globalTypingDelay) => {
     reply(node, data, globalTypingDelay);
   };
   helper.listenEvent("reply", REPLY_HANDLER[node.id]);
+
+  ifBotStarted = true;
 }
 
 // Stop server

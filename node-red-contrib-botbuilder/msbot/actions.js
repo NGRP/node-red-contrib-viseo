@@ -17,6 +17,7 @@ let botbuilderConfig = {
     appPassword: '',
     authConfig
 };
+let ifRootBot = false;
 
 
 const getAuthConfig = (allowedSkills) => {
@@ -27,39 +28,52 @@ const getAuthConfig = (allowedSkills) => {
   });
 };
 
-async function initConnector(config, node, startCmd) {
+async function initConnector(config, node, allowedCallers) {
   return new Promise( function (resolve, reject) {
-    const memoryStorage = new MemoryStorage();
-    const conversationState = new ConversationState(memoryStorage);
-    const ifRootBot = typeof config.rootAppId === 'undefined' || config.rootAppId === '';
-
-    // create bot framework adapter with bot config
-    authConfig = getAuthConfig(config.allowedCallers);
-    botbuilderConfig = {
-      appId: config.appId,
-      appPassword: config.appPassword,
-      authConfig
-    };
-    adapter = new BotFrameworkAdapter(botbuilderConfig);
-    // create bot
-    if (ifRootBot) {
-      const conversationIdFactory = new SkillConversationIdFactory();
-      const skillsConfig = new SkillsConfiguration(config.allowedCallers, config.skillHostEndpoint);
-      const credentialProvider = new SimpleCredentialProvider(config.appId, config.appPassword);
-      const skillClient = new SkillHttpClient(credentialProvider, conversationIdFactory);
-      bot = new VBMBot(node, config.appId, startCmd, sendWelcomeMessage, conversationState, skillsConfig, skillClient);
-
-      // Init skills if root bot
-      const skillHandler = new SkillHandler(adapter, bot, conversationIdFactory, credentialProvider, authConfig);
-      skillEndpoint = new ChannelServiceRoutes(skillHandler);
-
+    // create a simple user-facing bot, neither root nor skill bot
+    if (config.botType === 'none' || config.botType === '') {
+      botbuilderConfig = {
+        appId: config.appId,
+        appPassword: config.appPassword,
+      };
+      adapter = new BotFrameworkAdapter(botbuilderConfig);
+      bot = new VBMBot(node, config.appId, config.startCmd);
     } else {
-      bot = new VBMBot(node, config.appId, startCmd, null, conversationState);
+      // create a root or skill
+      const memoryStorage = new MemoryStorage();
+      const conversationState = new ConversationState(memoryStorage);
+      ifRootBot = typeof config.rootAppId === 'undefined' || config.rootAppId === '';
+      
+      // create bot framework adapter with bot config
+      authConfig = getAuthConfig(allowedCallers);
+      botbuilderConfig = {
+        appId: config.appId,
+        appPassword: config.appPassword,
+        authConfig
+      };
+      adapter = new BotFrameworkAdapter(botbuilderConfig);
+      
+      if (ifRootBot) {
+        // create a root
+        const conversationIdFactory = new SkillConversationIdFactory();
+        const skillsConfig = new SkillsConfiguration(allowedCallers, config.skillHostEndpoint);
+        const credentialProvider = new SimpleCredentialProvider(config.appId, config.appPassword);
+        const skillClient = new SkillHttpClient(credentialProvider, conversationIdFactory);
+        bot = new VBMBot(node, config.appId, config.startCmd, sendWelcomeMessage, conversationState, skillsConfig, skillClient);
+  
+        // Init skill endpoint associated
+        const skillHandler = new SkillHandler(adapter, bot, conversationIdFactory, credentialProvider, authConfig);
+        skillEndpoint = new ChannelServiceRoutes(skillHandler);
+  
+      } else {
+        // create a skill
+        bot = new VBMBot(node, config.appId, config.startCmd, null, conversationState);
+      }
     }
 
     // Handle turn error
     adapter.onTurnError = async (context, error) => {
-      console.error(`\n [BotBuilder]: ${ JSON.stringify(error, null, 2) }`);
+      console.error(`\n [Botbuilder] onTurnError: ${error}`);
   
       // Send a trace activity, which will be displayed in Bot Framework Emulator
       await context.sendTraceActivity(
@@ -74,7 +88,7 @@ async function initConnector(config, node, startCmd) {
             type: ActivityTypes.Message,
             text: 'The bot encountered an error or bug. To continue to run this bot, please fix the bot source code.'
           }, conversationReference)]);
-  };
+    };
 
     // Handle incoming message
     bot.onMessage(async (context, next) => {

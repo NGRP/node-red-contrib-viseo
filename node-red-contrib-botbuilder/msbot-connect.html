@@ -1,14 +1,17 @@
 <script type="text/javascript">
   RED.nodes.registerType("bot", {
-    category: "📻_channels",
+    category: "📻_channels",  
     color: "#8accff",
     defaults: {
       name: { value: undefined },
       delay: { value: undefined },
       startCmd: { value: undefined },
+      botType: { value: 'none'},
+      startDelayedbyInput: { value: false },
       rootAppId: { value: undefined },
       skillHostEndpoint: { value: undefined },
       allowedCallers: { value: undefined },
+      allowedCallersFromInput: { value: undefined },
       allowedCallersType: { value: undefined }
     },
     credentials: {
@@ -19,7 +22,7 @@
     outputs: 2,
     icon: "azure.png",
     align: "left",
-    paletteLabel: "BotBuilder-Skill",
+    paletteLabel: "BotBuilder",
     oneditprepare: function() {
       $("#node-input-name").typedInput({
         default: "str",
@@ -40,11 +43,6 @@
         default: "str",
         types: ["str"],
         type: "str"
-      });
-      $("#node-input-allowedCallers").typedInput({
-        default: "json",
-        types: ["json", "msg", "global"],
-        typeField: $("#node-input-allowedCallersType")
       });
       $("#node-input-skillHostEndpoint").typedInput({
         default: "str",
@@ -70,6 +68,122 @@
           }
         })
         .val(this.delay || 2000);
+
+      function builderAllowedCallers() {
+        $('.section-allowedCallers').removeClass('hide');
+        const ifDelay = $('#node-input-startDelayedbyInput').is(':checked');
+        if (ifDelay) { // require input
+          $('.section-fromInput').removeClass('hide');
+          $('.section-enterManually').addClass('hide');
+          $("#node-input-allowedCallersFromInput").typedInput({
+            default: "json",
+            types: ["json", "msg", "global", "flow"],
+            typeField: $("#node-input-allowedCallersType")
+          });
+        } else { // enter manually
+          $('.section-fromInput').addClass('hide');
+          $('.section-enterManually').removeClass('hide');
+        }
+      };
+
+      $('#node-input-botType').change(function (event) {
+        const type = $(this).val();
+        $('.section-' + type).removeClass('hide');
+        if (type === 'rootBot') {
+          $('.section-skillBot').addClass('hide');
+          $('.section-startDelayedbyInput').removeClass('hide');
+          builderAllowedCallers();
+        } else if (type === 'skillBot') {
+          $('.section-rootBot').addClass('hide');
+          $('.section-startDelayedbyInput').removeClass('hide');
+          builderAllowedCallers();
+        } else {
+          $('.section-startDelayedbyInput').addClass('hide');
+          $('#node-input-startDelayedbyInput').prop('checked', false);
+
+          $('.section-rootBot').addClass('hide');
+          $('#node-input-skillHostEndpoint').val(undefined);
+          
+          $('.section-skillBot').addClass('hide');
+          $('#node-input-rootAppId').val(undefined);
+
+          $('.section-allowedCallers').addClass('hide');
+          $('#node-input-allowedCallersFromInput').val(undefined);
+          $('#node-input-allowedCallersType').val(undefined);
+        }
+      });
+
+      $('#node-input-startDelayedbyInput').change(function (event) {
+        const botType = $('#node-input-botType').val();
+        if (botType !== 'none') {
+          builderAllowedCallers();
+        }
+      });
+
+      function addAllowedCallers(row, index, data) {
+        const caller = data.allowedCallers;
+        let appName = '';
+        let appId = '';
+        let skillEndpoint = '';
+        if (caller) {
+          if (caller.hasOwnProperty('name'))  appName =  caller.name;
+          if (caller.hasOwnProperty('appId'))  appId =  caller.appId;
+          if (caller.hasOwnProperty('skillEndpoint')) skillEndpoint = caller.skillEndpoint;
+        }
+        const hiddenField = $('<span/>', {}).appendTo(row);
+        const nameField =  $('<input/>',  { class:"property-name",  type:"text", style:"width:24%; margin-right:5px;", value: appName,  placeholder:"Name"}).appendTo(row);
+        const appIdField =  $('<input/>',  { class:"property-appId",  type:"text", style:"width:25%; margin-right:5px;", value: appId,  placeholder:"App ID"}).appendTo(row);
+        const skillEndpointField =  $('<input/>', { class:"property-skillEndpoint",  type:"text", style:"width:45%; margin-right:5px;", value: skillEndpoint,  placeholder:"Skill endpoint"}).appendTo(row);
+      };
+
+      $("#allowedCallers-container").css('min-height','100px').editableList({
+        addItem: function (row, index, data) {
+            addAllowedCallers(row, index, data);
+        },
+        sortable: true,
+        removable: true
+      });
+      
+      // allowedCallers of type ordered list
+      if (typeof this.allowedCallers === 'object') {
+        for (let i = 0; i < Object.keys(this.allowedCallers).length; i++) {
+          $("#allowedCallers-container").editableList('addItem', { allowedCallers: {
+            name: Object.keys(this.allowedCallers)[i],
+            appId: this.allowedCallers[Object.keys(this.allowedCallers)[i]].appId,
+            skillEndpoint: this.allowedCallers[Object.keys(this.allowedCallers)[i]].skillEndpoint
+          }});
+        }
+        $('#node-input-allowedCallersFromInput').val(undefined);
+        $('#node-input-allowedCallersType').val(undefined);
+      }
+    },
+    oneditsave: function() {
+      const ifDelay = $('#node-input-startDelayedbyInput').is(':checked');
+      const botType = $('#node-input-botType').val();
+      if (botType === 'none') {
+        this.allowedCallers = undefined;
+      } else {
+        if (!ifDelay) {
+        const items = $("#allowedCallers-container").editableList('items');
+        const callers = new Object();
+        items.each(function(i) {
+            const appName = $(this).find('.property-name').val();
+            const appId = $(this).find('.property-appId').val();
+            const skillEndpoint = $(this).find('.property-skillEndpoint').val();
+            if (appName && appId) {
+              callers[appName] = {
+                appId,
+                skillEndpoint
+              };
+            }
+        });
+        this.allowedCallers = Object.keys(callers).length === 0 ? undefined : callers;
+        
+        } else {
+          const allowedCallersFromInput = $('#node-input-allowedCallersFromInput').val();
+          this.allowedCallers = allowedCallersFromInput;
+        }
+      }
     },
     label: function() {
       return this.name || "BotBuilder";
@@ -90,32 +204,64 @@
       <label for="node-input-startCmd"><i class="fa fa-list-ul"></i> Start</label>
       <input type="text" id="node-input-startCmd" placeholder="" style="width:70%;">
   </div>
+
   <div class="form-row">
-      <label for="node-input-appId"><i class="fa fa-id-badge"></i> AppId*</label>
+      <label for="node-input-appId"><i class="fa fa-id-badge"></i> AppId(*)</label>
       <input type="text" id="node-input-appId" style="width:70%;">
   </div>
+
   <div class="form-row">
-      <label for="node-input-appPassword"><i class="fa fa-lock"></i> AppPass*</label>
+      <label for="node-input-appPassword"><i class="fa fa-lock"></i> AppPass(*)</label>
       <input type="text" id="node-input-appPassword" style="width:70%;">
   </div>
+
   <div class="form-row">
-    <label for="node-input-allowedCallers"><i class="fa fa-pencil-square-o"></i> Allowed callers*</label>
-    <input type="text" id="node-input-allowedCallers" style="width:70%;">
-    <input type="hidden" id="node-input-allowedCallersType">
+      <label for="node-input-botType"><i class="fa fa-gear"></i> Bot type(*)</label>
+      <select id="node-input-botType" style="width:70%;">
+          <option value="none">-</option>
+          <option value="rootBot">Root bot</option>
+          <option value="skillBot">Skill bot</option>
+      </select>
   </div>
 
-  <b>If root bot, entre: </b>
-  <div class="form-row">
-    <label for="node-input-skillHostEndpoint"><i class="fa fa-globe"></i> Skill host endpoint</label>
-    <input type="text" id="node-input-skillHostEndpoint" style="width:70%;">
-  </div>
+  <section class="section-startDelayedbyInput hide">
+    <div class="form-row">
+      <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-startDelayedbyInput">
+      <span>Require an input to start bot</span>
+    </div>
+    <br>
+  </section>
 
-  <b>If skill bot, entre: </b>
-  <div class="form-row">
-    <label for="node-input-rootAppId"><i class="fa fa-id-badge"></i> Root AppId</label>
-    <input type="text" id="node-input-rootAppId" style="width:70%;">
-  </div>
+  <section class="section-rootBot hide">
+    <div class="form-row">
+      <label for="node-input-skillHostEndpoint"><i class="fa fa-globe"></i> Skill host endpoint(*)</label>
+      <input type="text" id="node-input-skillHostEndpoint" style="width:70%;">
+    </div>
+  </section>
+  <section class="section-skillBot hide">
+    <div class="form-row">
+      <label for="node-input-rootAppId"><i class="fa fa-id-badge"></i> Root AppId(*)</label>
+      <input type="text" id="node-input-rootAppId" style="width:70%;">
+    </div>
+  </section>
 
+  <section class="section-allowedCallers hide">
+    <div class="form-row">
+      <label for="node-input-callersType"><i class="fa fa-pencil-square-o"></i> Allowed callers(*)</label>
+      <section class="section-fromInput hide">
+
+          <input type="text" id="node-input-allowedCallersFromInput" style="width:80%;">
+          <input type="hidden" id="node-input-allowedCallersType">
+
+      </section>
+      <section class="section-enterManually hide">
+        <div class="form-row" style="width:80%;">
+          <ol id="allowedCallers-container"></ol>
+        </div>
+      </section>
+    </div>
+  </section>
+  
   <br>
   <b>Global message settings </b>
   <div class="form-row">
@@ -140,24 +286,57 @@
 
   <h3>Details</h3>
   <p>Properties</p>
-  <p>This node uses the <code>/api/messsages</code> route to connect with Botbuilder v4.</p>
+  <p>This node uses the <code>/api/messsages</code> route to connect with Bot builder.</p>
   <dl class="message-properties">
       <dt>Name <span class="property-type">string</span></dt>
       <dd>name to be displayed in the Node-RED UI (top left)</dd>
       <dt>Start <span class="property-type">string</span></dt>
-      <dd>welcome message</dd>
-      <dt>AppId <span class="property-type">string</span></dt>
-      <dd>the Azure application ID</dd>
-      <dt>AppPass <span class="property-type">string</span></dt>
-      <dd>the Azure application password</dd>
-      <dt>Allowed callers <span class="property-type">json</span></dt>
-      <dd>authentication configuration json containing skills(with app IDs), from which a bot can accept activities. If you don't provide this claims validator, your bot will generate an error or exception upon receiving an activity from another bot, whether your bot is a skill or a skill consumer.</dd>
-      <dt>Skill host endpoint <span class="property-type">string</span></dt>
-      <dd>skill host endpoint of master bot, for receiving activities from a skill</dd>
+      <dd>Welcome message</dd>
+      <dt>AppId (*) <span class="property-type">string</span></dt>
+      <dd>The Azure application ID</dd>
+      <dt>AppPass (*) <span class="property-type">string</span></dt>
+      <dd>The Azure application password</dd>
+      <dt>Bot type (*) <span class="property-type">string</span></dt>
+      <dd>A bot may be of type root, skill, or none.
+        <ul>
+        <li>None can be used in case of a simple user-facing bot.</li>
+        <li>A skill is a bot can perform a set of tasks for another bot.</li>
+        <li>A root is a bot that can call one or more skills.</li>
+        </ul>
+      </dd>
+      <dt>Require an input to start bot <span class="property-type">boolean</span></dt>
+      <dd>
+          Start can be delayed and triggered by an input. It is necessary to get this option checked
+          when some configurations need to be calculated before starting bot.
+      </dd>
       <dt>Root AppId <span class="property-type">string</span></dt>
-      <dd>app ID of the master bot</dd>
+      <dd>The appId of the root bot</dd>
+      <dt>Skill host endpoint <span class="property-type">string</span></dt>
+      <dd>The skill host endpoint of root bot, for receiving activities from a skill</dd>
+      <dt>Allowed callers <span class="property-type">json</span></dt>
+      <dd>
+        <p>Authentication configuration json containing skills, from which a bot can accept activities. </p>
+        <p>If you don't provide this claims validator, your bot will generate an error or exception 
+        <code>'Unauthorized Access. Request is not authorized. Skill Claims require validation.'</code> upon 
+        receiving an activity from another bot, whether your bot is a skill or a root.</p>
+        <p>For example,
+        skill1 and skill2 are authorized to send activities to your bot with the following json:
+        </p>
+        <pre type="javascript" style="width:400px"> 
+  {
+    "skill1": {
+        "appId": "some AppId",
+        "skillEndpoint": "some skill endpoint"
+    },
+    "skill2": {
+        "appId": "some AppId",
+        "skillEndpoint": "some skill endpoint"
+    }
+  }    
+        </pre>
+      </dd>
       <dt>Delay<span class="property-type">number</span></dt>
-      <dd>the global delay for your messages. If empty, default is 2000ms. (Minimum 200ms)</dd>
+      <dd>The global delay for your messages. If empty, default is 2000ms. (Minimum 200ms)</dd>
   </dl>
 
   <h3>References help</h3>

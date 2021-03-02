@@ -36,23 +36,23 @@ class VBMBot extends ActivityHandler {
   // Override the ActivityHandler.run() method to save state changes
   async run(context) {
     await super.run(context);
-    await this.conversationState.saveChanges(context, false);
+    if (this.conversationState) await this.conversationState.saveChanges(context, false);
   }
 
   // route the activity to the skill
   async sendToSkill(activity, targetSkill) {
     if (typeof activity === 'undefined') {
-      throw new Error(`[BotBuilder]: cannot find activity to send to skill`);
+      throw new Error(`[Botbuilder]: cannot find activity to send to skill`);
     }
     if (typeof targetSkill === 'undefined') {
-      throw new Error(`[BotBuilder]: cannot find skill to send activity`);
+      throw new Error(`[Botbuilder]: cannot find skill to send activity`);
     }
 
-    console.log(`[BotBuilder]: routing the activity to the skill via ${targetSkill.skillEndpoint}`);
+    console.log(`[Botbuilder]: routing the activity to the skill via ${targetSkill.skillEndpoint}`);
     const response = await this.skillClient.postToSkill(this.botId, targetSkill, this.skillsConfig.hostEndpoint, activity);
 
     if (!(response.status >= 200 && response.status <= 499)) {
-      throw new Error(`[BotBuilder]: cannot invoke skill with appId: "${targetSkill.appId}" \r\nat "${targetSkill.skillEndpoint}" \r\n(status is ${response.status}). \r\n ${response.body}`);
+      throw new Error(`[Botbuilder]: cannot invoke skill with appId: "${targetSkill.appId}" \r\nat "${targetSkill.skillEndpoint}" \r\n(status is ${response.status}). \r\n ${response.body}`);
     }
   }
 }
