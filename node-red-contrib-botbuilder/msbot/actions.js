@@ -171,10 +171,7 @@ async function receive(node, config = {}, context, bot) {
 
   let data = buildMessageFlow(context.activity);
 
-  data.botbuilder = {
-    bot,
-    activity: context.activity
-  };
+  data.botbuilder = bot;
 
   // Add context object to store the lifetime of the stream
   let convId = botmgr.getConvId(data);
