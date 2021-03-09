@@ -9,67 +9,84 @@ const helper = require("node-red-viseo-helper");
 const botmgr = require("node-red-viseo-bot-manager");
 
 let adapter;
-let bot;
 let skillEndpoint;
-let authConfig;
-let botbuilderConfig = {
-    appId: '',
-    appPassword: '',
-    authConfig
+let skillHandler;
+
+
+const getAuthConfig = (config, allowedSkills) => {
+  if (config.botType === 'rootBot' || config.botType === 'skillBot') {
+    const allowedCallersClaimsValidator = new AllowedCallersClaimsValidator(allowedSkills);
+
+    return new AuthenticationConfiguration([], (claims) => {
+      allowedCallersClaimsValidator.validateClaims(claims);
+    });
+  }
 };
-let ifRootBot = false;
 
+function createAdapter(config, authConfig) {
+  let adapter;
+  let botbuilderConfig;
 
-const getAuthConfig = (allowedSkills) => {
-  const allowedCallersClaimsValidator = new AllowedCallersClaimsValidator(allowedSkills);
+  if (config.botType === 'none' || config.botType === '') {
+    botbuilderConfig = {
+      appId: config.appId,
+      appPassword: config.appPassword,
+    };
+  } else {
+    botbuilderConfig = {
+      appId: config.appId,
+      appPassword: config.appPassword,
+      authConfig
+    };
+  }
+  adapter = new BotFrameworkAdapter(botbuilderConfig);
 
-  return new AuthenticationConfiguration([], (claims) => {
-    allowedCallersClaimsValidator.validateClaims(claims);
-  });
-};
+  return adapter;
+}
+
+function createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig) {
+  let bot;
+
+  // create a simple user-facing bot, neither root nor skill bot
+  if (config.botType === 'none' || config.botType === '') {
+    bot = new VBMBot(node, config.appId, config.startCmd);
+  } else {
+    // create a root or skill
+    const memoryStorage = new MemoryStorage();
+    const conversationState = new ConversationState(memoryStorage);
+    
+    if (ifRootBot) {
+      // create a root
+      const conversationIdFactory = new SkillConversationIdFactory();
+      const skillsConfig = new SkillsConfiguration(allowedCallers, config.skillHostEndpoint);
+      const credentialProvider = new SimpleCredentialProvider(config.appId, config.appPassword);
+      const skillClient = new SkillHttpClient(credentialProvider, conversationIdFactory);
+      bot = new VBMBot(node, config.appId, config.startCmd, sendWelcomeMessage, conversationState, skillsConfig, skillClient);
+
+      // Init skill endpoint associated
+      skillHandler = new SkillHandler(adapter, bot, conversationIdFactory, credentialProvider, authConfig);
+      skillEndpoint = new ChannelServiceRoutes(skillHandler);
+
+    } else {
+      // create a skill
+      bot = new VBMBot(node, config.appId, config.startCmd, null, conversationState);
+    }
+  }
+  return bot;
+}
+
 
 async function initConnector(config, node, allowedCallers) {
+  let authConfig;
+  let bot;
+
+  const ifRootBot = typeof config.rootAppId === 'undefined' || config.rootAppId === '';
+
   return new Promise( function (resolve, reject) {
-    // create a simple user-facing bot, neither root nor skill bot
-    if (config.botType === 'none' || config.botType === '') {
-      botbuilderConfig = {
-        appId: config.appId,
-        appPassword: config.appPassword,
-      };
-      adapter = new BotFrameworkAdapter(botbuilderConfig);
-      bot = new VBMBot(node, config.appId, config.startCmd);
-    } else {
-      // create a root or skill
-      const memoryStorage = new MemoryStorage();
-      const conversationState = new ConversationState(memoryStorage);
-      ifRootBot = typeof config.rootAppId === 'undefined' || config.rootAppId === '';
-      
-      // create bot framework adapter with bot config
-      authConfig = getAuthConfig(allowedCallers);
-      botbuilderConfig = {
-        appId: config.appId,
-        appPassword: config.appPassword,
-        authConfig
-      };
-      adapter = new BotFrameworkAdapter(botbuilderConfig);
-      
-      if (ifRootBot) {
-        // create a root
-        const conversationIdFactory = new SkillConversationIdFactory();
-        const skillsConfig = new SkillsConfiguration(allowedCallers, config.skillHostEndpoint);
-        const credentialProvider = new SimpleCredentialProvider(config.appId, config.appPassword);
-        const skillClient = new SkillHttpClient(credentialProvider, conversationIdFactory);
-        bot = new VBMBot(node, config.appId, config.startCmd, sendWelcomeMessage, conversationState, skillsConfig, skillClient);
-  
-        // Init skill endpoint associated
-        const skillHandler = new SkillHandler(adapter, bot, conversationIdFactory, credentialProvider, authConfig);
-        skillEndpoint = new ChannelServiceRoutes(skillHandler);
-  
-      } else {
-        // create a skill
-        bot = new VBMBot(node, config.appId, config.startCmd, null, conversationState);
-      }
-    }
+    // create adapter
+    authConfig = getAuthConfig(config, allowedCallers);
+    adapter = createAdapter(config, authConfig);
+    bot = createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig);
 
     // Handle turn error
     adapter.onTurnError = async (context, error) => {
@@ -121,6 +138,7 @@ async function initConnector(config, node, allowedCallers) {
     } else {
       resolve({ handleReceive, reply});
     }
+
   });
 }
 

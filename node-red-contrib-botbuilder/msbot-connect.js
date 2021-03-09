@@ -10,7 +10,6 @@ const MINIMUM_TYPING_DELAY = 200;
 let REPLY_HANDLER = {};
 let server;
 let allowedCallers = '';
-let ifBotStarted = false;
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -67,7 +66,7 @@ module.exports = function(RED) {
         try {
           allowedCallers = getAllowedCallers(node, data, config);
           start(node, config, RED);
-          node.status({ fill: "green", shape: "dot", text: "connected" });
+          
         } catch (error) {
           console.error(`[Botbuilder] register: ${error}`);
           return node.status({ fill: "red", shape: "dot", text: `${error}` });
@@ -100,33 +99,39 @@ async function start(node, config, RED) {
   }
   
   server = RED.httpNode;
+  
+  try {
+    let { handleReceive, reply, skillEndpoint } = await initConnector(config, node, allowedCallers);
 
-  let { handleReceive, reply, skillEndpoint } = await initConnector(config, node, allowedCallers);
+    server.get("/api/messages", (req, res, next) => {
+      res.send("Hello I'm a bot !");
+      return next();
+    });
 
-  server.get("/api/messages", (req, res, next) => {
-    res.send("Hello I'm a bot !");
-    return next();
-  });
+    // bot framework v4 messaing endpoint
+    server.post("/api/messages", (req, res) => {
+      handleReceive(req, res);
+    });
 
-  // bot framework v4 messaing endpoint
-  server.post("/api/messages", (req, res) => {
-    handleReceive(req, res);
-  });
+    // expose skill host endpoint
+    server.post("/api/skills/v3/conversations/:conversationId/activities/:activityId");
 
-  // expose skill host endpoint
-  server.post("/api/skills/v3/conversations/:conversationId/activities/:activityId");
+    // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler
+    if (typeof config.rootAppId === 'undefined' && skillEndpoint) {
+      skillEndpoint.register(server, '/api/skills');
+    }
 
-  // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler
-  if (typeof config.rootAppId === 'undefined' && skillEndpoint) {
-    skillEndpoint.register(server, '/api/skills');
+    REPLY_HANDLER[node.id] = (node, data, globalTypingDelay) => {
+      reply(node, data, globalTypingDelay);
+    };
+    helper.listenEvent("reply", REPLY_HANDLER[node.id]);
+
+    node.status({ fill: "green", shape: "dot", text: "connected" });
+  } catch (error) {
+    console.error(`[Botbuilder] start: ${error}`);
+    node.status({ fill: "red", shape: "dot", text: `${error}` });
+    throw error;
   }
-
-  REPLY_HANDLER[node.id] = (node, data, globalTypingDelay) => {
-    reply(node, data, globalTypingDelay);
-  };
-  helper.listenEvent("reply", REPLY_HANDLER[node.id]);
-
-  ifBotStarted = true;
 }
 
 // Stop server
