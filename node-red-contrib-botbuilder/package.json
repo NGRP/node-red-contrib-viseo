@@ -26,7 +26,8 @@
   ],
   "node-red": {
     "nodes": {
-      "msbot-connect": "msbot-connect.js"
+      "msbot-connect": "msbot-connect.js",
+      "send-message-to-skill": "send-message-to-skill.js"
     }
   }
 }

@@ -101,7 +101,8 @@ async function start(node, config, RED) {
   server = RED.httpNode;
   
   try {
-    let { handleReceive, reply, skillEndpoint } = await initConnector(config, node, allowedCallers);
+    let { handleReceive, reply, skillEndpoint, bot } = await initConnector(config, node, allowedCallers);
+    module.exports.botbuilder = bot;
 
     server.get("/api/messages", (req, res, next) => {
       res.send("Hello I'm a bot !");

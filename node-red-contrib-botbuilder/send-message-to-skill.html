@@ -1,0 +1,42 @@
+<script type="text/javascript">
+    RED.nodes.registerType('send-message-to-skill',{
+        category: "📻_channels",
+        color: "#8accff",
+        defaults: {
+            name: { value: "" },
+            skillId: { value: "" },
+            skillIdType: { value: "str" }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: "msbot.png",
+        align: "left",
+        paletteLabel: "Bot-to-bot Message",
+        label: function() {
+            return this.name || "send-message-to-skill";
+        },
+        oneditprepare: function () {
+            $("#node-input-skillId").typedInput({
+                default: 'str',
+                types: ['msg','global','str'],
+                typeField: $("#node-input-skillIdType")
+            });
+        },
+        oneditsave: function () {}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="send-message-to-skill">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+    <br>
+    <b>Microsoft Bot Builder settings </b>
+    <br>
+    <div class="form-row">
+        <label for="node-input-skillId"><i class="fa fa-pencil-square-o"></i> Skill ID(*)</label>
+        <input type="text" id="node-input-skillId" style="width:70%;" placeholder="Skill ID">
+        <input type="hidden" id="node-input-skillIdType">
+    </div>
+</script>

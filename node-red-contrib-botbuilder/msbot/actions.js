@@ -12,7 +12,6 @@ let adapter;
 let skillEndpoint;
 let skillHandler;
 
-
 const getAuthConfig = (config, allowedSkills) => {
   if (config.botType === 'rootBot' || config.botType === 'skillBot') {
     const allowedCallersClaimsValidator = new AllowedCallersClaimsValidator(allowedSkills);
@@ -134,9 +133,9 @@ async function initConnector(config, node, allowedCallers) {
     }
 
     if (ifRootBot) {
-      resolve({ handleReceive, reply, skillEndpoint});
+      resolve({ handleReceive, reply, skillEndpoint, bot });
     } else {
-      resolve({ handleReceive, reply});
+      resolve({ handleReceive, reply, bot });
     }
 
   });
