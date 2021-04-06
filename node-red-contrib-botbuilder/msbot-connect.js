@@ -118,7 +118,7 @@ async function start(node, config, RED) {
     server.post("/api/skills/v3/conversations/:conversationId/activities/:activityId");
 
     // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler
-    if (typeof config.botType === 'rootBot' && skillEndpoint) {
+    if (config.botType === 'rootBot' && skillEndpoint) {
       skillEndpoint.register(server, '/api/skills');
     }
 

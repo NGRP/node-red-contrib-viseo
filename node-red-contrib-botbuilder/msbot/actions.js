@@ -79,7 +79,7 @@ async function initConnector(config, node, allowedCallers) {
   let authConfig;
   let bot;
 
-  const ifRootBot = typeof config.botType === 'rootBot';
+  const ifRootBot = config.botType === 'rootBot';
 
   return new Promise( function (resolve, reject) {
     // create adapter
