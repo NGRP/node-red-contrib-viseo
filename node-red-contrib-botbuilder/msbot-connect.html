@@ -8,7 +8,6 @@
       startCmd: { value: undefined },
       botType: { value: 'none'},
       startDelayedbyInput: { value: false },
-      rootAppId: { value: undefined },
       skillHostEndpoint: { value: undefined },
       allowedCallers: { value: undefined },
       allowedCallersFromInput: { value: undefined },
@@ -35,11 +34,6 @@
         type: "str"
       });
       $("#node-input-appPassword").typedInput({
-        default: "str",
-        types: ["str"],
-        type: "str"
-      });
-      $("#node-input-rootAppId").typedInput({
         default: "str",
         types: ["str"],
         type: "str"
@@ -90,7 +84,6 @@
         const type = $(this).val();
         $('.section-' + type).removeClass('hide');
         if (type === 'rootBot') {
-          $('.section-skillBot').addClass('hide');
           $('.section-startDelayedbyInput').removeClass('hide');
           builderAllowedCallers();
         } else if (type === 'skillBot') {
@@ -103,9 +96,6 @@
 
           $('.section-rootBot').addClass('hide');
           $('#node-input-skillHostEndpoint').val(undefined);
-          
-          $('.section-skillBot').addClass('hide');
-          $('#node-input-rootAppId').val(undefined);
 
           $('.section-allowedCallers').addClass('hide');
           $('#node-input-allowedCallersFromInput').val(undefined);
@@ -236,12 +226,6 @@
     <div class="form-row">
       <label for="node-input-skillHostEndpoint"><i class="fa fa-globe"></i> Skill host endpoint(*)</label>
       <input type="text" id="node-input-skillHostEndpoint" style="width:70%;">
-    </div>
-  </section>
-  <section class="section-skillBot hide">
-    <div class="form-row">
-      <label for="node-input-rootAppId"><i class="fa fa-id-badge"></i> Root AppId(*)</label>
-      <input type="text" id="node-input-rootAppId" style="width:70%;">
     </div>
   </section>
 
