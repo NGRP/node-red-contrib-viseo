@@ -82,6 +82,18 @@ async function initConnector(config, node, allowedCallers) {
   const ifRootBot = config.botType === 'rootBot';
 
   return new Promise( function (resolve, reject) {
+    if (config.appID === '') {
+      reject(new Error("[Botbuilder] Missing App ID!"));
+    }
+
+    if (config.appPassword === '') {
+      reject(new Error("[Botbuilder] Missing App pass!"));
+    }
+
+    if (allowedCallers === '') {
+      reject(new Error("[Botbuilder] Missing allowedCallers!"));
+    }
+
     // create adapter
     authConfig = getAuthConfig(config, allowedCallers);
     adapter = createAdapter(config, authConfig);

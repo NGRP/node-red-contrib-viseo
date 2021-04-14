@@ -297,7 +297,7 @@
       <dd>The skill host endpoint of root bot, for receiving activities from a skill</dd>
       <dt>Allowed callers <span class="property-type">json</span></dt>
       <dd>
-        <p>Authentication configuration json containing skills, from which a bot can accept activities. </p>
+        <p>A set of caller bots, from which a bot can accept activities. </p>
         <p>If you don't provide this claims validator, your bot will generate an error or exception 
         <code>'Unauthorized Access. Request is not authorized. Skill Claims require validation.'</code> upon 
         receiving an activity from another bot, whether your bot is a skill or a root.</p>
