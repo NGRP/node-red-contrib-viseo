@@ -57,7 +57,7 @@ function createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig)
     if (ifRootBot) {
       // create a root
       const conversationIdFactory = new SkillConversationIdFactory();
-      const skillsConfig = new SkillsConfiguration(allowedCallers, config.skillHostEndpoint);
+      const skillsConfig = new SkillsConfiguration(allowedCallers, `${global.CONFIG.server.host}/api/skills`);
       const credentialProvider = new SimpleCredentialProvider(config.appId, config.appPassword);
       const skillClient = new SkillHttpClient(credentialProvider, conversationIdFactory);
       bot = new VBMBot(node, config.appId, config.startCmd, sendWelcomeMessage, conversationState, skillsConfig, skillClient);
