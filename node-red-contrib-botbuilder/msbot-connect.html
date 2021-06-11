@@ -1,13 +1,13 @@
 <script type="text/javascript">
   RED.nodes.registerType("bot", {
-    category: "📻_channels",  
+    category: "📻_channels",
     color: "#8accff",
     defaults: {
       name: { value: undefined },
       delay: { value: undefined },
       startCmd: { value: undefined },
       botType: { value: 'none'},
-      startDelayedbyInput: { value: false },
+      startDelayedByInput: { value: false },
       allowedCallers: { value: undefined },
       allowedCallersFromInput: { value: undefined },
       allowedCallersType: { value: undefined }
@@ -59,7 +59,7 @@
 
       function builderAllowedCallers() {
         $('.section-allowedCallers').removeClass('hide');
-        const ifDelay = $('#node-input-startDelayedbyInput').is(':checked');
+        const ifDelay = $('#node-input-startDelayedByInput').is(':checked');
         if (ifDelay) { // require input
           $('.section-fromInput').removeClass('hide');
           $('.section-enterManually').addClass('hide');
@@ -77,11 +77,11 @@
       $('#node-input-botType').change(function (event) {
         const type = $(this).val();
         if (type === 'rootBot' || type === 'skillBot') {
-          $('.section-startDelayedbyInput').removeClass('hide');
+          $('.section-startDelayedByInput').removeClass('hide');
           builderAllowedCallers();
         } else {
-          $('.section-startDelayedbyInput').addClass('hide');
-          $('#node-input-startDelayedbyInput').prop('checked', false);
+          $('.section-startDelayedByInput').addClass('hide');
+          $('#node-input-startDelayedByInput').prop('checked', false);
 
           $('.section-allowedCallers').addClass('hide');
           $('#node-input-allowedCallersFromInput').val(undefined);
@@ -89,7 +89,7 @@
         }
       });
 
-      $('#node-input-startDelayedbyInput').change(function (event) {
+      $('#node-input-startDelayedByInput').change(function (event) {
         const botType = $('#node-input-botType').val();
         if (botType !== 'none') {
           builderAllowedCallers();
@@ -134,7 +134,7 @@
       }
     },
     oneditsave: function() {
-      const ifDelay = $('#node-input-startDelayedbyInput').is(':checked');
+      const ifDelay = $('#node-input-startDelayedByInput').is(':checked');
       const botType = $('#node-input-botType').val();
       if (botType === 'none') {
         this.allowedCallers = undefined;
@@ -200,9 +200,9 @@
       </select>
   </div>
 
-  <section class="section-startDelayedbyInput hide">
+  <section class="section-startDelayedByInput hide">
     <div class="form-row">
-      <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-startDelayedbyInput">
+      <input type="checkbox" style="width: auto; vertical-align:top;" id="node-input-startDelayedByInput">
       <span>Require an input to start bot</span>
     </div>
     <br>

@@ -13,9 +13,9 @@ module.exports = function exportSendMessageToBot(RED) {
 
         node.on('input', (data) => {
             // Set active skill
-            const skillId = helper.getContextValue(RED, node, data, config.skillId, config.skillIdType || 'str');
+            const skillName = helper.getContextValue(RED, node, data, config.skillName, config.skillIdType || 'str');
             const botbuilder = require('./msbot-connect.js').botbuilder;
-            const skill = botbuilder.skillsConfig.skills[skillId];
+            const skill = botbuilder.skillsConfig.skills[skillName];
             // Send the activity to the skill
             botbuilder.sendToSkill(data, skill)
                 .then(() => {

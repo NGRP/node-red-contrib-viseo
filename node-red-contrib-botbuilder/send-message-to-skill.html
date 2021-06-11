@@ -4,7 +4,7 @@
         color: "#8accff",
         defaults: {
             name: { value: "" },
-            skillId: { value: "" },
+            skillName: { value: "" },
             skillIdType: { value: "str" }
         },
         inputs: 1,
@@ -16,7 +16,7 @@
             return this.name || "send-message-to-skill";
         },
         oneditprepare: function () {
-            $("#node-input-skillId").typedInput({
+            $("#node-input-skillName").typedInput({
                 default: 'str',
                 types: ['msg','global','str'],
                 typeField: $("#node-input-skillIdType")
@@ -35,8 +35,8 @@
     <b>Microsoft Bot Builder settings </b>
     <br>
     <div class="form-row">
-        <label for="node-input-skillId"><i class="fa fa-pencil-square-o"></i> Skill ID(*)</label>
-        <input type="text" id="node-input-skillId" style="width:70%;" placeholder="Skill ID">
+        <label for="node-input-skillName"><i class="fa fa-pencil-square-o"></i> Skill name(*)</label>
+        <input type="text" id="node-input-skillName" style="width:70%;" placeholder="Skill name">
         <input type="hidden" id="node-input-skillIdType">
     </div>
 </script>
@@ -47,7 +47,7 @@
     <h3>Properties</h3>
     <dl class="message-properties">
         <dt>Skill Name <span class="property-type">string</span></dt>
-        <dd>The name of the skill bot, which the root bot sends activities to. 
+        <dd>The name of the skill bot, which the root bot sends activities to.
             Note: Not the App ID of the skill bot, but the name. It should correpond to one of the skill names defined in the Allowed Callers of the Bot builder.
         </dd>
     </dl>

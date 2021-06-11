@@ -60,7 +60,7 @@ module.exports = function(RED) {
     config.appPassword = node.credentials.appPassword;
 
     // require an input to start bot
-    const startDelayed = config.startDelayedbyInput;
+    const startDelayed = config.startDelayedByInput;
     if (startDelayed) {
       this.on("input", (data) => {
         try {
@@ -116,8 +116,6 @@ async function start(node, config, RED) {
 
     // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler (skill host endpoint)
     if (config.botType === 'rootBot' && skillEndpoint) {
-      // expose skill host endpoint
-      server.post("/api/skills/v3/conversations/:conversationId/activities/:activityId");
       skillEndpoint.register(server, '/api/skills');
     }
 
