@@ -24,19 +24,13 @@ const getAuthConfig = (config, allowedSkills) => {
 
 function createAdapter(config, authConfig) {
   let adapter;
-  let botbuilderConfig;
+  const botbuilderConfig = {
+    appId: config.appId,
+    appPassword: config.appPassword,
+  };
 
-  if (config.botType === 'none' || config.botType === '') {
-    botbuilderConfig = {
-      appId: config.appId,
-      appPassword: config.appPassword,
-    };
-  } else {
-    botbuilderConfig = {
-      appId: config.appId,
-      appPassword: config.appPassword,
-      authConfig
-    };
+  if (config.botType !== 'none' && config.botType !== '') {
+    botbuilderConfig.authConfig = authConfig;
   }
   adapter = new BotFrameworkAdapter(botbuilderConfig);
 
@@ -48,12 +42,12 @@ function createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig)
 
   // create a simple user-facing bot, neither root nor skill bot
   if (config.botType === 'none' || config.botType === '') {
-    bot = new VBMBot(node, config.appId, config.startCmd);
+    bot = new VBMBot(node, config.appId, config.startCmd, sendWelcomeMessage);
   } else {
     // create a root or skill
     const memoryStorage = new MemoryStorage();
     const conversationState = new ConversationState(memoryStorage);
-    
+
     if (ifRootBot) {
       // create a root
       const conversationIdFactory = new SkillConversationIdFactory();
@@ -90,7 +84,8 @@ async function initConnector(config, node, allowedCallers) {
       reject(new Error("[Botbuilder] Missing App pass!"));
     }
 
-    if (allowedCallers === '') {
+    // Verify allowedCallers only if bot type !== none
+    if (config.botType !== 'none' && config.botType !== '' && allowedCallers === '') {
       reject(new Error("[Botbuilder] Missing allowedCallers!"));
     }
 

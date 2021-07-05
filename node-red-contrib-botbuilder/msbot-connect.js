@@ -8,7 +8,6 @@ const DEFAULT_TYPING_DELAY = 2000;
 const MINIMUM_TYPING_DELAY = 200;
 
 let REPLY_HANDLER = {};
-let server;
 let allowedCallers = '';
 
 // --------------------------------------------------------------------------
@@ -47,7 +46,7 @@ module.exports = function(RED) {
   const register = function(config) {
     RED.nodes.createNode(this, config);
     var node = this;
-    node.status({});
+    node.status({}); // Re-init node status after occuring any error
 
     let globalTypingDelay = DEFAULT_TYPING_DELAY;
     if (config.delay) {
@@ -66,7 +65,7 @@ module.exports = function(RED) {
         try {
           allowedCallers = getAllowedCallers(node, data, config);
           start(node, config, RED);
-          
+
         } catch (error) {
           console.error(`[Botbuilder] register: ${error}`);
           return node.status({ fill: "red", shape: "dot", text: `${error}` });
@@ -98,7 +97,7 @@ async function start(node, config, RED) {
     helper.removeListener("reply", REPLY_HANDLER[node.id]);
   }
   
-  server = RED.httpNode;
+  const server = RED.httpNode;
   
   try {
     let { handleReceive, reply, skillEndpoint, bot } = await initConnector(config, node, allowedCallers);
@@ -109,7 +108,7 @@ async function start(node, config, RED) {
       return next();
     });
 
-    // bot framework v4 messaing endpoint
+    // bot framework v4 messaging endpoint
     server.post("/api/messages", (req, res) => {
       handleReceive(req, res);
     });
