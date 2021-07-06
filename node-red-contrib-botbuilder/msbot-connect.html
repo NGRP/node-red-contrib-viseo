@@ -4,6 +4,7 @@
     color: "#8accff",
     defaults: {
       name: { value: undefined },
+      inputs: { value: 0 },
       delay: { value: undefined },
       startCmd: { value: undefined },
       botType: { value: 'none'},
@@ -16,7 +17,7 @@
       appId: { type: "text" },
       appPassword: { type: "text" }
     },
-    inputs: 1,
+    inputs: 0,
     outputs: 2,
     icon: "azure.png",
     align: "left",
@@ -94,6 +95,13 @@
         if (botType !== 'none') {
           builderAllowedCallers();
         }
+        // Control the number of inputs by checkbox 'Require an input to start bot'
+        const ifDelay = $('#node-input-startDelayedByInput').is(':checked');
+        if (ifDelay) {
+          $('#node-input-inputs').val(1);
+        } else {
+          $('#node-input-inputs').val(0);
+        }
       });
 
       function addAllowedCallers(row, index, data) {
@@ -119,7 +127,7 @@
         sortable: true,
         removable: true
       });
-      
+
       // allowedCallers of type ordered list
       if (typeof this.allowedCallers === 'object') {
         for (let i = 0; i < Object.keys(this.allowedCallers).length; i++) {
@@ -154,7 +162,7 @@
             }
         });
         this.allowedCallers = Object.keys(callers).length === 0 ? undefined : callers;
-        
+
         } else {
           const allowedCallersFromInput = $('#node-input-allowedCallersFromInput').val();
           this.allowedCallers = allowedCallersFromInput;
@@ -171,6 +179,10 @@
   <div class="form-row">
       <label for="node-input-name"><i class="icon-tag"></i> Name</label>
       <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row hide">
+    <label for="node-input-inputs"><i class="fa fa-random"></i> Inputs</label>
+    <input id="node-input-inputs" style="width: 60px; height: 1.7em;" value=0>
   </div>
 
   <br>
@@ -222,7 +234,7 @@
       </section>
     </div>
   </section>
-  
+
   <br>
   <b>Global message settings </b>
   <div class="form-row">
@@ -234,6 +246,9 @@
 
 <script type="text/x-red" data-help-name="bot">
   <p>[<b>Bot server</b>] Connects to a Microsoft Bot Channel Registration (Bot builder). </p>
+
+  <h3>Inputs</h3>
+  <p>This node has one input if the checkbox <code>'Require an input to start bot'</code> gets checked. Otherwise, it has no input when the option unchecked.</p>
 
   <h3>Outputs</h3>
   <dl class="message-properties">
@@ -273,13 +288,13 @@
       <dt>Allowed callers <span class="property-type">json</span></dt>
       <dd>
         <p>A set of caller bots, from which a bot can accept activities. </p>
-        <p>If you don't provide this claims validator, your bot will generate an error or exception 
-        <code>'Unauthorized Access. Request is not authorized. Skill Claims require validation.'</code> upon 
+        <p>If you don't provide this claims validator, your bot will generate an error or exception
+        <code>'Unauthorized Access. Request is not authorized. Skill Claims require validation.'</code> upon
         receiving an activity from another bot, whether your bot is a skill or a root.</p>
         <p>For example,
         skill1 and skill2 are authorized to send activities to your bot with the following json:
         </p>
-        <pre type="javascript" style="width:400px"> 
+        <pre type="javascript" style="width:400px">
   {
     "skill1": {
         "appId": "some AppId",
@@ -289,7 +304,7 @@
         "appId": "some AppId",
         "skillEndpoint": "some skill endpoint"
     }
-  }    
+  }
         </pre>
       </dd>
       <dt>Delay<span class="property-type">number</span></dt>
