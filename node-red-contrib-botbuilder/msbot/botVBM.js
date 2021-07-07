@@ -48,7 +48,6 @@ class VBMBot extends ActivityHandler {
       throw new Error(`[Botbuilder]: cannot find skill to send activity`);
     }
 
-    console.log(`[Botbuilder]: routing the activity to the skill via ${targetSkill.skillEndpoint}`);
     const response = await this.skillClient.postToSkill(this.botId, targetSkill, this.skillsConfig.hostEndpoint, activity);
 
     if (!(response.status >= 200 && response.status <= 499)) {
