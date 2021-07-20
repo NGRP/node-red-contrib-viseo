@@ -160,7 +160,7 @@ const buildReply = (RED, node, data, config) => {
     let reply = {
         "type"      : config.sendType,
         "prompt"    : config.prompt,
-        "receipt"   : data._receipt,
+        "receipt"   : data.message.recipient,
         "notification": data.notification
     };
 

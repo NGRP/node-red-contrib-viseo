@@ -7,14 +7,46 @@ const { initConnector } = require("./msbot/actions.js");
 const DEFAULT_TYPING_DELAY = 2000;
 const MINIMUM_TYPING_DELAY = 200;
 
+let REPLY_HANDLER = {};
+let allowedCallers = '';
+
 // --------------------------------------------------------------------------
 //  NODE-RED
 // --------------------------------------------------------------------------
+const getAllowedCallers = (node, data, config) => {
+  let result = '';
+  const bType = config.botType;
+  const ac = config.allowedCallers;
+  const acType = config.allowedCallersType;
 
+  if (bType === 'rootBot' || bType === 'skillBot') {
+    if (acType === '' || ac === '') {
+      throw new Error('[BotBuilder]  Param allowedCallers missing');
+    }
+
+    switch (acType) {
+      case 'msg':
+        result = data[ac];
+        break;
+      case 'global':
+        result = node.context().global.get(ac);
+        break;
+      case 'json':
+        result = JSON.parse(ac);
+        break;
+      case 'flow':
+        result = node.context().flow.get(ac);
+        break;
+    }
+  }
+  return result;
+};
+ 
 module.exports = function(RED) {
   const register = function(config) {
     RED.nodes.createNode(this, config);
     var node = this;
+    node.status({}); // Re-init node status after occuring any error
 
     let globalTypingDelay = DEFAULT_TYPING_DELAY;
     if (config.delay) {
@@ -23,15 +55,32 @@ module.exports = function(RED) {
       if (globalTypingDelay < MINIMUM_TYPING_DELAY)
         globalTypingDelay = MINIMUM_TYPING_DELAY;
     }
-
     config.appId = node.credentials.appId;
     config.appPassword = node.credentials.appPassword;
 
-    start(node, config, RED);
+    // require an input to start bot
+    const startDelayed = config.startDelayedByInput;
+    if (startDelayed) {
+      this.on("input", (data) => {
+        try {
+          allowedCallers = getAllowedCallers(node, data, config);
+          start(node, config, RED);
+
+        } catch (error) {
+          console.error(`[Botbuilder] register: ${error}`);
+          return node.status({ fill: "red", shape: "dot", text: `${error}` });
+        }
+      });
+    } else {
+      allowedCallers = config.allowedCallers;
+      start(node, config, RED);
+    }
+
     this.on("close", done => {
       stop(node, done);
     });
   };
+
   RED.nodes.registerType("bot", register, {
     credentials: {
       appId: { type: "text" },
@@ -43,35 +92,43 @@ module.exports = function(RED) {
 // ------------------------------------------
 // SERVER
 // ------------------------------------------
-
-let REPLY_HANDLER = {};
-let server;
-
 async function start(node, config, RED) {
-
   if (REPLY_HANDLER[node.id]) {
     helper.removeListener("reply", REPLY_HANDLER[node.id]);
   }
   
-  server = RED.httpNode;
-
-  let { handleReceive, reply } = await initConnector(config, node, config.startCmd)
-
-  server.get("/server-botbuilder", (req, res, next) => {
-    res.send("Hello I'm a Bot !");
-    return next();
-  });
-
-  server.post("/server-botbuilder", (req, res) => {
-    handleReceive(req, res);
-  });
+  const server = RED.httpNode;
   
-  node.status({ fill: "green", shape: "dot", text: "connected" });
+  try {
+    let { handleReceive, reply, skillEndpoint, bot } = await initConnector(config, node, allowedCallers);
+    module.exports.botbuilder = bot;
 
-  REPLY_HANDLER[node.id] = (node, data, globalTypingDelay) => {
-    reply(node, data, globalTypingDelay);
-  };
-  helper.listenEvent("reply", REPLY_HANDLER[node.id]);
+    server.get("/api/messages", (req, res, next) => {
+      res.send("Hello I'm a bot !");
+      return next();
+    });
+
+    // bot framework v4 messaging endpoint
+    server.post("/api/messages", (req, res) => {
+      handleReceive(req, res);
+    });
+
+    // The bot defines an endpoint that forwards incoming skill activities to the root bot's skill handler (skill host endpoint)
+    if (config.botType === 'rootBot' && skillEndpoint) {
+      skillEndpoint.register(server, '/api/skills');
+    }
+
+    REPLY_HANDLER[node.id] = (node, data, globalTypingDelay) => {
+      reply(node, data, globalTypingDelay);
+    };
+    helper.listenEvent("reply", REPLY_HANDLER[node.id]);
+
+    node.status({ fill: "green", shape: "dot", text: "connected" });
+  } catch (error) {
+    console.error(`[Botbuilder] start: ${error}`);
+    node.status({ fill: "red", shape: "dot", text: `${error}` });
+    throw error;
+  }
 }
 
 // Stop server

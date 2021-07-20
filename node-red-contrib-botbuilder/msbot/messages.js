@@ -48,6 +48,8 @@ function getMessage(node, address, replies, globalTypingDelay, isPush) {
 
   messages.push(activity);
   if (expectedInput) activity.inputHint = "expectingInput";
+  else activity.inputHint = "acceptingInput";
+  
   return messages;
 }
 
@@ -135,7 +137,11 @@ function buildRawMessage(node, opts, address, isPush) {
   /* ---------------------------------------------------------- */
 
   let msg = {};
-  if (opts.prompt) msg.inputHint = "expectingInput";
+  if (opts.prompt) {
+    msg.inputHint = "expectingInput";
+  } else {
+    msg.inputHint = "acceptingInput";
+  }
 
   if (address.channelId === "facebook") {
     msg.data = {};

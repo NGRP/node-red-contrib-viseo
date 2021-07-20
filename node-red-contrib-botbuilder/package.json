@@ -1,10 +1,10 @@
 {
   "name": "node-red-contrib-viseo-botbuilder",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.6",
   "description": "VISEO Bot Maker - Microsoft BotBuilder and tools",
   "dependencies": {
-    "botbuilder": "^4.0.0",
-    "botbuilder-dialogs": "^4.0.0",
+    "botbuilder": "^4.13.0",
+    "botbuilder-dialogs": "^4.13.0",
     "node-red-viseo-helper": "~0.3.0",
     "node-red-viseo-bot-manager": "~0.1.0"
   },
@@ -26,7 +26,8 @@
   ],
   "node-red": {
     "nodes": {
-      "msbot-connect": "msbot-connect.js"
+      "msbot-connect": "msbot-connect.js",
+      "send-message-to-skill": "send-message-to-skill.js"
     }
   }
 }

@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    RED.nodes.registerType('send-message-to-skill',{
+        category: "📻_channels",
+        color: "#8accff",
+        defaults: {
+            name: { value: "" },
+            skillName: { value: "" },
+            skillIdType: { value: "str" }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: "msbot.png",
+        align: "left",
+        paletteLabel: "Bot-to-bot Message",
+        label: function() {
+            return this.name || "send-message-to-skill";
+        },
+        oneditprepare: function () {
+            $("#node-input-skillName").typedInput({
+                default: 'str',
+                types: ['msg','global','str'],
+                typeField: $("#node-input-skillIdType")
+            });
+        },
+        oneditsave: function () {}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="send-message-to-skill">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" style="width:70%;" placeholder="Name">
+    </div>
+    <br>
+    <b>Microsoft Bot Builder settings </b>
+    <br>
+    <div class="form-row">
+        <label for="node-input-skillName"><i class="fa fa-pencil-square-o"></i> Skill name(*)</label>
+        <input type="text" id="node-input-skillName" style="width:70%;" placeholder="Skill name">
+        <input type="hidden" id="node-input-skillIdType">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="send-message-to-skill">
+    <p>Route activities from root to skill bot according to the given skill ID</p>
+
+    <h3>Properties</h3>
+    <dl class="message-properties">
+        <dt>Skill Name <span class="property-type">string</span></dt>
+        <dd>The name of the skill bot, which the root bot sends activities to.
+            Note: Not the App ID of the skill bot, but the name. It should correpond to one of the skill names defined in the Allowed Callers of the Bot builder.
+        </dd>
+    </dl>
+
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt>msg <span class="property-type">object</span></dt>
+        <dd>the message to send</dd>
+    </dl>
+
+    <h3>Outputs 1</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string</span></dt>
+        <dd>the user input</dd>
+        <dt>user <span class="property-type">object</span></dt>
+        <dd>the user information</dd>
+        <dt>message <span class="property-type">object</span></dt>
+        <dd>the complete conversation information</dd>
+    </dl>
+
+    <h3>Outputs 2</h3>
+    <dl class="message-properties">
+        <dt>error <span class="property-type">object</span></dt>
+        <dd>the error</dd>
+    </dl>
+</script>
