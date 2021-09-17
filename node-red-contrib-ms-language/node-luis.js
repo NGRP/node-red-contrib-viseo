@@ -1,7 +1,64 @@
 const request =    require('request-promise');
 const helper     = require('node-red-viseo-helper');
 
+const extractEntities = (prediction) => {
+    const entities = [];
+    const compositeEntities = [];
+
+    Object.values(prediction.entities.$instance)
+    .reduce((result, entity) => result.concat(...entity), []) // flat entity array
+    .forEach(entity => {
+        if (!entity) return;
+        if (entity.modelType === 'Composite Entity Extractor') {
+            compositeEntities.push({
+                parentType: entity.type,
+                value: entity.text,
+                children: []
+            });
+            Object.values(prediction.entities[entity.type][0].$instance).forEach(child => {
+                compositeEntities[compositeEntities.length - 1].children.push({
+                  type: child[0].type,
+                  value: child[0].text
+                });
+                entities.push({
+                  type: child[0].type,
+                  entity: child[0].text,
+                  startIndex: child[0].startIndex,
+                  endIndex: child[0].startIndex + child[0].length,
+                  score: entity.score
+                })
+              });
+        } else {
+            entities.push({
+                type: entity.type,
+                entity: entity.text,
+                startIndex: entity.startIndex,
+                endIndex: entity.startIndex + entity.length, // add end index
+                resolution: {
+                  values: response.prediction.entities[entity.type.replace('builtin.', '')].reduce((result, e) => {
+                    if (Array.isArray(e)) {
+                      return result.concat(...e);
+                    }
+                    result.push(e);
+                    return result;
+                  }, [])
+                }
+            });
+        }
+    });
+
+    return {
+        entities,
+        compositeEntities
+    };
+};
+
 const asyncGetPrediction = async function(node, text) {
+    let entityObject = {
+        entities: [],
+        compositeEntities: []
+    };
+
     const response = await request({
         uri: `${node.endpoint}${encodeURIComponent(text)}`,
         method: 'GET',
@@ -12,20 +69,17 @@ const asyncGetPrediction = async function(node, text) {
         json: true
     });
 
-    const entities = Object.values(response.prediction.entities.$instance)
-        .reduce((result, entity) => result.concat(...entity), []) // flat entity array
-        .map(entity => {
-            return {
-                ...entity,
-                resolutionValues: response.prediction.entities[entity.type].reduce((result, entity) => result.concat(...entity), []) // add resolution values
-            }
-        })
+    // Merge additional metadate in the $instance object to entities
+    if (response.prediction.entities.$instance) {
+        entityObject = extractEntities(response.prediction);
+    }
 
     return {
         query: response.query,
         alteredQuery: response.prediction.alteredQuery,
         intents: response.prediction.intents,
-        entities,
+        entities: entityObject.entities,
+        compositeEntities: entityObject.compositeEntities,
         topScoringIntent: {
             intent: response.prediction.topIntent,
             score: response.prediction.intents[response.prediction.topIntent].score
