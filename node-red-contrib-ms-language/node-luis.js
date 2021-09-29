@@ -136,7 +136,7 @@ module.exports = function(RED) {
         if (this.endpoint) node.status({});
         this.on('input', (data)  => {
             try {
-                await input(RED, node, data, config);
+                input(RED, node, data, config);
             } catch (error) {
                 console.error(error);
                 node.error({ message: error.message, source: 'ms-luis' });
