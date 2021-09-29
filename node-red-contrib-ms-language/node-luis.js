@@ -35,8 +35,11 @@ const extractEntities = (prediction) => {
                     type: entity.type,
                     entity: entity.text,
                     startIndex: entity.startIndex,
-                    endIndex: entity.startIndex + entity.length, // add end index
-                    resolution: {
+                    endIndex: entity.startIndex + entity.length -1, // add end index
+                    resolution: { // to store the source words of recognition
+                      /* Why replace 'builtin' with ''?
+                      ** Because the type of number entities is not consistent: 'builtin.number' in the object $instance, but 'number' in the prediction.entities
+                      */
                       values: prediction.entities[entity.type.replace('builtin.', '')].reduce((result, e) => {
                         if (Array.isArray(e)) {
                           return result.concat(...e);
