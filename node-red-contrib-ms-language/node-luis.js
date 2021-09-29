@@ -57,9 +57,11 @@ const extractEntities = (prediction) => {
 };
 
 const getPrediction = async function(node, text) {
-    const headers = {
-        'Ocp-Apim-Subscription-Key': node.subKey
-    };
+    const headers = {};
+    // check if subscription key exists cause in "endpoint" mode, this value is provided in the query params
+    if (node.subKey) {
+        headers['Ocp-Apim-Subscription-Key'] = node.subKey;
+    }
     if (node.spellCheckKey) {
         headers['mkt-bing-spell-check-key'] = node.spellCheckKey;
     }
