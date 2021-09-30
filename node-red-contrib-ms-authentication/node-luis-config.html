@@ -11,7 +11,8 @@
         credentials: {
             appId:        { type: "text" },
             subKey:       { type: "text" },
-            endpoint:     { type: "text" }
+            endpoint:     { type: "text" },
+            spellCheckKey: { type: "text" }
         },
         oneditprepare: function() {
             if (!this.way) this.way = "key";
@@ -19,9 +20,9 @@
             $("#node-config-input-appId").typedInput({ default: 'str', types: ['str'], type: 'str'});
             $("#node-config-input-subKey").typedInput({ default: 'str', types: ['str'], type: 'str'});
             $("#node-config-input-endpoint").typedInput({ default: 'str', types: ['str'], type: 'str'});
-
             $("#node-config-input-verbose").typedInput({ default: 'bool', types: ['bool'], type: 'bool'});
             $("#node-config-input-staging").typedInput({ default: 'bool', types: ['bool'], type: 'bool'});
+            $("#node-config-input-spellCheckKey").typedInput({ default: 'str', types: ['str'], type: 'str'});
 
             $("#node-config-input-way").change(function() {
                 $(".key, .endpoint").hide();
@@ -35,7 +36,6 @@
                 }
                 else {
                     $(".endpoint").show();
-                    $("#node-config-input-endpoint").typedInput('show');
                 }
             })
         },
@@ -81,10 +81,13 @@
         <label for="node-config-input-staging"><i class="fa fa-lock"></i> Staging</label>
         <input type="text" id="node-config-input-staging" style="width:70%;" placeholder="">
     </div>
-
     <div class="form-row endpoint">
         <label for="node-config-input-endpoint"><i class="fa fa-globe"></i> Endpoint</label>
-        <input type="text" id="node-config-input-endpoint" style="width:70%;" placeholder="https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/{app}?subscription-key={key}&verbose=true&timezoneOffset=0&q=">
+        <input type="text" id="node-config-input-endpoint" style="width:70%;" placeholder="https://{your-resource-name}.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/{appId}/slots/{slotName}/predict?subscription-key={key}&query={query}[&verbose][&log][&show-all-intents]">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-spellCheckKey"><i class="fa fa-lock"></i> Spell check key</label>
+        <input type="text" id="node-config-input-spellCheckKey" style="width:70%;" placeholder="">
     </div>
 
 </script>

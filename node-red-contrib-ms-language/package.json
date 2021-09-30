@@ -1,12 +1,12 @@
 {
     "name"          : "node-red-contrib-viseo-ms-language",
-    "version"       : "0.1.0",
+    "version"       : "0.2.0",
     "description"   : "VISEO Bot Maker - Microsoft Cognitive Services Language",
     "dependencies"  : {
-        "node-red-contrib-viseo-ms-authentication" : "~0.0.0",
+        "node-red-contrib-viseo-ms-authentication" : "~0.1.0",
         "node-red-viseo-helper" : "~0.3.0",
-		"request"   : "^2.34.0",
-        "request-promise" : "^4.2.4",
+		"request"   : "^2.88.2",
+        "request-promise" : "^4.2.6",
         "html-entities": "^1.2.1"
     },
     "repository" : {

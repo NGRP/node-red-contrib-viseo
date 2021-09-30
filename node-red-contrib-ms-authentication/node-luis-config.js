@@ -12,7 +12,8 @@ module.exports = function(RED) {
     	credentials: {
             endpoint:     { type: "text" },
             appId:        { type: "text" },
-            subKey:       { type: "text" }
+            subKey:       { type: "text" },
+            spellCheckKey:{ type: "text" }
     	}
     });
 }
