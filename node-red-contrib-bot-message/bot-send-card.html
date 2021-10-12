@@ -68,8 +68,7 @@
             shcardbuttonType:    { value: "str" },
             shcardurl:       { value: undefined },
             shcardurlType:       { value: "str" },
-            
-           
+
             titleAdaptiveCard: { value: undefined },
             titleTypeAdaptiveCard: { value: "str" },
             textAdaptiveCard: { value: undefined },
@@ -88,7 +87,10 @@
             titleShowCardActionType: { value: "str" },
             textButtonMarker: { value: undefined },
             textButtonPrefix: { value: undefined },
-            textButtonPrefixType: { value: 'str' }
+            textButtonPrefixType: { value: 'str' },
+            titleInputCard:        { value: undefined },
+            titleInputCardType:    { value: "str" },
+            sections: { value: [{ label: "", type: "text", value: "" }] }
         },
         inputs:  1,
         outputs: 1,
@@ -96,7 +98,6 @@
             return this.labels[index];
         },
         oneditprepare: function () {
-
             // Typed Input
             $("#node-input-name").typedInput({         default: 'str', types: ['str'], type: 'str' });
             $("#node-input-eventName").typedInput({    default: 'str', types: ['str'], type: 'str' });
@@ -126,6 +127,8 @@
             $("#node-input-titleShowCardAction").typedInput({default: 'str', types: ['msg','global','str','flow'], typeField: $("#node-input-titleShowCardActionType")});
             $("#node-input-textButtonMarker").typedInput({   types: ['str'], type:'str'});
             $("#node-input-textButtonPrefix").typedInput({default: 'str', types: ['str', 're', 'msg','global','flow' ], typeField: $("#node-input-textButtonPrefixType")});
+
+            $("#node-input-titleInputCard").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleInputCardType")});
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -139,7 +142,6 @@
                 if ($(this).is(":checked")) $(".display-speech").hide();
                 else $(".display-speech").show();
             });
-
 
             $("#node-input-delay").change(function(e) {
                 var val = $(this).val();
@@ -183,17 +185,13 @@
                 if (type === "card") {
                     displaySharedCard()
                     $("#node-input-attach, #node-input-title").typedInput('show');
-                }
-                else if (type === "media") {
+                } else if (type === "media") {
                     $("#node-input-media").typedInput('show');
-                }
-                else if (type === "signin") {
+                } else if (type === "signin") {
                     $("#node-input-signintitle, #node-input-signinurl").typedInput('show');
-                }
-                else if (type === "event") {
+                } else if (type === "event") {
                     $("#node-input-eventValue, #node-input-eventName").typedInput('show');
-                } 
-                else if (type === "adaptiveCard") {
+                } else if (type === "adaptiveCard") {
                     $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
             });
@@ -226,10 +224,10 @@
                 var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
                 var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
                     actionField.val(action).change();
-            }; 
+            };
 
-             // Buttons and quick replies : init
-             $("#btn-container").css('min-height','100px').editableList({
+             // Buttons init
+             $("#btn-container, #btn-container-AdaptiveCard, #btn-container-inputCard").css('min-height','100px').editableList({
               addItem: function ( row, index, data ) {
 			            addButtonItem( row, index, data );
 	          },
@@ -237,14 +235,7 @@
               removable: true
             });
 
-           $("#btn-container-AdaptiveCard").css('min-height','100px').editableList({
-              addItem: function ( row, index, data ) {
-			            addButtonItem( row, index, data );
-	          },
-              sortable: true,
-              removable: true
-            });
-
+            // Quick replies : init
             $("#qck-container").css('min-height','150px').editableList({
                 addItem: function ( row, index, data ) {
                     var button = data.btn,
@@ -275,14 +266,41 @@
                 removable: true
             });
 
+            // Section init
+            $("#input-container").css('min-height','100px').editableList({
+              addItem: function (row, index, data) {
+                const section = data.section;
+                let label = '';
+                let type = 'text';
+                let value = '';
+
+                if (section) {
+                    if (section.hasOwnProperty('label')) label =  section.label;
+                    if (section.hasOwnProperty('type')) type = section.type;
+                    if (section.hasOwnProperty('value')) value =  section.value;
+                }
+
+                $('<span/>', {}).appendTo(row);
+                $('<input/>',  { class:"property-section-label",  type:"text", style:"width:25%; margin-right:5px;", value: label,  placeholder:"Label"}).appendTo(row);
+                var typeField = $('<select/>', { class:"property-section-type", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                typeField.append($("<option></option>").val("text").text("Text"));
+                typeField.append($("<option></option>").val("checkbox").text("Checkbox"));
+                typeField.append($("<option></option>").val("radiobutton").text("Radio button"));
+                typeField.append($("<option></option>").val("dropdownlist").text("Dropdown list"));
+                typeField.val(type).change();
+                $('<input/>', { class:"property-section-value",  type:"text", style:"width:20%; margin-right:5px;", value,  placeholder:"Value"}).appendTo(row);
+	          },
+              sortable: true,
+              removable: true
+            });
+
             // Buttons and quick replies : trigger action changes
             $(document).on('change', '.property-qck-action', function() {
-
                 var $parent = $(this).parent();
                 var $inputs = $parent.find('input');
                     $inputs.prop('disabled', false);
 
-                if      ($(this).val() === 'askLocation' || $(this).val() === 'askIdentity')  $inputs.prop('disabled', true);
+                if ($(this).val() === 'askLocation' || $(this).val() === 'askIdentity')  $inputs.prop('disabled', true);
                 else if ($(this).val() !== 'postBack' && $(this).val() !== 'imBack') {
                     $parent.find('.property-qck-regexp').prop('disabled', true);
                 }
@@ -302,15 +320,33 @@
                 displaySharedCard();
             }).change();
 
-            // Get buttons and quick replies
+            // Sections : trigger type changes
+            // $(document).on('change', '.property-section-type', function() {
+            //     var $parent = $(this).parent();
+            //     var $inputs = $parent.find('input');
+            //         $inputs.prop('disabled', false);
+
+            //     if ($(this).val() === 'text') {
+            //         $parent.find('.property-section-value').prop('disabled', true);
+            //     }
+            // }).change();
+
+            // Get buttons
             for (var i=0; i<this.buttons.length; i++) {
                 var infos = this.buttons[i];
-                $("#btn-container").editableList('addItem', { btn: infos, i:i });
-                $("#btn-container-AdaptiveCard").editableList('addItem', { btn: infos, i:i });
+                $("#btn-container, #btn-container-AdaptiveCard, #btn-container-inputCard").editableList('addItem', { btn: infos, i:i });
             }
+
+            // Get quick replies
             for (var i=0; i<this.quickreplies.length; i++) {
                 var infos = this.quickreplies[i];
                 $("#qck-container").editableList('addItem', { btn: infos, i:i });
+            }
+
+            // Get sections
+            for (var i = 0; i < this.sections.length; i++) {
+                const section = this.sections[i];
+                $("#input-container").editableList('addItem', { section, i });
             }
 
             // ID : set a random one
@@ -357,40 +393,54 @@
 
         },
         oneditsave: function(){
-
              // Buttons
             let butt;
             var type = $('#node-input-sendType').val();
             if (type === 'adaptiveCard'){
               butt = $("#btn-container-AdaptiveCard").editableList('items');
+            } else if (type === 'inputCard'){
+              butt = $("#btn-container-inputCard").editableList('items');
             } else {
               butt = $("#btn-container").editableList('items');
             }
-            let quic = $("#qck-container").editableList('items');
             let results = new Array();
-
             butt.each(function(i) {
                 var btn = {
                     title  : $(this).find('.property-btn-title').val(),
                     action : $(this).find('.property-btn-action').val(),
                     value  : $(this).find('.property-btn-value').val(),
-                    regexp : $(this).find('.property-btn-regexp').val(),
+                    regexp : $(this).find('.property-btn-regexp').val()
                 }
                 if ((btn.title && btn.value) || btn.action === 'share') { results.push(btn); }
             });
             this.buttons = (results.length === 0) ? [{ title: "", action:"postBack", value:"", regexp:""}] : results;
 
+            // Quick replies
             results = new Array();
+            let quic = $("#qck-container").editableList('items');
             quic.each(function(i) {
                 var btn = {
                     title  : $(this).find('.property-qck-title').val(),
                     action : $(this).find('.property-qck-action').val(),
                     value  : $(this).find('.property-qck-value').val(),
-                    regexp : $(this).find('.property-qck-regexp').val(),
+                    regexp : $(this).find('.property-qck-regexp').val()
                 }
                 if ((btn.title && btn.value) || btn.action.match(/askLocation|askIdentity/)) { results.push(btn); }
             });
             this.quickreplies = (results.length === 0) ? [{ title: "", action:"postBack", value:"", regexp:""}] : results;
+
+            //Sections
+            results = new Array();
+            const sections = $("#input-container").editableList('items');
+            sections.each(function(i) {
+                const section = {
+                    label  : $(this).find('.property-section-label').val(),
+                    type : $(this).find('.property-section-type').val(),
+                    value  : $(this).find('.property-section-value').val()
+                };
+                if (section.type) results.push(section);
+            });
+            this.sections = (results.length === 0) ? [{ label: "", type: "text", value: "" }] : results;
 
             // Outputs and labels
             let labels = new Array();
@@ -399,7 +449,7 @@
             this.outputs = 1 ;
 
             var type = $('#node-input-sendType').val();
-            if (type === 'card' || type === 'adaptiveCard'){
+            if (type === 'card' || type === 'adaptiveCard' || type === 'inputCard'){
                 var btnOut = $('#node-input-btnOutput').is(':checked')
                 if (btnOut) {
                     labels.push("Unexpected");
@@ -443,7 +493,7 @@
         label: function() {
             if (this.name) return this.name;
             if (this.carousel === true) return "Card";
-            if (this.sendType === "text" || this.sendType === "quick")  { 
+            if (this.sendType === "text" || this.sendType === "quick")  {
                 if (this.text) {
                     if (this.text.length <= 20) return "Send: \"" + this.text + "\"";
                     else return "Send: \"" + this.text.substring(0,17) + '...\"';
@@ -451,8 +501,8 @@
                 else return "Send: \"\"";
             }
             if (this.sendType === "card")   return "Send card";
-            if (this.sendType === "adaptiveCard")  return "Send card"; 
-            if (this.sendType === "media")  return "Send media"; 
+            if (this.sendType === "adaptiveCard")  return "Send card";
+            if (this.sendType === "media")  return "Send media";
             if (this.sendType === "signin") return "Send signin";
             if (this.sendType === "event")  return "Send event";
             else return "Send Card";
@@ -597,7 +647,7 @@
                 <option value="custom">custom</option>
             </select>
             <div id="node-input-delay-custom" style="display:inline-block">
-                <input type="text" id="node-input-delay" > 
+                <input type="text" id="node-input-delay" >
                 <p style="display: inline-block;"> ms</p>
             </div>
         </div>
@@ -624,6 +674,7 @@
                 <option value="event">Event</option>
                 <option value="adaptiveCard">AdaptiveCard</option>
                 <option value="confirm">Confirm</option>
+                <option value="inputCard">Input Card</option>
             </select>
         </div>
         <br>
@@ -762,6 +813,26 @@
             </div>
         </section>
 
+        <section class="section-type section-inputCard">
+            <div class="form-row">
+                <label for="node-input-titleInputCard"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-titleInputCard" style="width:80%;">
+                <input type="hidden" id="node-input-titleInputCardType">
+            </div>
+            <br>
+            <b>Sections</b>
+            <br><br>
+            <div class="form-row" style="width:97%;">
+                <ol id="input-container"></ol>
+            </div>
+            <br>
+            <b>Buttons</b>
+            <br><br>
+            <div class="form-row" style="width:97%;">
+                <ol id="btn-container-inputCard"></ol>
+            </div>
+        </section>
+
         <section class="section-type section-quick">
             <div class="form-row">
                 <label for="node-input-quicktext"><i class="fa fa-pencil-square-o"></i> Text</label>
@@ -784,14 +855,14 @@
                 <input type="text" id="node-input-signinurl" placeholder="https://url.to/auth" style="width:80%;">
                 <input type="hidden" id="node-input-signinurlType">
             </div>
-        </section>  
+        </section>
 
         <section class="section-type section-confirm">
             <div class="form-row">
                 <label for="node-input-confirmtext"><i class="fa fa-pencil-square-o"></i> Text</label>
                 <textarea id="node-input-confirmtext" rows="4" placeholder="Text to send"></textarea>
             </div>
-        </section>     
+        </section>
 
         <section class="section-type section-text section-quick">
             <div class="form-row">
