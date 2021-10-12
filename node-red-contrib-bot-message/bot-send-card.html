@@ -90,7 +90,7 @@
             textButtonPrefixType: { value: 'str' },
             titleInputCard:        { value: undefined },
             titleInputCardType:    { value: "str" },
-            sections: { value: [{ label: "", type: "text", value: "" }] }
+            sections: { value: [{ label: "", type: "", value: "" }] }
         },
         inputs:  1,
         outputs: 1,
@@ -129,6 +129,7 @@
             $("#node-input-textButtonPrefix").typedInput({default: 'str', types: ['str', 're', 'msg','global','flow' ], typeField: $("#node-input-textButtonPrefixType")});
 
             $("#node-input-titleInputCard").typedInput({        default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleInputCardType")});
+
             // Prompt and speech : show and hide fields
             $("#node-input-prompt").change( function() {
                 if ($(this).is(":checked")) {
@@ -271,7 +272,7 @@
               addItem: function (row, index, data) {
                 const section = data.section;
                 let label = '';
-                let type = 'text';
+                let type = '';
                 let value = '';
 
                 if (section) {
@@ -288,7 +289,7 @@
                 typeField.append($("<option></option>").val("radiobutton").text("Radio button"));
                 typeField.append($("<option></option>").val("dropdownlist").text("Dropdown list"));
                 typeField.val(type).change();
-                $('<input/>', { class:"property-section-value",  type:"text", style:"width:20%; margin-right:5px;", value,  placeholder:"Value"}).appendTo(row);
+                $('<input/>', { class:"property-section-value", type: "text", style:"width:45%; margin-right:5px;", value,  placeholder:"{}"}).appendTo(row);
 	          },
               sortable: true,
               removable: true
@@ -321,15 +322,15 @@
             }).change();
 
             // Sections : trigger type changes
-            // $(document).on('change', '.property-section-type', function() {
-            //     var $parent = $(this).parent();
-            //     var $inputs = $parent.find('input');
-            //         $inputs.prop('disabled', false);
+            $(document).on('change', '.property-section-type', function() {
+                var $parent = $(this).parent();
+                var $inputs = $parent.find('input');
+                    $inputs.prop('disabled', false);
 
-            //     if ($(this).val() === 'text') {
-            //         $parent.find('.property-section-value').prop('disabled', true);
-            //     }
-            // }).change();
+                if ($(this).val() === 'text') {
+                    $parent.find('.property-section-value').prop('disabled', true);
+                }
+            }).change();
 
             // Get buttons
             for (var i=0; i<this.buttons.length; i++) {
@@ -390,7 +391,6 @@
                     }
                 })
             }
-
         },
         oneditsave: function(){
              // Buttons

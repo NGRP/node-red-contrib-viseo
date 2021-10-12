@@ -251,6 +251,9 @@ const buildReply = (RED, node, data, config) => {
         else if (config.sendType === 'adaptiveCard') {
             buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
 
+        } else if (config.sendType === 'inputCard') {
+            buildInputCard(RED, node, locale, data, config, reply);
+
         }
     }
     
@@ -417,7 +420,7 @@ const addButtonToAdaptiveCard = (textButtonMarker, prefix, textToShow, body) => 
         "type": "TextBlock",
         "wrap": true,
         "size": "default",
-        "text": textToShow						
+        "text": textToShow
     };
     let button;
     const btnVal = textToShow.substring(textButtonMarker.length).trim(); // remove text marker ('- ') ahead of string
