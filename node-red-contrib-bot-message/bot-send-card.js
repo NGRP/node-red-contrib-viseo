@@ -658,16 +658,16 @@ const buildInputCard = (RED, node, locale, data, config) => {
 
         switch (type) {
             case 'checkbox':
-                item = inputFactory.buildCheckbox();
+                item = inputFactory.buildCheckbox(label, value);
                 break;
             case 'radiobutton':
-                item = inputFactory.buildRadioButton();
+                item = inputFactory.buildRadioButton(label, value);
                 break;
             case 'dropdownlist':
                 item = inputFactory.buildDropdown(label, value);
                 break;
             case 'text':
-                item = inputFactory.buildTextblock();
+                item = inputFactory.buildTextblock(label);
             default:
         }
         reply.body.push(item);
