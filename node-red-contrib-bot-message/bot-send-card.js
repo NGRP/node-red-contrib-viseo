@@ -640,7 +640,6 @@ const buildInputCard = (RED, node, locale, data, config) => {
     const reply = {
         type: 'AdaptiveCard',
         title: '',
-        version: "1.0",
         body: [],
         actions: []
     };

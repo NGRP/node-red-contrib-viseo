@@ -438,7 +438,7 @@ const getAdaptiveCard = opts => {
   let card = {
     $schema: "http://adaptivecards.io/schemas/adaptive-card.json",
     type: "AdaptiveCard",
-    version: "1.0",
+    version: "1.3",
     title: opts.title,
     subtext: opts.subtext,
     subtitle: opts.subtitle,
