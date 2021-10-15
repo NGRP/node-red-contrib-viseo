@@ -1,41 +1,44 @@
 const CARD_CONST = require('./constants.js');
 
-const buildCheckbox = (label, choices) => {
-    // "isMultiSelect": true,
+const buildCheckbox = (label, $data) => {
     return {
+        id: `checkbox${new Date().getTime()}`,
         type: CARD_CONST.CHOICE_SET,
         label,
         isMultiSelect: $data.isMultiSelect ? $data.isMultiSelect : true,
-        value: "1",
-        choices
+        value: $data.value ? $data.value : "1",
+        choices: $data.choices
     };
 };
 
-const buildRadioButton = (label, choices) => {
+const buildRadioButton = (label, $data) => {
     return {
+        id: `radiobutton${new Date().getTime()}`,
         type: CARD_CONST.CHOICE_SET,
         label,
-        style: "expanded",
+        style: CARD_CONST.STYLE_EXPANDED,
         value: "1",
-        choices
+        choices: $data.choices
     };
 };
 
 const buildTextblock = (label) => {
     return {
-        type: "Input.Text",
+        id: `textblock${new Date().getTime()}`,
+        type: CARD_CONST.TEXT_BLOCK,
         label,
         style: "text"
     };
 };
 
-const buildDropdown = (label, choices) => {
+const buildDropdown = (label, $data) => {
  return {
+        id: `dropdown${new Date().getTime()}`,
         type: CARD_CONST.CHOICE_SET,
         label,
-        style: "compact",
-        value: "1",
-        choices
+        style: CARD_CONST.STYLE_COMPACT,
+        value: $data.value ? $data.value : "1",
+        choices: $data.choices
     };
 };
 
