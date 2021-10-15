@@ -12,30 +12,69 @@ const extractEntities = (prediction) => {
         .forEach(entity => {
             if (!entity) return;
             if (entity.modelType === 'Composite Entity Extractor') {
+                // Extract composite entities
+                entities.push({
+                    type: entity.type,
+                    entity: entity.text,
+                    startIndex: entity.startIndex,
+                    endIndex: entity.startIndex + entity.length - 1,
+                    score: entity.score,
+                });
+
+                // Extract composite entities
                 compositeEntities.push({
                     parentType: entity.type,
                     value: entity.text,
                     children: []
                 });
-                Object.values(prediction.entities[entity.type][0].$instance).forEach(child => {
-                    compositeEntities[compositeEntities.length - 1].children.push({
-                      type: child[0].type,
-                      value: child[0].text
+
+                prediction.entities[entity.type].forEach((element) => {
+                    Object.values(element.$instance).forEach(children => {
+                        children
+                        .filter(child => child.startIndex >= entity.startIndex && child.startIndex + child.length <= entity.startIndex + entity.length)
+                        .forEach((child, index) => {
+                            // Extract composite entities' children
+                            compositeEntities[compositeEntities.length - 1].children.push({
+                                type: child.type,
+                                value: child.text
+                            });
+
+                            // Extract entities (builtin entities and list entities)
+                            let resolution = {};
+                            if (child.type === 'builtin.dimension') {
+                                // Builtin entities, like numbers, dimensions, are with resolution. Ex. {"subtype": "integer", "value": "10"}
+                                resolution = element[child.type.replace('builtin.', '')].map(e => ({
+                                    unit: e.units,
+                                    value: e.number
+                                }))[0];
+                            } else if (child.type === 'builtin.number') {
+                                // Builtin entities, like numbers, dimensions, are with resolution. Ex. {"subtype": "integer", "value": "10"}
+                                resolution = element[child.type.replace('builtin.', '')].map(e => ({
+                                    subtype: 'number',
+                                    value: e
+                                }))[0];
+                            } else {
+                                // List entities, are with resolution. Ex. {"values": ["pro", "laserjet pro"]}
+                                resolution.values = element[child.type.replace('builtin.', '')][index];
+                            }
+                            entities.push({
+                                type: child.type,
+                                entity: child.text,
+                                startIndex: child.startIndex,
+                                endIndex: child.startIndex + child.length - 1,
+                                score: entity.score,
+                                resolution
+                            });
+                        });
                     });
-                    entities.push({
-                      type: child[0].type,
-                      entity: child[0].text,
-                      startIndex: child[0].startIndex,
-                      endIndex: child[0].startIndex + child[0].length,
-                      score: entity.score
-                    })
-                  });
+                });
+
             } else {
                 entities.push({
                     type: entity.type,
                     entity: entity.text,
                     startIndex: entity.startIndex,
-                    endIndex: entity.startIndex + entity.length -1, // add end index
+                    endIndex: entity.startIndex + entity.length - 1, // add end index
                     resolution: { // to store the source words of recognition
                       /* Why replace 'builtin' with ''?
                       ** Because the type of number entities is not consistent: 'builtin.number' in the object $instance, but 'number' in the prediction.entities
