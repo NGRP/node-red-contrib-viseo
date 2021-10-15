@@ -667,16 +667,18 @@ const buildInputCard = (RED, node, locale, data, config) => {
                 break;
             case 'text':
                 item = inputFactory.buildTextblock(label);
+                break;
             default:
+                item = inputFactory.buildTextblock(label);
         }
         reply.body.push(item);
     });
 
     // Actions
     const action = {
-        "type": "Action.Submit",
-        "title": "Submit",
-        "data": {
+        type: "Action.Submit",
+        title: "Submit",
+        data: {
             // TODO
         }
     };
