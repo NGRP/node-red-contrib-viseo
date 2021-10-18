@@ -27,7 +27,8 @@ const buildTextblock = (label) => {
         id: `textblock${new Date().getTime()}`,
         type: CARD_CONST.TEXT_BLOCK,
         label,
-        style: "text"
+        style: "text",
+        isMultiline: true
     };
 };
 
