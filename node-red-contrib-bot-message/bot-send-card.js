@@ -608,7 +608,7 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
         let tmp = textToShow.substring(0, displayedTextSize);
 
         // To avoid displaying the UNCOMPLETED N th item, display onlt the (N - 1)th item
-        /* For exmaple: 
+        /* For exmaple:
                 tmp = "productbot.before_colon_series\n\n**Processor**:
                 - 1. Intel® Xeon® Gold 5222 (3.8 GHz base frequency, up to 3.9 GHz with Intel® Turbo Boost Technology, 16.5 MB cache, 4 cores)
                 - 2. Intel® Xeon® Silver 4114 (2.2 GHz base freque";
@@ -652,18 +652,21 @@ const buildInputCard = (RED, node, locale, data, config) => {
     sections.forEach(section => {
         const label = section.label;
         const type = section.type;
-        const value = JSON.parse(section.value); // TODO handle exception parser
+        let $data;
         let item;
 
         switch (type) {
             case 'checkbox':
-                item = inputFactory.buildCheckbox(label, value);
+                $data = JSON.parse(section.value);
+                item = inputFactory.buildCheckbox(label, $data);
                 break;
             case 'radiobutton':
-                item = inputFactory.buildRadioButton(label, value);
+                $data = JSON.parse(section.value);
+                item = inputFactory.buildRadioButton(label, $data);
                 break;
             case 'dropdownlist':
-                item = inputFactory.buildDropdown(label, value);
+                $data = JSON.parse(section.value);
+                item = inputFactory.buildDropdown(label, $data);
                 break;
             case 'text':
                 item = inputFactory.buildTextblock(label);
