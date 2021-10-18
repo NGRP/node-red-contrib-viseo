@@ -443,7 +443,7 @@ const getAdaptiveCard = opts => {
     subtext: opts.subtext,
     subtitle: opts.subtitle,
     body: opts.body,
-    actions: btns,
+    actions: opts.actions,
     speak: spch
   };
 
