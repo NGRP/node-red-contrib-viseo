@@ -88,9 +88,12 @@
             textButtonMarker: { value: undefined },
             textButtonPrefix: { value: undefined },
             textButtonPrefixType: { value: 'str' },
+            idInputCard:        { value: undefined },
+            idInputCardType:    { value: "str" },
             titleInputCard:        { value: undefined },
             titleInputCardType:    { value: "str" },
-            sections: { value: [{ label: "", type: "", value: "" }] }
+            sections: { value: [{ label: "", type: "", value: "" }] },
+            actions: { value: [{ title: "", type: "Action.Submit", data: "{}" }] }
         },
         inputs:  1,
         outputs: 1,
@@ -128,6 +131,7 @@
             $("#node-input-textButtonMarker").typedInput({   types: ['str'], type:'str'});
             $("#node-input-textButtonPrefix").typedInput({default: 'str', types: ['str', 're', 'msg','global','flow' ], typeField: $("#node-input-textButtonPrefixType")});
 
+            $("#node-input-idInputCard").typedInput({ default: 'str', types: ['msg','global','str'], typeField: $("#node-input-idInputCardType") });
             $("#node-input-titleInputCard").typedInput({ default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleInputCardType") });
 
             // Prompt and speech : show and hide fields
@@ -197,7 +201,9 @@
                 }
             });
 
-            function addButtonItem( row, index, data ) {
+             // Buttons init
+             $("#btn-container, #btn-container-AdaptiveCard").css('min-height','100px').editableList({
+              addItem: function ( row, index, data ) {
                 var button = data.btn,
                     title = '',
                     action = 'postBack',
@@ -224,13 +230,7 @@
                     actionField.append($("<option></option>").val("call").text("Call"));
                 var valueField =  $('<input/>', { class:"property-btn-value",  type:"text", style:"width:20%; margin-right:5px;", value: value,  placeholder:"Value"}).appendTo(row);
                 var regexpField = $('<input/>', { class:"property-btn-regexp", type:"text", style:"width:20%; margin-right:5px;", value: regexp, placeholder:"Regex"}).appendTo(row);
-                    actionField.val(action).change();
-            };
-
-             // Buttons init
-             $("#btn-container, #btn-container-AdaptiveCard, #btn-container-inputCard").css('min-height','100px').editableList({
-              addItem: function ( row, index, data ) {
-			            addButtonItem( row, index, data );
+                actionField.val(action).change();
 	          },
               sortable: true,
               removable: true
@@ -268,7 +268,7 @@
             });
 
             // Section init
-            $("#input-container").css('min-height','100px').editableList({
+            $("#section-container").css('min-height','100px').editableList({
               addItem: function (row, index, data) {
                 const section = data.section;
                 let label = '';
@@ -290,6 +290,31 @@
                 typeField.append($("<option></option>").val("dropdownlist").text("Dropdown list"));
                 typeField.val(type).change();
                 $('<input/>', { class:"property-section-value", type: "text", style:"width:45%; margin-right:5px;", value,  placeholder:"{}"}).appendTo(row);
+	          },
+              sortable: true,
+              removable: true
+            });
+
+            // Actions init
+            $("#action-container").css('min-height','100px').editableList({
+              addItem: function (row, index, data) {
+                const action = data.action;
+                let title = '';
+                let type = 'Action.Submit';
+                let _data = '';
+
+                if (action) {
+                    if (action.hasOwnProperty('title')) title = action.title;
+                    if (action.hasOwnProperty('type')) type = action.type;
+                    if (action.hasOwnProperty('data')) _data = action.data;
+                }
+
+                $('<span/>', {}).appendTo(row);
+                $('<input/>', { class:"property-action-title", type:"text", style:"width:25%; margin-right:5px;", value: title,  placeholder:"Title"}).appendTo(row);
+                const typeField = $('<select/>', { class:"property-action-type", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                typeField.append($("<option></option>").val("Action.Submit").text("Submit"));
+                typeField.val(type).change();
+                $('<input/>', { class:"property-action-data", type:"text", style:"width:40%; margin-right:5px;", value: _data,  placeholder:"{}"}).appendTo(row);
 	          },
               sortable: true,
               removable: true
@@ -332,22 +357,28 @@
                 }
             }).change();
 
-            // Get buttons
-            for (var i=0; i<this.buttons.length; i++) {
-                var infos = this.buttons[i];
-                $("#btn-container, #btn-container-AdaptiveCard, #btn-container-inputCard").editableList('addItem', { btn: infos, i:i });
+           // Get buttons
+            for (var i = 0; i < this.buttons.length; i++) {
+                const btn = this.buttons[i];
+                $("#btn-container, #btn-container-AdaptiveCard").editableList('addItem', { btn, i });
             }
 
             // Get quick replies
-            for (var i=0; i<this.quickreplies.length; i++) {
-                var infos = this.quickreplies[i];
-                $("#qck-container").editableList('addItem', { btn: infos, i:i });
+            for (var i = 0; i < this.quickreplies.length; i++) {
+                const btn = this.quickreplies[i];
+                $("#qck-container").editableList('addItem', { btn, i });
             }
 
             // Get sections
             for (var i = 0; i < this.sections.length; i++) {
                 const section = this.sections[i];
-                $("#input-container").editableList('addItem', { section, i });
+                $("#section-container").editableList('addItem', { section, i });
+            }
+
+            // Get actions
+            for (var i = 0; i < this.actions.length; i++) {
+                const action = this.actions[i];
+                $("#action-container").editableList('addItem', { action, i });
             }
 
             // ID : set a random one
@@ -398,8 +429,6 @@
             var type = $('#node-input-sendType').val();
             if (type === 'adaptiveCard'){
               butt = $("#btn-container-AdaptiveCard").editableList('items');
-            } else if (type === 'inputCard'){
-              butt = $("#btn-container-inputCard").editableList('items');
             } else {
               butt = $("#btn-container").editableList('items');
             }
@@ -431,7 +460,7 @@
 
             //Sections
             results = new Array();
-            const sections = $("#input-container").editableList('items');
+            const sections = $("#section-container").editableList('items');
             sections.each(function(i) {
                 const section = {
                     label  : $(this).find('.property-section-label').val(),
@@ -442,6 +471,19 @@
             });
             this.sections = (results.length === 0) ? [{ label: "", type: "text", value: "" }] : results;
 
+            // Actions
+            results = new Array();
+            const actions = $("#action-container").editableList('items');
+            actions.each(function(i) {
+                const action = {
+                    title: $(this).find('.property-action-title').val(),
+                    type: $(this).find('.property-action-type').val(),
+                    data: $(this).find('.property-action-data').val()
+                };
+                if (action.title) results.push(action);
+            });
+            this.actions = (results.length === 0) ? [{ title: "", type: "Action.Submit", data: "{}" }] : results;
+
             // Outputs and labels
             let labels = new Array();
             this.delay  = $('#node-input-delay').val();
@@ -449,7 +491,7 @@
             this.outputs = 1 ;
 
             var type = $('#node-input-sendType').val();
-            if (type === 'card' || type === 'adaptiveCard' || type === 'inputCard'){
+            if (type === 'card' || type === 'adaptiveCard'){
                 var btnOut = $('#node-input-btnOutput').is(':checked')
                 if (btnOut) {
                     labels.push("Unexpected");
@@ -815,6 +857,11 @@
 
         <section class="section-type section-inputCard">
             <div class="form-row">
+                <label for="node-input-idInputCard"><i class="fa fa-pencil-square-o"></i> ID</label>
+                <input type="text" id="node-input-idInputCard" style="width:80%;">
+                <input type="hidden" id="node-input-idInputCardType">
+            </div>
+            <div class="form-row">
                 <label for="node-input-titleInputCard"><i class="fa fa-pencil-square-o"></i> Title</label>
                 <input type="text" id="node-input-titleInputCard" style="width:80%;">
                 <input type="hidden" id="node-input-titleInputCardType">
@@ -823,13 +870,13 @@
             <b>Sections</b>
             <br><br>
             <div class="form-row" style="width:97%;">
-                <ol id="input-container"></ol>
+                <ol id="section-container"></ol>
             </div>
             <br>
-            <b>Buttons</b>
+            <b>Actions</b>
             <br><br>
             <div class="form-row" style="width:97%;">
-                <ol id="btn-container-inputCard"></ol>
+                <ol id="action-container"></ol>
             </div>
         </section>
 

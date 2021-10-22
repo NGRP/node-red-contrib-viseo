@@ -3,6 +3,7 @@ const i18n     = require('./lib/i18n.js');
 const botmgr   = require('node-red-viseo-bot-manager');
 const helper   = require('node-red-viseo-helper');
 const inputFactory = require('./input-factory.js');
+const CARD_CONST = require('./constants.js');
 
 require('./lib/i18n.js').init();
 
@@ -638,54 +639,60 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
 const buildInputCard = (RED, node, locale, data, config) => {
     // TODO extract constants
     const reply = {
-        type: 'AdaptiveCard',
+        type: CARD_CONST.CARD_ADAPTIVECARD,
         title: '',
         body: [],
         actions: []
     };
-    // Global title
+    // ID
+    let id = helper.getContextValue(RED, node, data, config.idInputCard || '', config.idInputCardType || 'str');
+
+    // Global text(title)
     const title = helper.getContextValue(RED, node, data, config.titleInputCard || '', config.titleInputCardType || 'str');
-    reply.title = title;
+    if (title) {
+        reply.title = title;
+        reply.body.push({
+            type: CARD_CONST.TEXT_BLOCK,
+            text: title,
+            wrap: true
+        });
+    }
 
     // Body
     const sections = JSON.parse(JSON.stringify(config.sections));
-    sections.forEach(section => {
+    sections.forEach((section, index) => {
         const label = section.label;
         const type = section.type;
         let $data;
         let item;
 
         switch (type) {
-            case 'checkbox':
+            case CARD_CONST.TYPE_CHECKBOX:
                 $data = JSON.parse(section.value);
-                item = inputFactory.buildCheckbox(label, $data);
+                item = inputFactory.buildCheckbox(id, index + 1, label, $data);
                 break;
-            case 'radiobutton':
+            case CARD_CONST.TYPE_RADIOBUTTON:
                 $data = JSON.parse(section.value);
-                item = inputFactory.buildRadioButton(label, $data);
+                item = inputFactory.buildRadioButton(id, index + 1, label, $data);
                 break;
-            case 'dropdownlist':
+            case CARD_CONST.TYPE_DROPDOWN:
                 $data = JSON.parse(section.value);
-                item = inputFactory.buildDropdown(label, $data);
+                item = inputFactory.buildDropdown(id, index + 1, label, $data);
                 break;
-            case 'text':
-                item = inputFactory.buildTextblock(label);
+            case CARD_CONST.TYPE_TEXT:
+                item = inputFactory.buildTextblock(id, index + 1, label);
                 break;
             default:
-                item = inputFactory.buildTextblock(label);
+                item = inputFactory.buildTextblock(id, index + 1, label);
         }
         reply.body.push(item);
     });
 
-    // Actions
-    const action = {
-        type: "Action.Submit",
-        title: "Submit",
-        data: {
-            // TODO
-        }
-    };
-    reply.actions.push(action);
+    reply.actions = JSON.parse(JSON.stringify(config.actions)).map(action => ({
+        title: action.title === '' ? 'Submit' : action.title,
+        type: action.type,
+        data: JSON.parse(action.data)
+    }));
 
     return reply;
 };
