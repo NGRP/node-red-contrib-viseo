@@ -41,16 +41,7 @@ class VBMBot extends ActivityHandler {
       }
       await next();
     });
-
-    this.onEvent(async (context, next) => {
-      if (context.activity.name === 'webchat/feedback') {
-        context.activity.type = 'message';
-        context.activity.text = 'feedback';
-        sendWelcomeMessage(node, context);
-      }
-      await next();
-      });
-    }
+  }
 
   // Override the ActivityHandler.run() method to save state changes
   async run(context) {

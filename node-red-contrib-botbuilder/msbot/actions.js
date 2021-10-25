@@ -43,7 +43,7 @@ function createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig)
 
   // create a simple user-facing bot, neither root nor skill bot
   if (config.botType === 'none' || config.botType === '') {
-    bot = new VBMBot(node, config.appId, config.startCmd);
+    bot = new VBMBot(node, config.appId, config.startCmd, sendWelcomeMessage);
   } else {
     // create a root or skill
     const memoryStorage = new MemoryStorage();
@@ -85,7 +85,7 @@ async function initConnector(config, node, allowedCallers) {
       reject(new Error("[Botbuilder] Missing App pass!"));
     }
 
-    if (allowedCallers === '') {
+    if (config.botType !== 'none' && config.botType !== '' && allowedCallers === '') {
       reject(new Error("[Botbuilder] Missing allowedCallers!"));
     }
 
@@ -174,7 +174,8 @@ function buildMessageFlow(activity) {
   let data = botmgr.buildMessageFlow(
     {
       message: JSON.parse(JSON.stringify(message)),
-      payload: message.text ? message.text : (typeof message.value.value === 'undefined' ? message.value : message.value.value),    },
+      payload: message.text ? message.text : (typeof message.value.value === 'undefined' ? message.value : message.value.value),    
+      user : message.from },
     { agent: "botbuilder" }
   );
 
@@ -208,7 +209,7 @@ async function receive(node, config = {}, context, bot) {
   _context.lastMessageDate = data.message.timestamp;
   helper.emitEvent("received", node, data, config);
 
-  node.send([null, data]);
+  node.send(data);
 }
 
 module.exports.receive = receive;
@@ -286,5 +287,5 @@ async function sendWelcomeMessage(node, context) {
   _context.convRef = ref;
   _context.lastMessageDate = data.message.timestamp;
 
-  node.send([null, data]);
+  node.send(data);
 }
