@@ -24,14 +24,15 @@ const getAuthConfig = (config, allowedSkills) => {
 
 function createAdapter(config, authConfig) {
   let adapter;
-  const botbuilderConfig = {
-    appId: config.appId,
-    appPassword: config.appPassword,
+  let botbuilderConfig = {
+      appId: config.appId,
+      appPassword: config.appPassword
   };
 
   if (config.botType !== 'none' && config.botType !== '') {
     botbuilderConfig.authConfig = authConfig;
   }
+
   adapter = new BotFrameworkAdapter(botbuilderConfig);
 
   return adapter;
@@ -47,7 +48,7 @@ function createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig)
     // create a root or skill
     const memoryStorage = new MemoryStorage();
     const conversationState = new ConversationState(memoryStorage);
-
+    
     if (ifRootBot) {
       // create a root
       const conversationIdFactory = new SkillConversationIdFactory();
@@ -84,7 +85,6 @@ async function initConnector(config, node, allowedCallers) {
       reject(new Error("[Botbuilder] Missing App pass!"));
     }
 
-    // Verify allowedCallers only if bot type !== none
     if (config.botType !== 'none' && config.botType !== '' && allowedCallers === '') {
       reject(new Error("[Botbuilder] Missing allowedCallers!"));
     }
@@ -124,7 +124,7 @@ async function initConnector(config, node, allowedCallers) {
           await next();
         }
       }
-      
+
       await new Promise(function(resolve, reject) {
         receive(node, config, context, bot);
         resolve();
@@ -157,7 +157,7 @@ function buildMessageFlow(activity) {
   if (!message.serviceUrl) return;
 
   message.user = message.from;
-  message.address = { 
+  message.address = {
     conversation: message.conversation,
     id: message.id,
     serviceUrl: message.serviceUrl,
@@ -174,9 +174,8 @@ function buildMessageFlow(activity) {
   let data = botmgr.buildMessageFlow(
     {
       message: JSON.parse(JSON.stringify(message)),
-      payload: message.text,
-      user: message.from
-    },
+      payload: message.text ? message.text : (typeof message.value.value === 'undefined' ? message.value : message.value.value),    
+      user : message.from },
     { agent: "botbuilder" }
   );
 
@@ -210,7 +209,7 @@ async function receive(node, config = {}, context, bot) {
   _context.lastMessageDate = data.message.timestamp;
   helper.emitEvent("received", node, data, config);
 
-  node.send([null, data]);
+  node.send(data);
 }
 
 module.exports.receive = receive;
@@ -280,15 +279,13 @@ async function reply(node, data, globalTypingDelay) {
   return callback();
 }
 
-async function sendWelcomeMessage(node, context, resolve, reject, next) {
+async function sendWelcomeMessage(node, context) {
   let data = buildMessageFlow(context.activity);
-  data.message = {};
 
   let ref = TurnContext.getConversationReference(context.activity);
   let _context = botmgr.getContext(data);
   _context.convRef = ref;
-  _context.next = next;
+  _context.lastMessageDate = data.message.timestamp;
 
-  resolve();
-  node.send([data, null]);
+  node.send(data);
 }
