@@ -13,9 +13,6 @@ class VBMBot extends ActivityHandler {
     }
 
     this.botId = appId;
-    if (sendWelcomeMessage) {
-      this.sendWelcomeMessage = sendWelcomeMessage;
-    }
     if (conversationState) {
       this.conversationState = conversationState;
     }
