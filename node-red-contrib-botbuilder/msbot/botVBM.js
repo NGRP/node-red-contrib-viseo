@@ -16,9 +16,6 @@ class VBMBot extends ActivityHandler {
     if (sendWelcomeMessage) {
       this.sendWelcomeMessage = sendWelcomeMessage;
     }
-    if (node) {
-      this.node = node;
-    }
     if (conversationState) {
       this.conversationState = conversationState;
     }
@@ -48,13 +45,13 @@ class VBMBot extends ActivityHandler {
     });
 
     this.onEvent(async (context, next) => {
-    if (context.activity.name === 'webchat/feedback') {
-      context.activity.type = 'message';
-      context.activity.text = 'feedback';
-      sendWelcomeMessage(node, context);
-    }
-    await next();
-  });
+      if (context.activity.name === 'webchat/feedback') {
+        context.activity.type = 'message';
+        context.activity.text = 'feedback';
+        sendWelcomeMessage(node, context);
+      }
+      await next();
+    });
   }
   // Override the ActivityHandler.run() method to save state changes
   async run(context) {
@@ -70,8 +67,6 @@ class VBMBot extends ActivityHandler {
     if (typeof targetSkill === 'undefined') {
       throw new Error(`[Botbuilder]: cannot find skill to send activity`);
     }
-
-    console.log(`[Botbuilder]: routing the activity to the skill via ${targetSkill.skillEndpoint}`);
     const response = await this.skillClient.postToSkill(this.botId, targetSkill, this.skillsConfig.hostEndpoint, activity);
 
     if (!(response.status >= 200 && response.status <= 499)) {
