@@ -410,14 +410,13 @@ const sendData = (node, data, config) => {
  */
 const addTextBlockToAdaptiveCard = (textToShow, body) => {
     const textBlock = {
-        "type": "TextBlock",
-        "wrap": true,
-        "size": "default",
-        "text": textToShow
+        type: CARD_CONST.TEXT_BLOCK,
+        wrap: true,
+        text: textToShow
     }
     body.push({
-        "type": "Container",
-        "items": [ textBlock ]
+        type: CARD_CONST.CONTAINER,
+        items: [ textBlock ]
     });
 };
 
@@ -428,28 +427,30 @@ const addTextBlockToAdaptiveCard = (textToShow, body) => {
  */
 const addButtonToAdaptiveCard = (textButtonMarker, prefix, textToShow, body) => {
     const textBlock = {
-        "type": "TextBlock",
-        "wrap": true,
-        "size": "default",
-        "text": textToShow
+        type: CARD_CONST.TEXT_BLOCK,
+        wrap: true,
+        text: textToShow
     };
     let button;
     const btnVal = textToShow.substring(textButtonMarker.length).trim(); // remove text marker ('- ') ahead of string
     if (btnVal && btnVal !== '') {
         button = {
-            "type": "Action.Submit",
-            "title": "cool link",
-            "data":{"__isBotFrameworkCardAction": true, "type": "postBack", "value": `${prefix + btnVal}`}
+            type: CARD_CONST.ACTION_SUBMIT,
+            title: `${btnVal.split('. ')[1]}`,
+            data: {
+                type: CARD_CONST.ACTION_POSTBACK,
+                value: `${prefix + btnVal}`
+            }
         };
         body.push({
-            "type": "Container",
-            "items": [ textBlock],
-            "selectAction": button
+            type: CARD_CONST.CONTAINER,
+            items: [ textBlock],
+            selectAction: button
         });
     } else {
         body.push({
-            "type": "Container",
-            "items": [ textBlock]
+            type: CARD_CONST.CONTAINER,
+            items: [ textBlock]
         });
     }
 };
@@ -524,7 +525,7 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
         image.pixelHeight = parseInt(imageHeight); // type Number
     }
 
-    const firstContainer = body[0].type === "Container" ? body[0] : null;
+    const firstContainer = body[0].type === CARD_CONST.CONTAINER ? body[0] : null;
 
     // If there exists a Container: append image directly to tail of Array ${items} inside the first Container 
     if (firstContainer) {
@@ -532,7 +533,7 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
     } else {
         // If there is no Container yet: create a Container; then fold image into this Container; finally append it to ${body}
         body.push({
-            "type": "Container",
+            "type": CARD_CONST.CONTAINER,
             "items": [ image ]
         });
     }
@@ -596,9 +597,8 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     imageWidth = helper.getContextValue(RED, node, data, imageWidth, 'str');
     imageHeight = helper.getContextValue(RED, node, data, imageHeight, 'str');
 
-    reply.type = 'AdaptiveCard';
+    reply.type = CARD_CONST.CARD_ADAPTIVECARD;
     reply.title = title;
-    reply.version = "1.0";
     reply.body = [];
 
     /*customized text to display*/
