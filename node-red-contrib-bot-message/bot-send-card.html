@@ -92,7 +92,7 @@
             idInputCardType:    { value: "str" },
             titleInputCard:        { value: undefined },
             titleInputCardType:    { value: "str" },
-            sections: { value: [{ label: "", type: "", value: "" }] },
+            sections: { value: [] },
             actions: { value: [{ title: "", type: "Action.Submit", data: "{}" }] }
         },
         inputs:  1,
@@ -469,7 +469,7 @@
                 };
                 if (section.type) results.push(section);
             });
-            this.sections = (results.length === 0) ? [{ label: "", type: "text", value: "" }] : results;
+            this.sections = (results.length === 0) ? [] : results;
 
             // Actions
             results = new Array();
