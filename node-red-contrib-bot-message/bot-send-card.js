@@ -668,15 +668,15 @@ const buildInputCard = (RED, node, locale, data, config) => {
 
         switch (type) {
             case CARD_CONST.TYPE_CHECKBOX:
-                $data = JSON.parse(section.value);
+                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
                 item = inputFactory.buildCheckbox(id, index + 1, label, $data);
                 break;
             case CARD_CONST.TYPE_RADIOBUTTON:
-                $data = JSON.parse(section.value);
+                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
                 item = inputFactory.buildRadioButton(id, index + 1, label, $data);
                 break;
             case CARD_CONST.TYPE_DROPDOWN:
-                $data = JSON.parse(section.value);
+                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
                 item = inputFactory.buildDropdown(id, index + 1, label, $data);
                 break;
             case CARD_CONST.TYPE_TEXT:

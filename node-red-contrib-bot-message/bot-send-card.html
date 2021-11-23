@@ -273,23 +273,30 @@
                 const section = data.section;
                 let label = '';
                 let type = '';
+                let valueType = '';
                 let value = '';
 
                 if (section) {
                     if (section.hasOwnProperty('label')) label =  section.label;
                     if (section.hasOwnProperty('type')) type = section.type;
+                    if (section.hasOwnProperty('valueType')) valueType =  section.valueType;
                     if (section.hasOwnProperty('value')) value =  section.value;
                 }
 
                 $('<span/>', {}).appendTo(row);
                 $('<input/>',  { class:"property-section-label",  type:"text", style:"width:25%; margin-right:5px;", value: label,  placeholder:"Label"}).appendTo(row);
-                var typeField = $('<select/>', { class:"property-section-type", type:"text", style:"width:25%; margin-right:5px;"}).appendTo(row);
+                var typeField = $('<select/>', { class:"property-section-type", type:"text", style:"width:15%; margin-right:5px;"}).appendTo(row);
                 typeField.append($("<option></option>").val("text").text("Text"));
                 typeField.append($("<option></option>").val("checkbox").text("Checkbox"));
                 typeField.append($("<option></option>").val("radiobutton").text("Radio button"));
                 typeField.append($("<option></option>").val("dropdownlist").text("Dropdown list"));
                 typeField.val(type).change();
-                $('<input/>', { class:"property-section-value", type: "text", style:"width:45%; margin-right:5px;", value,  placeholder:"{}"}).appendTo(row);
+                var valueTypeField = $('<select/>', { class:"property-section-valueType", type:"text", style:"width:15%;"}).appendTo(row);
+                valueTypeField.append($("<option></option>").val("msg").text("msg"));
+                valueTypeField.append($("<option></option>").val("global").text("global"));
+                valueTypeField.append($("<option></option>").val("json").text("{}"));
+                valueTypeField.val(valueType).change();
+                $('<input/>', { class:"property-section-value", type: "text", style:"width:40%; margin-right:5px;", value,  placeholder:""}).appendTo(row);
 	          },
               sortable: true,
               removable: true
@@ -353,6 +360,7 @@
                     $inputs.prop('disabled', false);
 
                 if ($(this).val() === 'text') {
+                    $parent.find('.property-section-valueType').prop('disabled', true);
                     $parent.find('.property-section-value').prop('disabled', true);
                 }
             }).change();
@@ -465,6 +473,7 @@
                 const section = {
                     label  : $(this).find('.property-section-label').val(),
                     type : $(this).find('.property-section-type').val(),
+                    valueType  : $(this).find('.property-section-valueType').val(),
                     value  : $(this).find('.property-section-value').val()
                 };
                 if (section.type) results.push(section);
