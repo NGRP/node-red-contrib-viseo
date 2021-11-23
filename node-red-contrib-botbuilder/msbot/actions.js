@@ -209,7 +209,7 @@ async function receive(node, config = {}, context, bot) {
   _context.lastMessageDate = data.message.timestamp;
   helper.emitEvent("received", node, data, config);
 
-  node.send(data);
+  node.send([data,null]);
 }
 
 module.exports.receive = receive;
@@ -287,5 +287,9 @@ async function sendWelcomeMessage(node, context) {
   _context.convRef = ref;
   _context.lastMessageDate = data.message.timestamp;
 
-  node.send(data);
+  if (context.activity.type === "message"){
+    node.send([data, null]);
+  }
+  
+  node.send([null, data]);
 }
