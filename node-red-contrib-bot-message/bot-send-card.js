@@ -2,8 +2,6 @@ const mustache = require('mustache');
 const i18n     = require('./lib/i18n.js');
 const botmgr   = require('node-red-viseo-bot-manager');
 const helper   = require('node-red-viseo-helper');
-const inputFactory = require('./input-factory.js');
-const CARD_CONST = require('./constants.js');
 
 require('./lib/i18n.js').init();
 
@@ -25,17 +23,9 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
-        node.status({}); // Re-init node status after occuring any error
 
         this.repeat = (data)  => { input(RED, node, data, config, data.reply) };
-        this.on('input', (data)  => {
-            try {
-                input(RED, node, data, config, null);
-            } catch (error) {
-                console.error(`[send-card] register: ${error}`);
-                return node.status({ fill: "red", shape: "dot", text: `${error}` });
-            }
-        });
+        this.on('input', (data)  => { input(RED, node, data, config, null)  });
     }
     RED.nodes.registerType("send-card", register, {});
 
@@ -53,8 +43,8 @@ const buttonsStack = {
         data._buttonsStack = data._buttonsStack.concat(buttons);
     },
     popAll: function(data) {
-        let buttons = data._buttonsStack;
-        data._buttonsStack = [];
+        let buttons = data._buttonsStack;       
+        data._buttonsStack = []; 
         return buttons;
     }
 };
@@ -65,7 +55,7 @@ const getButtons = (RED, locale, config, data) => {
     let buttons = [];
     if (config.sendType === 'quick'){
         buttons = JSON.parse(JSON.stringify(config.quickreplies));
-    } else if (config.sendType === 'card' || config.sendType === 'inputCard'){
+    } else if (config.sendType === 'card'){
         buttons = JSON.parse(JSON.stringify(config.buttons));
     }
 
@@ -231,43 +221,42 @@ const buildReply = (RED, node, data, config) => {
     if(config.sendType === 'confirm') {
         reply.text = marshall(locale, config.confirmtext,  data, '');
     }
-
-    // Buttons
-    if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard' || config.sendType === 'inputCard') {
+    
+    // Other card message
+    if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard' || config.sendType === 'formAdaptiveCard' || config.sendType === 'formGlobalAdaptiveCard') {
+    
         let buttons = getButtons(RED, locale, config, data);
         buttonsStack.push(data, buttons);
         reply.buttons = buttons;
-    }
 
-    // Other texts, attachment
-    if (config.sendType === 'quick') {
-        reply.quicktext = marshall(locale, config.quicktext, data, '');
-        if (config.random){
-            let txt = reply.quicktext.split('\n');
-            reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+        if (config.sendType === 'quick') {
+            reply.quicktext = marshall(locale, config.quicktext, data, '');
+            if (config.random){
+                let txt = reply.quicktext.split('\n');
+                reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+            }
+            if (reply.speech === undefined) reply.speech = reply.quicktext;
+        } 
+        else if (config.sendType === 'card') {
+
+            let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
+            let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
+            
+            reply.title =    marshall(locale, title,  data, '');
+            reply.subtitle = marshall(locale, config.subtitle,  data, '');
+            reply.subtext =  marshall(locale, config.subtext,   data, '');
+            reply.attach =   marshall(locale, attach,  data, '');
+            if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
         }
-        if (reply.speech === undefined) reply.speech = reply.quicktext;
-    }
-    else if (config.sendType === 'card') {
-        let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
-        let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
+        else if (config.sendType === 'adaptiveCard' || config.sendType === 'formAdaptiveCard' || config.sendType === 'formGlobalAdaptiveCard') {
+            buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
 
-        reply.title =    marshall(locale, title,  data, '');
-        reply.subtitle = marshall(locale, config.subtitle,  data, '');
-        reply.subtext =  marshall(locale, config.subtext,   data, '');
-        reply.attach =   marshall(locale, attach,  data, '');
-        if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
+        }
+        // else if (config.sendType === 'formAdaptiveCard'){
+        //     facto.buildFeedbackAdaptiveCard(RED, node, locale, data, config, reply);
+        // }
     }
-    else if (config.sendType === 'adaptiveCard') {
-        buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
-    }
-    else if (config.sendType === 'inputCard') {
-        reply = {
-            ...reply,
-            ...buildInputCard(RED, node, locale, data, config, reply)
-        };
-    }
-
+    
     // Forward data without sending anything
     let context = botmgr.getContext(data);
     if (config.carousel){
@@ -410,13 +399,14 @@ const sendData = (node, data, config) => {
  */
 const addTextBlockToAdaptiveCard = (textToShow, body) => {
     const textBlock = {
-        type: CARD_CONST.TEXT_BLOCK,
-        wrap: true,
-        text: textToShow
+        "type": "TextBlock",
+        "wrap": true,
+        "size": "default",
+        "text": textToShow
     }
     body.push({
-        type: CARD_CONST.CONTAINER,
-        items: [ textBlock ]
+        "type": "Container",
+        "items": [ textBlock ]
     });
 };
 
@@ -427,30 +417,31 @@ const addTextBlockToAdaptiveCard = (textToShow, body) => {
  */
 const addButtonToAdaptiveCard = (textButtonMarker, prefix, textToShow, body) => {
     const textBlock = {
-        type: CARD_CONST.TEXT_BLOCK,
-        wrap: true,
-        text: textToShow
+        "type": "TextBlock",
+        "wrap": true,
+        "size": "default",
+        "text": textToShow
     };
     let button;
     const btnVal = textToShow.substring(textButtonMarker.length).trim(); // remove text marker ('- ') ahead of string
     if (btnVal && btnVal !== '') {
         button = {
-            type: CARD_CONST.ACTION_SUBMIT,
+            type: "Action.Submit",
             title: `${btnVal.split('. ')[1]}`,
             data: {
-                type: CARD_CONST.ACTION_POSTBACK,
+                type: "postBack",
                 value: `${prefix + btnVal}`
             }
         };
         body.push({
-            type: CARD_CONST.CONTAINER,
-            items: [ textBlock],
-            selectAction: button
+            "type": "Container",
+            "items": [ textBlock],
+            "selectAction": button
         });
     } else {
         body.push({
-            type: CARD_CONST.CONTAINER,
-            items: [ textBlock]
+            "type": "Container",
+            "items": [ textBlock]
         });
     }
 };
@@ -525,7 +516,7 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
         image.pixelHeight = parseInt(imageHeight); // type Number
     }
 
-    const firstContainer = body[0].type === CARD_CONST.CONTAINER ? body[0] : null;
+    const firstContainer = body[0].type === "Container" ? body[0] : null;
 
     // If there exists a Container: append image directly to tail of Array ${items} inside the first Container 
     if (firstContainer) {
@@ -533,7 +524,7 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
     } else {
         // If there is no Container yet: create a Container; then fold image into this Container; finally append it to ${body}
         body.push({
-            "type": CARD_CONST.CONTAINER,
+            "type": "Container",
             "items": [ image ]
         });
     }
@@ -541,6 +532,7 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
 
 const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     let title = config.titleAdaptiveCard;
+    let subtitle = config.subtitle;
     let attach = config.attachAdaptiveCard;
     let attachSize = config.attachSizeAdaptiveCard;
     let imageHorizontalAlignment = config.attachHorizontalAlignment;
@@ -552,147 +544,182 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
     let titleShowCardAction = config.titleShowCardAction;
     let textButtonMarker = config.textButtonMarker;
     let textButtonPrefix = config.textButtonPrefix;
-   
-    /* 
-    '\n\n' is a default Section marker, '- ' is clickable text marker by default)
-    This is an exmaple of text to display:
-        {Title}
-        \n\n
-        {Subtitle1} (this is Section1)
-        - {some text}
-        - {some other text} 
-        \n\n
-        {Subtitle2} (this is Section2)
-        - {some text}
-        - {some other text}
-        \n\n 
-        {Subtitle3} (this is Section3)
-        - {some text}
-        - {some other text}
-    */
-    if (!separator) {
-        // if not defined value, then consider sections are surrounded by '\n\n'.
-        separator = "\n\n";
+    
+    if(config.sendType === 'formAdaptiveCard'){
+        title = helper.getContextValue(RED, node, data, title || '', config.titleTypeAdaptiveCard || 'str');
+        subtext = helper.getContextValue(RED, node, data, subtext || '', config.node-input-subtext || 'str');
+        subtext = marshall(locale, subtext,  data, '');
+        title = marshall(locale, title,  data, '');
+        
+        
+        reply.type = 'AdaptiveCard';
+        reply.title = title;
+        reply.version = "1.3";
+        reply.body = [{"type": "TextBlock",
+        "size": "Medium",
+        "weight": "Bolder",
+        "text": title,
+        "horizontalAlignment": "Center",
+        "wrap": true},
+        {
+            "type": "TextBlock",
+            "text": subtext,
+            "size": "Large",
+            "weight": "Bolder",
+            "wrap": true
+        },
+        {
+            "type": "Input.Text",
+            "style": "text",
+            "isMultiline": true,
+            "id": "userFeedback",
+            "placeholder": "master.placeholder",
+            "maxLength": 500,
+            "isRequired": true,
+            "label": "Feedback:",
+            "errorMessage": "master.errorMessage"
+        }];
+        reply.actions = [{
+            "type": "Action.Submit",
+            "title": "master.submit",
+            "data": {
+                "id": "feedbackButton",
+                "messageId": false,
+              }
+        }];
+        const textToShow = marshall(locale, subtext,  data, '');
     }
 
-    if (!displayedTextSize) {
-        // if not defined value, then don't wrap, display up to 100k characters.
-        displayedTextSize = 100000;
+    if(config.sendType === 'formGlobalAdaptiveCard'){
+        title = helper.getContextValue(RED, node, data, title || '', config.titleTypeAdaptiveCard || 'str');
+        title = marshall(locale, title,  data, '');
+    
+        
+        reply.type = 'AdaptiveCard';
+        reply.title = title;
+        reply.version = "1.3";
+        reply.body = [{"type": "TextBlock",
+        "size": "Medium",
+        "weight": "Bolder",
+        "text": title,
+        "horizontalAlignment": "Center",
+        "wrap": true},
+        {
+            "type": "Input.Text",
+            "style": "text",
+            "isMultiline": true,
+            "id": "userFeedback",
+            "placeholder": "master.placeholder",
+            "maxLength": 500,
+            "isRequired": true,
+            "label": "Feedback:",
+            "errorMessage": "master.errorMessage"
+        },
+        {
+            "type": "Input.ChoiceSet",
+            "id": "SingleSelectVal",
+            "style": "expanded",
+            "value": "1",
+            "choices": [
+                {
+                    "title": "👍",
+                    "value": "Like"
+                },
+                {
+                    "title": "👎",
+                    "value": "Dislike"  
+                }
+            ]
+        },];
+        reply.actions = [{
+            "type": "Action.Submit",
+            "title": "master.submit",
+            "data": {
+                "id": "feedbackGlobalButton",
+                }}];
+        const textToShow = marshall(locale, subtext,  data, '');
     }
 
-    textButtonMarker = helper.getContextValue(RED, node, data, textButtonMarker || '- ', 'str');
-    textButtonPrefix = helper.getContextValue(RED, node, data, textButtonPrefix || '', config.textButtonPrefixType || 'str');
-
-    titleShowCardAction = helper.getContextValue(RED, node, data, titleShowCardAction || 'More', config.titleShowCardActionType || 'str');
-    titleShowCardAction = marshall(locale, titleShowCardAction,  data, '');
-
-    title = helper.getContextValue(RED, node, data, title || '', config.titleTypeAdaptiveCard || 'str');
-    title = marshall(locale, title,  data, '');
-
-    attach = helper.getContextValue(RED, node, data, attach || '', config.attachTypeAdaptiveCard || 'str');
-    attach = marshall(locale, attach,  data, '');
-
-    attachSize = helper.getContextValue(RED, node, data, attachSize, 'str');
-    imageHorizontalAlignment = helper.getContextValue(RED, node, data, imageHorizontalAlignment, 'str');
-    imageWidth = helper.getContextValue(RED, node, data, imageWidth, 'str');
-    imageHeight = helper.getContextValue(RED, node, data, imageHeight, 'str');
-
-    reply.type = CARD_CONST.CARD_ADAPTIVECARD;
-    reply.title = title;
-    reply.body = [];
-
-    /*customized text to display*/
-    const textToShow = marshall(locale, subtext,  data, '');
-
-    if (textToShow.length > displayedTextSize) {
-        // if textToShow is too big and has to be wrapped up to <displayedTextSize> characters
-        let tmp = textToShow.substring(0, displayedTextSize);
-
-        // To avoid displaying the UNCOMPLETED N th item, display onlt the (N - 1)th item
-        /* For exmaple:
-                tmp = "productbot.before_colon_series\n\n**Processor**:
-                - 1. Intel® Xeon® Gold 5222 (3.8 GHz base frequency, up to 3.9 GHz with Intel® Turbo Boost Technology, 16.5 MB cache, 4 cores)
-                - 2. Intel® Xeon® Silver 4114 (2.2 GHz base freque";
-
-            To avoid displaying the 2nd item(which is uncomplete), display onlt the 1st item
+    else if(config.sendType === 'adaptiveCard'){
+            /* 
+        '\n\n' is a default Section marker, '- ' is clickable text marker by default)
+        This is an exmaple of text to display:
+            {Title}
+            \n\n
+            {Subtitle1} (this is Section1)
+            - {some text}
+            - {some other text} 
+            \n\n
+            {Subtitle2} (this is Section2)
+            - {some text}
+            - {some other text}
+            \n\n 
+            {Subtitle3} (this is Section3)
+            - {some text}
+            - {some other text}
         */
-        const attrIndex = tmp.lastIndexOf('\n');
-        tmp = textToShow.substring(0, attrIndex);
+        if (!separator) {
+            // if not defined value, then consider sections are surrounded by '\n\n'.
+            separator = "\n\n";
+        }
 
-        // primary card
-        buildAdaptiveCardJson(tmp, reply.body, separator, textButtonMarker, textButtonPrefix);
-        if (attach) addImageToAdaptiveCard(attach, attachSize, imageHorizontalAlignment, imageWidth, imageHeight, reply.body);
+        if (!displayedTextSize) {
+            // if not defined value, then don't wrap, display up to 100k characters.
+            displayedTextSize = 100000;
+        }
 
-        // expandable card
-        reply.actions = [];
-        tmp = textToShow.substring(attrIndex);
-        reply.actions.push({"type": "Action.ShowCard", "title": titleShowCardAction, "card": {"type": 'AdaptiveCard', "body": []}});
-        buildAdaptiveCardJson(tmp, reply.actions[0].card.body, separator, textButtonMarker, textButtonPrefix);
-    } else {
-        // otherwise show all the text within the primary card, no expandable card
-        buildAdaptiveCardJson(textToShow, reply.body, separator, textButtonMarker, textButtonPrefix);
-        if (attach) addImageToAdaptiveCard(attach, attachSize, imageHorizontalAlignment, imageWidth, imageHeight, reply.body);
+        textButtonMarker = helper.getContextValue(RED, node, data, textButtonMarker || '- ', 'str');
+        textButtonPrefix = helper.getContextValue(RED, node, data, textButtonPrefix || '', config.textButtonPrefixType || 'str');
+
+        titleShowCardAction = helper.getContextValue(RED, node, data, titleShowCardAction || 'More', config.titleShowCardActionType || 'str');
+        titleShowCardAction = marshall(locale, titleShowCardAction,  data, '');
+
+        title = helper.getContextValue(RED, node, data, title || '', config.titleTypeAdaptiveCard || 'str');
+        title = marshall(locale, title,  data, '');
+
+        attach = helper.getContextValue(RED, node, data, attach || '', config.attachTypeAdaptiveCard || 'str');
+        attach = marshall(locale, attach,  data, '');
+
+        attachSize = helper.getContextValue(RED, node, data, attachSize, 'str');
+        imageHorizontalAlignment = helper.getContextValue(RED, node, data, imageHorizontalAlignment, 'str');
+        imageWidth = helper.getContextValue(RED, node, data, imageWidth, 'str');
+        imageHeight = helper.getContextValue(RED, node, data, imageHeight, 'str');
+
+        reply.type = 'AdaptiveCard';
+        reply.title = title;
+        reply.version = "1.3";
+        reply.body = [];
+
+        /*customized text to display*/
+        const textToShow = marshall(locale, subtext,  data, '');
+
+        if (textToShow.length > displayedTextSize) {
+            // if textToShow is too big and has to be wrapped up to <displayedTextSize> characters
+            let tmp = textToShow.substring(0, displayedTextSize);
+
+            // To avoid displaying the UNCOMPLETED N th item, display onlt the (N - 1)th item
+            /* For exmaple: 
+                    tmp = "productbot.before_colon_series\n\n**Processor**:
+                    - 1. Intel® Xeon® Gold 5222 (3.8 GHz base frequency, up to 3.9 GHz with Intel® Turbo Boost Technology, 16.5 MB cache, 4 cores)
+                    - 2. Intel® Xeon® Silver 4114 (2.2 GHz base freque";
+                To avoid displaying the 2nd item(which is uncomplete), display onlt the 1st item
+            */
+            const attrIndex = tmp.lastIndexOf('\n');
+            tmp = textToShow.substring(0, attrIndex);
+
+            // primary card
+            buildAdaptiveCardJson(tmp, reply.body, separator, textButtonMarker, textButtonPrefix);
+            if (attach) addImageToAdaptiveCard(attach, attachSize, imageHorizontalAlignment, imageWidth, imageHeight, reply.body);
+
+            // expandable card
+            reply.actions = [];
+            tmp = textToShow.substring(attrIndex);
+            reply.actions.push({"type": "Action.ShowCard", "title": titleShowCardAction, "card": {"type": 'AdaptiveCard', "body": []}});
+            buildAdaptiveCardJson(tmp, reply.actions[0].card.body, separator, textButtonMarker, textButtonPrefix);
+        } else {
+            // otherwise show all the text within the primary card, no expandable card
+            buildAdaptiveCardJson(textToShow, reply.body, separator, textButtonMarker, textButtonPrefix);
+            if (attach) addImageToAdaptiveCard(attach, attachSize, imageHorizontalAlignment, imageWidth, imageHeight, reply.body);
+        }
     }
 }
-
-
-const buildInputCard = (RED, node, locale, data, config) => {
-    // TODO extract constants
-    const reply = {
-        type: CARD_CONST.CARD_ADAPTIVECARD,
-        title: '',
-        body: [],
-        actions: []
-    };
-    // ID
-    let id = helper.getContextValue(RED, node, data, config.idInputCard || '', config.idInputCardType || 'str');
-
-    // Global text(title)
-    const title = helper.getContextValue(RED, node, data, config.titleInputCard || '', config.titleInputCardType || 'str');
-    if (title) {
-        reply.title = title;
-        reply.body.push({
-            type: CARD_CONST.TEXT_BLOCK,
-            text: title,
-            wrap: true
-        });
-    }
-
-    // Body
-    const sections = JSON.parse(JSON.stringify(config.sections));
-    sections.forEach((section, index) => {
-        const label = section.label;
-        const type = section.type;
-        let $data;
-        let item;
-
-        switch (type) {
-            case CARD_CONST.TYPE_CHECKBOX:
-                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
-                item = inputFactory.buildCheckbox(id, index + 1, label, $data);
-                break;
-            case CARD_CONST.TYPE_RADIOBUTTON:
-                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
-                item = inputFactory.buildRadioButton(id, index + 1, label, $data);
-                break;
-            case CARD_CONST.TYPE_DROPDOWN:
-                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
-                item = inputFactory.buildDropdown(id, index + 1, label, $data);
-                break;
-            case CARD_CONST.TYPE_TEXT:
-                item = inputFactory.buildTextblock(id, index + 1, label);
-                break;
-            default:
-                item = inputFactory.buildTextblock(id, index + 1, label);
-        }
-        reply.body.push(item);
-    });
-
-    reply.actions = JSON.parse(JSON.stringify(config.actions)).map(action => ({
-        title: action.title === '' ? 'Submit' : action.title,
-        type: action.type,
-        data: JSON.parse(action.data)
-    }));
-
-    return reply;
-};
