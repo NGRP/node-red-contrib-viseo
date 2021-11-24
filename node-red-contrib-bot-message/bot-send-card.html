@@ -71,6 +71,8 @@
 
             titleAdaptiveCard: { value: undefined },
             titleTypeAdaptiveCard: { value: "str" },
+            formAdaptiveCard: {value: undefined},
+            formGlobalAdaptiveCard: {value: undefined},
             textAdaptiveCard: { value: undefined },
             subtextAdaptiveCard: { value: undefined },
             attachAdaptiveCard: { value: undefined },
@@ -197,6 +199,12 @@
                 } else if (type === "event") {
                     $("#node-input-eventValue, #node-input-eventName").typedInput('show');
                 } else if (type === "adaptiveCard") {
+                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
+                }
+                else if (type === "formAdaptiveCard") {
+                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
+                }
+                else if (type === "formGlobalAdaptiveCard") {
                     $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
             });
@@ -552,7 +560,7 @@
                 else return "Send: \"\"";
             }
             if (this.sendType === "card")   return "Send card";
-            if (this.sendType === "adaptiveCard")  return "Send card";
+            if (this.sendType === "adaptiveCard" || this.sendType === "formAdaptiveCard" || this.sendType === "formGlobalAdaptiveCard" )  return "Send card"; 
             if (this.sendType === "media")  return "Send media";
             if (this.sendType === "signin") return "Send signin";
             if (this.sendType === "event")  return "Send event";
@@ -725,6 +733,8 @@
                 <option value="event">Event</option>
                 <option value="adaptiveCard">AdaptiveCard</option>
                 <option value="confirm">Confirm</option>
+                <option value="formAdaptiveCard">formAdaptiveCard</option>
+                <option value="formGlobalAdaptiveCard">formGlobalAdaptiveCard</option>
                 <option value="inputCard">Input Card</option>
             </select>
         </div>
@@ -789,12 +799,34 @@
                 <input type="hidden" id="node-input-attachType">
             </div>
         </section>
-        <section class="section-type section-adaptiveCard">
+        <section class="section-type section-formAdaptiveCard">
             <div class="form-row">
                 <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
                 <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
                 <input type="hidden" id="node-input-titleTypeAdaptiveCard">
             </div>
+            <div class="form-row">
+                <label for="node-input-textAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
+                <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send" style="width:80%;"></textarea>
+            </div>
+        </section>
+
+        <section class="section-type section-formGlobalAdaptiveCard">
+            <div class="form-row">
+                <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-titleTypeAdaptiveCard">
+            </div>
+        </section>
+
+
+
+        <section class="section-type section-adaptiveCard">
+            <!-- <div class="form-row">
+                <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-titleTypeAdaptiveCard">
+            </div> -->
             <!--<div class="form-row">
                 <label for="node-input-subtextAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
                 <textarea id="node-input-subtextAdaptiveCard" rows="4" placeholder="Text to send" style="width:80%;"></textarea>
