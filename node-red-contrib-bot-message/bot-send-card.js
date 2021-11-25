@@ -2,6 +2,8 @@ const mustache = require('mustache');
 const i18n     = require('./lib/i18n.js');
 const botmgr   = require('node-red-viseo-bot-manager');
 const helper   = require('node-red-viseo-helper');
+const inputFactory = require('./input-factory.js');
+const CARD_CONST = require('./constants.js');
 
 require('./lib/i18n.js').init();
 
@@ -23,9 +25,17 @@ module.exports = function(RED) {
     const register = function(config) {
         RED.nodes.createNode(this, config);
         var node = this;
+        node.status({}); // Re-init node status after occuring any error
 
         this.repeat = (data)  => { input(RED, node, data, config, data.reply) };
-        this.on('input', (data)  => { input(RED, node, data, config, null)  });
+        this.on('input', (data)  => {
+            try {
+                input(RED, node, data, config, null);
+            } catch (error) {
+                console.error(`[send-card] register: ${error}`);
+                return node.status({ fill: "red", shape: "dot", text: `${error}` });
+            }
+        });
     }
     RED.nodes.registerType("send-card", register, {});
 
@@ -43,8 +53,8 @@ const buttonsStack = {
         data._buttonsStack = data._buttonsStack.concat(buttons);
     },
     popAll: function(data) {
-        let buttons = data._buttonsStack;       
-        data._buttonsStack = []; 
+        let buttons = data._buttonsStack;
+        data._buttonsStack = [];
         return buttons;
     }
 };
@@ -55,7 +65,7 @@ const getButtons = (RED, locale, config, data) => {
     let buttons = [];
     if (config.sendType === 'quick'){
         buttons = JSON.parse(JSON.stringify(config.quickreplies));
-    } else if (config.sendType === 'card'){
+    } else if (config.sendType === 'card' || config.sendType === 'inputCard'){
         buttons = JSON.parse(JSON.stringify(config.buttons));
     }
 
@@ -221,42 +231,42 @@ const buildReply = (RED, node, data, config) => {
     if(config.sendType === 'confirm') {
         reply.text = marshall(locale, config.confirmtext,  data, '');
     }
-    
-    // Other card message
-    if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard' || config.sendType === 'formAdaptiveCard' || config.sendType === 'formGlobalAdaptiveCard') {
-    
+
+    // Buttons
+    if (config.sendType === 'quick' || config.sendType === 'card' || config.sendType === 'adaptiveCard' || config.sendType === 'inputCard'|| config.sendType === 'formAdaptiveCard' || config.sendType === 'formGlobalAdaptiveCard') {
         let buttons = getButtons(RED, locale, config, data);
         buttonsStack.push(data, buttons);
         reply.buttons = buttons;
-
-        if (config.sendType === 'quick') {
-            reply.quicktext = marshall(locale, config.quicktext, data, '');
-            if (config.random){
-                let txt = reply.quicktext.split('\n');
-                reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
-            }
-            if (reply.speech === undefined) reply.speech = reply.quicktext;
-        } 
-        else if (config.sendType === 'card') {
-
-            let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
-            let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
-            
-            reply.title =    marshall(locale, title,  data, '');
-            reply.subtitle = marshall(locale, config.subtitle,  data, '');
-            reply.subtext =  marshall(locale, config.subtext,   data, '');
-            reply.attach =   marshall(locale, attach,  data, '');
-            if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
-        }
-        else if (config.sendType === 'adaptiveCard' || config.sendType === 'formAdaptiveCard' || config.sendType === 'formGlobalAdaptiveCard') {
-            buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
-
-        }
-        // else if (config.sendType === 'formAdaptiveCard'){
-        //     facto.buildFeedbackAdaptiveCard(RED, node, locale, data, config, reply);
-        // }
     }
-    
+
+    // Other texts, attachment
+    if (config.sendType === 'quick') {
+        reply.quicktext = marshall(locale, config.quicktext, data, '');
+        if (config.random){
+            let txt = reply.quicktext.split('\n');
+            reply.quicktext = txt[Math.round(Math.random() * (txt.length-1))]
+        }
+        if (reply.speech === undefined) reply.speech = reply.quicktext;
+    }
+    else if (config.sendType === 'card') {
+        let title  = helper.getContextValue(RED, node, data, config.title, config.titleType || 'str');
+        let attach = helper.getContextValue(RED, node, data, config.attach, config.attachType || 'str');
+
+        reply.title =    marshall(locale, title,  data, '');
+        reply.subtitle = marshall(locale, config.subtitle,  data, '');
+        reply.subtext =  marshall(locale, config.subtext,   data, '');
+        reply.attach =   marshall(locale, attach,  data, '');
+        if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
+    }
+    else if (config.sendType === 'adaptiveCard' || config.sendType === 'formAdaptiveCard' || config.sendType === 'formGlobalAdaptiveCard') {        buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
+    }
+    else if (config.sendType === 'inputCard') {
+        reply = {
+            ...reply,
+            ...buildInputCard(RED, node, locale, data, config, reply)
+        };
+    }
+
     // Forward data without sending anything
     let context = botmgr.getContext(data);
     if (config.carousel){
@@ -399,14 +409,13 @@ const sendData = (node, data, config) => {
  */
 const addTextBlockToAdaptiveCard = (textToShow, body) => {
     const textBlock = {
-        "type": "TextBlock",
-        "wrap": true,
-        "size": "default",
-        "text": textToShow
+        type: CARD_CONST.TEXT_BLOCK,
+        wrap: true,
+        text: textToShow
     }
     body.push({
-        "type": "Container",
-        "items": [ textBlock ]
+        type: CARD_CONST.CONTAINER,
+        items: [ textBlock ]
     });
 };
 
@@ -417,31 +426,30 @@ const addTextBlockToAdaptiveCard = (textToShow, body) => {
  */
 const addButtonToAdaptiveCard = (textButtonMarker, prefix, textToShow, body) => {
     const textBlock = {
-        "type": "TextBlock",
-        "wrap": true,
-        "size": "default",
-        "text": textToShow
+        type: CARD_CONST.TEXT_BLOCK,
+        wrap: true,
+        text: textToShow
     };
     let button;
     const btnVal = textToShow.substring(textButtonMarker.length).trim(); // remove text marker ('- ') ahead of string
     if (btnVal && btnVal !== '') {
         button = {
-            type: "Action.Submit",
+            type: CARD_CONST.ACTION_SUBMIT,
             title: `${btnVal.split('. ')[1]}`,
             data: {
-                type: "postBack",
+                type: CARD_CONST.ACTION_POSTBACK,
                 value: `${prefix + btnVal}`
             }
         };
         body.push({
-            "type": "Container",
-            "items": [ textBlock],
-            "selectAction": button
+            type: CARD_CONST.CONTAINER,
+            items: [ textBlock],
+            selectAction: button
         });
     } else {
         body.push({
-            "type": "Container",
-            "items": [ textBlock]
+            type: CARD_CONST.CONTAINER,
+            items: [ textBlock]
         });
     }
 };
@@ -516,7 +524,7 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
         image.pixelHeight = parseInt(imageHeight); // type Number
     }
 
-    const firstContainer = body[0].type === "Container" ? body[0] : null;
+    const firstContainer = body[0].type === CARD_CONST.CONTAINER ? body[0] : null;
 
     // If there exists a Container: append image directly to tail of Array ${items} inside the first Container 
     if (firstContainer) {
@@ -524,7 +532,7 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
     } else {
         // If there is no Container yet: create a Container; then fold image into this Container; finally append it to ${body}
         body.push({
-            "type": "Container",
+            "type": CARD_CONST.CONTAINER,
             "items": [ image ]
         });
     }
@@ -584,7 +592,6 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
             "title": "master.submit",
             "data": {
                 "id": "feedbackButton",
-                "messageId": false,
               }
         }];
         const textToShow = marshall(locale, subtext,  data, '');
@@ -723,3 +730,65 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
         }
     }
 }
+
+
+const buildInputCard = (RED, node, locale, data, config) => {
+    // TODO extract constants
+    const reply = {
+        type: CARD_CONST.CARD_ADAPTIVECARD,
+        title: '',
+        body: [],
+        actions: []
+    };
+    // ID
+    let id = helper.getContextValue(RED, node, data, config.idInputCard || '', config.idInputCardType || 'str');
+
+    // Global text(title)
+    const title = helper.getContextValue(RED, node, data, config.titleInputCard || '', config.titleInputCardType || 'str');
+    if (title) {
+        reply.title = title;
+        reply.body.push({
+            type: CARD_CONST.TEXT_BLOCK,
+            text: title,
+            wrap: true
+        });
+    }
+
+    // Body
+    const sections = JSON.parse(JSON.stringify(config.sections));
+    sections.forEach((section, index) => {
+        const label = section.label;
+        const type = section.type;
+        let $data;
+        let item;
+
+        switch (type) {
+            case CARD_CONST.TYPE_CHECKBOX:
+                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
+                item = inputFactory.buildCheckbox(id, index + 1, label, $data);
+                break;
+            case CARD_CONST.TYPE_RADIOBUTTON:
+                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
+                item = inputFactory.buildRadioButton(id, index + 1, label, $data);
+                break;
+            case CARD_CONST.TYPE_DROPDOWN:
+                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
+                item = inputFactory.buildDropdown(id, index + 1, label, $data);
+                break;
+            case CARD_CONST.TYPE_TEXT:
+                item = inputFactory.buildTextblock(id, index + 1, label);
+                break;
+            default:
+                item = inputFactory.buildTextblock(id, index + 1, label);
+        }
+        reply.body.push(item);
+    });
+
+    reply.actions = JSON.parse(JSON.stringify(config.actions)).map(action => ({
+        title: action.title === '' ? 'Submit' : action.title,
+        type: action.type,
+        data: JSON.parse(action.data)
+    }));
+
+    return reply;
+};
