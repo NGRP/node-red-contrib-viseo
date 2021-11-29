@@ -71,6 +71,28 @@
 
             titleAdaptiveCard: { value: undefined },
             titleTypeAdaptiveCard: { value: "str" },
+            titleformAdaptiveCard: { value: undefined },
+            titleformTypeAdaptiveCard: { value: "str" },
+            titleformGlobalAdaptiveCard: { value: undefined },
+            titleformGlobalTypeAdaptiveCard: { value: "str" },
+
+            errorMsgformAdaptiveCard: { value: undefined },
+            errorMsgformTypeAdaptiveCard: { value: "str" },
+            errorMsgformGlobalAdaptiveCard: { value: undefined },
+            errorMsgformGlobalTypeAdaptiveCard: { value: "str" },
+
+            submitLabelformAdaptiveCard: { value: undefined },
+            submitLabelformTypeAdaptiveCard: { value: "str" },
+            submitLabelformGlobalAdaptiveCard: { value: undefined },
+            submitLabelformGlobalTypeAdaptiveCard: { value: "str" },
+
+            placeHolderformAdaptiveCard: { value: undefined },
+            placeHolderformTypeAdaptiveCard: { value: "str" },
+            placeHolderformGlobalAdaptiveCard: { value: undefined },
+            placeHolderformGlobalTypeAdaptiveCard: { value: "str" },
+
+
+
             formAdaptiveCard: {value: undefined},
             formGlobalAdaptiveCard: {value: undefined},
             textAdaptiveCard: { value: undefined },
@@ -123,6 +145,18 @@
                 .typedInput("width", "100px");
 
             $("#node-input-titleAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleTypeAdaptiveCard")});
+            $("#node-input-titleformAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleformTypeAdaptiveCard")});
+            $("#node-input-titleformGlobalAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-titleformGlobalTypeAdaptiveCard")});
+            
+            $("#node-input-errorMsgformAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-errorMsgformTypeAdaptiveCard")});
+            $("#node-input-errorMsgformGlobalAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-errorMsgformGlobalTypeAdaptiveCard")});
+            
+            $("#node-input-submitLabelformAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-submitLabelformTypeAdaptiveCard")});
+            $("#node-input-submitLabelformGlobalAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-submitLabelformGlobalTypeAdaptiveCard")});
+            
+            $("#node-input-placeHolderformAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-placeHolderformTypeAdaptiveCard")});
+            $("#node-input-placeHolderformGlobalAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-placeHolderformGlobalTypeAdaptiveCard")});
+
             $("#node-input-attachAdaptiveCard").typedInput({     default: 'str', types: ['msg','global','str'], typeField: $("#node-input-attachTypeAdaptiveCard")});
             $("#node-input-attachWidthAdaptiveCard").typedInput({ default: 'str', types: ['str'], type: 'str' });
             $("#node-input-attachHeightAdaptiveCard").typedInput({ default: 'str', types: ['str'], type: 'str' });
@@ -202,10 +236,10 @@
                     $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
                 else if (type === "formAdaptiveCard") {
-                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
+                    $("#node-input-titleformAdaptiveCard, #errorMsgformAdaptiveCard, #submitLabelformAdaptiveCard, #placeHolderformAdaptiveCard").typedInput('show');
                 }
                 else if (type === "formGlobalAdaptiveCard") {
-                    $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
+                    $("#node-input-titleformGlobalAdaptiveCard, #errorMsgformGlobalAdaptiveCard, #submitLabelformGlobalAdaptiveCard, #placeHolderformGlobalAdaptiveCard").typedInput('show');
                 }
             });
 
@@ -801,21 +835,47 @@
         </section>
         <section class="section-type section-formAdaptiveCard">
             <div class="form-row">
-                <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
-                <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
-                <input type="hidden" id="node-input-titleTypeAdaptiveCard">
+                <label for="node-input-titleformAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-titleformAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-titleformTypeAdaptiveCard">
             </div>
             <div class="form-row">
-                <label for="node-input-textAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Text</label>
-                <textarea id="node-input-textAdaptiveCard" rows="4" placeholder="Text to send" style="width:80%;"></textarea>
+                <label for="node-input-placeHolderformAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Placeholder</label>
+                <input type="text" id="node-input-placeHolderformAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-placeHolderformTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-errorMsgformAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Error Message</label>
+                <input type="text" id="node-input-errorMsgformAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-errorMsgformTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-submitLabelformAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Submit Label</label>
+                <input type="text" id="node-input-submitLabelformAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-submitLabelformTypeAdaptiveCard">
             </div>
         </section>
 
         <section class="section-type section-formGlobalAdaptiveCard">
             <div class="form-row">
-                <label for="node-input-titleAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
-                <input type="text" id="node-input-titleAdaptiveCard" style="width:80%;">
-                <input type="hidden" id="node-input-titleTypeAdaptiveCard">
+                <label for="node-input-titleformGlobalAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Title</label>
+                <input type="text" id="node-input-titleformGlobalAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-titleformGlobalTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-placeHolderformGlobalAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Placeholder</label>
+                <input type="text" id="node-input-placeHolderformGlobalAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-placeHolderformGlobalTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-errorMsgformGlobalAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Error Message</label>
+                <input type="text" id="node-input-errorMsgformGlobalAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-errorMsgformGlobalTypeAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-submitLabelformGlobalAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Submit Label</label>
+                <input type="text" id="node-input-submitLabelformGlobalAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-submitLabelTypeformGlobalAdaptiveCard">
             </div>
         </section>
 
