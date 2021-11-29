@@ -86,6 +86,11 @@
             submitLabelformGlobalAdaptiveCard: { value: undefined },
             submitLabelformGlobalTypeAdaptiveCard: { value: "str" },
 
+            inputLabelformAdaptiveCard: { value: undefined },
+            inputLabelformTypeAdaptiveCard: { value: "str" },
+            inputLabelformGlobalAdaptiveCard: { value: undefined },
+            inputLabelformGlobalTypeAdaptiveCard: { value: "str" },
+
             placeHolderformAdaptiveCard: { value: undefined },
             placeHolderformTypeAdaptiveCard: { value: "str" },
             placeHolderformGlobalAdaptiveCard: { value: undefined },
@@ -153,6 +158,9 @@
             
             $("#node-input-submitLabelformAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-submitLabelformTypeAdaptiveCard")});
             $("#node-input-submitLabelformGlobalAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-submitLabelformGlobalTypeAdaptiveCard")});
+            
+            $("#node-input-inputLabelformAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-inputLabelformTypeAdaptiveCard")});
+            $("#node-input-inputLabelformGlobalAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-inputLabelformGlobalTypeAdaptiveCard")});
             
             $("#node-input-placeHolderformAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-placeHolderformTypeAdaptiveCard")});
             $("#node-input-placeHolderformGlobalAdaptiveCard").typedInput({      default: 'str', types: ['msg','global','str'], typeField: $("#node-input-placeHolderformGlobalTypeAdaptiveCard")});
@@ -236,10 +244,10 @@
                     $("#node-input-attachAdaptiveCard, #node-input-titleAdaptiveCard, #node-input-displayedTextSizeAdaptiveCard, #node-input-containerSeparatorAdaptiveCard").typedInput('show');
                 }
                 else if (type === "formAdaptiveCard") {
-                    $("#node-input-titleformAdaptiveCard, #errorMsgformAdaptiveCard, #submitLabelformAdaptiveCard, #placeHolderformAdaptiveCard").typedInput('show');
+                    $("#node-input-titleformAdaptiveCard, #errorMsgformAdaptiveCard, #submitLabelformAdaptiveCard, #placeHolderformAdaptiveCard, #inputLabelformAdaptiveCard").typedInput('show');
                 }
                 else if (type === "formGlobalAdaptiveCard") {
-                    $("#node-input-titleformGlobalAdaptiveCard, #errorMsgformGlobalAdaptiveCard, #submitLabelformGlobalAdaptiveCard, #placeHolderformGlobalAdaptiveCard").typedInput('show');
+                    $("#node-input-titleformGlobalAdaptiveCard, #errorMsgformGlobalAdaptiveCard, #submitLabelformGlobalAdaptiveCard, #placeHolderformGlobalAdaptiveCard, #submitLabelformGlobalAdaptiveCard").typedInput('show');
                 }
             });
 
@@ -854,6 +862,11 @@
                 <input type="text" id="node-input-submitLabelformAdaptiveCard" style="width:80%;">
                 <input type="hidden" id="node-input-submitLabelformTypeAdaptiveCard">
             </div>
+            <div class="form-row">
+                <label for="node-input-inputLabelformAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Input Label</label>
+                <input type="text" id="node-input-inputLabelformAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-inputLabelTypeformAdaptiveCard">
+            </div>
         </section>
 
         <section class="section-type section-formGlobalAdaptiveCard">
@@ -876,6 +889,11 @@
                 <label for="node-input-submitLabelformGlobalAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Submit Label</label>
                 <input type="text" id="node-input-submitLabelformGlobalAdaptiveCard" style="width:80%;">
                 <input type="hidden" id="node-input-submitLabelTypeformGlobalAdaptiveCard">
+            </div>
+            <div class="form-row">
+                <label for="node-input-inputLabelformGlobalAdaptiveCard"><i class="fa fa-pencil-square-o"></i> Input Label</label>
+                <input type="text" id="node-input-inputLabelformGlobalAdaptiveCard" style="width:80%;">
+                <input type="hidden" id="node-input-inputLabelTypeformGlobalAdaptiveCard">
             </div>
         </section>
 

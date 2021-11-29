@@ -560,6 +560,7 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
     let formtitle = config.titleformAdaptiveCard;
     let errorMsgform = config.errorMsgformAdaptiveCard;
     let submitLabelform = config.submitLabelformAdaptiveCard;
+    let inputLabelform = config.inputLabelformAdaptiveCard;
     let placeHolderform = config.placeHolderformAdaptiveCard;
 
     formtitle = helper.getContextValue(RED, node, data, formtitle || '', config.titleformTypeAdaptiveCard || 'str');
@@ -585,7 +586,7 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
             "placeholder": placeHolderform,
             "maxLength": 500,
             "isRequired": true,
-            "label": "Feedback:",
+            "label": inputLabelform,
             "errorMessage": errorMsgform
         }
     ];
@@ -603,6 +604,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
     let errorMsgformGlob = config.errorMsgformGlobalAdaptiveCard;
     let submitLabelformGlob = config.submitLabelformGlobalAdaptiveCard;
     let placeHolderformGlob = config.placeHolderformGlobalAdaptiveCard;
+    let inputLabelformGlob = config.inputLabelformGlobalAdaptiveCard;
 
     formGlobaltitle = helper.getContextValue(RED, node, data, formGlobaltitle || '', config.titleformGlobalTypeAdaptiveCard || 'str');
     formGlobaltitle = marshall(locale, formGlobaltitle, data, '');
@@ -627,7 +629,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
             "placeholder": placeHolderformGlob,
             "maxLength": 500,
             "isRequired": true,
-            "label": "Feedback:",
+            "label": inputLabelformGlob,
             "errorMessage": errorMsgformGlob
         },
         {
