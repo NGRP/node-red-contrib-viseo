@@ -258,7 +258,15 @@ const buildReply = (RED, node, data, config) => {
         reply.attach =   marshall(locale, attach,  data, '');
         if (reply.speech === undefined) reply.speech = reply.subtitle || reply.subtext;
     }
-    else if (config.sendType === 'adaptiveCard' || config.sendType === 'formAdaptiveCard' || config.sendType === 'formGlobalAdaptiveCard') {        buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
+    else if (config.sendType === 'adaptiveCard' ) {        
+        buildReplyAdaptiveCard(RED, node, locale, data, config, reply);
+    }
+    else if (config.sendType === 'formAdaptiveCard' ){
+        buildReplyformAdaptiveCard(RED, node, locale, data, config, reply);
+    }
+    else if (config.sendType === 'formGlobalAdaptiveCard'){
+        buildReplyformGlobalAdaptiveCard(RED, node, locale, data, config, reply);
+
     }
     else if (config.sendType === 'inputCard') {
         reply = {
@@ -538,77 +546,64 @@ const addImageToAdaptiveCard = (imageUrl, imageSize, imageHorizontalAlignment, i
     }
 };
 
-const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
-    let title = config.titleAdaptiveCard;
-    let subtitle = config.subtitle;
-    let attach = config.attachAdaptiveCard;
-    let attachSize = config.attachSizeAdaptiveCard;
-    let imageHorizontalAlignment = config.attachHorizontalAlignment;
-    let imageWidth = config.attachWidthAdaptiveCard;
-    let imageHeight = config.attachHeightAdaptiveCard;
-    let subtext = config.textAdaptiveCard;
-    let separator = config.containerSeparatorAdaptiveCard;
-    let displayedTextSize = config.displayedTextSizeAdaptiveCard;
-    let titleShowCardAction = config.titleShowCardAction;
-    let textButtonMarker = config.textButtonMarker;
-    let textButtonPrefix = config.textButtonPrefix;
-    
+const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
+    let formtitle = config.titleformAdaptiveCard;
+    let errorMsgform = config.errorMsgformAdaptiveCard;
+    let submitLabelform = config.submitLabelformAdaptiveCard;
+    let placeHolderform = config.placeHolderformAdaptiveCard;
+
     if(config.sendType === 'formAdaptiveCard'){
-        title = helper.getContextValue(RED, node, data, title || '', config.titleTypeAdaptiveCard || 'str');
-        subtext = helper.getContextValue(RED, node, data, subtext || '', config.node-input-subtext || 'str');
-        subtext = marshall(locale, subtext,  data, '');
-        title = marshall(locale, title,  data, '');
-        
-        
-        reply.type = 'AdaptiveCard';
-        reply.title = title;
-        reply.version = "1.3";
-        reply.body = [{"type": "TextBlock",
-        "size": "Medium",
-        "weight": "Bolder",
-        "text": title,
-        "horizontalAlignment": "Center",
-        "wrap": true},
-        {
-            "type": "TextBlock",
-            "text": subtext,
-            "size": "Large",
-            "weight": "Bolder",
-            "wrap": true
-        },
-        {
-            "type": "Input.Text",
-            "style": "text",
-            "isMultiline": true,
-            "id": "userFeedback",
-            "placeholder": "master.placeholder",
-            "maxLength": 500,
-            "isRequired": true,
-            "label": "Feedback:",
-            "errorMessage": "master.errorMessage"
-        }];
-        reply.actions = [{
-            "type": "Action.Submit",
-            "title": "master.submit",
-            "data": {
-                "id": "feedbackButton",
-              }
-        }];
-        const textToShow = marshall(locale, subtext,  data, '');
-    }
+    formtitle = helper.getContextValue(RED, node, data, formtitle || '', config.titleformTypeAdaptiveCard || 'str');
+    formtitle = marshall(locale, formtitle,  data, '');
+    
+    
+    reply.type = 'AdaptiveCard';
+    reply.formtitle = formtitle;
+    reply.version = "1.3";
+    reply.body = [{"type": "TextBlock",
+    "size": "Medium",
+    "weight": "Bolder",
+    "text": formtitle,
+    "horizontalAlignment": "Center",
+    "wrap": true},
+    {
+        "type": "Input.Text",
+        "style": "text",
+        "isMultiline": true,
+        "id": "userFeedback",
+        "placeholder": placeHolderform,
+        "maxLength": 500,
+        "isRequired": true,
+        "label": "Feedback:",
+        "errorMessage": errorMsgform
+    }];
+    reply.actions = [{
+        "type": "Action.Submit",
+        "title": submitLabelform,
+        "data": {
+            "id": "feedbackButton",
+          }
+    }];}
+
+}
+const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply) => {
+    let formGlobaltitle = config.titleformAdaptiveCard;
+    let errorMsgformGlob = config.errorMsgformGlobalAdaptiveCard;
+    let submitLabelformGlob = config.submitLabelformGlobalAdaptiveCard;
+    let placeHolderformGlob = config.placeHolderformGlobalAdaptiveCard;
 
     if(config.sendType === 'formGlobalAdaptiveCard'){
-        title = helper.getContextValue(RED, node, data, title || '', config.titleTypeAdaptiveCard || 'str');
-        title = marshall(locale, title,  data, '');
+        formGlobaltitle = helper.getContextValue(RED, node, data, formGlobaltitle || '', config.titleformGlobalTypeAdaptiveCard || 'str');
+        formGlobaltitle = marshall(locale, formGlobaltitle,  data, '');
     
         
         reply.type = 'AdaptiveCard';
-        reply.title = title;
+        reply.formGlobaltitle = formGlobaltitle;
         reply.version = "1.3";
         reply.body = [{"type": "TextBlock",
         "size": "Medium",
         "weight": "Bolder",
-        "text": title,
+        "text": formGlobaltitle,
         "horizontalAlignment": "Center",
         "wrap": true},
         {
@@ -616,11 +611,11 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
             "style": "text",
             "isMultiline": true,
             "id": "userFeedback",
-            "placeholder": "master.placeholder",
+            "placeholder": placeHolderformGlob,
             "maxLength": 500,
             "isRequired": true,
             "label": "Feedback:",
-            "errorMessage": "master.errorMessage"
+            "errorMessage": errorMsgformGlob
         },
         {
             "type": "Input.ChoiceSet",
@@ -640,14 +635,29 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
         },];
         reply.actions = [{
             "type": "Action.Submit",
-            "title": "master.submit",
+            "title": submitLabelformGlob,
             "data": {
                 "id": "feedbackGlobalButton",
                 }}];
-        const textToShow = marshall(locale, subtext,  data, '');
     }
 
-    else if(config.sendType === 'adaptiveCard'){
+}
+const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
+    let title = config.titleAdaptiveCard;
+    let subtitle = config.subtitle;
+    let attach = config.attachAdaptiveCard;
+    let attachSize = config.attachSizeAdaptiveCard;
+    let imageHorizontalAlignment = config.attachHorizontalAlignment;
+    let imageWidth = config.attachWidthAdaptiveCard;
+    let imageHeight = config.attachHeightAdaptiveCard;
+    let subtext = config.textAdaptiveCard;
+    let separator = config.containerSeparatorAdaptiveCard;
+    let displayedTextSize = config.displayedTextSizeAdaptiveCard;
+    let titleShowCardAction = config.titleShowCardAction;
+    let textButtonMarker = config.textButtonMarker;
+    let textButtonPrefix = config.textButtonPrefix;
+
+    if(config.sendType === 'adaptiveCard'){
             /* 
         '\n\n' is a default Section marker, '- ' is clickable text marker by default)
         This is an exmaple of text to display:
