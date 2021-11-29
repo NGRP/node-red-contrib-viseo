@@ -775,8 +775,8 @@
                 <option value="event">Event</option>
                 <option value="adaptiveCard">AdaptiveCard</option>
                 <option value="confirm">Confirm</option>
-                <option value="formAdaptiveCard">formAdaptiveCard</option>
-                <option value="formGlobalAdaptiveCard">formGlobalAdaptiveCard</option>
+                <option value="formAdaptiveCard">Input card with single text</option>
+                <option value="formGlobalAdaptiveCard">Feedback card with thumb up/down</option>
                 <option value="inputCard">Input Card</option>
             </select>
         </div>
@@ -1214,10 +1214,9 @@
             <a href="https://docs.microsoft.com/en-us/adaptive-cards/authoring-cards/getting-started">Adaptive Cards Documentation</a>.
         </dd>
         <dt>formAdaptiveCard</dt>
-        <dd>Send a card to the user with a text input. It allows the user to give his feedback about the answers of the QnA skills 
-            of the bot.</dd>
+        <dd>Adaptive card with single text input (of type Input.text) and one submit button (of action Action.Submit). For example, it allows the user to give his feedback about the answers of bot.</dd>
         <dt>formGlobalAdaptiveCard</dt>
-        <dd>Send a card to the user with a text input and some radio buttons. It allows the user to give a global feedback about the bot.</dd>
+        <dd>Adaptive card with a text input and 2 radio buttons, which are thumb up ("👍") and down ("👎"). It allows the user to give a thumb up or down to bot's answer, together with free-form text as feedback.</dd>
 
         <dt>SignIn</dt>
         <dd>sends card to signin to an account; a signin URL should be precised</dd>
