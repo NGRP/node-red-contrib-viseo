@@ -111,7 +111,8 @@ const getPrediction = async function(node, text) {
         uri: `${node.endpoint}${encodeURIComponent(text)}`,
         method: 'GET',
         headers,
-        json: true
+        json: true,
+        proxy: process.env.HTTP_PROXY
     });
 
     const entityObject = extractEntities(response.prediction);
