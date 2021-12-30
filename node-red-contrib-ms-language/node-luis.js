@@ -165,13 +165,17 @@ module.exports = function(RED) {
         node.status({fill:'red', shape:'ring', text: 'Missing credentials'});
 
         if (!conf || !conf.credentials) return;
+
+        // Endpoint
         if (conf.way === 'key') {
             // Endpoint URL changes for V3
             this.endpoint = `https://${conf.location}.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/${conf.credentials.appId}/slots/${conf.staging ? 'staging' : 'production'}/predict?verbose=${conf.verbose ? 'true' : 'false'}&log=true&show-all-intents=true&query=`;
-            this.subKey = conf.credentials.subKey;
         } else {
             this.endpoint = conf.credentials.endpoint;
         }
+
+        // subscription key
+        this.subKey = conf.credentials.subKey;
 
         // Spell check key
         if (conf.credentials.spellCheckKey && conf.credentials.spellCheckKey !== '') {

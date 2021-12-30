@@ -30,7 +30,6 @@
                     $(".key").show();
                     $("#node-config-input-location").typedInput('show');
                     $("#node-config-input-appId").typedInput('show');
-                    $("#node-config-input-subKey").typedInput('show');
                     $("#node-config-input-verbose").typedInput('show');
                     $("#node-config-input-staging").typedInput('show');
                 }
@@ -70,10 +69,6 @@
         <input type="text" id="node-config-input-appId" style="width:70%;" placeholder="">
     </div>
     <div class="form-row key">
-        <label for="node-config-input-subKey"><i class="fa fa-lock"></i> Sub Key</label>
-        <input type="text" id="node-config-input-subKey" style="width:70%;" placeholder="">
-    </div>
-    <div class="form-row key">
         <label for="node-config-input-verbose"><i class="fa fa-lock"></i> Verbose</label>
         <input type="text" id="node-config-input-verbose" style="width:70%;" placeholder="">
     </div>
@@ -84,6 +79,10 @@
     <div class="form-row endpoint">
         <label for="node-config-input-endpoint"><i class="fa fa-globe"></i> Endpoint</label>
         <input type="text" id="node-config-input-endpoint" style="width:70%;" placeholder="https://{your-resource-name}.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/{appId}/slots/{slotName}/predict?subscription-key={key}&query={query}[&verbose][&log][&show-all-intents]">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-subKey"><i class="fa fa-lock"></i> Sub Key</label>
+        <input type="text" id="node-config-input-subKey" style="width:70%;" placeholder="">
     </div>
     <div class="form-row">
         <label for="node-config-input-spellCheckKey"><i class="fa fa-lock"></i> Spell check key</label>
