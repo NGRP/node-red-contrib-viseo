@@ -17,7 +17,7 @@ const buildRadioButton = (id, index, label, $data) => {
         type: CARD_CONST.INPUT_CHOICESET,
         label,
         style: CARD_CONST.STYLE_EXPANDED,
-        value: "1", // "1" means the first option of the radio buttons
+        value:  $data.value ? $data.value : "1", // "1" means the first option of the radio buttons
         choices: $data.choices
     };
 };
