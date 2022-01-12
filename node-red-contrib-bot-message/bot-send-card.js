@@ -571,7 +571,7 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
     reply.title = formtitle;
     reply.version = "1.3";
     reply.body = [{
-            "type": "TextBlock",
+            "type": CARD_CONST.TEXT_BLOCK,
             "size": "Medium",
             "weight": "Bolder",
             "text": formtitle,
@@ -579,8 +579,8 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
             "wrap": true
         },
         {
-            "type": "Input.Text",
-            "style": "text",
+            "type": CARD_CONST.INPUT_TEXT,
+            "style": CARD_CONST.TYPE_TEXT,
             "isMultiline": true,
             "id": "userFeedback",
             "placeholder": placeHolderform,
@@ -614,7 +614,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
     reply.title = formGlobaltitle;
     reply.version = "1.3";
     reply.body = [{
-            "type": "TextBlock",
+            "type": CARD_CONST.TEXT_BLOCK,
             "size": "Medium",
             "weight": "Bolder",
             "text": formGlobaltitle,
@@ -622,8 +622,8 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
             "wrap": true
         },
         {
-            "type": "Input.Text",
-            "style": "text",
+            "type": CARD_CONST.INPUT_TEXT,
+            "style": CARD_CONST.TYPE_TEXT,
             "isMultiline": true,
             "id": "userFeedback",
             "placeholder": placeHolderformGlob,
@@ -633,7 +633,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
             "errorMessage": errorMsgformGlob
         },
         {
-            "type": "Input.ChoiceSet",
+            "type": CARD_CONST.INPUT_CHOICESET,
             "id": "SingleSelectVal",
             "style": "expanded",
             "value": "1",
@@ -748,7 +748,7 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
             "type": "Action.ShowCard",
             "title": titleShowCardAction,
             "card": {
-                "type": 'AdaptiveCard',
+                "type": CARD_CONST.CARD_ADAPTIVECARD,
                 "body": []
             }
         });
