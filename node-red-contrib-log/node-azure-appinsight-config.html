@@ -3,6 +3,10 @@
         category: 'config',
         defaults: {
             name: { value: undefined },
+            useADAuthentication: { value: false },
+            authenticationType: { value: 'managedIdentity' },
+            tenantId: { value: undefined },
+            clientId: { value: undefined },
             autoDependencyCorrelation: { value: false },
             autoCollectRequests: { value: false },
             autoCollectPerformance: { value: false },
@@ -14,10 +18,35 @@
             distributedTracingTracingMode: { value: "0" }
         },
         credentials: {
-            key: { type: 'text' }
+            connectionString: { type: 'text' },
+            clientSecret: { type: 'text' }
         },
         label: function() {
             return this.name || "Application insights config";
+        },
+        oneditprepare: function() {
+            $('#node-config-input-useADAuthentication').change(function (event) {
+                if ($(this).is(":checked")) {
+                    $('.section-authenticationType').removeClass('hide');
+                } else {
+                    $('.section-authenticationType').addClass('hide');
+                    $('#node-config-input-tenantId').val(undefined);
+                    $('#node-config-input-clientId').val(undefined);
+                    $('#node-config-input-clientSecret').val(undefined);
+                }
+            });
+
+            $('#node-config-input-authenticationType').change(function (event) {
+                const type = $(this).val();
+                if (type === 'servicePrincipal') {
+                    $('.section-servicePrincipal').removeClass('hide');
+                } else {
+                    $('.section-servicePrincipal').addClass('hide');
+                    $('#node-config-input-tenantId').val(undefined);
+                    $('#node-config-input-clientId').val(undefined);
+                    $('#node-config-input-clientSecret').val(undefined);
+                }
+            });
         }
     });
 </script>
@@ -30,9 +59,42 @@
 
     <br>
     <div class="form-row">
-        <label for="node-config-input-key" style="width: 35%;"><i class="fa fa-lock"></i> Instrumentation key</label>
-        <input type="text" id="node-config-input-key" placeholder="Instrumentation key" style="width: 60%;">
+        <label for="node-config-input-connectionString" style="width: 35%;"><i class="fa fa-lock"></i> Connection string</label>
+        <input type="text" id="node-config-input-connectionString" placeholder="Connection string" style="width: 60%;">
     </div>
+
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-useADAuthentication" style="width: 50%;">Use Azure AD authentication</label>
+        <input type="checkbox" id="node-config-input-useADAuthentication" style="width: auto;">
+    </div>
+
+    <section class="section-authenticationType hide">
+        <br>
+        <div class="form-row">
+            <label for="node-config-input-authenticationType"><i class="fa fa-gear"></i> Authentication type</label>
+            <select id="node-config-input-authenticationType" style="width:70%;">
+                <option value="managedIdentity">Managed identity</option>
+                <option value="servicePrincipal">Service principal</option>
+            </select>
+        </div>
+
+        <section class="section-servicePrincipal hide">
+            <br>
+            <div class="form-row">
+                <label for="node-config-input-tenantId" style="width: 35%;">Tenant ID</label>
+                <input type="text" id="node-config-input-tenantId" placeholder="Tenant ID" style="width: 60%;">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-clientId" style="width: 35%;">Client ID</label>
+                <input type="text" id="node-config-input-clientId" placeholder="Client ID" style="width: 60%;">
+            </div>
+            <div class="form-row">
+                <label for="node-config-input-clientSecret" style="width: 35%;"><i class="fa fa-lock"></i> Client secret</label>
+                <input type="text" id="node-config-input-clientSecret" placeholder="Client secret" style="width: 60%;">
+            </div>
+        </section>
+    </section>
 
     <br>
     <div class="form-row">

@@ -2,6 +2,10 @@ module.exports = function (RED) {
     const register = function (config) {
         RED.nodes.createNode(this, config);
 
+        this.useADAuthentication = config.useADAuthentication;
+        this.authenticationType = config.authenticationType;
+        this.tenantId = config.tenantId;
+        this.clientId = config.clientId;
         this.autoDependencyCorrelation = config.autoDependencyCorrelation;
         this.autoCollectRequests = config.autoCollectRequests;
         this.autoCollectPerformance = config.autoCollectPerformance;
@@ -14,7 +18,8 @@ module.exports = function (RED) {
     }
     RED.nodes.registerType('log-azure-appinsight-config', register, {
         credentials: {
-            key: { type: 'text' }
+            connectionString: { type: 'text' },
+            clientSecret: { type: 'text' }
         }
     });
 };
