@@ -8,7 +8,8 @@ const buildCheckbox = (id, index, label, $data) => {
         isMultiSelect: $data.isMultiSelect ? $data.isMultiSelect : true,
         value: $data.value ? $data.value : "1", // "1" means the first option of the checkbox
         choices: $data.choices,
-        isRequired: $data.isRequired ? $data.isRequired : false
+        isRequired: $data.isRequired ? $data.isRequired : false,
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
 };
 
@@ -20,7 +21,8 @@ const buildRadioButton = (id, index, label, $data) => {
         style: CARD_CONST.STYLE_EXPANDED,
         value:  $data.value ? $data.value : "1", // "1" means the first option of the radio buttons
         choices: $data.choices,
-        isRequired: $data.isRequired ? $data.isRequired : false
+        isRequired: $data.isRequired ? $data.isRequired : false,
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
 };
 
@@ -52,7 +54,9 @@ const buildDropdown = (id, index, label, $data) => {
         label,
         style: CARD_CONST.STYLE_COMPACT,
         value: $data.value ? $data.value : "1", // "1" means the first option of the dropdown list
-        choices: $data.choices
+        choices: $data.choices,
+        isRequired: $data.isRequired ? $data.isRequired : false,
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
 };
 

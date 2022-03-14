@@ -787,6 +787,8 @@ const buildInputCard = (RED, node, data, config) => {
     sections.forEach((section, index) => {
         const label = section.label;
         const $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
+        $data.errorMessage = helper.getContextValue(RED, node, data, section.errorMessage || '', section.errorMessageType || 'str');
+
         let item;
 
         switch (section.type) {
