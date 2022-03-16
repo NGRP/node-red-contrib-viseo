@@ -1,5 +1,6 @@
 const helper = require('node-red-viseo-helper');
 const appInsights = require('applicationinsights');
+const { DefaultAzureCredential, ClientSecretCredential  } = require('@azure/identity');
 
 // --------------------------------------------------------------------------
 //  NODE-RED
@@ -8,7 +9,7 @@ const appInsights = require('applicationinsights');
 let client;
 
 const setup = (config) => {
-    appInsights.setup(config.credentials.key)
+    appInsights.setup(config.credentials.connectionString)
         .setAutoDependencyCorrelation(config.autoDependencyCorrelation || false)
         .setAutoCollectRequests(config.autoCollectRequests || false)
         .setAutoCollectPerformance(config.autoCollectPerformance || false)
@@ -19,6 +20,18 @@ const setup = (config) => {
         .setSendLiveMetrics(config.sendLiveMetrics || false)
         .setDistributedTracingMode(config.distributedTracingTracingMode || appInsights.DistributedTracingModes.AI)
         .start();
+    
+    if (config.useADAuthentication) {
+        const credential = config.authenticationType === 'managedIdentity' ?
+            new DefaultAzureCredential() :
+            new ClientSecretCredential(
+                config.tenantId,
+                config.clientId,
+                config.credentials.clientSecret
+            );
+        appInsights.defaultClient.config.aadTokenCredential = credential;
+    }
+
     client = appInsights.defaultClient;
 };
 
@@ -63,7 +76,7 @@ module.exports = function (RED) {
             node.status({ fill: 'red', shape: 'ring', text: 'Missing configuration' });
         }
 
-        if (!conf || !conf.credentials.key) return;
+        if (!conf || !conf.credentials.connectionString) return;
 
         setup(conf);
         this.on('input', (data) => { input(node, data, config); });

@@ -1,14 +1,15 @@
 {
   "name": "node-red-contrib-viseo-log",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "VISEO Bot Maker - Logging nodes",
   "dependencies": {
-    "winston": "~2.3.1",
-    "applicationinsights": "~1.4.0",
+    "@azure/identity": "~2.0.3",
+    "applicationinsights": "~2.2.1",
     "logstash-client": "~1.1.1",
-    "request": "^2.34.0",
     "node-red-viseo-helper": "~0.3.0",
-    "sqlite3": "~4.0.0"
+    "request": "^2.34.0",
+    "sqlite3": "~4.0.0",
+    "winston": "~2.3.1"
   },
   "repository": {
     "type": "git",
