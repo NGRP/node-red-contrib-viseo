@@ -8,7 +8,8 @@ const buildCheckbox = (id, index, label, $data) => {
         isMultiSelect: $data.isMultiSelect ? $data.isMultiSelect : true,
         value: $data.value ? $data.value : "1", // "1" means the first option of the checkbox
         choices: $data.choices,
-        isRequired: $data.isRequired ? $data.isRequired : false
+        isRequired: $data.isRequired ? $data.isRequired : false,
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
 };
 
@@ -20,7 +21,8 @@ const buildRadioButton = (id, index, label, $data) => {
         style: CARD_CONST.STYLE_EXPANDED,
         value:  $data.value ? $data.value : "1", // "1" means the first option of the radio buttons
         choices: $data.choices,
-        isRequired: $data.isRequired ? $data.isRequired : false
+        isRequired: $data.isRequired ? $data.isRequired : false,
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
 };
 
@@ -33,16 +35,22 @@ const buildRadioButton = (id, index, label, $data) => {
  * @returns an object this text input used for payload body
  */
 const buildTextblock = (id, index, label, $data) => {
-    return {
+    const commonProps = {
         id: `${id}_${CARD_CONST.TYPE_TEXT}_${index}`,
         type: CARD_CONST.INPUT_TEXT,
         label,
-        style: $data.style ? $data.style : CARD_CONST.TYPE_TEXT, // Possible values are : text, tel, eamil.
-        isMultiline: true,
+        style: $data.style ? $data.style : CARD_CONST.TYPE_TEXT, // Possible values are : text, tel, email.
+        isMultiline: $data.isMultiline ? $data.isMultiline : false,
         isRequired: $data.isRequired ? $data.isRequired : false,
-        ... $data.regex && { regex: $data.regex},
-        ... $data.errorMessage && { errorMessage: $data.errorMessage}
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
+    if ($data.regex) {
+        return {
+            ...commonProps,
+            regex: $data.regex
+        };
+    }
+    return commonProps;
 };
 
 const buildDropdown = (id, index, label, $data) => {
@@ -52,7 +60,9 @@ const buildDropdown = (id, index, label, $data) => {
         label,
         style: CARD_CONST.STYLE_COMPACT,
         value: $data.value ? $data.value : "1", // "1" means the first option of the dropdown list
-        choices: $data.choices
+        choices: $data.choices,
+        isRequired: $data.isRequired ? $data.isRequired : false,
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
 };
 
