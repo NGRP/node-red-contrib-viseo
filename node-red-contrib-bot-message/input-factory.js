@@ -35,16 +35,22 @@ const buildRadioButton = (id, index, label, $data) => {
  * @returns an object this text input used for payload body
  */
 const buildTextblock = (id, index, label, $data) => {
-    return {
+    const commonProps = {
         id: `${id}_${CARD_CONST.TYPE_TEXT}_${index}`,
         type: CARD_CONST.INPUT_TEXT,
         label,
-        style: $data.style ? $data.style : CARD_CONST.TYPE_TEXT, // Possible values are : text, tel, eamil.
-        isMultiline: true,
+        style: $data.style ? $data.style : CARD_CONST.TYPE_TEXT, // Possible values are : text, tel, email.
+        isMultiline: $data.isMultiline ? $data.isMultiline : false,
         isRequired: $data.isRequired ? $data.isRequired : false,
-        ... $data.regex && { regex: $data.regex},
-        ... $data.errorMessage && { errorMessage: $data.errorMessage}
+        errorMessage: $data.errorMessage ? $data.errorMessage : ''
     };
+    if ($data.regex) {
+        return {
+            ...commonProps,
+            regex: $data.regex
+        };
+    }
+    return commonProps;
 };
 
 const buildDropdown = (id, index, label, $data) => {
