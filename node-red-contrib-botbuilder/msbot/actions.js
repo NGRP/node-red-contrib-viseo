@@ -1,5 +1,7 @@
 const { BotFrameworkAdapter, TurnContext, MemoryStorage, ConversationState, SkillHttpClient, SkillHandler, ChannelServiceRoutes, ActivityTypes } = require("botbuilder");
 const { SimpleCredentialProvider, AuthenticationConfiguration } = require('botframework-connector');
+const http = require('http');
+const https = require('https');
 const { VBMBot } = require("./botVBM");
 const getMessage = require("./messages.js");
 const { SkillsConfiguration } = require('./skillsConfiguration');
@@ -35,7 +37,8 @@ function createAdapter(config, authConfig) {
   if (process.env.HTTPS_PROXY || process.env.HTTP_PROXY) {
     botbuilderConfig.clientOptions = {
       agentSettings: {
-        https: new Agent()
+        http: new http.Agent(),
+        https: new https.Agent()
       }
     }
   }
@@ -44,7 +47,7 @@ function createAdapter(config, authConfig) {
     botbuilderConfig.authConfig = authConfig;
   }
 
-  return new BotFrameworkAdapter(botbuilderConfig);;
+  return new BotFrameworkAdapter(botbuilderConfig);
 }
 
 function createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig) {
