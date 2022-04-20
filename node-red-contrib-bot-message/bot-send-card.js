@@ -275,7 +275,7 @@ const buildReply = (RED, node, data, config) => {
     } else if (config.sendType === 'inputCard') {
         reply = {
             ...reply,
-            ...buildInputCard(RED, node, locale, data, config, reply)
+            ...buildInputCard(RED, node, data, config)
         };
     }
 
@@ -761,8 +761,7 @@ const buildReplyAdaptiveCard = (RED, node, locale, data, config, reply) => {
 }
 
 
-const buildInputCard = (RED, node, locale, data, config) => {
-    // TODO extract constants
+const buildInputCard = (RED, node, data, config) => {
     const reply = {
         type: CARD_CONST.CARD_ADAPTIVECARD,
         title: '',
@@ -787,28 +786,26 @@ const buildInputCard = (RED, node, locale, data, config) => {
     const sections = JSON.parse(JSON.stringify(config.sections));
     sections.forEach((section, index) => {
         const label = section.label;
-        const type = section.type;
-        let $data;
+        const $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
+        $data.errorMessage = helper.getContextValue(RED, node, data, section.errorMessage || '', section.errorMessageType || 'str');
+
         let item;
 
-        switch (type) {
+        switch (section.type) {
             case CARD_CONST.TYPE_CHECKBOX:
-                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
                 item = inputFactory.buildCheckbox(id, index + 1, label, $data);
                 break;
             case CARD_CONST.TYPE_RADIOBUTTON:
-                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
                 item = inputFactory.buildRadioButton(id, index + 1, label, $data);
                 break;
             case CARD_CONST.TYPE_DROPDOWN:
-                $data = helper.getContextValue(RED, node, data, section.value || '', section.valueType || 'json');
                 item = inputFactory.buildDropdown(id, index + 1, label, $data);
                 break;
             case CARD_CONST.TYPE_TEXT:
-                item = inputFactory.buildTextblock(id, index + 1, label);
-                break;
+            case CARD_CONST.TYPE_EMAIL:
+            case CARD_CONST.TYPE_TEL:
             default:
-                item = inputFactory.buildTextblock(id, index + 1, label);
+                item = inputFactory.buildTextblock(id, index + 1, label, $data);
         }
         reply.body.push(item);
     });

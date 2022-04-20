@@ -12,5 +12,7 @@ module.exports = {
     TYPE_CHECKBOX: "checkbox",
     TYPE_RADIOBUTTON: "radiobutton",
     TYPE_DROPDOWN: "dropdownlist",
-    TYPE_TEXT: "text"
+    TYPE_TEXT: "text",
+    TYPE_EMAIL: "email",
+    TYPE_TEL: "tel"
 };
