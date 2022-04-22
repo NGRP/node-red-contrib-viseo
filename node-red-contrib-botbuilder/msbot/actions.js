@@ -1,5 +1,7 @@
 const { BotFrameworkAdapter, TurnContext, MemoryStorage, ConversationState, SkillHttpClient, SkillHandler, ChannelServiceRoutes, ActivityTypes } = require("botbuilder");
 const { SimpleCredentialProvider, AuthenticationConfiguration } = require('botframework-connector');
+const http = require('http');
+const https = require('https');
 const { VBMBot } = require("./botVBM");
 const getMessage = require("./messages.js");
 const { SkillsConfiguration } = require('./skillsConfiguration');
@@ -23,19 +25,29 @@ const getAuthConfig = (config, allowedSkills) => {
 };
 
 function createAdapter(config, authConfig) {
-  let adapter;
   let botbuilderConfig = {
       appId: config.appId,
       appPassword: config.appPassword
   };
 
+  /* To fix issue when a proxy is used on local environment, we provide a specific http agent.
+  / It will bypass the proxy and send the message directly to the destination because the 
+  / NO_PROXY variable is not used by the botbuilder library.
+  */
+  if (process.env.HTTPS_PROXY || process.env.HTTP_PROXY) {
+    botbuilderConfig.clientOptions = {
+      agentSettings: {
+        http: new http.Agent(),
+        https: new https.Agent()
+      }
+    }
+  }
+
   if (config.botType !== 'none' && config.botType !== '') {
     botbuilderConfig.authConfig = authConfig;
   }
 
-  adapter = new BotFrameworkAdapter(botbuilderConfig);
-
-  return adapter;
+  return new BotFrameworkAdapter(botbuilderConfig);
 }
 
 function createBot(adapter, config, node, allowedCallers, ifRootBot, authConfig) {
