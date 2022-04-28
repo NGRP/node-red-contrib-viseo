@@ -612,6 +612,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
     reply.type = CARD_CONST.CARD_ADAPTIVECARD;
     reply.title = formGlobaltitle;
     reply.version = "1.3";
+    // Warning : If you want to put the Thumbs up/down required you have to add a n errorMessage and a label to be validated
     reply.body = [{
             "type": CARD_CONST.TEXT_BLOCK,
             "text": formGlobaltitle,
@@ -635,8 +636,6 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
             "id": "SingleSelectVal",
             "style": "expanded",
             "value": "1",
-            "isRequired": true,
-            "errorMessage": errorMsgformGlob,
             "choices": [{
                     "title": "👍",
                     "value": "Like"
