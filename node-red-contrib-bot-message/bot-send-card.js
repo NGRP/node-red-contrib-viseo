@@ -572,8 +572,6 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
     reply.version = "1.3";
     reply.body = [{
             "type": CARD_CONST.TEXT_BLOCK,
-            "size": "Medium",
-            "weight": "Bolder",
             "text": formtitle,
             "horizontalAlignment": "Center",
             "wrap": true
@@ -586,6 +584,7 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
             "placeholder": placeHolderform,
             "maxLength": 500,
             "isRequired": true,
+            "regex": "^[ &-.A-Za-z]+$",
             "label": inputLabelform,
             "errorMessage": errorMsgform
         }
@@ -613,10 +612,9 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
     reply.type = CARD_CONST.CARD_ADAPTIVECARD;
     reply.title = formGlobaltitle;
     reply.version = "1.3";
+    // Warning : If you want to put the Thumbs up/down required you have to add a n errorMessage and a label to be validated
     reply.body = [{
             "type": CARD_CONST.TEXT_BLOCK,
-            "size": "Medium",
-            "weight": "Bolder",
             "text": formGlobaltitle,
             "horizontalAlignment": "Center",
             "wrap": true
@@ -629,6 +627,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
             "placeholder": placeHolderformGlob,
             "maxLength": 500,
             "isRequired": true,
+            "regex": "^[ &-.A-Za-z]+$",
             "label": inputLabelformGlob,
             "errorMessage": errorMsgformGlob
         },
