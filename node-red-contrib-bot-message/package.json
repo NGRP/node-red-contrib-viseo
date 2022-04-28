@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-viseo-bot-message",
-  "version": "0.10.8",
+  "version": "0.10.9",
   "description": "VISEO Bot Maker - Sends messages to the user",
   "dependencies": {
     "mustache": "^4.2.0",
