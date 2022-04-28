@@ -572,8 +572,6 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
     reply.version = "1.3";
     reply.body = [{
             "type": CARD_CONST.TEXT_BLOCK,
-            "size": "Medium",
-            "weight": "Bolder",
             "text": formtitle,
             "horizontalAlignment": "Center",
             "wrap": true
@@ -616,8 +614,6 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
     reply.version = "1.3";
     reply.body = [{
             "type": CARD_CONST.TEXT_BLOCK,
-            "size": "Medium",
-            "weight": "Bolder",
             "text": formGlobaltitle,
             "horizontalAlignment": "Center",
             "wrap": true
@@ -640,6 +636,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
             "style": "expanded",
             "value": "1",
             "isRequired": true,
+            "errorMessage": errorMsgformGlob,
             "choices": [{
                     "title": "👍",
                     "value": "Like"
