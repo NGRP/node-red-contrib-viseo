@@ -584,7 +584,7 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
             "placeholder": placeHolderform,
             "maxLength": 500,
             "isRequired": true,
-            "regex": "^[ &-.A-Za-z]+$",
+            "regex": "^[ :?!,&-.A-Za-z']+$",
             "label": inputLabelform,
             "errorMessage": errorMsgform
         }
@@ -627,7 +627,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
             "placeholder": placeHolderformGlob,
             "maxLength": 500,
             "isRequired": true,
-            "regex": "^[ &-.A-Za-z]+$",
+            "regex": "^[ :?!,&-.A-Za-z']+$",
             "label": inputLabelformGlob,
             "errorMessage": errorMsgformGlob
         },
