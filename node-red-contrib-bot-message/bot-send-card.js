@@ -592,6 +592,7 @@ const buildReplyformAdaptiveCard = (RED, node, locale, data, config, reply) => {
     reply.actions = [{
         "type": "Action.Submit",
         "title": submitLabelform,
+        "id": "SubmitFeedback",
         "data": {
             "id": "feedbackButton",
         }
@@ -650,6 +651,7 @@ const buildReplyformGlobalAdaptiveCard = (RED, node, locale, data, config, reply
     reply.actions = [{
         "type": "Action.Submit",
         "title": submitLabelformGlob,
+        "id": "SubmitFeedback",
         "data": {
             "id": "feedbackGlobalButton",
         }
