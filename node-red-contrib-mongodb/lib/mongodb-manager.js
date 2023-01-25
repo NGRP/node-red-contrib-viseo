@@ -1,6 +1,6 @@
 'use strict';
 const DatabaseManager = require('node-red-contrib-viseo-nosql-manager').DbManager;
-const MongoClient   = new require('mongodb').MongoClient();
+const MongoClient   = new require('mongodb').MongoClient;
 
 // --------------------------------------------------------------------------
 //  LOGS
@@ -116,22 +116,22 @@ class MongoDBManager extends DatabaseManager {
         let manager = this;
 
             //CONNECT DATABASE
-        MongoClient.connect(this.url, function(err, db) {
+        MongoClient.connect(this.url, function(err, client) {
 
             if(err === null) {
-                manager.db = db;
+                manager.db = client;
                 let hosts = '';
                 for (let host of manager.hosts) {
                     hosts += " "+Object.values(host).join(":");
                 }
                 info("Connected to database "+hosts+'/'+manager._database);
-
-                db.on('close', () => {
+                
+                client.on('close', () => {
                     manager.db = null;
                 });
 
                 if(callback) {
-                    callback(db);
+                    callback(client);
                 }
             } else {
                 error("Could not connect to database "+manager.url+' : '+err);
@@ -201,8 +201,8 @@ class MongoDBManager extends DatabaseManager {
     _request(request) {
 
         if(this.db === null) {
-            this._connect((db) => {
-                request(db);
+            this._connect((client) => {
+                request(client);
             })
         } else {
             request(this.db);
@@ -223,9 +223,9 @@ class MongoDBManager extends DatabaseManager {
 
     count(key, data, config, callback) {
 
-        this._request((db) => {
+        this._request((client) => {
             try {
-                const collection = db.collection(config.collection);
+                const collection = client.db(config.MongoDB).collection(config.collection);
                 collection.count(key, function(err, count) {
                     callback(err, data, count)
                 });
@@ -239,15 +239,13 @@ class MongoDBManager extends DatabaseManager {
 
     find(key, data, config, callback) { 
 
-        this._request(async (db) => {
+        this._request(async (client) => {
 
             var err = null;
             let documents = [];
 
             try {
-                const collection = db.collection(config.collection);
-
-
+                const collection = client.db(config.MongoDB).collection(config.collection);
                 let cursor = collection.find(key);
                 if(config.limit) {
                     cursor = cursor.skip(config.offset).limit(config.limit);
@@ -266,10 +264,10 @@ class MongoDBManager extends DatabaseManager {
 
 	update(key, value, data, config, callback) {
 
-        this._request((db) => {
+        this._request((client) => {
 
             try {
-        		let collection = db.collection(config.collection);
+                const collection = client.db(config.MongoDB).collection(config.collection);
         	    collection.updateOne(key, { $set: value }, { upsert: true }, function(err, result) {
         	        callback(err, data, result);
         	    });
@@ -281,10 +279,10 @@ class MongoDBManager extends DatabaseManager {
 
     increment(key, value, data, config, callback) {
 
-        this._request((db) => {
+        this._request((client) => {
 
             try {
-                let collection = db.collection(config.collection);
+                const collection = client.db(config.MongoDB).collection(config.collection);
                 collection.updateOne(key, { $inc: value }, { upsert: true }, function(err, result) {
                     callback(err, data, result);
                 });
@@ -296,11 +294,11 @@ class MongoDBManager extends DatabaseManager {
 
 	add(values, data, config, callback) {
 
-        this._request((db) => {
+        this._request((client) => {
 
             try { 
 
-        	    let collection = db.collection(config.collection);
+                const collection = client.db(config.MongoDB).collection(config.collection);
         	    collection.insert(values, function(err, result) {
         	    	callback(err, data, result);
         	    });
@@ -313,11 +311,10 @@ class MongoDBManager extends DatabaseManager {
 
 	remove(key, data, config, callback) {
 
-        this._request((db) => {
+        this._request((client) => {
 
             try {
-
-        	    let collection = db.collection(config.collection);
+                let collection = client.db(config.MongoDB).collection(config.collection);
         	    collection.remove(key, function(err, result) {
         	        callback(err, data, result);
         	    });    
