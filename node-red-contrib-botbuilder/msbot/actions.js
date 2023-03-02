@@ -13,6 +13,7 @@ const botmgr = require("node-red-viseo-bot-manager");
 let adapter;
 let skillEndpoint;
 let skillHandler;
+let oAuthScope;
 
 const getAuthConfig = (config, allowedSkills) => {
   if (config.botType === 'rootBot' || config.botType === 'skillBot') {
@@ -99,6 +100,11 @@ async function initConnector(config, node, allowedCallers) {
 
     if (config.botType !== 'none' && config.botType !== '' && allowedCallers === '') {
       reject(new Error("[Botbuilder] Missing allowedCallers!"));
+    }
+
+    // Register optional skill-claim oAuthScope, if provided.
+    if (config.oAuthScope) {
+      oAuthScope = config.oAuthScope;
     }
 
     // create adapter
@@ -284,9 +290,16 @@ async function reply(node, data, globalTypingDelay) {
   }
 
   let reference = context.convRef;
-  await adapter.continueConversation(reference, async (_cont) => {
-    await _cont.sendActivities(message);
-  });
+  // Use oauth overload if we respond to an oauth skill
+  if (oAuthScope) {
+    await adapter.continueConversation(reference, oAuthScope, async (_cont) => {
+      await _cont.sendActivities(message);
+    });
+  } else {
+    await adapter.continueConversation(reference, async (_cont) => {
+      await _cont.sendActivities(message);
+    });
+  }
 
   return callback();
 }
