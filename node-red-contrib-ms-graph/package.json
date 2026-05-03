@@ -3,7 +3,7 @@
     "version"       : "0.3.0",
     "description"   : "VISEO Bot Maker - Microsoft Graph",
     "dependencies"  : {  
-        "uuid"      : "3.1.0",
+        "uuid"      : "14.0.0",
         "node-red-viseo-helper": "~0.3.0",
         "request"   : "^2.34.0",
         "request-promise" : "^4.2.4"
